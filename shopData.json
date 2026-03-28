@@ -11,9 +11,7 @@
   ],
   "websites": {
     "primary": "https://www.contraptioncart.com",
-    "etsy": "https://contraptioncart.etsy.com",
-    "contactPage": "https://www.contraptioncart.com/contact",
-    "newsletterSignup": "https://www.contraptioncart.com/news-letter-sign-up"
+    "etsy": "https://contraptioncart.etsy.com"
   },
   "contact": {
     "email": "shasabolton@gmail.com",
@@ -39,19 +37,5 @@
       "verified": false,
       "notes": "Facebook presence is mentioned in product text; direct page URL was not found in fetched pages."
     }
-  },
-  "etsyMetadata": {
-    "shopDisplayName": "Contraptioncart",
-    "location": "Sheffield, Australia",
-    "starSeller": true,
-    "salesCount": 4473,
-    "ratingSummary": "5-star rating",
-    "notes": "Values come from search snippets and may change over time."
-  },
-  "sources": [
-    "https://www.contraptioncart.com",
-    "https://www.contraptioncart.com/contact",
-    "https://contraptioncart.etsy.com"
-  ],
-  "lastUpdated": "2026-03-28"
+  }
 }
