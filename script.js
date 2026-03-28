@@ -121,7 +121,9 @@ async function renderFirstProduct() {
       return;
     }
 
-    root.innerHTML = generateProductHtml(products[0]);
+    const firstProduct = products[0];
+    document.title = firstProduct.TITLE || document.title;
+    root.innerHTML = generateProductHtml(firstProduct);
   } catch (error) {
     root.innerHTML = `<p>Failed to load product data: ${escapeHtml(error.message)}</p>`;
   }
