@@ -67,7 +67,7 @@
         try {
           const html = await window.siteGenerator.generateHomepageHtml();
           frame.srcdoc = html;
-          status.textContent = "Live homepage preview from current config/templates.";
+          status.textContent = "Live homepage preview from current config/templates and CSS.";
         } catch (error) {
           status.classList.add("error");
           status.textContent = `Failed to build preview: ${error.message}`;

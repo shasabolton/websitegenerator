@@ -98,6 +98,17 @@ function buildFaviconPath(shopData) {
   return shopData?.branding?.faviconPath || "./shop/assets/favicon.jpg";
 }
 
+function buildSiteCssPath() {
+  return "./shop/assets/css/site.css";
+}
+
+function resolveAssetPath(path, useAbsoluteAssetPaths) {
+  if (!useAbsoluteAssetPaths) {
+    return path;
+  }
+  return new URL(path, window.location.href).href;
+}
+
 function homepageBodyContent(shopData) {
   const about = shopData?.about ? escapeHtml(shopData.about) : "We are preparing this page. Please check back soon.";
   return `
@@ -108,7 +119,8 @@ function homepageBodyContent(shopData) {
   `;
 }
 
-async function generateHomepageHtml() {
+async function generateHomepageHtml(options = {}) {
+  const useAbsoluteAssetPaths = Boolean(options.absoluteAssetPaths);
   const [shopData, navigationConfig, headerTemplate, footerTemplate, pageTemplate] = await Promise.all([
     fetchJson("./shop/config/shopData.json"),
     fetchJson("./shop/config/navigation.json"),
@@ -119,7 +131,8 @@ async function generateHomepageHtml() {
 
   const navHtml = buildNavigationHtml(navigationConfig);
   const shopName = escapeHtml(shopData?.shopName || "Shop");
-  const faviconPath = escapeHtml(buildFaviconPath(shopData));
+  const faviconPath = escapeHtml(resolveAssetPath(buildFaviconPath(shopData), useAbsoluteAssetPaths));
+  const siteCssPath = escapeHtml(resolveAssetPath(buildSiteCssPath(), useAbsoluteAssetPaths));
 
   const headerHtml = applyTemplate(headerTemplate, {
     SHOP_NAME: shopName,
@@ -137,6 +150,7 @@ async function generateHomepageHtml() {
   return applyTemplate(pageTemplate, {
     PAGE_TITLE: `${shopName} - Home`,
     FAVICON_PATH: faviconPath,
+    SITE_CSS_PATH: siteCssPath,
     HEADER: headerHtml,
     BODY_CONTENT: homepageBodyContent(shopData),
     FOOTER: footerHtml,
@@ -168,10 +182,15 @@ async function renderHomepagePreview(targetElementId = "preview-root") {
     throw new Error(`Preview target element not found: #${targetElementId}`);
   }
 
-  const homepageHtml = await generateHomepageHtml();
-  const parser = new DOMParser();
-  const parsedDoc = parser.parseFromString(homepageHtml, "text/html");
-  root.innerHTML = parsedDoc.body.innerHTML;
+  const homepageHtml = await generateHomepageHtml({ absoluteAssetPaths: true });
+  root.innerHTML = "";
+  const iframe = document.createElement("iframe");
+  iframe.title = "Generated homepage preview";
+  iframe.style.width = "100%";
+  iframe.style.height = "100%";
+  iframe.style.border = "none";
+  iframe.srcdoc = homepageHtml;
+  root.appendChild(iframe);
 }
 
 window.siteGenerator = {

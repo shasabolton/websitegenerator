@@ -164,7 +164,7 @@ async function renderCsvTable() {
   }
 
   try {
-    const response = await fetch("./product%20data.csv");
+    const response = await fetch("./shop/config/product%20data.csv");
     if (!response.ok) {
       throw new Error(`CSV request failed with status ${response.status}`);
     }
