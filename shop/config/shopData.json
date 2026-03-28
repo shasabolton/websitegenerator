@@ -11,7 +11,11 @@
   ],
   "websites": {
     "primary": "https://www.contraptioncart.com",
-    "etsy": "https://contraptioncart.etsy.com"
+    "etsy": "https://contraptioncart.etsy.com",
+    "newsletterSignup": "https://www.contraptioncart.com/news-letter-sign-up"
+  },
+  "branding": {
+    "faviconPath": "./shop/assets/favicon.jpg"
   },
   "contact": {
     "email": "shasabolton@gmail.com",

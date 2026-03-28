@@ -7,6 +7,14 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function slugify(value) {
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function parseCsv(text) {
   const rows = [];
   let row = [];
@@ -54,6 +62,58 @@ function parseCsv(text) {
   }
 
   return rows;
+}
+
+function asArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function buildNavItemsHtml(navigation, shopData) {
+  return asArray(navigation).map((item) => {
+    const label = escapeHtml(item.label || "");
+    if (item.key === "shop" && Array.isArray(shopData.shopFocus) && shopData.shopFocus.length > 0) {
+      const categoryLinks = shopData.shopFocus
+        .map((category) => {
+          const categoryLabel = escapeHtml(category);
+          const href = `#${slugify(category)}`;
+          return `<li><a href="${href}">${categoryLabel}</a></li>`;
+        })
+        .join("");
+      return `
+        <li class="nav-item nav-item-has-children">
+          <span>${label}</span>
+          <ul class="submenu">
+            ${categoryLinks}
+          </ul>
+        </li>
+      `;
+    }
+
+    const href = escapeHtml(item.href || "#");
+    return `<li class="nav-item"><a href="${href}">${label}</a></li>`;
+  }).join("");
+}
+
+function renderTemplate(templateText, replacements) {
+  return Object.entries(replacements).reduce((result, [key, value]) => {
+    return result.replaceAll(`{{${key}}}`, value);
+  }, templateText);
+}
+
+async function loadJson(path) {
+  const response = await fetch(path);
+  if (!response.ok) {
+    throw new Error(`Failed to load ${path}: ${response.status}`);
+  }
+  return response.json();
+}
+
+async function loadText(path) {
+  const response = await fetch(path);
+  if (!response.ok) {
+    throw new Error(`Failed to load ${path}: ${response.status}`);
+  }
+  return response.text();
 }
 
 function generateCsvTableHtml(parsedRows) {
@@ -117,4 +177,48 @@ async function renderCsvTable() {
   }
 }
 
-window.addEventListener("load", renderCsvTable);
+async function handleGenerateSiteClick() {
+  const button = document.getElementById("generate-site-btn");
+  const status = document.getElementById("generate-status");
+  if (!button) {
+    return;
+  }
+
+  const originalText = button.textContent;
+  button.disabled = true;
+  button.textContent = "Generating...";
+  if (status) {
+    status.classList.remove("error");
+    status.textContent = "Generating homepage...";
+  }
+
+  try {
+    if (!window.siteGenerator?.generateHomepageHtml) {
+      throw new Error("Site generator is not available.");
+    }
+
+    const homepageHtml = await window.siteGenerator.generateHomepageHtml();
+    window.siteGenerator.downloadFile("homepage.html", homepageHtml, "text/html;charset=utf-8");
+    window.siteGenerator.openGeneratedPage(homepageHtml);
+
+    if (status) {
+      status.textContent = "Homepage generated, downloaded, and opened in a new tab.";
+    }
+  } catch (error) {
+    if (status) {
+      status.classList.add("error");
+      status.textContent = `Failed to generate homepage: ${error.message}`;
+    }
+  } finally {
+    button.disabled = false;
+    button.textContent = originalText;
+  }
+}
+
+window.addEventListener("load", () => {
+  renderCsvTable();
+  const button = document.getElementById("generate-site-btn");
+  if (button) {
+    button.addEventListener("click", handleGenerateSiteClick);
+  }
+});
