@@ -1,6 +1,87 @@
-<main class="site-main">
-  <section class="page-content">
-    <h1>Coming soon</h1>
-    <p>We are preparing this page. Please check back soon.</p>
-  </section>
-</main>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{PAGE_TITLE}}</title>
+    <link rel="icon" type="image/jpeg" href="{{FAVICON_PATH}}" />
+    <style>
+      :root {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        background: #fafafa;
+        color: #1f2937;
+      }
+
+      .site-header,
+      .site-footer {
+        background: #ffffff;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .site-header-inner,
+      .site-footer-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 16px 24px;
+      }
+
+      .site-footer {
+        border-top: 1px solid #e5e7eb;
+        border-bottom: none;
+        margin-top: 24px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .brand-logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 4px;
+      }
+
+      .brand-name {
+        font-weight: 700;
+      }
+
+      .nav-list {
+        display: flex;
+        gap: 20px;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+
+      .submenu {
+        margin: 6px 0 0 0;
+        padding-left: 20px;
+      }
+
+      .site-main {
+        max-width: 1000px;
+        margin: 24px auto;
+        padding: 0 24px;
+      }
+
+      .footer-links {
+        margin: 0;
+        padding-left: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    {{HEADER}}
+    <main class="site-main">
+      {{BODY_CONTENT}}
+    </main>
+    {{FOOTER}}
+  </body>
+</html>

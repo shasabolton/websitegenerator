@@ -130,6 +130,7 @@ async function generateHomepageHtml() {
   const footerHtml = applyTemplate(footerTemplate, {
     SHOP_NAME: shopName,
     SOCIAL_LINKS: buildSocialLinksHtml(shopData),
+    MAILING_LIST_URL: escapeHtml(shopData?.websites?.newsletterSignup || "#"),
     CONTACT_BLOCK: buildFooterContactHtml(shopData),
   });
 
