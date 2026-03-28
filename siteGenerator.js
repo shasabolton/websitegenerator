@@ -162,8 +162,21 @@ function openGeneratedPage(content) {
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
+async function renderHomepagePreview(targetElementId = "preview-root") {
+  const root = document.getElementById(targetElementId);
+  if (!root) {
+    throw new Error(`Preview target element not found: #${targetElementId}`);
+  }
+
+  const homepageHtml = await generateHomepageHtml();
+  const parser = new DOMParser();
+  const parsedDoc = parser.parseFromString(homepageHtml, "text/html");
+  root.innerHTML = parsedDoc.body.innerHTML;
+}
+
 window.siteGenerator = {
   generateHomepageHtml,
   downloadFile,
   openGeneratedPage,
+  renderHomepagePreview,
 };

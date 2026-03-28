@@ -186,23 +186,20 @@ async function handleGenerateSiteClick() {
 
   const originalText = button.textContent;
   button.disabled = true;
-  button.textContent = "Generating...";
+  button.textContent = "Opening Preview...";
   if (status) {
     status.classList.remove("error");
     status.textContent = "Generating homepage...";
   }
 
   try {
-    if (!window.siteGenerator?.generateHomepageHtml) {
-      throw new Error("Site generator is not available.");
+    const previewWindow = window.open("./preview.html", "_blank", "noopener");
+    if (!previewWindow) {
+      throw new Error("Preview popup was blocked by the browser.");
     }
 
-    const homepageHtml = await window.siteGenerator.generateHomepageHtml();
-    window.siteGenerator.downloadFile("homepage.html", homepageHtml, "text/html;charset=utf-8");
-    window.siteGenerator.openGeneratedPage(homepageHtml);
-
     if (status) {
-      status.textContent = "Homepage generated, downloaded, and opened in a new tab.";
+      status.textContent = "Preview opened in a new tab.";
     }
   } catch (error) {
     if (status) {
