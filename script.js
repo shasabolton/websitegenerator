@@ -56,53 +56,49 @@ function parseCsv(text) {
   return rows;
 }
 
-function getImageUrls(productRow) {
-  const imageKeys = Object.keys(productRow)
-    .filter((key) => /^IMAGE\d+$/.test(key))
-    .sort((a, b) => Number(a.replace("IMAGE", "")) - Number(b.replace("IMAGE", "")));
+function generateCsvTableHtml(parsedRows) {
+  if (parsedRows.length === 0) {
+    return "<p>No CSV data found.</p>";
+  }
 
-  return imageKeys.map((key) => productRow[key]).filter((url) => typeof url === "string" && url.trim() !== "");
-}
+  const headers = parsedRows[0];
+  const dataRows = parsedRows.slice(1);
+  if (dataRows.length === 0) {
+    return "<p>No product rows found in CSV.</p>";
+  }
 
-function generateProductHtml(productRow) {
-  const title = escapeHtml(productRow.TITLE || "Untitled Product");
-  const description = escapeHtml(productRow.DESCRIPTION || "");
-  const imageUrls = getImageUrls(productRow);
-
-  const imagesHtml =
-    imageUrls.length === 0
-      ? ""
-      : `<div class="product-images">${imageUrls
-          .map((url, index) => `<img src="${escapeHtml(url)}" alt="${title} image ${index + 1}" loading="lazy" />`)
-          .join("")}</div>`;
+  const headerHtml = headers.map((header) => `<th scope="col">${escapeHtml(header)}</th>`).join("");
+  const rowsHtml = dataRows
+    .map((row) => {
+      const cells = headers
+        .map((_, columnIndex) => {
+          const value = row[columnIndex] ?? "";
+          const trimmed = value.trim();
+          const cellClass = trimmed === "" ? "csv-cell empty-cell" : "csv-cell";
+          const displayValue = trimmed === "" ? "—" : escapeHtml(value);
+          return `<td><div class="${cellClass}">${displayValue}</div></td>`;
+        })
+        .join("");
+      return `<tr>${cells}</tr>`;
+    })
+    .join("");
 
   return `
-    <article class="product">
-      <h1>${title}</h1>
-      <p class="product-description">${description}</p>
-      ${imagesHtml}
-    </article>
+    <div class="table-wrapper">
+      <table class="csv-table">
+        <thead>
+          <tr>${headerHtml}</tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+    </div>
   `;
 }
 
-function toObjects(csvText) {
-  const parsed = parseCsv(csvText);
-  if (parsed.length < 2) {
-    return [];
-  }
-
-  const headers = parsed[0];
-  return parsed.slice(1).map((row) => {
-    const record = {};
-    headers.forEach((header, idx) => {
-      record[header] = row[idx] ?? "";
-    });
-    return record;
-  });
-}
-
-async function renderFirstProduct() {
-  const root = document.getElementById("product-root");
+async function renderCsvTable() {
+  const root = document.getElementById("csv-root");
   if (!root) {
     return;
   }
@@ -114,19 +110,11 @@ async function renderFirstProduct() {
     }
 
     const csvText = await response.text();
-    const products = toObjects(csvText);
-
-    if (products.length === 0) {
-      root.innerHTML = "<p>No products found in CSV.</p>";
-      return;
-    }
-
-    const firstProduct = products[0];
-    document.title = firstProduct.TITLE || document.title;
-    root.innerHTML = generateProductHtml(firstProduct);
+    const parsedRows = parseCsv(csvText);
+    root.innerHTML = generateCsvTableHtml(parsedRows);
   } catch (error) {
     root.innerHTML = `<p>Failed to load product data: ${escapeHtml(error.message)}</p>`;
   }
 }
 
-window.addEventListener("load", renderFirstProduct);
+window.addEventListener("load", renderCsvTable);
