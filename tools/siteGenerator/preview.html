@@ -62,11 +62,7 @@
         }
 
         try {
-          const cachedHtml = sessionStorage.getItem("generatedShopHtml");
-          const html = cachedHtml || (await window.generateShop.generateShopHtml());
-          if (cachedHtml) {
-            sessionStorage.removeItem("generatedShopHtml");
-          }
+          const html = await window.generateShop.generateShopHtml();
           document.open();
           document.write(html);
           document.close();

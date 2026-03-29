@@ -193,11 +193,11 @@ async function handleGenerateSiteClick() {
   }
 
   try {
-    if (!window.generateShop?.prepareShopPreviewHtml) {
+    if (!window.generateShop?.generateShopHtml) {
       throw new Error("Shop generator is not available.");
     }
-    const html = await window.generateShop.prepareShopPreviewHtml();
-    sessionStorage.setItem("generatedShopHtml", html);
+    // Open preview page and let it generate the full HTML there to avoid
+    // hitting browser storage quotas with large HTML strings.
     window.location.href = "./preview.html";
 
     if (status) {
