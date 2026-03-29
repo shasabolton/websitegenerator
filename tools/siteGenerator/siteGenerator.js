@@ -182,15 +182,10 @@ async function renderHomepagePreview(targetElementId = "preview-root") {
     throw new Error(`Preview target element not found: #${targetElementId}`);
   }
 
-  const homepageHtml = await generateHomepageHtml({ absoluteAssetPaths: true });
-  root.innerHTML = "";
-  const iframe = document.createElement("iframe");
-  iframe.title = "Generated homepage preview";
-  iframe.style.width = "100%";
-  iframe.style.height = "100%";
-  iframe.style.border = "none";
-  iframe.srcdoc = homepageHtml;
-  root.appendChild(iframe);
+  const homepageHtml = await generateHomepageHtml({ absoluteAssetPaths: false });
+  const parser = new DOMParser();
+  const parsedDocument = parser.parseFromString(homepageHtml, "text/html");
+  root.innerHTML = parsedDocument.body.innerHTML;
 }
 
 window.siteGenerator = {

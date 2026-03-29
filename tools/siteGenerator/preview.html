@@ -40,10 +40,8 @@
         color: #fecaca;
       }
 
-      .preview-frame {
-        width: 100%;
-        height: calc(100vh - 48px);
-        border: none;
+      .preview-container {
+        min-height: calc(100vh - 48px);
         background: #fff;
       }
     </style>
@@ -53,20 +51,19 @@
       <a href="./index.html">Back to data table</a>
       <p id="preview-status" class="preview-status">Generating preview...</p>
     </div>
-    <iframe id="preview-frame" class="preview-frame" title="Generated homepage preview"></iframe>
+    <div id="preview-root" class="preview-container" aria-live="polite"></div>
 
     <script src="./siteGenerator.js"></script>
     <script>
       async function loadPreview() {
         const status = document.getElementById("preview-status");
-        const frame = document.getElementById("preview-frame");
-        if (!status || !frame) {
+        const root = document.getElementById("preview-root");
+        if (!status || !root) {
           return;
         }
 
         try {
-          const html = await window.siteGenerator.generateHomepageHtml();
-          frame.srcdoc = html;
+          await window.siteGenerator.renderHomepagePreview("preview-root");
           status.textContent = "Live homepage preview from current config/templates and CSS.";
         } catch (error) {
           status.classList.add("error");
