@@ -78,47 +78,87 @@ function parseCsv(text) {
   return rows;
 }
 
-function getCategoryLabelsHtml(csvText) {
+function slugify(value) {
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function getProductsByCategory(csvText) {
   const rows = parseCsv(csvText);
   if (rows.length < 2) {
-    return "<p>No product rows found.</p>";
+    return [];
   }
 
   const headers = rows[0];
   const categoryIndex = headers.findIndex((header) => header.trim().toUpperCase() === "CATEGORY");
+  const titleIndex = headers.findIndex((header) => header.trim().toUpperCase() === "TITLE");
+  const imageIndex = headers.findIndex((header) => header.trim().toUpperCase() === "IMAGE1");
   if (categoryIndex === -1) {
-    return "<p>No CATEGORY column found in CSV.</p>";
+    return [];
   }
 
-  const categories = [];
-  const seen = new Set();
-
+  const categories = new Map();
   rows.slice(1).forEach((row) => {
-    const value = (row[categoryIndex] || "").trim();
-    if (!value) {
+    const category = (row[categoryIndex] || "").trim();
+    if (!category) {
       return;
     }
-    const key = value.toLowerCase();
-    if (!seen.has(key)) {
-      seen.add(key);
-      categories.push(value);
+    const key = category.toLowerCase();
+    if (!categories.has(key)) {
+      categories.set(key, {
+        name: category,
+        slug: slugify(category),
+        products: [],
+      });
     }
+    const title = (row[titleIndex] || "Untitled Product").trim() || "Untitled Product";
+    const image = (row[imageIndex] || "").trim();
+    categories.get(key).products.push({ title, image });
   });
 
+  return Array.from(categories.values());
+}
+
+async function buildCategoryPreviewsHtml(csvText) {
+  const categories = getProductsByCategory(csvText);
   if (categories.length === 0) {
-    return "<p>No categories found in CSV rows.</p>";
+    return "<section class=\"page-content\"><p>No categories found in product data.</p></section>";
   }
 
-  const labels = categories
-    .map((category) => `<span class="category-label">${escapeHtml(category)}</span>`)
+  const [productIconTemplate, categoryPreviewTemplate] = await Promise.all([
+    fetchText("./templates/partials/productIcon.html"),
+    fetchText("./templates/partials/categoryPreview.html"),
+  ]);
+
+  const categorySections = categories
+    .map((category) => {
+      const iconsHtml = category.products
+        .slice(0, 3)
+        .map((product) =>
+          applyTemplate(productIconTemplate, {
+            PRODUCT_IMAGE_URL: escapeHtml(product.image || "../../shared-assets/images/branding/favicon.jpg"),
+            PRODUCT_TITLE: escapeHtml(product.title),
+          })
+        )
+        .join("");
+
+      return applyTemplate(categoryPreviewTemplate, {
+        CATEGORY_ID: escapeHtml(`category-${category.slug || "other"}`),
+        CATEGORY_NAME: escapeHtml(category.name),
+        PRODUCT_ICONS: iconsHtml || "<p class=\"product-icon-empty\">No products in this category yet.</p>",
+      });
+    })
     .join("");
 
   return `
     <section class="page-content">
-      <h1>Shop Categories</h1>
-      <p>Categories found in product data:</p>
-      <div class="category-labels">${labels}</div>
+      <h1>Shop</h1>
+      <p>Browse categories from your product data.</p>
     </section>
+    ${categorySections}
   `;
 }
 
@@ -132,13 +172,14 @@ async function generateShopHtml() {
 
   const { headerHtml, footerHtml, shopName, faviconPath, siteCssPath } =
     await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig);
+  const categoryPreviewsHtml = await buildCategoryPreviewsHtml(csvText);
 
   return applyTemplate(pageTemplate, {
     PAGE_TITLE: `${escapeHtml(shopName)} - Shop`,
     FAVICON_PATH: escapeHtml(faviconPath),
     SITE_CSS_PATH: escapeHtml(siteCssPath),
     HEADER: headerHtml,
-    BODY_CONTENT: getCategoryLabelsHtml(csvText),
+    BODY_CONTENT: categoryPreviewsHtml,
     FOOTER: footerHtml,
   });
 }
