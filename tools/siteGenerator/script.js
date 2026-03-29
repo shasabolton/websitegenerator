@@ -189,19 +189,24 @@ async function handleGenerateSiteClick() {
   button.textContent = "Opening Preview...";
   if (status) {
     status.classList.remove("error");
-    status.textContent = "Generating homepage...";
+    status.textContent = "Generating shop page...";
   }
 
   try {
+    if (!window.generateShop?.prepareShopPreviewHtml) {
+      throw new Error("Shop generator is not available.");
+    }
+    const html = await window.generateShop.prepareShopPreviewHtml();
+    sessionStorage.setItem("generatedShopHtml", html);
     window.location.href = "./preview.html";
 
     if (status) {
-      status.textContent = "Opening preview page...";
+      status.textContent = "Opening shop preview...";
     }
   } catch (error) {
     if (status) {
       status.classList.add("error");
-      status.textContent = `Failed to generate homepage: ${error.message}`;
+      status.textContent = `Failed to generate shop page: ${error.message}`;
     }
   } finally {
     button.disabled = false;

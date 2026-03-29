@@ -53,7 +53,7 @@
     </div>
 
     <script src="./generateHeaderAndFooter.js"></script>
-    <script src="./siteGenerator.js"></script>
+    <script src="./generateShop.js"></script>
     <script>
       async function loadPreview() {
         const status = document.getElementById("preview-status");
@@ -62,7 +62,11 @@
         }
 
         try {
-          const html = await window.siteGenerator.generateHomepageHtml({ absoluteAssetPaths: true });
+          const cachedHtml = sessionStorage.getItem("generatedShopHtml");
+          const html = cachedHtml || (await window.generateShop.generateShopHtml());
+          if (cachedHtml) {
+            sessionStorage.removeItem("generatedShopHtml");
+          }
           document.open();
           document.write(html);
           document.close();
