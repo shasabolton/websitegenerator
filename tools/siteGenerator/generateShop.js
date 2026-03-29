@@ -8,7 +8,7 @@ function escapeHtml(value) {
 }
 
 async function fetchJson(url) {
-  const response = await fetch(url);
+  const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Failed to load JSON: ${url} (${response.status})`);
   }
@@ -16,7 +16,7 @@ async function fetchJson(url) {
 }
 
 async function fetchText(url) {
-  const response = await fetch(url);
+  const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Failed to load file: ${url} (${response.status})`);
   }
@@ -139,6 +139,7 @@ async function buildCategoryPreviewsHtml(csvText) {
         .slice(0, 3)
         .map((product) =>
           applyTemplate(productIconTemplate, {
+            PRODUCT_IMAGE: escapeHtml(product.image || "../../shared-assets/images/branding/favicon.jpg"),
             PRODUCT_IMAGE_URL: escapeHtml(product.image || "../../shared-assets/images/branding/favicon.jpg"),
             PRODUCT_TITLE: escapeHtml(product.title),
           })
@@ -148,7 +149,9 @@ async function buildCategoryPreviewsHtml(csvText) {
       return applyTemplate(categoryPreviewTemplate, {
         CATEGORY_ID: escapeHtml(`category-${category.slug || "other"}`),
         CATEGORY_NAME: escapeHtml(category.name),
+        CATEGORY_TITLE: escapeHtml(category.name),
         PRODUCT_ICONS: iconsHtml || "<p class=\"product-icon-empty\">No products in this category yet.</p>",
+        VIEW_ALL_HREF: `#${escapeHtml(`category-${category.slug || "other"}`)}`,
       });
     })
     .join("");
