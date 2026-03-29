@@ -15,7 +15,7 @@
     "newsletterSignup": "https://www.contraptioncart.com/news-letter-sign-up"
   },
   "branding": {
-    "faviconPath": "./shop/assets/favicon.jpg"
+    "faviconPath": "../../shared-assets/images/branding/favicon.jpg"
   },
   "contact": {
     "email": "shasabolton@gmail.com",

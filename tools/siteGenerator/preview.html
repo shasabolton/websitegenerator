@@ -51,20 +51,20 @@
       <a href="./index.html">Back to data table</a>
       <p id="preview-status" class="preview-status">Generating preview...</p>
     </div>
-    <div id="preview-root" class="preview-container" aria-live="polite"></div>
 
     <script src="./siteGenerator.js"></script>
     <script>
       async function loadPreview() {
         const status = document.getElementById("preview-status");
-        const root = document.getElementById("preview-root");
-        if (!status || !root) {
+        if (!status) {
           return;
         }
 
         try {
-          await window.siteGenerator.renderHomepagePreview("preview-root");
-          status.textContent = "Live homepage preview from current config/templates and CSS.";
+          const html = await window.siteGenerator.generateHomepageHtml({ absoluteAssetPaths: true });
+          document.open();
+          document.write(html);
+          document.close();
         } catch (error) {
           status.classList.add("error");
           status.textContent = `Failed to build preview: ${error.message}`;

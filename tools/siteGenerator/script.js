@@ -164,7 +164,7 @@ async function renderCsvTable() {
   }
 
   try {
-    const response = await fetch("./shop/config/product data.csv");
+    const response = await fetch("../../shared-assets/config/product data.csv");
     if (!response.ok) {
       throw new Error(`CSV request failed with status ${response.status}`);
     }
@@ -193,13 +193,10 @@ async function handleGenerateSiteClick() {
   }
 
   try {
-    const previewWindow = window.open("./preview.html", "_blank", "noopener");
-    if (!previewWindow) {
-      throw new Error("Preview popup was blocked by the browser.");
-    }
+    window.location.href = "./preview.html";
 
     if (status) {
-      status.textContent = "Preview opened in a new tab.";
+      status.textContent = "Opening preview page...";
     }
   } catch (error) {
     if (status) {

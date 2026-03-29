@@ -95,18 +95,11 @@ function buildFooterContactHtml(shopData) {
 }
 
 function buildFaviconPath(shopData) {
-  return shopData?.branding?.faviconPath || "./shop/assets/favicon.jpg";
+  return shopData?.branding?.faviconPath || "../../shared-assets/images/branding/favicon.jpg";
 }
 
 function buildSiteCssPath() {
-  return "./shop/assets/css/site.css";
-}
-
-function resolveAssetPath(path, useAbsoluteAssetPaths) {
-  if (!useAbsoluteAssetPaths) {
-    return path;
-  }
-  return new URL(path, window.location.href).href;
+  return "./templates/css/site.css";
 }
 
 function homepageBodyContent(shopData) {
@@ -120,10 +113,11 @@ function homepageBodyContent(shopData) {
 }
 
 async function generateHomepageHtml(options = {}) {
-  const useAbsoluteAssetPaths = Boolean(options.absoluteAssetPaths);
+  const { hrefPrefix = "" } = options;
+  const prefix = hrefPrefix ? `${hrefPrefix}` : "";
   const [shopData, navigationConfig, headerTemplate, footerTemplate, pageTemplate] = await Promise.all([
-    fetchJson("./shop/config/shopData.json"),
-    fetchJson("./shop/config/navigation.json"),
+    fetchJson(`${prefix}../../shared-assets/config/shopData.json`),
+    fetchJson(`${prefix}../../shared-assets/config/navigation.json`),
     fetchTemplate("./templates/partials/header.html"),
     fetchTemplate("./templates/partials/footer.html"),
     fetchTemplate("./templates/pages/homepage.html"),
@@ -131,8 +125,8 @@ async function generateHomepageHtml(options = {}) {
 
   const navHtml = buildNavigationHtml(navigationConfig);
   const shopName = escapeHtml(shopData?.shopName || "Shop");
-  const faviconPath = escapeHtml(resolveAssetPath(buildFaviconPath(shopData), useAbsoluteAssetPaths));
-  const siteCssPath = escapeHtml(resolveAssetPath(buildSiteCssPath(), useAbsoluteAssetPaths));
+  const faviconPath = escapeHtml(buildFaviconPath(shopData));
+  const siteCssPath = escapeHtml(buildSiteCssPath());
 
   const headerHtml = applyTemplate(headerTemplate, {
     SHOP_NAME: shopName,
@@ -182,10 +176,8 @@ async function renderHomepagePreview(targetElementId = "preview-root") {
     throw new Error(`Preview target element not found: #${targetElementId}`);
   }
 
-  const homepageHtml = await generateHomepageHtml({ absoluteAssetPaths: false });
-  const parser = new DOMParser();
-  const parsedDocument = parser.parseFromString(homepageHtml, "text/html");
-  root.innerHTML = parsedDocument.body.innerHTML;
+  const homepageHtml = await generateHomepageHtml({ hrefPrefix: "../" });
+  root.innerHTML = homepageHtml;
 }
 
 window.siteGenerator = {
