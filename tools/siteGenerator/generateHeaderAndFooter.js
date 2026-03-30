@@ -30,6 +30,10 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "");
 }
 
+function buildShopCategoryHref(categoryName) {
+  return `/shop/${slugify(categoryName)}`;
+}
+
 function buildNavigationHtml(navigationConfig, categoryNames = []) {
   const items = Array.isArray(navigationConfig?.items) ? navigationConfig.items : [];
   return items
@@ -41,7 +45,7 @@ function buildNavigationHtml(navigationConfig, categoryNames = []) {
       if (isShopItem && Array.isArray(categoryNames) && categoryNames.length > 0) {
         children = categoryNames.map((category) => ({
           label: category,
-          href: `#category-${slugify(category)}`,
+          href: buildShopCategoryHref(category),
         }));
       }
       if (children.length === 0) {
@@ -155,5 +159,7 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
 
 window.generateHeaderAndFooter = {
   escapeHtml,
+  slugify,
+  buildShopCategoryHref,
   generateHeaderAndFooter,
 };

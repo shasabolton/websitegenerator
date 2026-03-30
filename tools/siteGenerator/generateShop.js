@@ -30,6 +30,47 @@ function applyTemplate(template, values) {
   }, template);
 }
 
+function appendPreviewNavigationScript(html) {
+  const script = `
+    <script>
+      (function () {
+        if (!window.location.pathname.includes("preview")) {
+          return;
+        }
+        document.addEventListener("click", async function (event) {
+          const link = event.target.closest("a[href]");
+          if (!link) {
+            return;
+          }
+          const href = link.getAttribute("href") || "";
+          let url;
+          try {
+            url = new URL(href, window.location.href);
+          } catch {
+            return;
+          }
+          if (!url.pathname.includes("/shop/")) {
+            return;
+          }
+          event.preventDefault();
+          const slug = url.pathname.split("/shop/")[1] ? url.pathname.split("/shop/")[1].replace(/\\/+$/, "") : "";
+          try {
+            const htmlOut = slug && window.generateCategory?.generateCategoryHtmlBySlug
+              ? await window.generateCategory.generateCategoryHtmlBySlug(slug)
+              : await window.generateShop.generateShopHtml();
+            document.open();
+            document.write(htmlOut);
+            document.close();
+          } catch (err) {
+            console.error("Preview navigation generation failed", err);
+          }
+        });
+      })();
+    <\/script>
+  `;
+  return html.replace("</body>", `${script}</body>`);
+}
+
 function parseCsv(text) {
   const rows = [];
   let row = [];
@@ -84,6 +125,10 @@ function slugify(value) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function categoryHref(category) {
+  return `/shop/${slugify(category)}`;
 }
 
 function getProductsByCategory(csvText) {
@@ -147,11 +192,11 @@ async function buildCategoryPreviewsHtml(csvText) {
         .join("");
 
       return applyTemplate(categoryPreviewTemplate, {
-        CATEGORY_ID: escapeHtml(`category-${category.slug || "other"}`),
+        CATEGORY_ID: escapeHtml(`shop-category-${category.slug || "other"}`),
         CATEGORY_NAME: escapeHtml(category.name),
         CATEGORY_TITLE: escapeHtml(category.name),
         PRODUCT_ICONS: iconsHtml || "<p class=\"product-icon-empty\">No products in this category yet.</p>",
-        CATEGORY_LINK: `#${escapeHtml(`category-${category.slug || "other"}`)}`,
+        CATEGORY_LINK: escapeHtml(categoryHref(category.name)),
       });
     })
     .join("");
@@ -178,7 +223,7 @@ async function generateShopHtml() {
   const { headerHtml, footerHtml, shopName, faviconPath, siteCssPath } =
     await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig, { categoryNames });
 
-  return applyTemplate(pageTemplate, {
+  const pageHtml = applyTemplate(pageTemplate, {
     PAGE_TITLE: `${escapeHtml(shopName)} - Shop`,
     FAVICON_PATH: escapeHtml(faviconPath),
     SITE_CSS_PATH: escapeHtml(siteCssPath),
@@ -186,6 +231,7 @@ async function generateShopHtml() {
     BODY_CONTENT: categoryPreviewsHtml,
     FOOTER: footerHtml,
   });
+  return appendPreviewNavigationScript(pageHtml);
 }
 
 async function prepareShopPreviewHtml() {

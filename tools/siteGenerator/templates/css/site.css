@@ -169,6 +169,26 @@ a:hover {
   line-height: 1.2;
 }
 
+.breadcrumbs {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.breadcrumbs a {
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumbs-sep {
+  margin: 0 6px;
+  color: #6b7280;
+}
+
 .category-heading-link:hover {
   color: #ffffff;
   text-decoration: none;

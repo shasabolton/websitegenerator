@@ -54,7 +54,56 @@
 
     <script src="./generateHeaderAndFooter.js"></script>
     <script src="./generateShop.js"></script>
+    <script src="./generateCategory.js"></script>
     <script>
+      const PREVIEW_INTERCEPT_SCRIPT = `
+        <script>
+          (function () {
+            if (window.__previewNavInstalled) return;
+            window.__previewNavInstalled = true;
+            document.addEventListener("click", async function (event) {
+              const link = event.target.closest("a[href]");
+              if (!link) return;
+
+              const href = link.getAttribute("href");
+              if (!href) return;
+              const url = new URL(href, window.location.origin);
+              if (!url.pathname.startsWith("/shop")) return;
+
+              event.preventDefault();
+
+              try {
+                const slug = url.pathname.split("/shop/")[1]?.replace(/\\/+$/, "");
+                if (!slug) {
+                  const html = await window.generateShop.generateShopHtml();
+                  document.open();
+                  document.write(html + PREVIEW_INTERCEPT_SCRIPT);
+                  document.close();
+                  return;
+                }
+
+                const html = await window.generateCategory.generateCategoryHtmlBySlug(slug);
+                document.open();
+                document.write(html + PREVIEW_INTERCEPT_SCRIPT);
+                document.close();
+              } catch (error) {
+                console.error("Preview navigation generation failed", error);
+              }
+            });
+          })();
+        <\/script>
+      `;
+
+      function parsePreviewTarget() {
+        const params = new URLSearchParams(window.location.search);
+        const page = params.get("page");
+        const category = params.get("category");
+        if (page === "category" && category) {
+          return { type: "category", category };
+        }
+        return { type: "shop", category: null };
+      }
+
       async function loadPreview() {
         const status = document.getElementById("preview-status");
         if (!status) {
@@ -62,9 +111,13 @@
         }
 
         try {
-          const html = await window.generateShop.generateShopHtml();
+          const target = parsePreviewTarget();
+          const html =
+            target.type === "category"
+              ? await window.generateCategory.generateCategoryHtml(target.category)
+              : await window.generateShop.generateShopHtml();
           document.open();
-          document.write(html);
+          document.write(html + PREVIEW_INTERCEPT_SCRIPT);
           document.close();
         } catch (error) {
           status.classList.add("error");
