@@ -109,7 +109,7 @@ a:hover {
 .site-main {
   max-width: 1080px;
   margin: 26px auto;
-  --site-inline-padding: 12px;
+  --site-inline-padding: 10px;
   padding: 0 var(--site-inline-padding);
 }
 
@@ -138,7 +138,7 @@ a:hover {
 }
 
 .category-preview {
-  margin: 0 0 28px;
+  margin: 0 0 16px;
 }
 
 .category-preview-band {
@@ -146,7 +146,7 @@ a:hover {
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 
 .category-preview-header {
@@ -167,8 +167,8 @@ a:hover {
 .product-icon-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-  margin: 12px 0 0;
+  gap: 7px;
+  margin: 6px 0 0;
 }
 
 .product-icon {
@@ -179,7 +179,7 @@ a:hover {
 }
 
 .product-icon-image-wrap {
-  margin: 0 0 8px;
+  margin: 0 0 4px;
 }
 
 .product-icon-image {
@@ -195,6 +195,18 @@ a:hover {
   font-size: 0.9rem;
   line-height: 1.35;
   color: #111827;
+}
+
+@media (min-width: 768px) {
+  .site-main {
+    --site-inline-padding: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .site-main {
+    --site-inline-padding: 24px;
+  }
 }
 
 .site-footer {
