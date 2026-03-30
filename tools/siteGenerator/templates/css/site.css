@@ -109,7 +109,7 @@ a:hover {
 .site-main {
   max-width: 1080px;
   margin: 26px auto;
-  --site-inline-padding: 24px;
+  --site-inline-padding: 12px;
   padding: 0 var(--site-inline-padding);
 }
 
@@ -141,36 +141,24 @@ a:hover {
   margin: 0 0 28px;
 }
 
-.category-preview-header {
-  color: #ffffff;
-  position: relative;
-  margin: 0 0 14px;
-  padding: 0;
-}
-
-.category-preview-header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
+.category-preview-band {
   background: #000000;
-  z-index: 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-bottom: 14px;
 }
 
-.category-preview-header-inner {
-  position: relative;
-  z-index: 1;
+.category-preview-header {
   max-width: 1080px;
   margin: 0 auto;
   padding: 0 var(--site-inline-padding);
+  color: #ffffff;
 }
 
 .category-preview-header h2 {
   margin: 0;
-  padding: 10px 12px;
+  padding: 14px 0;
   font-size: 1.5rem;
   font-weight: 800;
   line-height: 1.2;
