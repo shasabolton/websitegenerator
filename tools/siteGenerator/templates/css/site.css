@@ -156,12 +156,32 @@ a:hover {
   color: #ffffff;
 }
 
-.category-preview-header h2 {
+.category-preview-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  text-decoration: none;
   margin: 0;
   padding: 14px 0;
   font-size: 1.5rem;
   font-weight: 800;
   line-height: 1.2;
+}
+
+.category-preview-link:hover {
+  text-decoration: underline;
+}
+
+.category-preview-link:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.category-preview-link .chevron {
+  font-size: 1.15rem;
+  font-weight: 700;
+  transform: translateY(1px);
 }
 
 .product-icon-grid {

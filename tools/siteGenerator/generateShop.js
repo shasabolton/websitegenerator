@@ -151,6 +151,7 @@ async function buildCategoryPreviewsHtml(csvText) {
         CATEGORY_NAME: escapeHtml(category.name),
         CATEGORY_TITLE: escapeHtml(category.name),
         PRODUCT_ICONS: iconsHtml || "<p class=\"product-icon-empty\">No products in this category yet.</p>",
+        CATEGORY_LINK: `#${escapeHtml(`category-${category.slug || "other"}`)}`,
       });
     })
     .join("");
