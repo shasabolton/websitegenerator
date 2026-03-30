@@ -109,7 +109,7 @@ a:hover {
 .site-main {
   max-width: 1080px;
   margin: 26px auto;
-  padding: 0;
+  padding: 0 24px;
 }
 
 .page-content {
