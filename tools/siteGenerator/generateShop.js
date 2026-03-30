@@ -136,6 +136,7 @@ async function buildCategoryPreviewsHtml(csvText) {
   const categorySections = categories
     .map((category) => {
       const iconsHtml = category.products
+        .slice(0, 3)
         .map((product) =>
           applyTemplate(productIconTemplate, {
             PRODUCT_IMAGE: escapeHtml(product.image || "../../shared-assets/images/branding/favicon.jpg"),
@@ -150,7 +151,6 @@ async function buildCategoryPreviewsHtml(csvText) {
         CATEGORY_NAME: escapeHtml(category.name),
         CATEGORY_TITLE: escapeHtml(category.name),
         PRODUCT_ICONS: iconsHtml || "<p class=\"product-icon-empty\">No products in this category yet.</p>",
-        VIEW_ALL_HREF: `#${escapeHtml(`category-${category.slug || "other"}`)}`,
       });
     })
     .join("");
