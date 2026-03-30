@@ -179,9 +179,9 @@ a:hover {
 }
 
 .category-heading-chevron {
-  font-size: 1.15rem;
+  font-size: 1em;
   font-weight: 700;
-  transform: translateY(1px);
+  transform: none;
 }
 
 .product-icon-grid {
