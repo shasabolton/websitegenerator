@@ -136,7 +136,6 @@ async function buildCategoryPreviewsHtml(csvText) {
   const categorySections = categories
     .map((category) => {
       const iconsHtml = category.products
-        .slice(0, 3)
         .map((product) =>
           applyTemplate(productIconTemplate, {
             PRODUCT_IMAGE: escapeHtml(product.image || "../../shared-assets/images/branding/favicon.jpg"),
@@ -156,13 +155,14 @@ async function buildCategoryPreviewsHtml(csvText) {
     })
     .join("");
 
-  return `
+  const html = `
     <section class="page-content">
       <h1>Shop</h1>
       <p>Browse categories from your product data.</p>
     </section>
     ${categorySections}
   `;
+  return { html, categoryNames: categories.map((category) => category.name) };
 }
 
 async function generateShopHtml() {
@@ -173,9 +173,9 @@ async function generateShopHtml() {
     fetchText("../../shared-assets/config/product data.csv"),
   ]);
 
+  const { html: categoryPreviewsHtml, categoryNames } = await buildCategoryPreviewsHtml(csvText);
   const { headerHtml, footerHtml, shopName, faviconPath, siteCssPath } =
-    await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig);
-  const categoryPreviewsHtml = await buildCategoryPreviewsHtml(csvText);
+    await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig, { categoryNames });
 
   return applyTemplate(pageTemplate, {
     PAGE_TITLE: `${escapeHtml(shopName)} - Shop`,

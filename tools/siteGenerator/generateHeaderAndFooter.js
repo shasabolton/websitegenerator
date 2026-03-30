@@ -22,13 +22,28 @@ function applyTemplate(template, values) {
   }, template);
 }
 
-function buildNavigationHtml(navigationConfig) {
+function slugify(value) {
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function buildNavigationHtml(navigationConfig, categoryNames = []) {
   const items = Array.isArray(navigationConfig?.items) ? navigationConfig.items : [];
   return items
     .map((item) => {
       const label = escapeHtml(item.label || "");
       const href = escapeHtml(item.href || "#");
-      const children = Array.isArray(item.children) ? item.children : [];
+      const isShopItem = String(item?.label || "").trim().toLowerCase() === "shop";
+      let children = Array.isArray(item.children) ? item.children : [];
+      if (isShopItem && Array.isArray(categoryNames) && categoryNames.length > 0) {
+        children = categoryNames.map((category) => ({
+          label: category,
+          href: `#category-${slugify(category)}`,
+        }));
+      }
       if (children.length === 0) {
         return `<li class="nav-item"><a href="${href}">${label}</a></li>`;
       }
@@ -39,6 +54,16 @@ function buildNavigationHtml(navigationConfig) {
           return `<li><a href="${childHref}">${childLabel}</a></li>`;
         })
         .join("");
+      if (isShopItem) {
+        return `
+          <li class="nav-item nav-item-has-children">
+            <details class="nav-dropdown">
+              <summary>${label}</summary>
+              <ul class="submenu">${childrenHtml}</ul>
+            </details>
+          </li>
+        `;
+      }
       return `
         <li class="nav-item nav-item-has-children">
           <a href="${href}">${label}</a>
@@ -94,13 +119,14 @@ function buildSiteCssPath() {
   return "./templates/css/site.css";
 }
 
-async function generateHeaderAndFooter(shopData, navigationConfig) {
+async function generateHeaderAndFooter(shopData, navigationConfig, options = {}) {
   const [headerTemplate, footerTemplate] = await Promise.all([
     fetchTemplate("./templates/partials/header.html"),
     fetchTemplate("./templates/partials/footer.html"),
   ]);
 
-  const navHtml = buildNavigationHtml(navigationConfig);
+  const categoryNames = Array.isArray(options.categoryNames) ? options.categoryNames : [];
+  const navHtml = buildNavigationHtml(navigationConfig, categoryNames);
   const shopName = escapeHtml(shopData?.shopName || "Shop");
   const faviconPath = escapeHtml(buildFaviconPath(shopData));
   const siteCssPath = escapeHtml(buildSiteCssPath());
