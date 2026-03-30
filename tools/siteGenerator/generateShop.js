@@ -34,6 +34,10 @@ function appendPreviewNavigationScript(html) {
   const script = `
     <script>
       (function () {
+        if (window.__previewNavInstalled) {
+          return;
+        }
+        window.__previewNavInstalled = true;
         if (!window.location.pathname.includes("preview")) {
           return;
         }
@@ -53,6 +57,7 @@ function appendPreviewNavigationScript(html) {
             return;
           }
           event.preventDefault();
+          window.alert("Preview mode: generating page content rather than navigating.");
           const slug = url.pathname.split("/shop/")[1] ? url.pathname.split("/shop/")[1].replace(/\\/+$/, "") : "";
           try {
             const htmlOut = slug && window.generateCategory?.generateCategoryHtmlBySlug

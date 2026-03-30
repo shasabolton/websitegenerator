@@ -74,6 +74,7 @@
 
               try {
                 const slug = url.pathname.split("/shop/")[1]?.replace(/\\/+$/, "");
+                window.alert("Preview mode: generating page content rather than navigating.");
                 if (!slug) {
                   const html = await window.generateShop.generateShopHtml();
                   document.open();

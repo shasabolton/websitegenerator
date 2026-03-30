@@ -45,6 +45,10 @@ function buildPreviewNavigationScript() {
         if (!window.location.pathname.endsWith("/preview.html")) {
           return;
         }
+        if (window.__previewNavInstalled) {
+          return;
+        }
+        window.__previewNavInstalled = true;
         document.addEventListener("click", async function (event) {
           const link = event.target.closest("a[href]");
           if (!link) {
@@ -55,6 +59,7 @@ function buildPreviewNavigationScript() {
             return;
           }
           event.preventDefault();
+          window.alert("Preview mode: generating page content rather than navigating.");
           try {
             const slug = url.pathname.split("/shop/")[1]?.replace(/\\/+$/, "");
             if (!slug) {
