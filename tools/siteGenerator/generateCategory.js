@@ -38,6 +38,46 @@ function applyTemplate(template, values) {
   }, template);
 }
 
+function appendPreviewRoutingScript(html) {
+  const script = `
+    <script>
+      (function () {
+        if (!window.location.pathname.includes("preview")) {
+          return;
+        }
+        if (window.__previewNavInstalled) {
+          return;
+        }
+        window.__previewNavInstalled = true;
+        document.addEventListener("click", function (event) {
+          const link = event.target.closest("a[href]");
+          if (!link) {
+            return;
+          }
+          const href = link.getAttribute("href") || "";
+          let url;
+          try {
+            url = new URL(href, window.location.href);
+          } catch {
+            return;
+          }
+          if (!url.pathname.startsWith("/shop")) {
+            return;
+          }
+          event.preventDefault();
+          window.alert("Preview mode: generating page content rather than navigating.");
+          const slug = url.pathname.split("/shop/")[1] ? url.pathname.split("/shop/")[1].replace(/\\/+$/, "") : "";
+          const target = slug
+            ? "./preview.html?page=category&category=" + encodeURIComponent(slug)
+            : "./preview.html?page=shop";
+          window.location.href = target;
+        });
+      })();
+    <\/script>
+  `;
+  return html.replace("</body>", `${script}</body>`);
+}
+
 function parseCsv(text) {
   const rows = [];
   let row = [];
@@ -183,7 +223,7 @@ async function generateCategoryHtml(categoryName) {
     ${categorySectionHtml}
   `;
 
-  return applyTemplate(pageTemplate, {
+  const pageHtml = applyTemplate(pageTemplate, {
     PAGE_TITLE: `${escapeHtml(shopName)} - ${escapeHtml(target.name)}`,
     FAVICON_PATH: escapeHtml(faviconPath),
     SITE_CSS_PATH: escapeHtml(siteCssPath),
@@ -191,6 +231,7 @@ async function generateCategoryHtml(categoryName) {
     BODY_CONTENT: bodyHtml,
     FOOTER: footerHtml,
   });
+  return appendPreviewRoutingScript(pageHtml);
 }
 
 window.generateCategory = {
