@@ -38,50 +38,6 @@ function applyTemplate(template, values) {
   }, template);
 }
 
-function buildPreviewNavigationScript() {
-  return `
-    <script>
-      (function () {
-        if (!window.location.pathname.endsWith("/preview.html")) {
-          return;
-        }
-        if (window.__previewNavInstalled) {
-          return;
-        }
-        window.__previewNavInstalled = true;
-        document.addEventListener("click", async function (event) {
-          const link = event.target.closest("a[href]");
-          if (!link) {
-            return;
-          }
-          const url = new URL(link.getAttribute("href"), window.location.href);
-          if (!url.pathname.includes("/shop/")) {
-            return;
-          }
-          event.preventDefault();
-          window.alert("Preview mode: generating page content rather than navigating.");
-          try {
-            const slug = url.pathname.split("/shop/")[1]?.replace(/\\/+$/, "");
-            if (!slug) {
-              const html = await window.generateShop.generateShopHtml();
-              document.open();
-              document.write(html);
-              document.close();
-              return;
-            }
-            const html = await window.generateCategory.generateCategoryHtmlBySlug(slug);
-            document.open();
-            document.write(html);
-            document.close();
-          } catch (error) {
-            console.error("Preview navigation generation failed", error);
-          }
-        });
-      })();
-    </script>
-  `;
-}
-
 function parseCsv(text) {
   const rows = [];
   let row = [];
@@ -232,7 +188,7 @@ async function generateCategoryHtml(categoryName) {
     FAVICON_PATH: escapeHtml(faviconPath),
     SITE_CSS_PATH: escapeHtml(siteCssPath),
     HEADER: headerHtml,
-    BODY_CONTENT: `${bodyHtml}${buildPreviewNavigationScript()}`,
+    BODY_CONTENT: bodyHtml,
     FOOTER: footerHtml,
   });
 }

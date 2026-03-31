@@ -30,52 +30,6 @@ function applyTemplate(template, values) {
   }, template);
 }
 
-function appendPreviewNavigationScript(html) {
-  const script = `
-    <script>
-      (function () {
-        if (window.__previewNavInstalled) {
-          return;
-        }
-        window.__previewNavInstalled = true;
-        if (!window.location.pathname.includes("preview")) {
-          return;
-        }
-        document.addEventListener("click", async function (event) {
-          const link = event.target.closest("a[href]");
-          if (!link) {
-            return;
-          }
-          const href = link.getAttribute("href") || "";
-          let url;
-          try {
-            url = new URL(href, window.location.href);
-          } catch {
-            return;
-          }
-          if (!url.pathname.includes("/shop/")) {
-            return;
-          }
-          event.preventDefault();
-          window.alert("Preview mode: generating page content rather than navigating.");
-          const slug = url.pathname.split("/shop/")[1] ? url.pathname.split("/shop/")[1].replace(/\\/+$/, "") : "";
-          try {
-            const htmlOut = slug && window.generateCategory?.generateCategoryHtmlBySlug
-              ? await window.generateCategory.generateCategoryHtmlBySlug(slug)
-              : await window.generateShop.generateShopHtml();
-            document.open();
-            document.write(htmlOut);
-            document.close();
-          } catch (err) {
-            console.error("Preview navigation generation failed", err);
-          }
-        });
-      })();
-    <\/script>
-  `;
-  return html.replace("</body>", `${script}</body>`);
-}
-
 function parseCsv(text) {
   const rows = [];
   let row = [];
@@ -228,7 +182,7 @@ async function generateShopHtml() {
   const { headerHtml, footerHtml, shopName, faviconPath, siteCssPath } =
     await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig, { categoryNames });
 
-  const pageHtml = applyTemplate(pageTemplate, {
+  return applyTemplate(pageTemplate, {
     PAGE_TITLE: `${escapeHtml(shopName)} - Shop`,
     FAVICON_PATH: escapeHtml(faviconPath),
     SITE_CSS_PATH: escapeHtml(siteCssPath),
@@ -236,7 +190,6 @@ async function generateShopHtml() {
     BODY_CONTENT: categoryPreviewsHtml,
     FOOTER: footerHtml,
   });
-  return appendPreviewNavigationScript(pageHtml);
 }
 
 async function prepareShopPreviewHtml() {
