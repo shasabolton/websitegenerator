@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Homepage Preview</title>
+    <title>Site Preview</title>
     <style>
       :root {
         font-family: Arial, Helvetica, sans-serif;
@@ -40,21 +40,89 @@
         color: #fecaca;
       }
 
-      .preview-container {
+      .preview-shell {
+        display: grid;
+        grid-template-columns: 320px 1fr;
         min-height: calc(100vh - 48px);
-        background: #fff;
+      }
+
+      .file-tree-panel {
+        padding: 12px;
+        border-right: 1px solid #374151;
+        background: #0b1220;
+        overflow: auto;
+      }
+
+      .file-tree-title {
+        margin: 0 0 10px;
+        font-size: 14px;
+        color: #cbd5e1;
+      }
+
+      .file-tree-list {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .file-tree-item {
+        margin: 4px 0;
+      }
+
+      .file-tree-node {
+        display: inline-block;
+        width: 100%;
+        text-align: left;
+        background: transparent;
+        border: 1px solid transparent;
+        color: #e5e7eb;
+        border-radius: 6px;
+        padding: 4px 6px;
+        cursor: pointer;
+      }
+
+      .file-tree-node:hover:not(:disabled) {
+        background: rgba(148, 163, 184, 0.15);
+        border-color: rgba(148, 163, 184, 0.25);
+      }
+
+      .file-tree-node:disabled {
+        color: #9ca3af;
+        cursor: default;
+      }
+
+      .preview-view {
+        background: #d1d5db;
+        padding: 12px;
+      }
+
+      .preview-frame {
+        width: 100%;
+        min-height: calc(100vh - 72px);
+        border: 0;
+        border-radius: 8px;
+        background: #ffffff;
       }
     </style>
   </head>
   <body>
     <div class="preview-toolbar">
       <a href="./index.html">Back to data table</a>
-      <p id="preview-status" class="preview-status">Generating preview...</p>
+      <p id="preview-status" class="preview-status">Loading file tree...</p>
+    </div>
+    <div class="preview-shell">
+      <aside class="file-tree-panel">
+        <h2 class="file-tree-title">Generated Site File Tree</h2>
+        <div id="file-tree-root"></div>
+      </aside>
+      <section class="preview-view">
+        <iframe id="preview-frame" class="preview-frame" title="Generated page preview"></iframe>
+      </section>
     </div>
 
     <script src="./generateHeaderAndFooter.js"></script>
     <script src="./generateShop.js"></script>
     <script src="./generateCategory.js"></script>
+    <script src="./displayFileTree.js"></script>
     <script>
       function parsePreviewTarget() {
         const params = new URLSearchParams(window.location.search);
@@ -66,6 +134,34 @@
         return { type: "shop", category: null };
       }
 
+      async function renderPreviewTarget(target) {
+        const status = document.getElementById("preview-status");
+        const frame = document.getElementById("preview-frame");
+        if (!status || !frame) {
+          return;
+        }
+
+        try {
+          status.classList.remove("error");
+          status.textContent =
+            target.type === "category"
+              ? `Generating category page: ${target.category}...`
+              : "Generating shop page...";
+          const html =
+            target.type === "category"
+              ? await window.generateCategory.generateCategoryHtml(target.category)
+              : await window.generateShop.generateShopHtml();
+          frame.srcdoc = html;
+          status.textContent =
+            target.type === "category"
+              ? `Showing category page: ${target.category}`
+              : "Showing shop page";
+        } catch (error) {
+          status.classList.add("error");
+          status.textContent = `Failed to build preview: ${error.message}`;
+        }
+      }
+
       async function loadPreview() {
         const status = document.getElementById("preview-status");
         if (!status) {
@@ -73,17 +169,14 @@
         }
 
         try {
-          const target = parsePreviewTarget();
-          const html =
-            target.type === "category"
-              ? await window.generateCategory.generateCategoryHtml(target.category)
-              : await window.generateShop.generateShopHtml();
-          document.open();
-          document.write(html);
-          document.close();
+          await window.displayFileTree.initDisplayFileTree({
+            containerId: "file-tree-root",
+            onSelect: renderPreviewTarget,
+          });
+          await renderPreviewTarget(parsePreviewTarget());
         } catch (error) {
           status.classList.add("error");
-          status.textContent = `Failed to build preview: ${error.message}`;
+          status.textContent = `Failed to initialize file tree: ${error.message}`;
         }
       }
 

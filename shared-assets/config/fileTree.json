@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "label": "Shop",
+      "href": "/shop",
+      "children": [
+        {
+          "label": "Categories",
+          "href": "/shop",
+          "children": []
+        }
+      ]
+    },
+    {
+      "label": "Blog",
+      "href": "#blog"
+    },
+    {
+      "label": "About",
+      "href": "#about"
+    }
+  ]
+}
