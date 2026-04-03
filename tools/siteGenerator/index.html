@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Product Data Preview</title>
+    <title>Site generator</title>
     <style>
       :root {
         font-family: Arial, Helvetica, sans-serif;
@@ -21,93 +21,96 @@
         margin: 0 auto;
       }
 
-      .toolbar {
-        display: flex;
-        justify-content: flex-end;
-        margin-bottom: 12px;
-      }
-
-      .generate-btn {
-        border: 1px solid #2563eb;
-        background: #2563eb;
-        color: #fff;
-        border-radius: 6px;
-        padding: 10px 14px;
-        font-size: 14px;
-        cursor: pointer;
-      }
-
-      .generate-btn:hover {
-        background: #1d4ed8;
-      }
-
-      .generate-status {
-        margin: 0 0 12px;
-        font-size: 14px;
-        color: #374151;
-      }
-
-      .generate-status.error {
-        color: #b91c1c;
-      }
-
-      .table-wrapper {
+      .preview-panel {
+        margin-bottom: 20px;
+        padding: 16px;
         background: #fff;
         border: 1px solid #e5e7eb;
         border-radius: 8px;
-        overflow: auto;
       }
 
-      .csv-table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 1200px;
-      }
-
-      .csv-table th,
-      .csv-table td {
-        border: 1px solid #e5e7eb;
-        padding: 8px;
-        text-align: left;
-        vertical-align: top;
-        font-size: 14px;
-        line-height: 1.4;
-      }
-
-      .csv-table thead th {
-        position: sticky;
-        top: 0;
-        background: #f9fafb;
-        z-index: 1;
-      }
-
-      .csv-table tbody th {
-        background: #f9fafb;
+      .preview-panel h2 {
+        margin: 0 0 8px;
+        font-size: 16px;
         font-weight: 600;
+        color: #111827;
       }
 
-      .csv-cell {
-        max-width: 280px;
-        white-space: pre-wrap;
-        word-break: break-word;
+      .preview-panel p {
+        margin: 0 0 12px;
+        font-size: 14px;
+        color: #4b5563;
       }
 
-      .empty-cell {
-        color: #9ca3af;
+      .preview-picker-root {
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .preview-picker-dropdown {
+        margin: 6px 0 6px 8px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 6px 10px;
+        background: #f9fafb;
+      }
+
+      .preview-picker-dropdown > summary {
+        cursor: pointer;
+        font-weight: 600;
+        color: #374151;
+        list-style-position: outside;
+        margin-bottom: 4px;
+      }
+
+      .preview-picker-dropdown-body {
+        margin-top: 6px;
+        padding-left: 6px;
+        border-left: 2px solid #e5e7eb;
+      }
+
+      .preview-picker-row .preview-picker-page-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .preview-picker-row .preview-picker-page-link:hover {
+        text-decoration: underline;
+      }
+
+      .preview-picker-error {
+        margin: 0;
+        font-size: 14px;
+        color: #b91c1c;
+      }
+
+      .preview-picker-muted {
+        color: #6b7280;
+        font-size: 13px;
+        margin: 2px 0;
+      }
+
+      .preview-picker-nested {
+        padding-left: 14px;
       }
     </style>
   </head>
   <body>
     <main>
-      <div class="toolbar">
-        <button id="generate-site-btn" class="generate-btn" type="button">Preview</button>
-      </div>
-      <p id="generate-status" class="generate-status" aria-live="polite"></p>
-      <section id="csv-root" aria-live="polite"></section>
+      <section class="preview-panel" aria-labelledby="preview-heading">
+        <h2 id="preview-heading">Preview generated pages</h2>
+        <p>
+          Open a page below (nested static site structure). <code>preview.html</code> reads the page choice from the URL,
+          generates the site there, and replaces itself with that HTML. Use back to return here and pick another page.
+        </p>
+        <div id="preview-picker-root" aria-live="polite"></div>
+      </section>
     </main>
     <script src="./generateHeaderAndFooter.js"></script>
+    <script src="../editData/productData.js"></script>
     <script src="./generateShop.js"></script>
-    <script src="./siteGenerator.js"></script>
+    <script src="./displayFileTree.js"></script>
     <script src="./script.js"></script>
   </body>
   </html>

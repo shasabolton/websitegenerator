@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Edit data</title>
+    <style>
+      :root {
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        color: #1f2937;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px;
+        background: #fafafa;
+      }
+
+      .page-inner {
+        max-width: 36rem;
+        margin: 0 auto 2rem;
+      }
+
+      h1 {
+        font-size: 1.35rem;
+        margin: 0 0 0.75rem;
+      }
+
+      p {
+        margin: 0 0 1rem;
+        color: #4b5563;
+        line-height: 1.5;
+      }
+
+      a {
+        color: #2563eb;
+      }
+
+      #viewProductTableButton {
+        margin: 0.5rem 0 0;
+        padding: 0.65rem 1rem;
+        border-radius: 8px;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid #2563eb;
+        background: #2563eb;
+        color: #fff;
+      }
+
+      #viewProductTableButton:hover {
+        background: #1d4ed8;
+      }
+
+      #product-table-panel {
+        margin-top: 1.5rem;
+        max-width: 100%;
+      }
+
+      #product-table-panel h2 {
+        margin: 0 0 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .table-wrapper {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        overflow: auto;
+      }
+
+      .product-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1200px;
+      }
+
+      .product-table th,
+      .product-table td {
+        border: 1px solid #e5e7eb;
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      .product-table thead th {
+        position: sticky;
+        top: 0;
+        background: #f9fafb;
+        z-index: 1;
+      }
+
+      .product-table-cell {
+        max-width: 280px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .empty-cell {
+        color: #9ca3af;
+      }
+
+      .product-table-loading,
+      .product-table-error {
+        margin: 0;
+        font-size: 14px;
+        color: #4b5563;
+      }
+
+      .product-table-error {
+        color: #b91c1c;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-inner">
+      <h1>Edit data</h1>
+      <p>This area will hold tools to edit product and site configuration data.</p>
+      <p>
+        <button type="button" id="viewProductTableButton">View product table</button>
+      </p>
+      <p><a href="../index.html">Back to tools</a></p>
+    </div>
+
+    <section id="product-table-panel" hidden>
+      <h2>Product data</h2>
+      <div id="product-table-root" aria-live="polite"></div>
+    </section>
+
+    <script src="./productData.js"></script>
+    <script src="./productTable.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tools</title>
+    <style>
+      :root {
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        color: #1f2937;
+      }
+
+      body {
+        max-width: 28rem;
+        margin: 3rem auto;
+        padding: 0 1.25rem;
+      }
+
+      h1 {
+        margin: 0 0 0.5rem;
+        font-size: 1.5rem;
+      }
+
+      p {
+        margin: 0;
+        color: #4b5563;
+        font-size: 0.95rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+      }
+
+      .tool-btn {
+        display: block;
+        padding: 0.7rem 1rem;
+        border-radius: 8px;
+        font: inherit;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        border: 1px solid #2563eb;
+      }
+
+      #siteGeneratorButton {
+        background: #2563eb;
+        color: #fff;
+      }
+
+      #siteGeneratorButton:hover {
+        background: #1d4ed8;
+      }
+
+      #editDataButton {
+        background: #fff;
+        color: #1d4ed8;
+      }
+
+      #editDataButton:hover {
+        background: #eff6ff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Tools</h1>
+    <p>Choose a tool.</p>
+    <div class="actions">
+      <a id="siteGeneratorButton" class="tool-btn" href="./siteGenerator/index.html">Site generator</a>
+      <a id="editDataButton" class="tool-btn" href="./editData/index.html">Edit data</a>
+    </div>
+  </body>
+</html>

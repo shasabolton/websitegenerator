@@ -1,2 +1,2 @@
 rules
-a vanilla js front end site that generates a web sute html from product data csv 
+a vanilla js front end site that generates a web site html from product data csv 

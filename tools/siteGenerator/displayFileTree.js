@@ -1,11 +1,4 @@
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
+const PREVIEW_HTML_PATH = "./preview.html";
 
 function slugify(value) {
   return String(value)
@@ -21,102 +14,6 @@ async function fetchJson(url) {
     throw new Error(`Failed to load JSON: ${url} (${response.status})`);
   }
   return response.json();
-}
-
-async function fetchText(url) {
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Failed to load file: ${url} (${response.status})`);
-  }
-  return response.text();
-}
-
-function parseCsv(text) {
-  const rows = [];
-  let row = [];
-  let field = "";
-  let inQuotes = false;
-
-  for (let i = 0; i < text.length; i += 1) {
-    const char = text[i];
-    const nextChar = text[i + 1];
-
-    if (char === '"') {
-      if (inQuotes && nextChar === '"') {
-        field += '"';
-        i += 1;
-      } else {
-        inQuotes = !inQuotes;
-      }
-      continue;
-    }
-
-    if (char === "," && !inQuotes) {
-      row.push(field);
-      field = "";
-      continue;
-    }
-
-    if ((char === "\n" || char === "\r") && !inQuotes) {
-      if (char === "\r" && nextChar === "\n") {
-        i += 1;
-      }
-      row.push(field);
-      rows.push(row);
-      row = [];
-      field = "";
-      continue;
-    }
-
-    field += char;
-  }
-
-  if (field.length > 0 || row.length > 0) {
-    row.push(field);
-    rows.push(row);
-  }
-
-  return rows;
-}
-
-function getCategoriesFromCsv(csvText) {
-  const rows = parseCsv(csvText);
-  if (rows.length < 2) {
-    return [];
-  }
-
-  const headers = rows[0];
-  const categoryIndex = headers.findIndex((header) => header.trim().toUpperCase() === "CATEGORY");
-  const titleIndex = headers.findIndex((header) => header.trim().toUpperCase() === "TITLE");
-  if (categoryIndex === -1) {
-    return [];
-  }
-
-  const categories = new Map();
-  rows.slice(1).forEach((row) => {
-    const categoryName = (row[categoryIndex] || "").trim();
-    if (!categoryName) {
-      return;
-    }
-    const key = categoryName.toLowerCase();
-    if (!categories.has(key)) {
-      categories.set(key, {
-        label: categoryName,
-        slug: slugify(categoryName),
-        href: `/shop/${slugify(categoryName)}`,
-        products: [],
-      });
-    }
-    const productTitle = (row[titleIndex] || "").trim();
-    if (productTitle) {
-      categories.get(key).products.push({
-        label: productTitle,
-        href: "#",
-      });
-    }
-  });
-
-  return Array.from(categories.values());
 }
 
 function cloneTree(value) {
@@ -161,85 +58,164 @@ function populateFileTree(fileTreeConfig, categoryData) {
   return tree;
 }
 
-function createNodeElement(node, onSelect) {
-  const listItem = document.createElement("li");
-  listItem.className = "file-tree-item";
-  const label = document.createElement("button");
-  label.type = "button";
-  label.className = "file-tree-node";
-  label.textContent = `${node.label}${node.href ? ` (${node.href})` : ""}`;
-  label.dataset.href = node.href || "";
-
-  if (node.pageType === "category") {
-    label.dataset.pageType = "category";
-    label.dataset.category = node.category || node.label || "";
-    label.classList.add("is-category-node");
-    label.addEventListener("click", async () => {
-      await onSelect({
-        type: "category",
-        category: node.category || node.label || "",
-      });
-    });
-  } else if (node.href === "/shop") {
-    label.dataset.pageType = "shop";
-    label.classList.add("is-shop-node");
-    label.addEventListener("click", async () => {
-      await onSelect({ type: "shop", category: null });
-    });
-  } else {
-    label.disabled = true;
-  }
-
-  listItem.appendChild(label);
-
-  if (Array.isArray(node.children) && node.children.length > 0) {
-    const childList = document.createElement("ul");
-    childList.className = "file-tree-list";
-    node.children.forEach((childNode) => {
-      childList.appendChild(createNodeElement(childNode, onSelect));
-    });
-    listItem.appendChild(childList);
-  }
-
-  return listItem;
-}
-
 async function buildPopulatedFileTree() {
-  const [fileTreeConfig, csvText] = await Promise.all([
+  const [fileTreeConfig, { products }] = await Promise.all([
     fetchJson("../../shared-assets/config/fileTree.json"),
-    fetchText("../../shared-assets/config/product data.csv"),
+    window.productData.fetchProductDataJson(),
   ]);
-  const categoryData = getCategoriesFromCsv(csvText);
+  const categoryData = window.productData.getCategoriesForFileTree(products);
   return populateFileTree(fileTreeConfig, categoryData);
 }
 
-function renderTree(root, fileTree, onSelect) {
-  root.innerHTML = "";
-  const list = document.createElement("ul");
-  list.className = "file-tree-list";
-  const items = Array.isArray(fileTree?.items) ? fileTree.items : [];
-  items.forEach((node) => {
-    list.appendChild(createNodeElement(node, onSelect));
-  });
-  root.appendChild(list);
+function parsePreviewTarget(search) {
+  const raw = typeof search === "string" ? search : "";
+  const params = new URLSearchParams(raw.startsWith("?") ? raw.slice(1) : raw);
+  const page = params.get("page");
+  const category = params.get("category");
+  if (page === "category" && category) {
+    return { type: "category", category: decodeURIComponent(category) };
+  }
+  return { type: "shop", category: null };
 }
 
-async function initDisplayFileTree(options = {}) {
-  const { containerId = "file-tree-root", onSelect } = options;
+function buildPreviewUrl(target) {
+  const base = PREVIEW_HTML_PATH;
+  if (target?.type === "category" && target.category) {
+    return `${base}?page=category&category=${encodeURIComponent(target.category)}`;
+  }
+  return `${base}?page=shop`;
+}
+
+function showPreviewBootError(error) {
+  document.body.textContent = "";
+  const wrap = document.createElement("div");
+  wrap.style.cssText = "font-family:sans-serif;padding:1rem;max-width:40rem";
+  const p = document.createElement("p");
+  p.textContent = `Failed to build preview: ${error.message || String(error)}`;
+  const nav = document.createElement("p");
+  const a = document.createElement("a");
+  a.href = "./index.html";
+  a.textContent = "Back to product data";
+  nav.appendChild(a);
+  wrap.appendChild(p);
+  wrap.appendChild(nav);
+  document.body.appendChild(wrap);
+}
+
+async function runPreviewPage() {
+  try {
+    const target = parsePreviewTarget(window.location.search);
+    const html =
+      target.type === "category"
+        ? await window.generateCategory.generateCategoryHtml(target.category)
+        : await window.generateShop.generateShopHtml();
+    document.open();
+    document.write(html);
+    document.close();
+  } catch (error) {
+    showPreviewBootError(error);
+  }
+}
+
+function renderNodeAsDropdown(container, node) {
+  const labelLower = String(node?.label || "").trim().toLowerCase();
+
+  if (labelLower === "shop") {
+    const details = document.createElement("details");
+    details.className = "preview-picker-dropdown";
+    details.open = true;
+    const summary = document.createElement("summary");
+    summary.textContent = node.label || "Shop";
+    details.appendChild(summary);
+    const body = document.createElement("div");
+    body.className = "preview-picker-dropdown-body";
+    const shopRow = document.createElement("div");
+    shopRow.className = "preview-picker-row";
+    const shopLink = document.createElement("a");
+    shopLink.href = buildPreviewUrl({ type: "shop", category: null });
+    shopLink.className = "preview-picker-page-link";
+    shopLink.textContent = "Shop page";
+    shopRow.appendChild(shopLink);
+    body.appendChild(shopRow);
+    (node.children || []).forEach((child) => {
+      renderNodeAsDropdown(body, child);
+    });
+    details.appendChild(body);
+    container.appendChild(details);
+    return;
+  }
+
+  if (node.pageType === "category") {
+    const row = document.createElement("div");
+    row.className = "preview-picker-row";
+    const pageLink = document.createElement("a");
+    pageLink.href = buildPreviewUrl({
+      type: "category",
+      category: node.category || node.label || "",
+    });
+    pageLink.className = "preview-picker-page-link";
+    pageLink.textContent = node.label || "Category";
+    row.appendChild(pageLink);
+    container.appendChild(row);
+    (node.children || []).forEach((product) => {
+      const meta = document.createElement("div");
+      meta.className = "preview-picker-muted preview-picker-nested";
+      meta.textContent = product.label || "";
+      container.appendChild(meta);
+    });
+    return;
+  }
+
+  if (node.children && node.children.length > 0) {
+    const details = document.createElement("details");
+    details.className = "preview-picker-dropdown";
+    details.open = true;
+    const summary = document.createElement("summary");
+    summary.textContent = node.label || "";
+    details.appendChild(summary);
+    const body = document.createElement("div");
+    body.className = "preview-picker-dropdown-body";
+    node.children.forEach((child) => {
+      renderNodeAsDropdown(body, child);
+    });
+    details.appendChild(body);
+    container.appendChild(details);
+    return;
+  }
+
+  const muted = document.createElement("div");
+  muted.className = "preview-picker-muted";
+  const hrefPart = node.href ? ` (${node.href})` : "";
+  muted.textContent = `${node.label || ""}${hrefPart} — no preview`;
+  container.appendChild(muted);
+}
+
+function renderPreviewPicker(container, fileTree) {
+  container.innerHTML = "";
+  container.classList.add("preview-picker-root");
+  const items = fileTree?.items || [];
+  items.forEach((node) => {
+    renderNodeAsDropdown(container, node);
+  });
+}
+
+async function initPreviewPicker(options = {}) {
+  const { containerId = "preview-picker-root" } = options;
   const container = document.getElementById(containerId);
   if (!container) {
-    throw new Error(`File tree container not found: #${containerId}`);
-  }
-  if (typeof onSelect !== "function") {
-    throw new Error("File tree onSelect callback is required.");
+    throw new Error(`Preview picker container not found: #${containerId}`);
   }
 
   const populatedTree = await buildPopulatedFileTree();
-  renderTree(container, populatedTree, onSelect);
+  renderPreviewPicker(container, populatedTree);
   return populatedTree;
 }
 
 window.displayFileTree = {
-  initDisplayFileTree,
+  initPreviewPicker,
   buildPopulatedFileTree,
+  renderPreviewPicker,
+  parsePreviewTarget,
+  buildPreviewUrl,
+  runPreviewPage,
 };
