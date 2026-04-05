@@ -28,7 +28,7 @@ function populateFileTree(fileTreeConfig, categoryData) {
     return tree;
   }
 
-  shopNode.href = "/shop";
+  shopNode.href = "shop";
   if (!Array.isArray(shopNode.children)) {
     shopNode.children = [];
   }
@@ -50,7 +50,7 @@ function populateFileTree(fileTreeConfig, categoryData) {
   } else {
     shopNode.children.push({
       label: "Categories",
-      href: "/shop",
+      href: "shop",
       children: categoryChildren,
     });
   }

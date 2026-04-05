@@ -15,22 +15,6 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "");
 }
 
-async function fetchJson(url) {
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Failed to load JSON: ${url} (${response.status})`);
-  }
-  return response.json();
-}
-
-async function fetchText(url) {
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Failed to load file: ${url} (${response.status})`);
-  }
-  return response.text();
-}
-
 function applyTemplate(template, values) {
   return Object.entries(values).reduce((current, [key, value]) => {
     const token = new RegExp(`{{\\s*${key}\\s*}}`, "g");
@@ -39,56 +23,53 @@ function applyTemplate(template, values) {
 }
 
 async function generateCategoryHtml(categoryName) {
-  const [shopData, navigationConfig, pageTemplate, { products }, productIconTemplate, categoryPreviewTemplate] =
-    await Promise.all([
-      fetchJson("../../shared-assets/config/shopData.json"),
-      fetchJson("../../shared-assets/config/navigation.json"),
-      fetchText("./templates/pages/homepage.html"),
-      window.productData.fetchProductDataJson(),
-      fetchText("./templates/partials/productIcon.html"),
-      fetchText("./templates/partials/categoryPreview.html"),
-    ]);
+  const fetchText = window.generatePage.fetchText;
+  const nameFilter = String(categoryName || "").toLowerCase().trim();
 
-  const categories = window.productData.getProductsByCategory(products);
-  const target = categories.find(
-    (category) => category.name.toLowerCase() === String(categoryName || "").toLowerCase().trim()
-  );
-  if (!target) {
-    throw new Error(`Category not found: ${categoryName}`);
-  }
+  return window.generatePage.generatePage({
+    buildBody: async ({ products, shopData }) => {
+      const categories = window.productData.getProductsByCategory(products);
+      const target = categories.find(
+        (category) => category.name.toLowerCase() === nameFilter
+      );
+      if (!target) {
+        throw new Error(`Category not found: ${categoryName}`);
+      }
 
-  const { headerHtml, footerHtml, shopName, faviconPath, siteCssPath } =
-    await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig, {
-      categoryNames: categories.map((category) => category.name),
-    });
+      const [productIconTemplate, categoryPreviewTemplate] = await Promise.all([
+        fetchText("./templates/partials/productIcon.html"),
+        fetchText("./templates/partials/categoryPreview.html"),
+      ]);
 
-  const productIconsHtml = target.products
-    .map((product) =>
-      applyTemplate(productIconTemplate, {
-        PRODUCT_IMAGE: escapeHtml(product.image || "../../shared-assets/images/branding/favicon.jpg"),
-        PRODUCT_IMAGE_URL: escapeHtml(product.image || "../../shared-assets/images/branding/favicon.jpg"),
-        PRODUCT_TITLE: escapeHtml(product.title),
-      })
-    )
-    .join("");
+      const productIconsHtml = target.products
+        .map((product) =>
+          applyTemplate(productIconTemplate, {
+            PRODUCT_IMAGE: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
+            PRODUCT_IMAGE_URL: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
+            PRODUCT_TITLE: escapeHtml(product.title),
+          })
+        )
+        .join("");
 
-  const categorySectionHtml = applyTemplate(categoryPreviewTemplate, {
-    CATEGORY_ID: `shop-category-${escapeHtml(target.slug || "other")}`,
-    CATEGORY_NAME: escapeHtml(target.name),
-    CATEGORY_TITLE: escapeHtml(target.name),
-    CATEGORY_LINK: `/shop/${escapeHtml(target.slug || "other")}`,
-    PRODUCT_ICONS: productIconsHtml || "<p class=\"product-icon-empty\">No products in this category yet.</p>",
-  });
+      const slugPart = target.slug || "other";
+      const categoryLink = escapeHtml(`shop/${slugPart}`);
+      const categorySectionHtml = applyTemplate(categoryPreviewTemplate, {
+        CATEGORY_ID: escapeHtml(`shop-category-${slugPart}`),
+        CATEGORY_NAME: escapeHtml(target.name),
+        CATEGORY_TITLE: escapeHtml(target.name),
+        CATEGORY_LINK: categoryLink,
+        PRODUCT_ICONS: productIconsHtml || "<p class=\"product-icon-empty\">No products in this category yet.</p>",
+      });
 
-  const breadcrumbsHtml = `
+      const breadcrumbsHtml = `
     <nav class="breadcrumbs" aria-label="Breadcrumb">
-      <a href="/shop">Shop</a>
+      <a href="shop/">Shop</a>
       <span class="breadcrumbs-sep" aria-hidden="true">&rsaquo;</span>
       <span>${escapeHtml(target.name)}</span>
     </nav>
   `;
 
-  const bodyHtml = `
+      const bodyHtml = `
     <section class="page-content">
       ${breadcrumbsHtml}
       <h1>${escapeHtml(target.name)}</h1>
@@ -97,15 +78,14 @@ async function generateCategoryHtml(categoryName) {
     ${categorySectionHtml}
   `;
 
-  const pageHtml = applyTemplate(pageTemplate, {
-    PAGE_TITLE: `${escapeHtml(shopName)} - ${escapeHtml(target.name)}`,
-    FAVICON_PATH: escapeHtml(faviconPath),
-    SITE_CSS_PATH: escapeHtml(siteCssPath),
-    HEADER: headerHtml,
-    BODY_CONTENT: bodyHtml,
-    FOOTER: footerHtml,
+      const shopNameEsc = escapeHtml(shopData?.shopName || "Shop");
+      return {
+        bodyHtml,
+        categoryNames: categories.map((category) => category.name),
+        pageTitle: `${shopNameEsc} - ${escapeHtml(target.name)}`,
+      };
+    },
   });
-  return pageHtml;
 }
 
 window.generateCategory = {

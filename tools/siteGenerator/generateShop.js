@@ -7,20 +7,12 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-async function fetchJson(url) {
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Failed to load JSON: ${url} (${response.status})`);
-  }
-  return response.json();
-}
-
-async function fetchText(url) {
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Failed to load file: ${url} (${response.status})`);
-  }
-  return response.text();
+function slugify(value) {
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 function applyTemplate(template, values) {
@@ -30,16 +22,8 @@ function applyTemplate(template, values) {
   }, template);
 }
 
-function slugify(value) {
-  return String(value)
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
 function categoryHref(category) {
-  return `/shop/${slugify(category)}`;
+  return `shop/${slugify(category)}`;
 }
 
 async function buildCategoryPreviewsHtml(products) {
@@ -51,6 +35,7 @@ async function buildCategoryPreviewsHtml(products) {
     };
   }
 
+  const fetchText = window.generatePage.fetchText;
   const [productIconTemplate, categoryPreviewTemplate] = await Promise.all([
     fetchText("./templates/partials/productIcon.html"),
     fetchText("./templates/partials/categoryPreview.html"),
@@ -62,8 +47,8 @@ async function buildCategoryPreviewsHtml(products) {
         .slice(0, 3)
         .map((product) =>
           applyTemplate(productIconTemplate, {
-            PRODUCT_IMAGE: escapeHtml(product.image || "../../shared-assets/images/branding/favicon.jpg"),
-            PRODUCT_IMAGE_URL: escapeHtml(product.image || "../../shared-assets/images/branding/favicon.jpg"),
+            PRODUCT_IMAGE: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
+            PRODUCT_IMAGE_URL: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
             PRODUCT_TITLE: escapeHtml(product.title),
           })
         )
@@ -90,26 +75,17 @@ async function buildCategoryPreviewsHtml(products) {
 }
 
 async function generateShopHtml() {
-  const [shopData, navigationConfig, pageTemplate, { products }] = await Promise.all([
-    fetchJson("../../shared-assets/config/shopData.json"),
-    fetchJson("../../shared-assets/config/navigation.json"),
-    fetchText("./templates/pages/homepage.html"),
-    window.productData.fetchProductDataJson(),
-  ]);
-
-  const { html: categoryPreviewsHtml, categoryNames } = await buildCategoryPreviewsHtml(products);
-  const { headerHtml, footerHtml, shopName, faviconPath, siteCssPath } =
-    await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig, { categoryNames });
-
-  const pageHtml = applyTemplate(pageTemplate, {
-    PAGE_TITLE: `${escapeHtml(shopName)} - Shop`,
-    FAVICON_PATH: escapeHtml(faviconPath),
-    SITE_CSS_PATH: escapeHtml(siteCssPath),
-    HEADER: headerHtml,
-    BODY_CONTENT: categoryPreviewsHtml,
-    FOOTER: footerHtml,
+  return window.generatePage.generatePage({
+    buildBody: async ({ products, shopData }) => {
+      const { html, categoryNames } = await buildCategoryPreviewsHtml(products);
+      const shopNameEsc = escapeHtml(shopData?.shopName || "Shop");
+      return {
+        bodyHtml: html,
+        categoryNames,
+        pageTitle: `${shopNameEsc} - Shop`,
+      };
+    },
   });
-  return pageHtml;
 }
 
 async function prepareShopPreviewHtml() {

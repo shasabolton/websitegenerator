@@ -2,11 +2,11 @@
   "items": [
     {
       "label": "Shop",
-      "href": "/shop",
+      "href": "shop",
       "children": [
         {
           "label": "Categories",
-          "href": "/shop",
+          "href": "shop",
           "children": []
         }
       ]

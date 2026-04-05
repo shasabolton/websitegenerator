@@ -58,7 +58,7 @@ function getCategoriesForFileTree(products) {
       categories.set(key, {
         label: categoryName,
         slug: slugify(categoryName),
-        href: `/shop/${slugify(categoryName)}`,
+        href: `shop/${slugify(categoryName)}`,
         products: [],
       });
     }

@@ -31,7 +31,7 @@ function slugify(value) {
 }
 
 function buildShopCategoryHref(categoryName) {
-  return `/shop/${slugify(categoryName)}`;
+  return `shop/${slugify(categoryName)}`;
 }
 
 function buildNavigationHtml(navigationConfig, categoryNames = []) {
@@ -116,11 +116,11 @@ function buildFooterContactHtml(shopData) {
 }
 
 function buildFaviconPath(shopData) {
-  return shopData?.branding?.faviconPath || "../../shared-assets/images/branding/favicon.jpg";
+  return shopData?.branding?.faviconPath || "shared-assets/images/branding/favicon.jpg";
 }
 
 function buildSiteCssPath() {
-  return "./templates/css/site.css";
+  return "tools/siteGenerator/templates/css/site.css";
 }
 
 async function generateHeaderAndFooter(shopData, navigationConfig, options = {}) {
