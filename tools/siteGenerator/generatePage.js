@@ -16,8 +16,8 @@ async function fetchText(url) {
 
 function applyTemplate(template, values) {
   return Object.entries(values).reduce((current, [key, value]) => {
-    const token = new RegExp(`{{\\s*${key}\\s*}}`, "g");
-    return current.replace(token, String(value));
+    const token = new RegExp(`__${key}__`, "g");
+    return current.replace(token, () => String(value));
   }, template);
 }
 

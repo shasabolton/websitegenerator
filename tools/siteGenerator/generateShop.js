@@ -17,8 +17,8 @@ function slugify(value) {
 
 function applyTemplate(template, values) {
   return Object.entries(values).reduce((current, [key, value]) => {
-    const token = new RegExp(`{{\\s*${key}\\s*}}`, "g");
-    return current.replace(token, String(value));
+    const token = new RegExp(`__${key}__`, "g");
+    return current.replace(token, () => String(value));
   }, template);
 }
 
@@ -41,17 +41,20 @@ async function buildCategoryPreviewsHtml(products) {
     fetchText("./templates/partials/categoryPreview.html"),
   ]);
 
+  const resolveImg = window.generateHeaderAndFooter.resolveOptionalProductImageUrl;
+
   const categorySections = categories
     .map((category) => {
       const iconsHtml = category.products
         .slice(0, 3)
-        .map((product) =>
-          applyTemplate(productIconTemplate, {
-            PRODUCT_IMAGE: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
-            PRODUCT_IMAGE_URL: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
+        .map((product) => {
+          const imgUrl = resolveImg(product.image);
+          return applyTemplate(productIconTemplate, {
+            PRODUCT_IMAGE: escapeHtml(imgUrl),
+            PRODUCT_IMAGE_URL: escapeHtml(imgUrl),
             PRODUCT_TITLE: escapeHtml(product.title),
-          })
-        )
+          });
+        })
         .join("");
 
       return applyTemplate(categoryPreviewTemplate, {
