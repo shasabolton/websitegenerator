@@ -28,7 +28,7 @@ So preview is “generate a string of HTML, then swap the document.” No iframe
 
 **`generatePage.js`** owns the shared pipeline for every generated page type.
 
-1. Parallel fetch: `shopData.json`, `navigation.json`, page shell `templates/pages/homepage.html`, and **`setBase.js`** (source to inline).
+1. Parallel fetch: `shopData.json`, `navigation.json`, page shell `templates/pages/allPages.html`, and **`setBase.js`** (source to inline).
 2. Load products via `window.productData.fetchProductDataJson()` (`tools/editData/productData.js`).
 3. Call the caller’s **`buildBody`** function with `{ shopData, navigationConfig, products }`.
 4. `buildBody` must return `{ bodyHtml, categoryNames, pageTitle }`:
@@ -36,13 +36,13 @@ So preview is “generate a string of HTML, then swap the document.” No iframe
    - **`categoryNames`** — used to expand the Shop dropdown in the nav (`generateHeaderAndFooter`).
    - **`pageTitle`** — full `<title>` text (already escaped where needed).
 5. `generateHeaderAndFooter.generateHeaderAndFooter(...)` builds header/footer partials.
-6. Merge everything into `homepage.html` with `applyTemplate()` using tokens (see [Templates](#templates)).
+6. Merge everything into `allPages.html` with `applyTemplate()` using tokens (see [Templates](#templates)).
 
 **Adding a new page type:** add a module (e.g. `generateFoo.js`) that calls `window.generatePage.generatePage({ buildBody })`, and wire `displayFileTree` + `runPreviewPage()` if it should appear in the picker.
 
 ## Templates and tokens
 
-- **Page shell:** `templates/pages/homepage.html` — defines `<head>`, `__SET_BASE_SCRIPT__`, `__HEADER__`, `__BODY_CONTENT__`, `__FOOTER__`, etc.
+- **Page shell:** `templates/pages/allPages.html` — shared wrapper for every generated page: literal `<base href="/">`, synchronous inlined `setBase.js`, then `__PAGE_TITLE__`, assets, `__HEADER__`, `__BODY_CONTENT__`, `__FOOTER__`. Preview and future download use the **same** HTML string from `generatePage()`.
 - **Partials:** `templates/partials/*.html` — header, footer, category preview band, product icon tile.
 - **Substitution:** `__TOKEN_NAME__` (double underscores, no spaces). Implemented in `applyTemplate()` in `generatePage.js`, `generateHeaderAndFooter.js`, `generateShop.js`, and `generateCategory.js`. Replacements use a **function** callback so values that contain `$` (e.g. inlined `setBase.js` with `` `${...}` ``) are not corrupted by `String.prototype.replace`.
 
@@ -90,17 +90,18 @@ Generated pages are meant to work when the **whole repo** is served from one ori
 
 ## `<base>` and `setBase.js`
 
-Each generated page inlines the contents of **`setBase.js`** immediately after the viewport `<meta>` in `<head>`, before `<title>` and `<link>` tags.
+`allPages.html` emits, in order: `charset`, `viewport`, a **literal** `<base href="/" data-site-base>`, then an **inline synchronous** `<script>` with the contents of **`setBase.js`**, then `<title>` and `<link>` tags. The static base gives a safe default (custom domain / local); the script runs **before** those links are parsed.
 
 On load, that script:
 
-1. Detects `*.github.io` (GitHub Pages).
-2. If so, sets `<base href="/<first-path-segment>/">` so project sites like `https://user.github.io/websitegenerator/...` resolve `shop/...` and asset paths under the repo name. The repo slug is hard-coded as `GITHUB_PAGES_REPO` in `setBase.js` (keep in sync with the real GitHub repo name, or generalize).
-3. Otherwise sets base to `/` (custom domain or local server with repo as root).
+1. Finds the existing `<base data-site-base>` (or creates one if missing).
+2. Detects `*.github.io` (GitHub Pages).
+3. If so, sets `href` to `/<first-path-segment>/` so project sites like `https://user.github.io/websitegenerator/...` resolve `shop/...` under the repo name. The repo slug is hard-coded as `GITHUB_PAGES_REPO` in `setBase.js` (keep in sync with the real GitHub repo name, or generalize).
+4. Otherwise leaves base as `/` (already set in markup).
 
 It also shows an **`alert`** (temporary debugging aid); remove or gate when stable.
 
-Only one `<base data-site-base>` is created/updated. All relative `href`/`src` in that document (that do not start with `/`) resolve against it.
+All relative `href`/`src` in that document (that do not start with `/`) resolve against the active `<base>` after the script runs.
 
 ## Configuration sources
 
@@ -127,11 +128,11 @@ Only one `<base data-site-base>` is created/updated. All relative `href`/`src` i
 
 ## Styling
 
-- Generated pages link to **`tools/siteGenerator/templates/css/site.css`** via `SITE_CSS_PATH`. Favicon and stylesheet URLs are turned into **absolute** `http(s)` URLs (or `../../…` under `file://`) in `generateHeaderAndFooter.resolveRootAssetUrl`, using the same GitHub project prefix as `setBase.js`. That way they load correctly from `tools/siteGenerator/preview.html` even if `<base>` is applied after the parser starts. Nav links such as `shop/…` still rely on `<base>`.
+- Generated pages link to **`tools/siteGenerator/templates/css/site.css`** and the favicon using **base-relative** paths (`shared-assets/…`, `tools/siteGenerator/…`). `allPages.html` sets literal `<base href="/">` and runs inlined `setBase.js` **before** those `<link>` / `<img>` tags so resolution uses the correct root (including `/websitegenerator/` on GitHub Pages).
 - The picker UI on `index.html` uses **inline** styles in that file, not `site.css`.
 
 ## Operational notes
 
 - **Caching:** fetches use `{ cache: "no-store" }` during development.
 - **Export:** If you later copy only a `site/` subtree to hosting, you must either copy `shared-assets` and the CSS (or change paths) so generated URLs still resolve; the generator currently assumes monorepo-style URLs from repo root.
-- **Favicon 404:** `shopData.json` points at `shared-assets/images/branding/favicon.jpg`. If that file is missing from the repo, the link will 404 everywhere (GitHub and local). Add the image or change `faviconPath` once `setBase.js` has run so the resolved URL is under your published root.
+- **Favicon 404:** `shopData.json` points at `shared-assets/images/branding/favicon.jpg`. If that file is missing from the repo, the link will 404 everywhere (GitHub and local). Add the image or change `faviconPath` (base-relative or `https://…`).

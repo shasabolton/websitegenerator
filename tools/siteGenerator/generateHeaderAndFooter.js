@@ -22,66 +22,6 @@ function applyTemplate(template, values) {
   }, template);
 }
 
-/** Keep in sync with `setBase.js` (GitHub project Pages). */
-const GITHUB_PAGES_REPO = "websitegenerator";
-
-/**
- * Path prefix for site root on this host (e.g. "/" or "/websitegenerator/").
- * Matches logic in inlined `setBase.js`.
- */
-function getPublishedPathPrefix() {
-  if (typeof window === "undefined" || !window.location) {
-    return "/";
-  }
-  const h = window.location.hostname;
-  if (h === "github.io" || h.endsWith(".github.io")) {
-    const segments = window.location.pathname.split("/").filter(Boolean);
-    if (segments.length > 0) {
-      const first = segments[0];
-      return first === GITHUB_PAGES_REPO ? `/${GITHUB_PAGES_REPO}/` : `/${first}/`;
-    }
-  }
-  return "/";
-}
-
-/**
- * Turn a repo-root-relative asset path into an absolute URL (or ../../… under file://)
- * so favicon/CSS/images work from `tools/siteGenerator/preview.html` without relying on `<base>`.
- * Pass-through for http(s) and data URLs.
- */
-function resolveRootAssetUrl(relativePath) {
-  const raw = String(relativePath || "").trim();
-  if (!raw) {
-    return "";
-  }
-  if (/^https?:\/\//i.test(raw) || raw.startsWith("data:")) {
-    return raw;
-  }
-  const clean = raw.replace(/^\/+/, "");
-  const loc = typeof window !== "undefined" ? window.location : null;
-  if (!loc || loc.protocol === "file:") {
-    return `../../${clean}`;
-  }
-  const base = `${loc.origin}${getPublishedPathPrefix()}`;
-  try {
-    return new URL(clean, base).href;
-  } catch {
-    return `${base}${clean}`;
-  }
-}
-
-function resolveOptionalProductImageUrl(imagePath) {
-  const fallback = "shared-assets/images/branding/favicon.jpg";
-  const raw = String(imagePath || "").trim();
-  if (!raw) {
-    return resolveRootAssetUrl(fallback);
-  }
-  if (/^https?:\/\//i.test(raw) || raw.startsWith("data:")) {
-    return raw;
-  }
-  return resolveRootAssetUrl(raw.replace(/^\/+/, ""));
-}
-
 function slugify(value) {
   return String(value)
     .trim()
@@ -192,8 +132,8 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
   const categoryNames = Array.isArray(options.categoryNames) ? options.categoryNames : [];
   const navHtml = buildNavigationHtml(navigationConfig, categoryNames);
   const shopName = escapeHtml(shopData?.shopName || "Shop");
-  const faviconPath = escapeHtml(resolveRootAssetUrl(buildFaviconPath(shopData)));
-  const siteCssPath = escapeHtml(resolveRootAssetUrl(buildSiteCssPath()));
+  const faviconPath = escapeHtml(buildFaviconPath(shopData));
+  const siteCssPath = escapeHtml(buildSiteCssPath());
 
   const headerHtml = applyTemplate(headerTemplate, {
     SHOP_NAME: shopName,
@@ -222,7 +162,4 @@ window.generateHeaderAndFooter = {
   slugify,
   buildShopCategoryHref,
   generateHeaderAndFooter,
-  getPublishedPathPrefix,
-  resolveRootAssetUrl,
-  resolveOptionalProductImageUrl,
 };

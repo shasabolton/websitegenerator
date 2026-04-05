@@ -41,20 +41,17 @@ async function buildCategoryPreviewsHtml(products) {
     fetchText("./templates/partials/categoryPreview.html"),
   ]);
 
-  const resolveImg = window.generateHeaderAndFooter.resolveOptionalProductImageUrl;
-
   const categorySections = categories
     .map((category) => {
       const iconsHtml = category.products
         .slice(0, 3)
-        .map((product) => {
-          const imgUrl = resolveImg(product.image);
-          return applyTemplate(productIconTemplate, {
-            PRODUCT_IMAGE: escapeHtml(imgUrl),
-            PRODUCT_IMAGE_URL: escapeHtml(imgUrl),
+        .map((product) =>
+          applyTemplate(productIconTemplate, {
+            PRODUCT_IMAGE: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
+            PRODUCT_IMAGE_URL: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
             PRODUCT_TITLE: escapeHtml(product.title),
-          });
-        })
+          })
+        )
         .join("");
 
       return applyTemplate(categoryPreviewTemplate, {

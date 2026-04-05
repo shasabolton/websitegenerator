@@ -31,7 +31,9 @@ function wrapInlineScript(js) {
 }
 
 /**
- * Fetches shared config, builds header/footer, runs buildBody, injects base script.
+ * Fetches shared config, builds header/footer, runs buildBody, merges into `allPages.html`.
+ * Returns one complete HTML string — the same string is used for `document.write` preview and
+ * (later) file download.
  * @param {{ buildBody: (ctx: { shopData: object, navigationConfig: object, products: object[] }) => Promise<{ bodyHtml: string, categoryNames: string[], pageTitle: string }> }} options
  */
 async function generatePage(options) {
@@ -43,7 +45,7 @@ async function generatePage(options) {
   const [shopData, navigationConfig, pageTemplate, setBaseSource] = await Promise.all([
     fetchJson("../../shared-assets/config/shopData.json"),
     fetchJson("../../shared-assets/config/navigation.json"),
-    fetchText("./templates/pages/homepage.html"),
+    fetchText("./templates/pages/allPages.html"),
     fetchText("./setBase.js"),
   ]);
 
