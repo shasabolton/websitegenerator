@@ -1,5 +1,0 @@
-flow
-
-click on file tree item
-launches specific generate page
-displayFileTree.generatePreview()

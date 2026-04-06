@@ -49,7 +49,7 @@ async function buildCategoryPreviewsHtml(products) {
     };
   }
 
-  const fetchText = window.generatePage.fetchText;
+  const fetchText = window.generateAnyPage.fetchText;
   const [productThumbTemplate, productThumbRowTemplate, categoryPreviewTemplate] = await Promise.all([
     fetchText("./templates/partials/productThumb.html"),
     fetchText("./templates/partials/productThumbRow.html"),
@@ -84,25 +84,22 @@ async function buildCategoryPreviewsHtml(products) {
   return { html, categoryNames: categories.map((category) => category.name) };
 }
 
-async function generateShopHtml() {
-  return window.generatePage.generatePage({
-    buildBody: async ({ products, shopData }) => {
-      const { html, categoryNames } = await buildCategoryPreviewsHtml(products);
-      const shopNameEsc = escapeHtml(shopData?.shopName || "Shop");
-      return {
-        bodyHtml: html,
-        categoryNames,
-        pageTitle: `${shopNameEsc} - Shop`,
-      };
-    },
-  });
+/**
+ * Shop landing main column + nav category list metadata.
+ * @param {{ shopData: object, navigationConfig: object, products: object[] }} ctx
+ * @returns {Promise<{ bodyHtml: string, categoryNames: string[], pageTitle: string }>}
+ */
+async function generateShopBody(ctx) {
+  const { products, shopData } = ctx;
+  const { html, categoryNames } = await buildCategoryPreviewsHtml(products);
+  const shopNameEsc = escapeHtml(shopData?.shopName || "Shop");
+  return {
+    bodyHtml: html,
+    categoryNames,
+    pageTitle: `${shopNameEsc} - Shop`,
+  };
 }
 
-async function prepareShopPreviewHtml() {
-  return generateShopHtml();
-}
-
-window.generateShop = {
-  prepareShopPreviewHtml,
-  generateShopHtml,
+window.generateShopBody = {
+  generateShopBody,
 };

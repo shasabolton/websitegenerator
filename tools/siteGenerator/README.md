@@ -8,43 +8,41 @@ This README is for maintainers and for AI agents working in this folder.
 
 | File | Role |
 |------|------|
-| `index.html` | Lists preview targets (file tree UI). Loads `previewTarget.js` + `displayFileTree.js` only (no page generators). |
-| `preview.html` | Loads shared pipeline + `previewBoot.js`, which loads **either** `generateShop.js` **or** `generateCategory.js` from the URL, then **replaces itself** with generated HTML (see below). |
+| `index.html` | **Hub:** file tree picker when opened with no `path` query. **Preview:** when opened with `?path=…` (same origin), `script.js` loads the generator stack and replaces the document with generated HTML. |
 
 Open these from a **local HTTP server** with the **repository root** as the site root (e.g. VS Code / Cursor Live Server on the repo folder). `file://` is unreliable because `fetch()` and base URLs behave differently.
 
 ## End-to-end preview flow
 
-1. User opens `index.html` → `script.js` calls `displayFileTree.initPreviewPicker()`, which loads `shared-assets/config/fileTree.json` and product data, then renders links.
-2. Links point at `preview.html?page=shop` or `preview.html?page=category&category=...` (see `previewTarget.buildPreviewUrl` / `displayFileTree.buildPreviewUrl`).
-3. `preview.html` loads shared scripts, then `previewBoot.js` loads **only** the generator for that URL (`generateShop.js` or `generateCategory.js`), then `displayFileTree.js`, then runs `displayFileTree.runPreviewPage()`.
-4. `runPreviewPage()` reads query params (`previewTarget.parsePreviewTarget`), calls either `generateShop.generateShopHtml()` or `generateCategory.generateCategoryHtml(name)`, then:
+1. User opens `index.html` (no query) → `script.js` calls `displayFileTree.initPreviewPicker()`, which loads `shared-assets/config/fileTree.json` and product data, then renders links.
+2. Links point at `index.html?path=shop` or `index.html?path=shop%2F<category-slug>` (tree `href` values; see `previewTarget.buildPreviewUrl` / `displayFileTree.buildPreviewUrl`).
+3. With `path` set, `script.js` loads `generateHeaderAndFooter.js`, `generateAnyPage.js`, `generateShopBody.js`, and `generateCategoryBody.js`, then calls `generateAnyPage.previewAnyPage(path)`.
+4. `generateAnyPage.generateAnyPage()` loads shared config and `allPages.html`, calls `generateShopBody` or `generateCategoryBody` for main markup, merges header/footer via `generateHeaderAndFooter`, then:
    - `document.open(); document.write(html); document.close();`
-   - The browser document is now the **generated** page; the URL is still `.../preview.html?...`.
+   - The browser document is now the **generated** page; the URL is still `.../index.html?path=...`.
 
 So preview is “generate a string of HTML, then swap the document.” No iframe.
 
-## Core pipeline: `generatePage`
+## Core pipeline: `generateAnyPage.js`
 
-**`generatePage.js`** owns the shared pipeline for every generated page type.
+**`generateAnyPage.js`** owns the shared pipeline for every generated page type.
 
-1. Parallel fetch: `shopData.json`, `navigation.json`, page shell `templates/pages/allPages.html`, and **`setBase.js`** (source to inline).
-2. Load products via `window.productData.fetchProductDataJson()` (`tools/editData/productData.js`).
-3. Call the caller’s **`buildBody`** function with `{ shopData, navigationConfig, products }`.
-4. `buildBody` must return `{ bodyHtml, categoryNames, pageTitle }`:
+1. Parallel fetch: `shopData.json`, `navigation.json`, page shell `templates/pages/allPages.html`, **`setBase.js`** (source to inline), and products via `window.productData.fetchProductDataJson()`.
+2. Route on tree `path`: call **`generateShopBody.generateShopBody(ctx)`** or **`generateCategoryBody.generateCategoryBody(ctx)`** with `ctx = { shopData, navigationConfig, products }` (category also gets `categoryName`).
+3. Each body generator returns `{ bodyHtml, categoryNames, pageTitle }`:
    - **`bodyHtml`** — main column only (inside `<main>`).
    - **`categoryNames`** — used to expand the Shop dropdown in the nav (`generateHeaderAndFooter`).
    - **`pageTitle`** — full `<title>` text (already escaped where needed).
-5. `generateHeaderAndFooter.generateHeaderAndFooter(...)` builds header/footer partials.
-6. Merge everything into `allPages.html` with `applyTemplate()` using tokens (see [Templates](#templates)).
+4. `generateHeaderAndFooter.generateHeaderAndFooter(...)` builds header/footer partials.
+5. Merge everything into `allPages.html` with `generateAnyPage.applyTemplate()` using tokens (see [Templates](#templates)).
 
-**Adding a new page type:** add a module (e.g. `generateFoo.js`) that calls `window.generatePage.generatePage({ buildBody })`, extend `previewTarget.parsePreviewTarget` / URL conventions as needed, load it from `previewBoot.js` for the right query shape, and add a branch in `displayFileTree.runPreviewPage()` (and picker links) if it should appear in the preview UI.
+**Adding a new page type:** add a module that exports **`generateFooBody(ctx)`** returning that shape, extend `generateAnyPage.generateAnyPage()` routing (and URL `path` conventions), ensure `script.js` loads the new script after `generateAnyPage.js`, and add picker links in `displayFileTree` if it should appear in the preview UI. Use **`window.generateAnyPage.fetchText`** for partial templates.
 
 ## Templates and tokens
 
-- **Page shell:** `templates/pages/allPages.html` — shared wrapper for every generated page: literal `<base href="/">`, synchronous inlined `setBase.js`, then `__PAGE_TITLE__`, assets, `__HEADER__`, `__BODY_CONTENT__`, `__FOOTER__`. Preview and future download use the **same** HTML string from `generatePage()`.
+- **Page shell:** `templates/pages/allPages.html` — shared wrapper for every generated page: literal `<base href="/">`, synchronous inlined `setBase.js`, then `__PAGE_TITLE__`, assets, `__HEADER__`, `__BODY_CONTENT__`, `__FOOTER__`. Preview and future download use the **same** HTML string from `generateAnyPage.generateAnyPage()` (or the same merge steps).
 - **Partials:** `templates/partials/*.html` — header, footer, `categoryPreview` (shop band + thumb row), `categoryPage` (full category body), `productThumb`, `productThumbRow`.
-- **Substitution:** `__TOKEN_NAME__` (double underscores, no spaces). Implemented in `applyTemplate()` in `generatePage.js`, `generateHeaderAndFooter.js`, `generateShop.js`, and `generateCategory.js`. Replacements use a **function** callback so values that contain `$` (e.g. inlined `setBase.js` with `` `${...}` ``) are not corrupted by `String.prototype.replace`.
+- **Substitution:** `__TOKEN_NAME__` (double underscores, no spaces). Implemented in `applyTemplate()` in `generateAnyPage.js`, `generateHeaderAndFooter.js`, `generateShopBody.js`, and `generateCategoryBody.js`. Replacements use a **function** callback so values that contain `$` (e.g. inlined `setBase.js` with `` `${...}` ``) are not corrupted by `String.prototype.replace`.
 
 **Do not use `{{...}}` in templates.** GitHub Pages runs **Jekyll** by default; that syntax is Liquid and will strip or alter placeholders before the browser runs the generator. The repo root includes **`.nojekyll`** so Pages serves HTML as static files without Jekyll processing.
 
@@ -54,7 +52,7 @@ Escaped vs raw: user-visible strings from data should go through `escapeHtml()` 
 
 Load order matters.
 
-**`index.html` (picker only):**
+**`index.html` (hub, no `?path=`):**
 
 ```
 productData.js
@@ -63,20 +61,14 @@ displayFileTree.js           (needs productData + previewTarget)
 script.js
 ```
 
-**`preview.html` (generate one page type):**
+**`index.html` (preview, with `?path=`):** `script.js` loads, then injects in order:
 
 ```
 generateHeaderAndFooter.js
-productData.js
-generatePage.js
-previewTarget.js
-previewBoot.js               → dynamically loads ONE OF:
-  generateShop.js            (shop preview)
-  generateCategory.js        (category preview)
-then displayFileTree.js      (for runPreviewPage only)
+generateAnyPage.js           (shared pipeline + path routing)
+generateShopBody.js          (generateShopBody)
+generateCategoryBody.js      (generateCategoryBody)
 ```
-
-`generateShop.js` / `generateCategory.js` are **not** loaded together on the same document.
 
 ## Fetch paths (generator runtime)
 
@@ -131,13 +123,13 @@ All relative `href`/`src` in that document (that do not start with `/`) resolve 
 
 | Module | Responsibility |
 |--------|------------------|
-| `generatePage.js` | Shared page pipeline, template merge, inline `setBase.js`. |
-| `generateShop.js` | Shop landing: category preview sections from product data. |
-| `generateCategory.js` | Single category page: breadcrumbs, heading, product grid. |
+| `generateAnyPage.js` | Shared fetches, `allPages.html` merge, inline `setBase.js`, path → body generators + full HTML. |
+| `generateShopBody.js` | `generateShopBody`: shop landing main column from product data. |
+| `generateCategoryBody.js` | `generateCategoryBody`: single category main column (requires `categoryName` on `ctx`). |
 | `generateHeaderAndFooter.js` | Header/footer partials; `buildSiteCssPath()`, `buildFaviconPath()`, nav HTML, `buildShopCategoryHref()` → `shop/<slug>`. |
-| `previewTarget.js` | `parsePreviewTarget`, `buildPreviewUrl`, `showPreviewBootError`. |
-| `previewBoot.js` | Preview entry: loads exactly one page generator, then `displayFileTree` + `runPreviewPage`. |
-| `displayFileTree.js` | Preview picker UI, file tree merge with categories, `runPreviewPage`. |
+| `previewTarget.js` | `parsePreviewTarget` (`path` query), `buildPreviewUrl`, `showPreviewBootError`. |
+| `displayFileTree.js` | Preview picker UI, file tree merge with categories. |
+| `script.js` | Hub vs preview: `initPreviewPicker` or dynamic generator load + `generateAnyPage.previewAnyPage`. |
 | `productData.js` (in `editData/`) | Fetch/parse product JSON; category helpers for shop and file tree. |
 | `setBase.js` | Runtime base URL; **inlined** into output (not loaded as separate file in production HTML). |
 

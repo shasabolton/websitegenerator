@@ -57,35 +57,6 @@ async function buildPopulatedFileTree() {
   return populateFileTree(fileTreeConfig, categoryData);
 }
 
-async function runPreviewPage() {
-  try {
-    const target = window.previewTarget.parsePreviewTarget(window.location.search);
-    let html;
-    if (target.type === "category") {
-      const gen = window.generateCategory?.generateCategoryHtml;
-      if (typeof gen !== "function") {
-        throw new Error(
-          "Category preview needs generateCategory.js loaded for this preview (see previewBoot.js)."
-        );
-      }
-      html = await gen(target.category);
-    } else {
-      const gen = window.generateShop?.generateShopHtml;
-      if (typeof gen !== "function") {
-        throw new Error(
-          "Shop preview needs generateShop.js loaded for this preview (see previewBoot.js)."
-        );
-      }
-      html = await gen();
-    }
-    document.open();
-    document.write(html);
-    document.close();
-  } catch (error) {
-    window.previewTarget.showPreviewBootError(error);
-  }
-}
-
 function renderNodeAsDropdown(container, node) {
   const labelLower = String(node?.label || "").trim().toLowerCase();
 
@@ -101,7 +72,7 @@ function renderNodeAsDropdown(container, node) {
     const shopRow = document.createElement("div");
     shopRow.className = "preview-picker-row";
     const shopLink = document.createElement("a");
-    shopLink.href = window.previewTarget.buildPreviewUrl({ type: "shop", category: null });
+    shopLink.href = window.previewTarget.buildPreviewUrl("shop");
     shopLink.className = "preview-picker-page-link";
     shopLink.textContent = "Shop page";
     shopRow.appendChild(shopLink);
@@ -118,10 +89,11 @@ function renderNodeAsDropdown(container, node) {
     const row = document.createElement("div");
     row.className = "preview-picker-row";
     const pageLink = document.createElement("a");
-    pageLink.href = window.previewTarget.buildPreviewUrl({
-      type: "category",
-      category: node.category || node.label || "",
-    });
+    const treeHref = String(node.href || "").trim();
+    if (!treeHref) {
+      throw new Error("Category node missing href for preview link.");
+    }
+    pageLink.href = window.previewTarget.buildPreviewUrl(treeHref);
     pageLink.className = "preview-picker-page-link";
     pageLink.textContent = node.label || "Category";
     row.appendChild(pageLink);
@@ -185,6 +157,5 @@ window.displayFileTree = {
   buildPopulatedFileTree,
   renderPreviewPicker,
   parsePreviewTarget: (search) => window.previewTarget.parsePreviewTarget(search),
-  buildPreviewUrl: (target) => window.previewTarget.buildPreviewUrl(target),
-  runPreviewPage,
+  buildPreviewUrl: (treePath) => window.previewTarget.buildPreviewUrl(treePath),
 };

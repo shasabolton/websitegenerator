@@ -7,7 +7,37 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = src;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+    document.body.appendChild(s);
+  });
+}
+
+async function runPreviewBootFromUrl() {
+  await loadScript("./generateHeaderAndFooter.js");
+  await loadScript("./generateAnyPage.js");
+  await loadScript("./generateShopBody.js");
+  await loadScript("./generateCategoryBody.js");
+  const target = window.previewTarget.parsePreviewTarget(window.location.search);
+  if (!target?.path) {
+    throw new Error("Preview boot: missing path in URL.");
+  }
+  await window.generateAnyPage.previewAnyPage(target.path);
+}
+
 window.addEventListener("load", () => {
+  const previewTarget = window.previewTarget.parsePreviewTarget(window.location.search);
+  if (previewTarget?.path) {
+    runPreviewBootFromUrl().catch((error) => {
+      window.previewTarget.showPreviewBootError(error);
+    });
+    return;
+  }
+
   if (window.displayFileTree?.initPreviewPicker) {
     window.displayFileTree.initPreviewPicker({ containerId: "preview-picker-root" }).catch((error) => {
       const root = document.getElementById("preview-picker-root");

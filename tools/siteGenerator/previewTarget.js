@@ -1,22 +1,21 @@
-const PREVIEW_HTML_PATH = "./preview.html";
+const INDEX_HTML_PATH = "./index.html";
 
 function parsePreviewTarget(search) {
   const raw = typeof search === "string" ? search : "";
   const params = new URLSearchParams(raw.startsWith("?") ? raw.slice(1) : raw);
-  const page = params.get("page");
-  const category = params.get("category");
-  if (page === "category" && category) {
-    return { type: "category", category: decodeURIComponent(category) };
+  const path = params.get("path");
+  if (path == null || !String(path).trim()) {
+    return null;
   }
-  return { type: "shop", category: null };
+  return { path: decodeURIComponent(String(path).trim()) };
 }
 
-function buildPreviewUrl(target) {
-  const base = PREVIEW_HTML_PATH;
-  if (target?.type === "category" && target.category) {
-    return `${base}?page=category&category=${encodeURIComponent(target.category)}`;
-  }
-  return `${base}?page=shop`;
+/**
+ * @param {string} treePath - File-tree href, e.g. `shop` or `shop/my-category`.
+ */
+function buildPreviewUrl(treePath) {
+  const path = String(treePath || "").trim();
+  return `${INDEX_HTML_PATH}?path=${encodeURIComponent(path)}`;
 }
 
 function showPreviewBootError(error) {
@@ -28,7 +27,7 @@ function showPreviewBootError(error) {
   const nav = document.createElement("p");
   const a = document.createElement("a");
   a.href = "./index.html";
-  a.textContent = "Back to product data";
+  a.textContent = "Back to site generator";
   nav.appendChild(a);
   wrap.appendChild(p);
   wrap.appendChild(nav);
@@ -36,7 +35,7 @@ function showPreviewBootError(error) {
 }
 
 window.previewTarget = {
-  PREVIEW_HTML_PATH,
+  INDEX_HTML_PATH,
   parsePreviewTarget,
   buildPreviewUrl,
   showPreviewBootError,
