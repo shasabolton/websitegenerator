@@ -1,4 +1,9 @@
-const PRODUCT_DATA_JSON_URL = "../../shared-assets/config/productData.json";
+(function initProductData() {
+  if (window.productData && typeof window.productData.fetchProductDataJson === "function") {
+    return;
+  }
+
+  const PRODUCT_DATA_JSON_URL = "../../shared-assets/config/productData.json";
 
 function slugify(value) {
   return String(value)
@@ -194,12 +199,13 @@ function getCategoriesForFileTree(products) {
   return Array.from(categories.values());
 }
 
-window.productData = {
-  fetchProductDataJson,
-  getProductsByCategory,
-  getCategoriesForFileTree,
-  assignProductSlugsByCategory,
-  getProductSlugForRow,
-  findProductByShopPath,
-  collectProductImageUrls,
-};
+  window.productData = {
+    fetchProductDataJson,
+    getProductsByCategory,
+    getCategoriesForFileTree,
+    assignProductSlugsByCategory,
+    getProductSlugForRow,
+    findProductByShopPath,
+    collectProductImageUrls,
+  };
+})();

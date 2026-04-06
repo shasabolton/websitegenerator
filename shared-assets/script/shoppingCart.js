@@ -8,6 +8,11 @@
  * @property {string} [productPath]
  */
 
+(function initShoppingCart() {
+  if (window.ShoppingCart && typeof window.skuToLineItem === "function") {
+    return;
+  }
+
 /**
  * @param {unknown} raw
  * @returns {CartLineItem | null} `null` when `sku` is missing.
@@ -256,5 +261,6 @@ class ShoppingCart {
   }
 }
 
-window.ShoppingCart = ShoppingCart;
-window.skuToLineItem = skuToLineItem;
+  window.ShoppingCart = ShoppingCart;
+  window.skuToLineItem = skuToLineItem;
+})();
