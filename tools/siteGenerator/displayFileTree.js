@@ -1,13 +1,3 @@
-const PREVIEW_HTML_PATH = "./preview.html";
-
-function slugify(value) {
-  return String(value)
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
 async function fetchJson(url) {
   const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
@@ -67,53 +57,32 @@ async function buildPopulatedFileTree() {
   return populateFileTree(fileTreeConfig, categoryData);
 }
 
-function parsePreviewTarget(search) {
-  const raw = typeof search === "string" ? search : "";
-  const params = new URLSearchParams(raw.startsWith("?") ? raw.slice(1) : raw);
-  const page = params.get("page");
-  const category = params.get("category");
-  if (page === "category" && category) {
-    return { type: "category", category: decodeURIComponent(category) };
-  }
-  return { type: "shop", category: null };
-}
-
-function buildPreviewUrl(target) {
-  const base = PREVIEW_HTML_PATH;
-  if (target?.type === "category" && target.category) {
-    return `${base}?page=category&category=${encodeURIComponent(target.category)}`;
-  }
-  return `${base}?page=shop`;
-}
-
-function showPreviewBootError(error) {
-  document.body.textContent = "";
-  const wrap = document.createElement("div");
-  wrap.style.cssText = "font-family:sans-serif;padding:1rem;max-width:40rem";
-  const p = document.createElement("p");
-  p.textContent = `Failed to build preview: ${error.message || String(error)}`;
-  const nav = document.createElement("p");
-  const a = document.createElement("a");
-  a.href = "./index.html";
-  a.textContent = "Back to product data";
-  nav.appendChild(a);
-  wrap.appendChild(p);
-  wrap.appendChild(nav);
-  document.body.appendChild(wrap);
-}
-
 async function runPreviewPage() {
   try {
-    const target = parsePreviewTarget(window.location.search);
-    const html =
-      target.type === "category"
-        ? await window.generateCategory.generateCategoryHtml(target.category)
-        : await window.generateShop.generateShopHtml();
+    const target = window.previewTarget.parsePreviewTarget(window.location.search);
+    let html;
+    if (target.type === "category") {
+      const gen = window.generateCategory?.generateCategoryHtml;
+      if (typeof gen !== "function") {
+        throw new Error(
+          "Category preview needs generateCategory.js loaded for this preview (see previewBoot.js)."
+        );
+      }
+      html = await gen(target.category);
+    } else {
+      const gen = window.generateShop?.generateShopHtml;
+      if (typeof gen !== "function") {
+        throw new Error(
+          "Shop preview needs generateShop.js loaded for this preview (see previewBoot.js)."
+        );
+      }
+      html = await gen();
+    }
     document.open();
     document.write(html);
     document.close();
   } catch (error) {
-    showPreviewBootError(error);
+    window.previewTarget.showPreviewBootError(error);
   }
 }
 
@@ -132,7 +101,7 @@ function renderNodeAsDropdown(container, node) {
     const shopRow = document.createElement("div");
     shopRow.className = "preview-picker-row";
     const shopLink = document.createElement("a");
-    shopLink.href = buildPreviewUrl({ type: "shop", category: null });
+    shopLink.href = window.previewTarget.buildPreviewUrl({ type: "shop", category: null });
     shopLink.className = "preview-picker-page-link";
     shopLink.textContent = "Shop page";
     shopRow.appendChild(shopLink);
@@ -149,7 +118,7 @@ function renderNodeAsDropdown(container, node) {
     const row = document.createElement("div");
     row.className = "preview-picker-row";
     const pageLink = document.createElement("a");
-    pageLink.href = buildPreviewUrl({
+    pageLink.href = window.previewTarget.buildPreviewUrl({
       type: "category",
       category: node.category || node.label || "",
     });
@@ -215,7 +184,7 @@ window.displayFileTree = {
   initPreviewPicker,
   buildPopulatedFileTree,
   renderPreviewPicker,
-  parsePreviewTarget,
-  buildPreviewUrl,
+  parsePreviewTarget: (search) => window.previewTarget.parsePreviewTarget(search),
+  buildPreviewUrl: (target) => window.previewTarget.buildPreviewUrl(target),
   runPreviewPage,
 };

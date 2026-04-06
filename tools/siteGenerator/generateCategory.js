@@ -7,19 +7,26 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-function slugify(value) {
-  return String(value)
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
 function applyTemplate(template, values) {
   return Object.entries(values).reduce((current, [key, value]) => {
     const token = new RegExp(`__${key}__`, "g");
     return current.replace(token, () => String(value));
   }, template);
+}
+
+const EMPTY_CATEGORY_THUMB_ROW =
+  "<p class=\"product-thumb-empty\">No products in this category yet.</p>";
+
+function buildProductThumbsHtml(productThumbTemplate, products) {
+  return products
+    .map((product) =>
+      applyTemplate(productThumbTemplate, {
+        PRODUCT_IMAGE: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
+        PRODUCT_IMAGE_URL: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
+        PRODUCT_TITLE: escapeHtml(product.title),
+      })
+    )
+    .join("");
 }
 
 async function generateCategoryHtml(categoryName) {
@@ -36,29 +43,15 @@ async function generateCategoryHtml(categoryName) {
         throw new Error(`Category not found: ${categoryName}`);
       }
 
-      const [productIconTemplate, categoryPreviewTemplate] = await Promise.all([
-        fetchText("./templates/partials/productIcon.html"),
-        fetchText("./templates/partials/categoryPreview.html"),
+      const [productThumbTemplate, productThumbRowTemplate, categoryPageTemplate] = await Promise.all([
+        fetchText("./templates/partials/productThumb.html"),
+        fetchText("./templates/partials/productThumbRow.html"),
+        fetchText("./templates/partials/categoryPage.html"),
       ]);
 
-      const productIconsHtml = target.products
-        .map((product) =>
-          applyTemplate(productIconTemplate, {
-            PRODUCT_IMAGE: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
-            PRODUCT_IMAGE_URL: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
-            PRODUCT_TITLE: escapeHtml(product.title),
-          })
-        )
-        .join("");
-
-      const slugPart = target.slug || "other";
-      const categoryLink = escapeHtml(`shop/${slugPart}`);
-      const categorySectionHtml = applyTemplate(categoryPreviewTemplate, {
-        CATEGORY_ID: escapeHtml(`shop-category-${slugPart}`),
-        CATEGORY_NAME: escapeHtml(target.name),
-        CATEGORY_TITLE: escapeHtml(target.name),
-        CATEGORY_LINK: categoryLink,
-        PRODUCT_ICONS: productIconsHtml || "<p class=\"product-icon-empty\">No products in this category yet.</p>",
+      const thumbsHtml = buildProductThumbsHtml(productThumbTemplate, target.products);
+      const rowHtml = applyTemplate(productThumbRowTemplate, {
+        PRODUCT_THUMBS: thumbsHtml || EMPTY_CATEGORY_THUMB_ROW,
       });
 
       const breadcrumbsHtml = `
@@ -69,14 +62,12 @@ async function generateCategoryHtml(categoryName) {
     </nav>
   `;
 
-      const bodyHtml = `
-    <section class="page-content">
-      ${breadcrumbsHtml}
-      <h1>${escapeHtml(target.name)}</h1>
-      <p>All products in this category.</p>
-    </section>
-    ${categorySectionHtml}
-  `;
+      const bodyHtml = applyTemplate(categoryPageTemplate, {
+        BREADCRUMBS: breadcrumbsHtml,
+        CATEGORY_TITLE: escapeHtml(target.name),
+        CATEGORY_INTRO: escapeHtml("All products in this category."),
+        PRODUCT_THUMB_ROW: rowHtml,
+      });
 
       const shopNameEsc = escapeHtml(shopData?.shopName || "Shop");
       return {

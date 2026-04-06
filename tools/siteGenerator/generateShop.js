@@ -26,6 +26,20 @@ function categoryHref(category) {
   return `shop/${slugify(category)}`;
 }
 
+const EMPTY_THUMB_ROW = "<p class=\"product-thumb-empty\">No products in this category yet.</p>";
+
+function buildProductThumbsHtml(productThumbTemplate, products) {
+  return products
+    .map((product) =>
+      applyTemplate(productThumbTemplate, {
+        PRODUCT_IMAGE: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
+        PRODUCT_IMAGE_URL: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
+        PRODUCT_TITLE: escapeHtml(product.title),
+      })
+    )
+    .join("");
+}
+
 async function buildCategoryPreviewsHtml(products) {
   const categories = window.productData.getProductsByCategory(products);
   if (categories.length === 0) {
@@ -36,30 +50,26 @@ async function buildCategoryPreviewsHtml(products) {
   }
 
   const fetchText = window.generatePage.fetchText;
-  const [productIconTemplate, categoryPreviewTemplate] = await Promise.all([
-    fetchText("./templates/partials/productIcon.html"),
+  const [productThumbTemplate, productThumbRowTemplate, categoryPreviewTemplate] = await Promise.all([
+    fetchText("./templates/partials/productThumb.html"),
+    fetchText("./templates/partials/productThumbRow.html"),
     fetchText("./templates/partials/categoryPreview.html"),
   ]);
 
   const categorySections = categories
     .map((category) => {
-      const iconsHtml = category.products
-        .slice(0, 3)
-        .map((product) =>
-          applyTemplate(productIconTemplate, {
-            PRODUCT_IMAGE: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
-            PRODUCT_IMAGE_URL: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
-            PRODUCT_TITLE: escapeHtml(product.title),
-          })
-        )
-        .join("");
+      const slice = category.products.slice(0, 3);
+      const thumbsHtml = buildProductThumbsHtml(productThumbTemplate, slice);
+      const rowHtml = applyTemplate(productThumbRowTemplate, {
+        PRODUCT_THUMBS: thumbsHtml || EMPTY_THUMB_ROW,
+      });
 
       return applyTemplate(categoryPreviewTemplate, {
         CATEGORY_ID: escapeHtml(`shop-category-${category.slug || "other"}`),
         CATEGORY_NAME: escapeHtml(category.name),
         CATEGORY_TITLE: escapeHtml(category.name),
-        PRODUCT_ICONS: iconsHtml || "<p class=\"product-icon-empty\">No products in this category yet.</p>",
         CATEGORY_LINK: escapeHtml(categoryHref(category.name)),
+        PRODUCT_THUMB_ROW: rowHtml,
       });
     })
     .join("");
