@@ -173,6 +173,56 @@ class ShoppingCart {
   }
 
   /**
+   * @param {unknown} sku
+   * @returns {number}
+   */
+  findLineIndex(sku) {
+    const key = String(sku ?? "").trim();
+    if (!key) {
+      return -1;
+    }
+    return this.data.items.findIndex((i) => String(i.sku).trim() === key);
+  }
+
+  /**
+   * @param {unknown} sku
+   * @returns {boolean}
+   */
+  removeLineItem(sku) {
+    const idx = this.findLineIndex(sku);
+    if (idx < 0) {
+      return false;
+    }
+    this.data.items.splice(idx, 1);
+    this.saveToLocalStorage();
+    return true;
+  }
+
+  /**
+   * Sets quantity for a line; values below 1 remove the line.
+   * @param {unknown} sku
+   * @param {unknown} quantity
+   * @returns {boolean} `false` if the line was not found or `quantity` is not a finite number.
+   */
+  setLineItemQuantity(sku, quantity) {
+    const idx = this.findLineIndex(sku);
+    if (idx < 0) {
+      return false;
+    }
+    let q = Number(quantity);
+    if (!Number.isFinite(q)) {
+      return false;
+    }
+    q = Math.floor(q);
+    if (q < 1) {
+      return this.removeLineItem(sku);
+    }
+    this.data.items[idx].quantity = q;
+    this.saveToLocalStorage();
+    return true;
+  }
+
+  /**
    * Serializes {@link ShoppingCart#data} to `localStorage`.
    */
   saveToLocalStorage() {

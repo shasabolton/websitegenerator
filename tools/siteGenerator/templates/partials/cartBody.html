@@ -1,17 +1,200 @@
-<section class="page-content cart-page">
-  <p>cart loading</p>
-  <p>
-    <button type="button" id="cart-alert-data-btn">Show cart data</button>
-  </p>
+<section class="page-content cart-page" id="cart-page-root">
+  <h1>Shopping cart</h1>
+  <p id="cart-page-empty" class="cart-page-empty">Your cart is empty.</p>
+  <div id="cart-lines-container" class="cart-lines-container" hidden></div>
+  <div id="cart-page-summary" class="cart-page-summary" hidden>
+    <p class="cart-subtotal-row">
+      Subtotal (<span id="cart-currency-label"></span>):
+      <strong id="cart-subtotal-amount"></strong>
+    </p>
+  </div>
   <script>
     (function () {
       var cart = window.siteCart;
-      var btn = document.getElementById("cart-alert-data-btn");
-      if (btn && cart) {
-        btn.addEventListener("click", function () {
-          cart.alertCurrentData();
-        });
+      var root = document.getElementById("cart-page-root");
+      var emptyEl = document.getElementById("cart-page-empty");
+      var linesEl = document.getElementById("cart-lines-container");
+      var summaryEl = document.getElementById("cart-page-summary");
+      var subtotalEl = document.getElementById("cart-subtotal-amount");
+      var currencyLabelEl = document.getElementById("cart-currency-label");
+      if (!cart || !root) {
+        return;
       }
+
+      function escHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function escAttr(s) {
+        return escHtml(s).replace(/`/g, "&#96;");
+      }
+
+      function formatMoney(amount, currency) {
+        var n = Number(amount);
+        if (!Number.isFinite(n)) {
+          n = 0;
+        }
+        return (currency ? currency + " " : "") + n.toFixed(2);
+      }
+
+      function lineSubtotal(line) {
+        var q = Number(line.quantity);
+        var p = Number(line.unitPrice);
+        if (!Number.isFinite(q)) q = 0;
+        if (!Number.isFinite(p)) p = 0;
+        return q * p;
+      }
+
+      function renderCartPage() {
+        var items = cart.data.items || [];
+        var currency = cart.data.currencyCode || "";
+        if (currencyLabelEl) {
+          currencyLabelEl.textContent = currency || "—";
+        }
+        if (items.length === 0) {
+          if (emptyEl) {
+            emptyEl.hidden = false;
+          }
+          if (linesEl) {
+            linesEl.hidden = true;
+            linesEl.innerHTML = "";
+          }
+          if (summaryEl) {
+            summaryEl.hidden = true;
+          }
+          return;
+        }
+        if (emptyEl) {
+          emptyEl.hidden = true;
+        }
+        if (linesEl) {
+          linesEl.hidden = false;
+        }
+        if (summaryEl) {
+          summaryEl.hidden = false;
+        }
+
+        var subtotal = 0;
+        var rowsHtml = items
+          .map(function (line) {
+            subtotal += lineSubtotal(line);
+            var sku = String(line.sku || "").trim();
+            var title = String(line.title || "Item").trim() || "Item";
+            var qty = Math.max(1, Math.floor(Number(line.quantity)) || 1);
+            var unit = Number(line.unitPrice);
+            if (!Number.isFinite(unit)) unit = 0;
+            var thumb = line.imageUrl ? String(line.imageUrl).trim() : "";
+            var lineTotal = lineSubtotal(line);
+            var thumbBlock = thumb
+              ? '<div class="cart-line-thumb"><img src="' +
+                escAttr(thumb) +
+                '" alt="" width="64" height="64" loading="lazy" decoding="async" /></div>'
+              : '<div class="cart-line-thumb cart-line-thumb--empty" aria-hidden="true"></div>';
+            return (
+              '<article class="cart-line" data-sku="' +
+              escAttr(sku) +
+              '">' +
+              thumbBlock +
+              '<div class="cart-line-main">' +
+              '<h3 class="cart-line-title">' +
+              escHtml(title) +
+              "</h3>" +
+              '<p class="cart-line-meta">SKU: ' +
+              escHtml(sku) +
+              "</p>" +
+              '<p class="cart-line-unit">' +
+              escHtml(formatMoney(unit, currency)) +
+              " each</p>" +
+              "</div>" +
+              '<div class="cart-line-qty" role="group" aria-label="Quantity for ' +
+              escAttr(title) +
+              '">' +
+              '<button type="button" class="cart-line-dec" aria-label="Decrease quantity">−</button>' +
+              '<label class="cart-line-qty-label"><span class="visually-hidden">Quantity</span>' +
+              '<input type="number" class="cart-line-qty-input" min="1" step="1" value="' +
+              escAttr(String(qty)) +
+              '" aria-label="Quantity" inputmode="numeric" />' +
+              "</label>" +
+              '<button type="button" class="cart-line-inc" aria-label="Increase quantity">+</button>' +
+              "</div>" +
+              '<p class="cart-line-total">' +
+              escHtml(formatMoney(lineTotal, currency)) +
+              "</p>" +
+              '<button type="button" class="cart-line-remove" aria-label="Remove ' +
+              escAttr(title) +
+              ' from cart">Remove</button>' +
+              "</article>"
+            );
+          })
+          .join("");
+        if (linesEl) {
+          linesEl.innerHTML = rowsHtml;
+        }
+        if (subtotalEl) {
+          subtotalEl.textContent = formatMoney(subtotal, currency);
+        }
+      }
+
+      root.addEventListener("click", function (e) {
+        var t = e.target;
+        if (!t || !t.closest) {
+          return;
+        }
+        var lineEl = t.closest(".cart-line");
+        if (!lineEl) {
+          return;
+        }
+        var sku = lineEl.getAttribute("data-sku");
+        if (!sku) {
+          return;
+        }
+        var item = (cart.data.items || []).find(function (i) {
+          return String(i.sku).trim() === sku;
+        });
+        var q = item ? Math.max(1, Math.floor(Number(item.quantity)) || 1) : 1;
+        if (t.closest(".cart-line-dec")) {
+          e.preventDefault();
+          cart.setLineItemQuantity(sku, q - 1);
+          renderCartPage();
+        } else if (t.closest(".cart-line-inc")) {
+          e.preventDefault();
+          cart.setLineItemQuantity(sku, q + 1);
+          renderCartPage();
+        } else if (t.closest(".cart-line-remove")) {
+          e.preventDefault();
+          cart.removeLineItem(sku);
+          renderCartPage();
+        }
+      });
+
+      root.addEventListener("change", function (e) {
+        var el = e.target;
+        if (!el || !el.classList || !el.classList.contains("cart-line-qty-input")) {
+          return;
+        }
+        var lineEl = el.closest(".cart-line");
+        if (!lineEl) {
+          return;
+        }
+        var sku = lineEl.getAttribute("data-sku");
+        if (!sku) {
+          return;
+        }
+        var v = parseInt(String(el.value), 10);
+        if (!Number.isFinite(v)) {
+          renderCartPage();
+          return;
+        }
+        cart.setLineItemQuantity(sku, v);
+        renderCartPage();
+      });
+
+      renderCartPage();
     })();
   </script>
 </section>
