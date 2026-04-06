@@ -83,6 +83,7 @@ async function mergeBodyIntoFullHtml(
     categoryNames,
   });
 
+  // Cart init only; ShoppingCart/productData stay loadable when `window` is reused (preview). Guards live inside those files.
   const shopNameJson = JSON.stringify(shopData?.shopName || "");
   const siteCartInitScript = wrapInlineScript(`window.siteCart = new ShoppingCart(${shopNameJson});`);
 

@@ -11,6 +11,10 @@
     <link rel="stylesheet" href="__SITE_CSS_PATH__" />
   </head>
   <body>
+    <!--
+      Global scripts below run in the same `window` as the siteGenerator preview shell after `document.write()`.
+      Each file must avoid redeclaring top-level const/let/class (use an IIFE + guard). New shared scripts: same pattern.
+    -->
     <script src="__PRODUCT_DATA_SCRIPT_PATH__"></script>
     <script src="__SHOPPING_CART_SCRIPT_PATH__"></script>
     __SITE_CART_INIT_SCRIPT__
