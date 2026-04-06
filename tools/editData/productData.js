@@ -3,7 +3,11 @@
     return;
   }
 
-  const PRODUCT_DATA_JSON_URL = "../../shared-assets/config/productData.json";
+function productDataJsonUrl() {
+  return document.querySelector("base[data-site-base]")
+    ? "shared-assets/config/productData.json"
+    : "../../shared-assets/config/productData.json";
+}
 
 function slugify(value) {
   return String(value)
@@ -14,9 +18,10 @@ function slugify(value) {
 }
 
 async function fetchProductDataJson() {
-  const response = await fetch(PRODUCT_DATA_JSON_URL, { cache: "no-store" });
+  const url = productDataJsonUrl();
+  const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
-    throw new Error(`Failed to load product data: ${PRODUCT_DATA_JSON_URL} (${response.status})`);
+    throw new Error(`Failed to load product data: ${url} (${response.status})`);
   }
   const data = await response.json();
   const products = Array.isArray(data?.products) ? data.products : [];

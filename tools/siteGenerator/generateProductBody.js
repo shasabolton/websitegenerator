@@ -49,7 +49,7 @@ function buildCarouselThumbsHtml(images, productTitleRaw) {
       const label = escapeHtml(`Show ${labelBase} image ${index + 1} of ${images.length}`);
       return `<li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb${active}" data-carousel-index="${index}" aria-label="${label}"${ariaCurrent}>
-    <img class="image-carousel-thumb-img" src="${safeUrl}" alt="" width="72" height="72" loading="lazy" decoding="async" />
+    <img class="image-carousel-thumb-img" src="${safeUrl}" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>`;
     })

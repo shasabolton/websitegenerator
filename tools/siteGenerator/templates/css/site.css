@@ -595,6 +595,7 @@ a:hover {
   height: 72px;
   object-fit: cover;
   display: block;
+  background: #f3f4f6;
 }
 
 @media (min-width: 768px) {

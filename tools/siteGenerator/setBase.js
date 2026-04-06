@@ -25,10 +25,4 @@
     }
   }
   baseEl.href = baseHref;
-
-  alert(
-    onGithubPages
-      ? `Base set to: ${baseHref} (GitHub Pages)`
-      : `Base left as: ${baseHref} (not github.io — no repo prefix)`
-  );
 })();
