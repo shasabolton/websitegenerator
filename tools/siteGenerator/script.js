@@ -20,8 +20,10 @@ function loadScript(src) {
 async function runPreviewBootFromUrl() {
   await loadScript("./generateHeaderAndFooter.js");
   await loadScript("./generateAnyPage.js");
+  await loadScript("./generateCartBody.js");
   await loadScript("./generateShopBody.js");
   await loadScript("./generateCategoryBody.js");
+  await loadScript("./generateProductBody.js");
   const target = window.previewTarget.parsePreviewTarget(window.location.search);
   if (!target?.path) {
     throw new Error("Preview boot: missing path in URL.");

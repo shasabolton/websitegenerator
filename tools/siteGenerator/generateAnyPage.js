@@ -1,6 +1,6 @@
 /**
  * Full page pipeline: shared fetches, `allPages.html` merge, header/footer.
- * Body markup comes from `generateShopBody` / `generateCategoryBody` (`{ bodyHtml, categoryNames, pageTitle }`).
+ * Body markup comes from `generateCartBody`, `generateShopBody`, `generateCategoryBody`, or `generateProductBody` (`{ bodyHtml, categoryNames, pageTitle }`).
  */
 
 async function fetchJson(url) {
@@ -71,15 +71,29 @@ async function mergeBodyIntoFullHtml(
   bodyPayload
 ) {
   const { bodyHtml, categoryNames, pageTitle } = bodyPayload;
-  const { headerHtml, footerHtml, faviconPath, siteCssPath } =
-    await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig, {
-      categoryNames,
-    });
+  const {
+    headerHtml,
+    footerHtml,
+    faviconPath,
+    siteCssPath,
+    siteJsPath,
+    productDataScriptPath,
+    shoppingCartScriptPath,
+  } = await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig, {
+    categoryNames,
+  });
+
+  const shopNameJson = JSON.stringify(shopData?.shopName || "");
+  const siteCartInitScript = wrapInlineScript(`window.siteCart = new ShoppingCart(${shopNameJson});`);
 
   return applyTemplate(pageTemplate, {
     PAGE_TITLE: pageTitle,
     FAVICON_PATH: faviconPath,
     SITE_CSS_PATH: siteCssPath,
+    SITE_JS_PATH: siteJsPath,
+    PRODUCT_DATA_SCRIPT_PATH: productDataScriptPath,
+    SHOPPING_CART_SCRIPT_PATH: shoppingCartScriptPath,
+    SITE_CART_INIT_SCRIPT: siteCartInitScript,
     SET_BASE_SCRIPT: wrapInlineScript(setBaseSource),
     HEADER: headerHtml,
     BODY_CONTENT: bodyHtml,
@@ -106,6 +120,22 @@ async function runGenerateAnyPage(treePath) {
   const products = Array.isArray(productData?.products) ? productData.products : [];
   const ctxBase = { shopData, navigationConfig, products };
 
+  if (path === "cart") {
+    const gen = window.generateCartBody?.buildCartBody;
+    if (typeof gen !== "function") {
+      throw new Error("generateCartBody.js must be loaded before preview.");
+    }
+    const bodyPayload = await gen(ctxBase);
+    html = await mergeBodyIntoFullHtml(
+      shopData,
+      navigationConfig,
+      pageTemplate,
+      setBaseSource,
+      bodyPayload
+    );
+    return html;
+  }
+
   if (path === "shop") {
     const gen = window.generateShopBody?.generateShopBody;
     if (typeof gen !== "function") {
@@ -123,24 +153,47 @@ async function runGenerateAnyPage(treePath) {
   }
 
   if (path.startsWith("shop/")) {
-    const slug = path.slice("shop/".length);
-    if (!slug) {
-      throw new Error('Invalid path: expected "shop/<category-slug>".');
+    const rest = path.slice("shop/".length);
+    if (!rest) {
+      throw new Error('Invalid path: expected "shop/<category-slug>" or "shop/<category-slug>/<product-slug>".');
     }
-    const categoryName = resolveCategoryNameFromSlug(slug, products);
-    const gen = window.generateCategoryBody?.generateCategoryBody;
-    if (typeof gen !== "function") {
-      throw new Error("generateCategoryBody.js must be loaded before preview.");
+    const segments = rest.split("/").filter(Boolean);
+    if (segments.length === 1) {
+      const categoryName = resolveCategoryNameFromSlug(segments[0], products);
+      const gen = window.generateCategoryBody?.generateCategoryBody;
+      if (typeof gen !== "function") {
+        throw new Error("generateCategoryBody.js must be loaded before preview.");
+      }
+      const bodyPayload = await gen({ ...ctxBase, categoryName });
+      html = await mergeBodyIntoFullHtml(
+        shopData,
+        navigationConfig,
+        pageTemplate,
+        setBaseSource,
+        bodyPayload
+      );
+      return html;
     }
-    const bodyPayload = await gen({ ...ctxBase, categoryName });
-    html = await mergeBodyIntoFullHtml(
-      shopData,
-      navigationConfig,
-      pageTemplate,
-      setBaseSource,
-      bodyPayload
-    );
-    return html;
+    if (segments.length === 2) {
+      const gen = window.generateProductBody?.generateProductBody;
+      if (typeof gen !== "function") {
+        throw new Error("generateProductBody.js must be loaded before preview.");
+      }
+      const bodyPayload = await gen({
+        ...ctxBase,
+        categorySlug: segments[0],
+        productSlug: segments[1],
+      });
+      html = await mergeBodyIntoFullHtml(
+        shopData,
+        navigationConfig,
+        pageTemplate,
+        setBaseSource,
+        bodyPayload
+      );
+      return html;
+    }
+    throw new Error(`Invalid shop path (too many segments): ${treePath}`);
   }
 
   throw new Error(`No preview generator for path: ${treePath}`);

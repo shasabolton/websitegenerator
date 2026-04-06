@@ -255,6 +255,141 @@ a:hover {
   color: #111827;
 }
 
+.product-body-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 0;
+}
+
+.product-add-to-cart-btn {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px 18px;
+  color: #fff;
+  background: #1d4ed8;
+  border: none;
+  border-radius: 8px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.product-add-to-cart-btn:hover:not(:disabled) {
+  background: #1e40af;
+}
+
+.product-add-to-cart-btn:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.product-add-to-cart-btn:disabled {
+  cursor: wait;
+  opacity: 0.85;
+}
+
+.product-add-to-cart-btn.is-added {
+  background: #047857;
+}
+
+.product-add-to-cart-feedback {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #047857;
+  letter-spacing: 0.01em;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+  pointer-events: none;
+}
+
+.product-add-to-cart-feedback.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.product-page .product-body-description {
+  margin-top: 18px;
+  line-height: 1.65;
+  color: #374151;
+  white-space: pre-wrap;
+}
+
+.image-carousel {
+  margin: 14px 0 0;
+  max-width: 640px;
+}
+
+.image-carousel-stage {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 200px;
+}
+
+.image-carousel-slide {
+  display: none;
+  margin: 0;
+}
+
+.image-carousel-slide.is-active {
+  display: block;
+}
+
+.image-carousel-slide-img {
+  width: 100%;
+  height: auto;
+  max-height: min(72vh, 560px);
+  object-fit: contain;
+  display: block;
+  background: #f9fafb;
+}
+
+.image-carousel-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.image-carousel-thumb {
+  display: block;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #fff;
+  line-height: 0;
+}
+
+.image-carousel-thumb:hover {
+  border-color: #93c5fd;
+}
+
+.image-carousel-thumb:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.image-carousel-thumb.is-active {
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 1px #1d4ed8;
+}
+
+.image-carousel-thumb-img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  display: block;
+}
+
 @media (min-width: 768px) {
   .site-main {
     --site-inline-padding: 20px;

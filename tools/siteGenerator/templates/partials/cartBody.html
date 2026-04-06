@@ -1,0 +1,17 @@
+<section class="page-content cart-page">
+  <p>cart loading</p>
+  <p>
+    <button type="button" id="cart-alert-data-btn">Show cart data</button>
+  </p>
+  <script>
+    (function () {
+      var cart = window.siteCart;
+      var btn = document.getElementById("cart-alert-data-btn");
+      if (btn && cart) {
+        btn.addEventListener("click", function () {
+          cart.alertCurrentData();
+        });
+      }
+    })();
+  </script>
+</section>

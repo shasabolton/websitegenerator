@@ -123,6 +123,18 @@ function buildSiteCssPath() {
   return "tools/siteGenerator/templates/css/site.css";
 }
 
+function buildSiteJsPath() {
+  return "tools/siteGenerator/templates/js/image-carousel.js";
+}
+
+function buildProductDataScriptPath() {
+  return "tools/editData/productData.js";
+}
+
+function buildShoppingCartScriptPath() {
+  return "shared-assets/script/shoppingCart.js";
+}
+
 async function generateHeaderAndFooter(shopData, navigationConfig, options = {}) {
   const [headerTemplate, footerTemplate] = await Promise.all([
     fetchTemplate("./templates/partials/header.html"),
@@ -134,6 +146,9 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
   const shopName = escapeHtml(shopData?.shopName || "Shop");
   const faviconPath = escapeHtml(buildFaviconPath(shopData));
   const siteCssPath = escapeHtml(buildSiteCssPath());
+  const siteJsPath = escapeHtml(buildSiteJsPath());
+  const productDataScriptPath = escapeHtml(buildProductDataScriptPath());
+  const shoppingCartScriptPath = escapeHtml(buildShoppingCartScriptPath());
 
   const headerHtml = applyTemplate(headerTemplate, {
     SHOP_NAME: shopName,
@@ -154,6 +169,9 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
     shopName,
     faviconPath,
     siteCssPath,
+    siteJsPath,
+    productDataScriptPath,
+    shoppingCartScriptPath,
   };
 }
 
@@ -161,5 +179,8 @@ window.generateHeaderAndFooter = {
   escapeHtml,
   slugify,
   buildShopCategoryHref,
+  buildSiteJsPath,
+  buildProductDataScriptPath,
+  buildShoppingCartScriptPath,
   generateHeaderAndFooter,
 };

@@ -60,6 +60,19 @@ async function buildPopulatedFileTree() {
 function renderNodeAsDropdown(container, node) {
   const labelLower = String(node?.label || "").trim().toLowerCase();
 
+  if (labelLower === "cart") {
+    const row = document.createElement("div");
+    row.className = "preview-picker-row";
+    const cartLink = document.createElement("a");
+    const treeHref = String(node.href || "cart").trim();
+    cartLink.href = window.previewTarget.buildPreviewUrl(treeHref);
+    cartLink.className = "preview-picker-page-link";
+    cartLink.textContent = node.label || "Cart";
+    row.appendChild(cartLink);
+    container.appendChild(row);
+    return;
+  }
+
   if (labelLower === "shop") {
     const details = document.createElement("details");
     details.className = "preview-picker-dropdown";
@@ -99,10 +112,18 @@ function renderNodeAsDropdown(container, node) {
     row.appendChild(pageLink);
     container.appendChild(row);
     (node.children || []).forEach((product) => {
-      const meta = document.createElement("div");
-      meta.className = "preview-picker-muted preview-picker-nested";
-      meta.textContent = product.label || "";
-      container.appendChild(meta);
+      const productRow = document.createElement("div");
+      productRow.className = "preview-picker-row preview-picker-nested";
+      const productLink = document.createElement("a");
+      const productHref = String(product.href || "").trim();
+      if (!productHref) {
+        throw new Error("Product node missing href for preview link.");
+      }
+      productLink.href = window.previewTarget.buildPreviewUrl(productHref);
+      productLink.className = "preview-picker-page-link";
+      productLink.textContent = product.label || "Product";
+      productRow.appendChild(productLink);
+      container.appendChild(productRow);
     });
     return;
   }

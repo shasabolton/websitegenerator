@@ -1,0 +1,61 @@
+<section class="page-content product-page">
+  __BREADCRUMBS__
+  <h1>__PRODUCT_TITLE__</h1>
+  <p class="product-body-actions">
+    <button type="button" class="product-add-to-cart-btn" id="product-add-to-cart-btn">Add to cart</button>
+    <span
+      id="product-add-to-cart-feedback"
+      class="product-add-to-cart-feedback"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></span>
+  </p>
+  __PRODUCT_CAROUSEL__
+  <div class="product-body-description">__PRODUCT_DESCRIPTION__</div>
+  <script>
+    (function () {
+      var cart = window.siteCart;
+      var sku = __PRODUCT_SKU_JSON__;
+      var btn = document.getElementById("product-add-to-cart-btn");
+      var feedback = document.getElementById("product-add-to-cart-feedback");
+      var resetTimer;
+      if (btn && cart) {
+        btn.addEventListener("click", function () {
+          btn.disabled = true;
+          cart
+            .addToCartFromSku(sku, 1)
+            .then(function (ok) {
+              if (!ok) {
+                window.alert("Could not add to cart.");
+                return;
+              }
+              if (resetTimer) {
+                window.clearTimeout(resetTimer);
+              }
+              btn.classList.add("is-added");
+              btn.textContent = "Added";
+              if (feedback) {
+                feedback.textContent = "Added to your cart.";
+                feedback.classList.add("is-visible");
+              }
+              resetTimer = window.setTimeout(function () {
+                btn.classList.remove("is-added");
+                btn.textContent = "Add to cart";
+                if (feedback) {
+                  feedback.textContent = "";
+                  feedback.classList.remove("is-visible");
+                }
+              }, 2800);
+            })
+            .catch(function () {
+              window.alert("Could not add to cart.");
+            })
+            .finally(function () {
+              btn.disabled = false;
+            });
+        });
+      }
+    })();
+  </script>
+</section>
