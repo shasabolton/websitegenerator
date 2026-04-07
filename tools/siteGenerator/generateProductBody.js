@@ -7,6 +7,30 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+/**
+ * @param {object} row - Product row from productData (expects PRICE, CURRENCY_CODE).
+ * @returns {string} HTML-safe formatted price, or empty string when not displayable.
+ */
+function formatProductPriceDisplay(row) {
+  const currency = String(row.CURRENCY_CODE || "")
+    .trim()
+    .toUpperCase();
+  const priceNum = parseFloat(String(row.PRICE ?? "").trim());
+  if (!Number.isFinite(priceNum) || priceNum < 0) {
+    return "";
+  }
+  if (!/^[A-Z]{3}$/.test(currency)) {
+    return escapeHtml(`${String(row.PRICE ?? "").trim()} ${currency}`.trim());
+  }
+  try {
+    return escapeHtml(
+      new Intl.NumberFormat(undefined, { style: "currency", currency }).format(priceNum),
+    );
+  } catch {
+    return escapeHtml(`${currency} ${priceNum}`);
+  }
+}
+
 function applyTemplate(template, values) {
   return Object.entries(values).reduce((current, [key, value]) => {
     const token = new RegExp(`__${key}__`, "g");
@@ -120,9 +144,11 @@ async function generateProductBody(ctx) {
   `;
 
   const skuJson = JSON.stringify(String(row.SKU || "").trim());
+  const productPriceDisplay = formatProductPriceDisplay(row);
   const bodyHtml = applyTemplate(productBodyTemplate, {
     BREADCRUMBS: breadcrumbsHtml,
     PRODUCT_TITLE: titleEsc,
+    PRODUCT_PRICE: productPriceDisplay,
     PRODUCT_DESCRIPTION: escapeHtml(description),
     PRODUCT_CAROUSEL: carouselHtml,
     PRODUCT_SKU_JSON: skuJson,

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "notes": "Match PayPal JS SDK onShippingChange: data.shipping_address.country_code is ISO 3166-1 alpha-2 (e.g. AU, NZ, US). weight is tier ceiling in grams; pick smallest tier where cart weight <= weight.",
+  "currency": "AUD",
+  "rates": [
+    {
+      "countryCodes": ["AU"],
+      "rates": [
+        { "weight": 250, "price": 10 },
+        { "weight": 500, "price": 15 },
+        { "weight": 1000, "price": 20 },
+        { "weight": 2000, "price": 25 }
+      ]
+    },
+    {
+      "countryCodes": ["NZ"],
+      "rates": [
+        { "weight": 250, "price": 15 },
+        { "weight": 500, "price": 20 },
+        { "weight": 1000, "price": 25 },
+        { "weight": 2000, "price": 30 }
+      ]
+    },
+    {
+      "default": true,
+      "rates": [
+        { "weight": 250, "price": 25 },
+        { "weight": 500, "price": 30 },
+        { "weight": 1000, "price": 40 },
+        { "weight": 2000, "price": 50 }
+      ]
+    }
+  ]
+}

@@ -4,9 +4,12 @@
  * @property {string} title
  * @property {number} quantity
  * @property {number} unitPrice
+ * @property {number} [unitWeightKg] - Mass per unit in kilograms (from product WEIGHT_KG).
  * @property {string} [imageUrl]
  * @property {string} [productPath]
  */
+
+const DEFAULT_UNIT_WEIGHT_KG = 0.25;
 
 (function initShoppingCart() {
   if (window.ShoppingCart && typeof window.skuToLineItem === "function") {
@@ -36,8 +39,12 @@ function normalizeCartLineInput(raw) {
   if (!Number.isFinite(unitPrice) || unitPrice < 0) {
     unitPrice = 0;
   }
+  let unitWeightKg = Number(o.unitWeightKg);
+  if (!Number.isFinite(unitWeightKg) || unitWeightKg < 0) {
+    unitWeightKg = DEFAULT_UNIT_WEIGHT_KG;
+  }
   /** @type {CartLineItem} */
-  const line = { sku, title, quantity, unitPrice };
+  const line = { sku, title, quantity, unitPrice, unitWeightKg };
   const imageUrl = o.imageUrl != null ? String(o.imageUrl).trim() : "";
   if (imageUrl) {
     line.imageUrl = imageUrl;
@@ -66,12 +73,16 @@ function skuToLineItem(sku, products) {
   }
   const priceRaw = parseFloat(String(row.PRICE ?? "0"));
   const unitPrice = Number.isFinite(priceRaw) && priceRaw >= 0 ? priceRaw : 0;
+  const weightRaw = parseFloat(String(row.WEIGHT_KG ?? ""));
+  const unitWeightKg =
+    Number.isFinite(weightRaw) && weightRaw >= 0 ? weightRaw : DEFAULT_UNIT_WEIGHT_KG;
   /** @type {CartLineItem} */
   const line = {
     sku: skuKey,
     title: String(row.TITLE || "").trim() || "Item",
     quantity: 1,
     unitPrice,
+    unitWeightKg,
   };
   const img = String(row.IMAGE1 || "").trim();
   if (img) {
@@ -118,6 +129,26 @@ class ShoppingCart {
   }
 
   /**
+   * @returns {number} Total cart mass in kilograms (sum of quantity × unitWeightKg per line).
+   */
+  getTotalWeightKg() {
+    let total = 0;
+    for (const item of this.data.items) {
+      let w = Number(item.unitWeightKg);
+      if (!Number.isFinite(w) || w < 0) {
+        w = DEFAULT_UNIT_WEIGHT_KG;
+      }
+      let q = Number(item.quantity);
+      if (!Number.isFinite(q) || q < 1) {
+        q = 1;
+      }
+      q = Math.floor(q);
+      total += w * q;
+    }
+    return total;
+  }
+
+  /**
    * Adds a line or merges quantity into an existing line with the same `sku`, then {@link ShoppingCart#saveToLocalStorage}.
    * @param {unknown} cartLineItem
    * @returns {boolean} `false` when `sku` is missing or invalid.
@@ -139,6 +170,7 @@ class ShoppingCart {
         existing.title = line.title;
       }
       existing.unitPrice = line.unitPrice;
+      existing.unitWeightKg = line.unitWeightKg;
       if (line.imageUrl && !existing.imageUrl) {
         existing.imageUrl = line.imageUrl;
       }

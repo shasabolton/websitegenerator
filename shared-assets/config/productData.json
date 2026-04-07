@@ -6,6 +6,7 @@
     "PRICE",
     "CURRENCY_CODE",
     "QUANTITY",
+    "WEIGHT_KG",
     "TAGS",
     "MATERIALS",
     "IMAGE1",
@@ -53,7 +54,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "1",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Mini Cryptex Puzzle Box Laser Cut Files, SVG DXF PDF, Spell and Spin learning toy",
@@ -80,7 +82,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "2",
-      "CATEGORY": "puzzle boxes"
+      "CATEGORY": "puzzle boxes",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Slide Picture Puzzle Box Kit Davinci's Vitruvian man",
@@ -107,7 +110,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "4",
-      "CATEGORY": "puzzle boxes"
+      "CATEGORY": "puzzle boxes",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Mouse Maze Puzzle Box, wooden mystery Box",
@@ -134,7 +138,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "3",
-      "CATEGORY": "puzzle boxes"
+      "CATEGORY": "puzzle boxes",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Mechanical Calculator, Math and Science Toy, Wooden Mechanism, Model Engineering Kit",
@@ -161,7 +166,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "5",
-      "CATEGORY": "toys and games"
+      "CATEGORY": "toys and games",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Woodchopper whirligig plans, laser cut files, scroll saw, svg dxf pdf",
@@ -188,7 +194,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "6",
-      "CATEGORY": "other"
+      "CATEGORY": "other",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Cam Box laser cutter plans svg dxf",
@@ -215,7 +222,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "7",
-      "CATEGORY": "other"
+      "CATEGORY": "other",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Hummingbird and Flower Automaton Laser Cut plans SVG DXF",
@@ -242,7 +250,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "8",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Magic Empty Box Laser Cutter Files SVG DXF",
@@ -269,7 +278,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "10",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Magic Pencil Box Laser Cutter Plans SVG DXF PDF",
@@ -296,7 +306,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "9",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Magic Drawer Box, Lasercut Files SVG DXF PDF, Wooden Production Box Illusion",
@@ -323,7 +334,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "11",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Musical Marble Tree Scroll Saw or Laser Cutter Plans PDF - SVG - DXF",
@@ -350,7 +362,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "12",
-      "CATEGORY": "toys and games"
+      "CATEGORY": "toys and games",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Fisherman whirligig plans - SVG DXF PDF - laser cutting - scroll saw",
@@ -377,7 +390,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "13",
-      "CATEGORY": "other"
+      "CATEGORY": "other",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Dog and Cat Running Automata Laser Cutting plans svg dxf",
@@ -404,7 +418,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "14",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Tortoise  Automata Kit - Wooden mechanical keepsake box",
@@ -431,7 +446,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "15",
-      "CATEGORY": "puzzle boxes"
+      "CATEGORY": "puzzle boxes",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Coke Can Magic Trick Box: Self-Working Illusion, DIY or Assembled",
@@ -458,7 +474,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "16",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Plans for Wooden Hummingbird pole pet automata SVG DXF PDF",
@@ -485,7 +502,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "17",
-      "CATEGORY": "toys and games"
+      "CATEGORY": "toys and games",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Mechanical Calculator Laser Cut Files SVG, DXF, Math Toy, Wooden Mechanism",
@@ -512,7 +530,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "18",
-      "CATEGORY": "toys and games"
+      "CATEGORY": "toys and games",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Wind Powered Bird Whirligig Kit, Birch Plywood Fantail, Kinetic sculpture",
@@ -539,7 +558,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "19",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Hummingbird and Flower Automaton, Hand Cranked Mechanism",
@@ -566,7 +586,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "20",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Magic Drawer Illusion Box – Vanish or Appear Objects Trick",
@@ -593,7 +614,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "21",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Wooden Hummingbird pole pet automata",
@@ -620,7 +642,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "22",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Dog Whirligig, Kinetic Wind Powered Garden Sculpture, DIY Kit or Fully Assembled",
@@ -647,7 +670,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "23",
-      "CATEGORY": "other"
+      "CATEGORY": "other",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Bird Whirligig Plans DXF SVG Laser cut or Scroll saw",
@@ -674,7 +698,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "24",
-      "CATEGORY": "other"
+      "CATEGORY": "other",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Magic Frame Illusion-Appearing Image and words-customizable",
@@ -701,7 +726,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "25",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Slide Picture Puzzle Box Plans SVG DXF PDF Davinci's Vitruvian man",
@@ -728,7 +754,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "27",
-      "CATEGORY": "puzzle boxes"
+      "CATEGORY": "puzzle boxes",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Illusionist Pendant Puzzle Box Laser Cut Files",
@@ -755,7 +782,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "26",
-      "CATEGORY": "puzzle boxes"
+      "CATEGORY": "puzzle boxes",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Dice Tunnel Magic Trick Laser Cut Illusion DIY Kit",
@@ -782,7 +810,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "28",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Bird Zoetrope Kit, 3D Laser Cut Wooden Puzzle, Animation Machine",
@@ -809,7 +838,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "29",
-      "CATEGORY": "puzzle boxes"
+      "CATEGORY": "puzzle boxes",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Bird 3D Zoetrope laser cutter plans - SVG DXF",
@@ -836,7 +866,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "30",
-      "CATEGORY": "other"
+      "CATEGORY": "other",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Dog and Cat Running Automata kit",
@@ -863,7 +894,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "31",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Writing automaton plans scroll saw/laser cutter - Lanky Doodler  Mechanical Model SVG,DXF,PDF",
@@ -890,7 +922,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "32",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "DIY Swinging Monkey Automata Kit - Fun Craft Project for Kids and Adults",
@@ -917,7 +950,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "33",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Mouse Maze Puzzle Box Plans- SVG DXF PDF- Laser cutting files - scroll saw",
@@ -944,7 +978,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "34",
-      "CATEGORY": "puzzle boxes"
+      "CATEGORY": "puzzle boxes",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Magic Frame-lasercut Files-Appearing Image and words-customizable-svg dxf pdf",
@@ -971,7 +1006,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "36",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Dice Tunnel Magic Trick Laser Cut Files for Download - SVG - DXF - PDF - Illusion",
@@ -998,7 +1034,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "35",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Illusionist Pendant Puzzle Box Laser Cut DIY Kit",
@@ -1025,7 +1062,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "37",
-      "CATEGORY": "puzzle boxes"
+      "CATEGORY": "puzzle boxes",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Key Through Coin Magic Trick: Laser Cut Plans (SVG, PDF, DXF)",
@@ -1052,7 +1090,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "38",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Magic Trick Pencil Box Kit: Wooden 3D Puzzle, STEM Toy",
@@ -1079,7 +1118,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "39",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Whirligig Hardware Kit: Stainless Steel & Brass Parts",
@@ -1106,7 +1146,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "40",
-      "CATEGORY": "other"
+      "CATEGORY": "other",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Whale Automata Toy Kit: Mechanical Pet, DIY Build",
@@ -1133,7 +1174,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "41",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Gorilla Pulley Pet Automata Plans SVG DXF-Laser cut mechanical toy",
@@ -1160,7 +1202,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "42",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Magic Empty Box Illusion - DIY Magic Trick - Make anything appear and disappear",
@@ -1187,7 +1230,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "43",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Newcomb's Paradox Magic Trick Laser Cut Files, SVG DXF PDF, Coin Illusion with Secret Mechanism, Mental Magic",
@@ -1214,7 +1258,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "44",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Chicken And Egg Box Magic Trick laser cut files, svg dxf pdf, gozinta box",
@@ -1241,7 +1286,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "45",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Mini Cryptex Puzzle Box – Word Lock Secret Drawer, Spelling Learning Toy",
@@ -1268,7 +1314,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "46",
-      "CATEGORY": "puzzle boxes"
+      "CATEGORY": "puzzle boxes",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Chicken And Egg Box Magic Trick, gozinta box, Impossible boxes, Each fits inside the other",
@@ -1295,7 +1342,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "47",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Woodchopper Whirligig Kit",
@@ -1322,7 +1370,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "48",
-      "CATEGORY": "other"
+      "CATEGORY": "other",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Fisherman whirligig  Kit, Wind Powered Kinetic Garden Sculpture",
@@ -1349,7 +1398,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "49",
-      "CATEGORY": "other"
+      "CATEGORY": "other",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Surfer Whirligig Kit",
@@ -1376,7 +1426,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "50",
-      "CATEGORY": "other"
+      "CATEGORY": "other",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Surfer Whirligig Plans - SVG - PDF - laser cutting - scroll saw",
@@ -1403,7 +1454,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "51",
-      "CATEGORY": "other"
+      "CATEGORY": "other",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Moving Head Illusion Robot Laser cut files svg dxf pdf",
@@ -1430,7 +1482,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "52",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Fluttering Heart Automaton SVG DXF PDF laser cutter files",
@@ -1457,7 +1510,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "53",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Electric Origami Hummingbird Plans - Paper Automata template",
@@ -1484,7 +1538,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "54",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Chocolate Train Counting Squares: Educational Math Toy SVG DXF (Digital Download)",
@@ -1511,7 +1566,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "55",
-      "CATEGORY": "toys and games"
+      "CATEGORY": "toys and games",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Writing and Drawing automaton, Laser  Cut Mechanical Model, Science Kit",
@@ -1538,7 +1594,8 @@
       "VARIATION 2 NAME": "Assembly",
       "VARIATION 2 VALUES": "Unassembled Kit,Assembled",
       "SKU": "56",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Swinging Monkey Automata Laser Cutting plans svg dxf",
@@ -1565,7 +1622,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "57",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Automata kit Bird Money Bank - Gear Box Pets",
@@ -1592,7 +1650,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "58",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Sword Through Finger Magic Trick, laser cut illusion puzzle, wooden DIY kit",
@@ -1619,7 +1678,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "60",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Climbing Gorilla Pulley Toy Kit: Pet Automata Mechanism",
@@ -1646,7 +1706,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "59",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Goldfish Automata Kit - Wooden Mechanical Fish",
@@ -1673,7 +1734,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "61",
-      "CATEGORY": "puzzle boxes"
+      "CATEGORY": "puzzle boxes",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Toddler Ride On Dog Toy Plans: Sweeping Car, DXF SVG PDF",
@@ -1700,7 +1762,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "62",
-      "CATEGORY": "toys and games"
+      "CATEGORY": "toys and games",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Mini Arcade Driving Game: Wind-Up Music Box, Laser Cut Wood Kit",
@@ -1727,7 +1790,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "63",
-      "CATEGORY": "toys and games"
+      "CATEGORY": "toys and games",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Fluttering Heart Automata Kit - Kinetic mechanical model - Valentines Gift",
@@ -1754,7 +1818,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "64",
-      "CATEGORY": "automata"
+      "CATEGORY": "automata",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Wooden Ride On Car Street Sweeper, Wheely Dog for Toddlers, Pug Toy for Babies",
@@ -1781,7 +1846,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "65",
-      "CATEGORY": "toys and games"
+      "CATEGORY": "toys and games",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Musical Marble Tree Laser Cut Kit",
@@ -1808,7 +1874,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "66",
-      "CATEGORY": "toys and games"
+      "CATEGORY": "toys and games",
+      "WEIGHT_KG": "0.25"
     },
     {
       "TITLE": "Newcomb's Paradox Magic Trick: Coin Illusion with Secret Mechanism, Mental Magic",
@@ -1835,7 +1902,8 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "67",
-      "CATEGORY": "magic tricks"
+      "CATEGORY": "magic tricks",
+      "WEIGHT_KG": "0.25"
     }
   ]
 }

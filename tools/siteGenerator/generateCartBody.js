@@ -13,12 +13,17 @@ function escapeHtml(value) {
  */
 async function buildCartBody(ctx) {
   const fetchText = window.generateAnyPage.fetchText;
+  const applyTemplate = window.generateAnyPage.applyTemplate;
   const { shopData, products } = ctx;
   const cartTemplate = await fetchText("./templates/partials/cartBody.html");
   const categories = window.productData.getProductsByCategory(products);
   const shopNameEsc = escapeHtml(shopData?.shopName || "Shop");
+  const paypalClientId = String(shopData?.paypal?.clientId ?? "").trim();
+  const bodyHtml = applyTemplate(cartTemplate, {
+    PAYPAL_CLIENT_ID_JSON: JSON.stringify(paypalClientId),
+  });
   return {
-    bodyHtml: cartTemplate,
+    bodyHtml,
     categoryNames: categories.map((c) => c.name),
     pageTitle: `${shopNameEsc} - Cart`,
   };

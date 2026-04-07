@@ -14,6 +14,9 @@
     "etsy": "https://contraptioncart.etsy.com",
     "newsletterSignup": "https://www.contraptioncart.com/news-letter-sign-up"
   },
+  "paypal": {
+    "clientId": "Adg6IasG1Q7-JOHkkke2xaHQqgwf6edUaOjiM2lboWOftGPMQS5UpNRqVUbgoyLEJoz0-SS61QaMADpp"
+  },
   "branding": {
     "faviconPath": "shared-assets/images/branding/favicon.jpg"
   },

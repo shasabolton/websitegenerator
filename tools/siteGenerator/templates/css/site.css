@@ -255,6 +255,17 @@ a:hover {
   color: #111827;
 }
 
+.product-body-price {
+  margin: 8px 0 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.product-body-price:empty {
+  display: none;
+}
+
 .product-body-actions {
   display: flex;
   flex-wrap: wrap;
@@ -499,6 +510,38 @@ a:hover {
 
 .cart-subtotal-row strong {
   color: #111827;
+}
+
+.cart-total-weight-row {
+  margin: 10px 0 0;
+  font-size: 1.05rem;
+  color: #374151;
+}
+
+.cart-total-weight-row strong {
+  color: #111827;
+}
+
+.cart-paypal-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.cart-paypal-heading {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+.cart-paypal-hint {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.paypal-button-container {
+  max-width: 400px;
 }
 
 @media (max-width: 640px) {

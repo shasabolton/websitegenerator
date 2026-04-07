@@ -7,9 +7,19 @@
       Subtotal (<span id="cart-currency-label"></span>):
       <strong id="cart-subtotal-amount"></strong>
     </p>
+    <p class="cart-total-weight-row">
+      Total weight:
+      <strong id="cart-total-weight-amount"></strong>
+    </p>
+    <div id="cart-paypal-section" class="cart-paypal-section" hidden>
+      <h2 class="cart-paypal-heading">Checkout with PayPal</h2>
+      <p class="cart-paypal-hint">Pay with your PayPal balance or card (where available).</p>
+      <div id="paypal-button-container" class="paypal-button-container"></div>
+    </div>
   </div>
   <script>
     (function () {
+      var paypalClientId = __PAYPAL_CLIENT_ID_JSON__;
       var cart = window.siteCart;
       var root = document.getElementById("cart-page-root");
       var emptyEl = document.getElementById("cart-page-empty");
@@ -17,6 +27,14 @@
       var summaryEl = document.getElementById("cart-page-summary");
       var subtotalEl = document.getElementById("cart-subtotal-amount");
       var currencyLabelEl = document.getElementById("cart-currency-label");
+      var totalWeightEl = document.getElementById("cart-total-weight-amount");
+      var paypalSectionEl = document.getElementById("cart-paypal-section");
+      var paypalContainerEl = document.getElementById("paypal-button-container");
+      var paypalButtonsInstance = null;
+      var paypalMounted = false;
+      var paypalMountInProgress = false;
+      var paypalSdkLoading = false;
+
       if (!cart || !root) {
         return;
       }
@@ -50,6 +68,142 @@
         return q * p;
       }
 
+      function formatTotalWeightKg(kg) {
+        var n = Number(kg);
+        if (!Number.isFinite(n) || n < 0) {
+          n = 0;
+        }
+        return n.toFixed(2) + " kg";
+      }
+
+      function cartSubtotal() {
+        var items = cart.data.items || [];
+        var sum = 0;
+        for (var i = 0; i < items.length; i++) {
+          sum += lineSubtotal(items[i]);
+        }
+        return sum;
+      }
+
+      function destroyPayPalButtons() {
+        if (paypalButtonsInstance && typeof paypalButtonsInstance.close === "function") {
+          try {
+            paypalButtonsInstance.close();
+          } catch (e) {}
+        }
+        paypalButtonsInstance = null;
+        if (paypalContainerEl) {
+          paypalContainerEl.innerHTML = "";
+        }
+      }
+
+      function loadPayPalSdk(clientId, currency, done) {
+        if (window.paypal) {
+          done();
+          return;
+        }
+        if (paypalSdkLoading) {
+          var tries = 0;
+          var t = window.setInterval(function () {
+            tries += 1;
+            if (window.paypal) {
+              window.clearInterval(t);
+              done();
+            } else if (tries > 200) {
+              window.clearInterval(t);
+              done();
+            }
+          }, 50);
+          return;
+        }
+        paypalSdkLoading = true;
+        var script = document.createElement("script");
+        script.src =
+          "https://www.paypal.com/sdk/js?client-id=" +
+          encodeURIComponent(clientId) +
+          "&currency=" +
+          encodeURIComponent(currency) +
+          "&intent=capture";
+        script.onload = function () {
+          paypalSdkLoading = false;
+          done();
+        };
+        script.onerror = function () {
+          paypalSdkLoading = false;
+          done();
+        };
+        document.head.appendChild(script);
+      }
+
+      function ensurePayPalButtons() {
+        if (!paypalClientId || !paypalSectionEl || !paypalContainerEl) {
+          return;
+        }
+        var items = cart.data.items || [];
+        if (items.length === 0) {
+          destroyPayPalButtons();
+          paypalMounted = false;
+          paypalMountInProgress = false;
+          paypalSectionEl.hidden = true;
+          return;
+        }
+        paypalSectionEl.hidden = false;
+        if (paypalMounted || paypalMountInProgress) {
+          return;
+        }
+        paypalMountInProgress = true;
+        var currency = (cart.data.currencyCode || "AUD").trim() || "AUD";
+        loadPayPalSdk(paypalClientId, currency, function () {
+          paypalMountInProgress = false;
+          if (!window.paypal || !(cart.data.items || []).length) {
+            return;
+          }
+          paypalButtonsInstance = window.paypal.Buttons({
+            createOrder: function (data, actions) {
+              var total = cartSubtotal();
+              var cur = (cart.data.currencyCode || "AUD").trim() || "AUD";
+              return actions.order.create({
+                purchase_units: [
+                  {
+                    description: "Cart order",
+                    amount: {
+                      currency_code: cur,
+                      value: total.toFixed(2),
+                    },
+                  },
+                ],
+              });
+            },
+            onApprove: function (data, actions) {
+              return actions.order.capture().then(function () {
+                cart.data.items = [];
+                cart.saveToLocalStorage();
+                destroyPayPalButtons();
+                paypalMounted = false;
+                renderCartPage();
+                window.alert("Payment successful. Thank you!");
+              });
+            },
+            onError: function (err) {
+              console.error("PayPal error", err);
+              window.alert("Payment could not be completed. Please try again.");
+            },
+          });
+          try {
+            var renderResult = paypalButtonsInstance.render(paypalContainerEl);
+            if (renderResult && typeof renderResult.then === "function") {
+              renderResult.then(function () {
+                paypalMounted = true;
+              });
+            } else {
+              paypalMounted = true;
+            }
+          } catch (e) {
+            console.error("PayPal render failed", e);
+          }
+        });
+      }
+
       function renderCartPage() {
         var items = cart.data.items || [];
         var currency = cart.data.currencyCode || "";
@@ -66,6 +220,12 @@
           }
           if (summaryEl) {
             summaryEl.hidden = true;
+          }
+          destroyPayPalButtons();
+          paypalMounted = false;
+          paypalMountInProgress = false;
+          if (paypalSectionEl) {
+            paypalSectionEl.hidden = true;
           }
           return;
         }
@@ -138,6 +298,10 @@
         if (subtotalEl) {
           subtotalEl.textContent = formatMoney(subtotal, currency);
         }
+        if (totalWeightEl && typeof cart.getTotalWeightKg === "function") {
+          totalWeightEl.textContent = formatTotalWeightKg(cart.getTotalWeightKg());
+        }
+        ensurePayPalButtons();
       }
 
       root.addEventListener("click", function (e) {
