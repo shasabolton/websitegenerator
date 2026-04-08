@@ -163,7 +163,7 @@ async function runGenerateAnyPage(treePath) {
     }
     const segments = rest.split("/").filter(Boolean);
     if (segments.length === 1) {
-      const categoryName = resolveCategoryNameFromSlug(segments[0], products);
+      const categoryName = resolveCategoryNameFromSlug(segments[0], productsForShop);
       const gen = window.generateCategoryBody?.generateCategoryBody;
       if (typeof gen !== "function") {
         throw new Error("generateCategoryBody.js must be loaded before preview.");
