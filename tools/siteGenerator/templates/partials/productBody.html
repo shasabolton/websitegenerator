@@ -2,6 +2,7 @@
   __BREADCRUMBS__
   <h1>__PRODUCT_TITLE__</h1>
   <p class="product-body-price">__PRODUCT_PRICE__</p>
+  __PRODUCT_VARIATIONS_HTML__
   <p class="product-body-actions">
     <button type="button" class="product-add-to-cart-btn" id="product-add-to-cart-btn">Add to cart</button>
     <span
@@ -17,15 +18,39 @@
   <script>
     (function () {
       var cart = window.siteCart;
-      var sku = __PRODUCT_SKU_JSON__;
+      var boot = __PRODUCT_CART_BOOTSTRAP_JSON__;
       var btn = document.getElementById("product-add-to-cart-btn");
       var feedback = document.getElementById("product-add-to-cart-feedback");
       var resetTimer;
-      if (btn && cart) {
+      if (btn && cart && boot && boot.sku) {
         btn.addEventListener("click", function () {
+          var sku = String(boot.sku || "").trim();
+          var opts = {
+            productPath: String(boot.productPath || "").trim(),
+          };
+          var vars = boot.variations;
+          if (vars && vars.length) {
+            var encParts = [];
+            var summParts = [];
+            for (var vi = 0; vi < vars.length; vi++) {
+              var ax = vars[vi];
+              var sel = document.getElementById("product-variation-" + (vi + 1));
+              var val = sel && sel.value != null ? String(sel.value).trim() : "";
+              if (!val) {
+                window.alert("Please choose an option for " + (ax.name || "this product") + ".");
+                return;
+              }
+              encParts.push(
+                encodeURIComponent(String(ax.name || "")) + "=" + encodeURIComponent(val),
+              );
+              summParts.push(String(ax.name || "").trim() + ": " + val);
+            }
+            opts.lineId = sku + "::" + encParts.join("&");
+            opts.variationSummary = summParts.join("; ");
+          }
           btn.disabled = true;
           cart
-            .addToCartFromSku(sku, 1)
+            .addToCartFromSku(sku, 1, opts)
             .then(function (ok) {
               if (!ok) {
                 window.alert("Could not add to cart.");

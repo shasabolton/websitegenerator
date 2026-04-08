@@ -239,6 +239,13 @@
             },
             category: "PHYSICAL_GOODS",
           };
+          var desc = String(line.variationSummary || "").trim();
+          if (desc.length > 127) {
+            desc = desc.slice(0, 127);
+          }
+          if (desc) {
+            row.description = desc;
+          }
           var sku = String(line.sku || "").trim();
           if (sku) {
             row.sku = sku.length > 127 ? sku.slice(0, 127) : sku;
@@ -509,7 +516,9 @@
           .map(function (line) {
             subtotal += lineSubtotal(line);
             var sku = String(line.sku || "").trim();
+            var lineKey = String(line.lineId || sku).trim();
             var title = String(line.title || "Item").trim() || "Item";
+            var varSumm = String(line.variationSummary || "").trim();
             var qty = Math.max(1, Math.floor(Number(line.quantity)) || 1);
             var unit = Number(line.unitPrice);
             if (!Number.isFinite(unit)) unit = 0;
@@ -520,8 +529,13 @@
                 escAttr(thumb) +
                 '" alt="" width="64" height="64" loading="lazy" decoding="async" /></div>'
               : '<div class="cart-line-thumb cart-line-thumb--empty" aria-hidden="true"></div>';
+            var varBlock = varSumm
+              ? '<p class="cart-line-variation">' + escHtml(varSumm) + "</p>"
+              : "";
             return (
-              '<article class="cart-line" data-sku="' +
+              '<article class="cart-line" data-line-id="' +
+              escAttr(lineKey) +
+              '" data-sku="' +
               escAttr(sku) +
               '">' +
               thumbBlock +
@@ -529,6 +543,7 @@
               '<h3 class="cart-line-title">' +
               escHtml(title) +
               "</h3>" +
+              varBlock +
               '<p class="cart-line-meta">SKU: ' +
               escHtml(sku) +
               "</p>" +
@@ -537,7 +552,7 @@
               " each</p>" +
               "</div>" +
               '<div class="cart-line-qty" role="group" aria-label="Quantity for ' +
-              escAttr(title) +
+              escAttr(varSumm ? title + " (" + varSumm + ")" : title) +
               '">' +
               '<button type="button" class="cart-line-dec" aria-label="Decrease quantity">−</button>' +
               '<label class="cart-line-qty-label"><span class="visually-hidden">Quantity</span>' +
@@ -585,25 +600,26 @@
         if (!lineEl) {
           return;
         }
-        var sku = lineEl.getAttribute("data-sku");
-        if (!sku) {
+        var lineKey = lineEl.getAttribute("data-line-id");
+        if (!lineKey) {
           return;
         }
         var item = (cart.data.items || []).find(function (i) {
-          return String(i.sku).trim() === sku;
+          var k = String(i.lineId || i.sku || "").trim();
+          return k === lineKey;
         });
         var q = item ? Math.max(1, Math.floor(Number(item.quantity)) || 1) : 1;
         if (t.closest(".cart-line-dec")) {
           e.preventDefault();
-          cart.setLineItemQuantity(sku, q - 1);
+          cart.setLineItemQuantity(lineKey, q - 1);
           renderCartPage();
         } else if (t.closest(".cart-line-inc")) {
           e.preventDefault();
-          cart.setLineItemQuantity(sku, q + 1);
+          cart.setLineItemQuantity(lineKey, q + 1);
           renderCartPage();
         } else if (t.closest(".cart-line-remove")) {
           e.preventDefault();
-          cart.removeLineItem(sku);
+          cart.removeLineItem(lineKey);
           renderCartPage();
         }
       });
@@ -617,8 +633,8 @@
         if (!lineEl) {
           return;
         }
-        var sku = lineEl.getAttribute("data-sku");
-        if (!sku) {
+        var lineKey = lineEl.getAttribute("data-line-id");
+        if (!lineKey) {
           return;
         }
         var v = parseInt(String(el.value), 10);
@@ -626,7 +642,7 @@
           renderCartPage();
           return;
         }
-        cart.setLineItemQuantity(sku, v);
+        cart.setLineItemQuantity(lineKey, v);
         renderCartPage();
       });
 

@@ -7,6 +7,8 @@
  * @property {number} [unitWeightKg] - Mass per unit in kilograms (from product WEIGHT_KG).
  * @property {string} [imageUrl]
  * @property {string} [productPath]
+ * @property {string} [lineId] - When set, cart rows merge by this key instead of by `sku` alone (e.g. per variation).
+ * @property {string} [variationSummary] - Human-readable options for display and checkout (e.g. "Size: M; Color: Red").
  */
 
 const DEFAULT_UNIT_WEIGHT_KG = 0.25;
@@ -15,6 +17,19 @@ const DEFAULT_UNIT_WEIGHT_KG = 0.25;
   if (window.ShoppingCart && typeof window.skuToLineItem === "function") {
     return;
   }
+
+/**
+ * Stable row key for merge / quantity updates (persisted cart lines without `lineId` use `sku`).
+ * @param {Pick<CartLineItem, "sku" | "lineId">} item
+ * @returns {string}
+ */
+function cartLineKey(item) {
+  const id = String(item.lineId ?? "").trim();
+  if (id) {
+    return id;
+  }
+  return String(item.sku ?? "").trim();
+}
 
 /**
  * @param {unknown} raw
@@ -45,6 +60,14 @@ function normalizeCartLineInput(raw) {
   }
   /** @type {CartLineItem} */
   const line = { sku, title, quantity, unitPrice, unitWeightKg };
+  const lineId = o.lineId != null ? String(o.lineId).trim() : "";
+  if (lineId) {
+    line.lineId = lineId;
+  }
+  const variationSummary = o.variationSummary != null ? String(o.variationSummary).trim() : "";
+  if (variationSummary) {
+    line.variationSummary = variationSummary;
+  }
   const imageUrl = o.imageUrl != null ? String(o.imageUrl).trim() : "";
   if (imageUrl) {
     line.imageUrl = imageUrl;
@@ -158,7 +181,8 @@ class ShoppingCart {
     if (!line) {
       return false;
     }
-    const existing = this.data.items.find((i) => String(i.sku).trim() === line.sku);
+    const key = cartLineKey(line);
+    const existing = this.data.items.find((i) => cartLineKey(i) === key);
     if (existing) {
       const prev = Number(existing.quantity);
       const prevQ = Number.isFinite(prev) && prev >= 1 ? Math.floor(prev) : 0;
@@ -177,6 +201,9 @@ class ShoppingCart {
       if (line.productPath && !existing.productPath) {
         existing.productPath = line.productPath;
       }
+      if (line.variationSummary && !existing.variationSummary) {
+        existing.variationSummary = line.variationSummary;
+      }
     } else {
       this.data.items.push(line);
     }
@@ -188,9 +215,10 @@ class ShoppingCart {
    * Resolves `sku` via {@link skuToLineItem} using `window.productData.fetchProductDataJson()`, then {@link ShoppingCart#addLineItemToCart}.
    * @param {unknown} sku
    * @param {unknown} quantity
+   * @param {{ lineId?: unknown, variationSummary?: unknown, productPath?: unknown }} [options]
    * @returns {Promise<boolean>}
    */
-  async addToCartFromSku(sku, quantity) {
+  async addToCartFromSku(sku, quantity, options) {
     const fetchCatalog = window.productData?.fetchProductDataJson;
     if (typeof fetchCatalog !== "function") {
       return false;
@@ -206,27 +234,40 @@ class ShoppingCart {
       q = 1;
     }
     line.quantity = Math.floor(q);
+    const opt = options && typeof options === "object" ? options : {};
+    const lineId = String(opt.lineId ?? "").trim();
+    if (lineId) {
+      line.lineId = lineId;
+    }
+    const variationSummary = String(opt.variationSummary ?? "").trim();
+    if (variationSummary) {
+      line.variationSummary = variationSummary;
+    }
+    const productPath = String(opt.productPath ?? "").trim();
+    if (productPath) {
+      line.productPath = productPath;
+    }
     return this.addLineItemToCart(line);
   }
 
   /**
-   * @param {unknown} sku
+   * @param {unknown} lineKey - {@link cartLineKey} for the row (`lineId` when set, otherwise `sku`).
    * @returns {number}
    */
-  findLineIndex(sku) {
-    const key = String(sku ?? "").trim();
+  findLineIndex(lineKey) {
+    const key = String(lineKey ?? "").trim();
     if (!key) {
       return -1;
     }
-    return this.data.items.findIndex((i) => String(i.sku).trim() === key);
+    return this.data.items.findIndex((i) => cartLineKey(i) === key);
   }
 
   /**
-   * @param {unknown} sku
+   * @param {unknown} lineKey
    * @returns {boolean}
    */
-  removeLineItem(sku) {
-    const idx = this.findLineIndex(sku);
+  removeLineItem(lineKey) {
+    const idx = this.findLineIndex(lineKey);
     if (idx < 0) {
       return false;
     }
@@ -237,12 +278,12 @@ class ShoppingCart {
 
   /**
    * Sets quantity for a line; values below 1 remove the line.
-   * @param {unknown} sku
+   * @param {unknown} lineKey
    * @param {unknown} quantity
    * @returns {boolean} `false` if the line was not found or `quantity` is not a finite number.
    */
-  setLineItemQuantity(sku, quantity) {
-    const idx = this.findLineIndex(sku);
+  setLineItemQuantity(lineKey, quantity) {
+    const idx = this.findLineIndex(lineKey);
     if (idx < 0) {
       return false;
     }
@@ -252,7 +293,7 @@ class ShoppingCart {
     }
     q = Math.floor(q);
     if (q < 1) {
-      return this.removeLineItem(sku);
+      return this.removeLineItem(lineKey);
     }
     this.data.items[idx].quantity = q;
     this.saveToLocalStorage();

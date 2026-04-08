@@ -63,6 +63,59 @@ function buildCarouselSlidesHtml(images, productTitleRaw) {
     .join("\n");
 }
 
+function parseVariationValuesCell(raw) {
+  return String(raw ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+/**
+ * @param {object} row - Product row from productData.json
+ * @returns {{ name: string, values: string[] }[]}
+ */
+function collectVariationAxes(row) {
+  const axes = [];
+  for (let i = 1; i <= 2; i += 1) {
+    const name = String(row[`VARIATION ${i} NAME`] || "").trim();
+    const values = parseVariationValuesCell(row[`VARIATION ${i} VALUES`]);
+    if (name && values.length > 0) {
+      axes.push({ name, values });
+    }
+  }
+  return axes;
+}
+
+/**
+ * @param {{ name: string, values: string[] }[]} axes
+ */
+function buildProductVariationsHtml(axes) {
+  if (!axes.length) {
+    return "";
+  }
+  const fields = axes
+    .map((axis, idx) => {
+      const n = idx + 1;
+      const id = `product-variation-${n}`;
+      const label = escapeHtml(axis.name);
+      const opts = axis.values
+        .map((v, i) => {
+          const escV = escapeHtml(v);
+          const selected = i === 0 ? " selected" : "";
+          return `<option value="${escV}"${selected}>${escV}</option>`;
+        })
+        .join("");
+      return `<div class="product-variation-field">
+  <label class="product-variation-label" for="${id}">${label}</label>
+  <select id="${id}" class="product-variation-select" aria-label="${label}">
+    ${opts}
+  </select>
+</div>`;
+    })
+    .join("\n");
+  return `<div class="product-variations" role="group" aria-label="Options">${fields}</div>`;
+}
+
 function buildCarouselThumbsHtml(images, productTitleRaw) {
   const labelBase = productTitleRaw || "Product";
   return images
@@ -143,7 +196,15 @@ async function generateProductBody(ctx) {
     </nav>
   `;
 
-  const skuJson = JSON.stringify(String(row.SKU || "").trim());
+  const sku = String(row.SKU || "").trim();
+  const variationAxes = collectVariationAxes(row);
+  const variationsHtml = buildProductVariationsHtml(variationAxes);
+  const cartBootstrap = {
+    sku,
+    productPath: `shop/${categorySlugResolved}/${productSlug}`,
+    variations: variationAxes.map((a) => ({ name: a.name, values: a.values })),
+  };
+  const bootstrapJson = JSON.stringify(cartBootstrap);
   const productPriceDisplay = formatProductPriceDisplay(row);
   const bodyHtml = applyTemplate(productBodyTemplate, {
     BREADCRUMBS: breadcrumbsHtml,
@@ -151,7 +212,8 @@ async function generateProductBody(ctx) {
     PRODUCT_PRICE: productPriceDisplay,
     PRODUCT_DESCRIPTION: escapeHtml(description),
     PRODUCT_CAROUSEL: carouselHtml,
-    PRODUCT_SKU_JSON: skuJson,
+    PRODUCT_VARIATIONS_HTML: variationsHtml,
+    PRODUCT_CART_BOOTSTRAP_JSON: bootstrapJson,
   });
 
   const categories = window.productData.getProductsByCategory(products);
