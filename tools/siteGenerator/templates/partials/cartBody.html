@@ -11,15 +11,38 @@
       Total weight:
       <strong id="cart-total-weight-amount"></strong>
     </p>
+    <p class="cart-ship-to-row">
+      <label class="cart-ship-to-label" for="cart-ship-to-country">Ship to (sets shipping rate)</label>
+      <select id="cart-ship-to-country" class="cart-ship-to-country" aria-label="Ship to country for shipping cost">
+        <option value="AU">Australia</option>
+        <option value="NZ">New Zealand</option>
+        <option value="__OTHER__">Other countries</option>
+      </select>
+    </p>
+    <p class="cart-shipping-estimate-row">
+      Estimated shipping:
+      <strong id="cart-shipping-estimate-amount"></strong>
+    </p>
+    <p class="cart-estimated-total-row">
+      Estimated total:
+      <strong id="cart-estimated-total-amount"></strong>
+    </p>
     <div id="cart-paypal-section" class="cart-paypal-section" hidden>
       <h2 class="cart-paypal-heading">Checkout with PayPal</h2>
-      <p class="cart-paypal-hint">Pay with your PayPal balance or card (where available).</p>
+      <p class="cart-paypal-hint">
+        Pay with your PayPal balance or card (where available). Choose <strong>Ship to</strong> above so
+        shipping matches your rates by weight. Use the <strong>same country</strong> for your PayPal shipping
+        address so the total stays correct.
+      </p>
       <div id="paypal-button-container" class="paypal-button-container"></div>
     </div>
   </div>
   <script>
     (function () {
       var paypalClientId = __PAYPAL_CLIENT_ID_JSON__;
+      var paypalEnv = __PAYPAL_ENV_JSON__;
+      var paypalBuyerCountry = __PAYPAL_BUYER_COUNTRY_JSON__;
+      var shippingRatesConfig = __SHIPPING_RATES_JSON__;
       var cart = window.siteCart;
       var root = document.getElementById("cart-page-root");
       var emptyEl = document.getElementById("cart-page-empty");
@@ -28,12 +51,17 @@
       var subtotalEl = document.getElementById("cart-subtotal-amount");
       var currencyLabelEl = document.getElementById("cart-currency-label");
       var totalWeightEl = document.getElementById("cart-total-weight-amount");
+      var shipCountryEl = document.getElementById("cart-ship-to-country");
+      var shippingEstimateEl = document.getElementById("cart-shipping-estimate-amount");
+      var estimatedTotalEl = document.getElementById("cart-estimated-total-amount");
       var paypalSectionEl = document.getElementById("cart-paypal-section");
       var paypalContainerEl = document.getElementById("paypal-button-container");
       var paypalButtonsInstance = null;
       var paypalMounted = false;
       var paypalMountInProgress = false;
       var paypalSdkLoading = false;
+      var shipCountryListenerBound = false;
+      var SHIP_COUNTRY_STORAGE_KEY = "websitegenerator-cart-ship-country";
 
       if (!cart || !root) {
         return;
@@ -85,6 +113,160 @@
         return sum;
       }
 
+      function cartWeightGrams() {
+        if (typeof cart.getTotalWeightKg !== "function") {
+          return gramsFromKg(0);
+        }
+        return gramsFromKg(cart.getTotalWeightKg());
+      }
+
+      function gramsFromKg(kg) {
+        var n = Math.ceil(Number(kg) * 1000);
+        if (!Number.isFinite(n) || n < 0) {
+          return 0;
+        }
+        return n;
+      }
+
+      function resolveShippingZone(countryCode) {
+        var cc = String(countryCode || "")
+          .trim()
+          .toUpperCase();
+        var zones =
+          shippingRatesConfig && Array.isArray(shippingRatesConfig.rates)
+            ? shippingRatesConfig.rates
+            : [];
+        var fallback = null;
+        for (var i = 0; i < zones.length; i++) {
+          var z = zones[i];
+          if (z && z.default === true) {
+            fallback = z;
+          }
+          var codes = z.countryCodes;
+          if (Array.isArray(codes) && codes.indexOf(cc) >= 0) {
+            return z;
+          }
+        }
+        return fallback;
+      }
+
+      function shippingPriceForZoneAndGrams(zone, grams) {
+        var g = Math.max(0, Number(grams) || 0);
+        var tiers = zone && zone.rates;
+        if (!Array.isArray(tiers) || tiers.length === 0) {
+          return 0;
+        }
+        var sorted = tiers.slice().sort(function (a, b) {
+          return (Number(a.weight) || 0) - (Number(b.weight) || 0);
+        });
+        for (var i = 0; i < sorted.length; i++) {
+          var w = Number(sorted[i].weight) || 0;
+          if (g <= w) {
+            return Number(sorted[i].price) || 0;
+          }
+        }
+        var last = sorted[sorted.length - 1];
+        return Number(last.price) || 0;
+      }
+
+      /** Map cart "Other" to a non-listed ISO code so the default rate zone applies. */
+      function getCartShipToCountryCode() {
+        var sel = shipCountryEl;
+        var v = sel && sel.value ? String(sel.value).trim() : "AU";
+        if (v === "__OTHER__") {
+          return "US";
+        }
+        return v;
+      }
+
+      function shippingCostForCountryCode(countryCode) {
+        var zone = resolveShippingZone(countryCode);
+        if (!zone) {
+          return 0;
+        }
+        return shippingPriceForZoneAndGrams(zone, cartWeightGrams());
+      }
+
+      function bindShipCountryOnce() {
+        if (shipCountryListenerBound || !shipCountryEl) {
+          return;
+        }
+        shipCountryListenerBound = true;
+        try {
+          var saved = sessionStorage.getItem(SHIP_COUNTRY_STORAGE_KEY);
+          if (saved === "AU" || saved === "NZ" || saved === "__OTHER__") {
+            shipCountryEl.value = saved;
+          }
+        } catch (e) {}
+        shipCountryEl.addEventListener("change", function () {
+          try {
+            sessionStorage.setItem(SHIP_COUNTRY_STORAGE_KEY, shipCountryEl.value);
+          } catch (e2) {}
+          destroyPayPalButtons();
+          paypalMounted = false;
+          paypalMountInProgress = false;
+          renderCartPage();
+        });
+      }
+
+      /**
+       * Line items for PayPal; sums match breakdown.item_total (unit prices rounded per line to cents).
+       * @returns {{ items: object[], itemTotalCents: number }}
+       */
+      function buildPayPalLineItems(cur) {
+        var raw = cart.data.items || [];
+        var items = [];
+        var itemTotalCents = 0;
+        for (var i = 0; i < raw.length; i++) {
+          var line = raw[i];
+          var qty = Math.max(1, Math.floor(Number(line.quantity)) || 1);
+          var p = Number(line.unitPrice);
+          if (!Number.isFinite(p) || p < 0) {
+            p = 0;
+          }
+          var unitCents = Math.round(p * 100);
+          itemTotalCents += unitCents * qty;
+          var title = String(line.title || "Item").trim() || "Item";
+          if (title.length > 127) {
+            title = title.slice(0, 127);
+          }
+          var row = {
+            name: title,
+            quantity: String(qty),
+            unit_amount: {
+              currency_code: cur,
+              value: (unitCents / 100).toFixed(2),
+            },
+            category: "PHYSICAL_GOODS",
+          };
+          var sku = String(line.sku || "").trim();
+          if (sku) {
+            row.sku = sku.length > 127 ? sku.slice(0, 127) : sku;
+          }
+          items.push(row);
+        }
+        return { items: items, itemTotalCents: itemTotalCents };
+      }
+
+      /** Money as integer cents so value === item_total + shipping in PayPal validation. */
+      function orderAmountValue(itemTotal, shippingVal, currencyCode) {
+        var cur = String(currencyCode || "AUD").trim() || "AUD";
+        var itemCents = Math.round(Math.max(0, Number(itemTotal) || 0) * 100);
+        var shipCents = Math.round(Math.max(0, Number(shippingVal) || 0) * 100);
+        var totalCents = itemCents + shipCents;
+        var itemStr = (itemCents / 100).toFixed(2);
+        var shipStr = (shipCents / 100).toFixed(2);
+        var totalStr = (totalCents / 100).toFixed(2);
+        return {
+          currency_code: cur,
+          value: totalStr,
+          breakdown: {
+            item_total: { currency_code: cur, value: itemStr },
+            shipping: { currency_code: cur, value: shipStr },
+          },
+        };
+      }
+
       function destroyPayPalButtons() {
         if (paypalButtonsInstance && typeof paypalButtonsInstance.close === "function") {
           try {
@@ -95,6 +277,62 @@
         if (paypalContainerEl) {
           paypalContainerEl.innerHTML = "";
         }
+      }
+
+      /** Logs one JSON line prefixed with [PayPal debug] — copy from DevTools Console to share. */
+      function paypalDebug(tag, payload) {
+        var line;
+        try {
+          line = "[PayPal debug] " + tag + ": " + JSON.stringify(payload, null, 2);
+        } catch (e) {
+          line = "[PayPal debug] " + tag + ": (payload not serializable)";
+        }
+        console.log(line);
+      }
+
+      function paypalSerializeError(err) {
+        if (err == null) {
+          return null;
+        }
+        var o = {
+          message: err.message,
+          name: err.name,
+        };
+        if (typeof err.statusCode !== "undefined") {
+          o.statusCode = err.statusCode;
+        }
+        if (err.details != null) {
+          try {
+            o.details = JSON.parse(JSON.stringify(err.details));
+          } catch (e) {
+            o.details = String(err.details);
+          }
+        }
+        try {
+          if (typeof err.toString === "function") {
+            o.string = err.toString();
+          }
+        } catch (e2) {}
+        return o;
+      }
+
+      /**
+       * Always load from www.paypal.com (Per PayPal docs); client-id selects sandbox vs live.
+       * commit=true with PAY_NOW matches a fixed total from createOrder (no order.patch).
+       */
+      function buildPayPalSdkUrl(clientId, currency) {
+        var isLive = paypalEnv === "live";
+        var parts = [
+          "client-id=" + encodeURIComponent(clientId),
+          "currency=" + encodeURIComponent(currency),
+          "intent=capture",
+          "components=buttons",
+          "commit=true",
+        ];
+        if (!isLive && paypalBuyerCountry && /^[A-Z]{2}$/.test(paypalBuyerCountry)) {
+          parts.push("buyer-country=" + encodeURIComponent(paypalBuyerCountry));
+        }
+        return "https://www.paypal.com/sdk/js?" + parts.join("&");
       }
 
       function loadPayPalSdk(clientId, currency, done) {
@@ -118,12 +356,7 @@
         }
         paypalSdkLoading = true;
         var script = document.createElement("script");
-        script.src =
-          "https://www.paypal.com/sdk/js?client-id=" +
-          encodeURIComponent(clientId) +
-          "&currency=" +
-          encodeURIComponent(currency) +
-          "&intent=capture";
+        script.src = buildPayPalSdkUrl(clientId, currency);
         script.onload = function () {
           paypalSdkLoading = false;
           done();
@@ -160,22 +393,51 @@
           }
           paypalButtonsInstance = window.paypal.Buttons({
             createOrder: function (data, actions) {
-              var total = cartSubtotal();
               var cur = (cart.data.currencyCode || "AUD").trim() || "AUD";
-              return actions.order.create({
-                purchase_units: [
-                  {
-                    description: "Cart order",
-                    amount: {
-                      currency_code: cur,
-                      value: total.toFixed(2),
-                    },
-                  },
-                ],
+              var built = buildPayPalLineItems(cur);
+              var itemTotal = built.itemTotalCents / 100;
+              var shipCc = getCartShipToCountryCode();
+              var shipCost = shippingCostForCountryCode(shipCc);
+              paypalDebug("createOrder start", {
+                currency: cur,
+                itemTotal: itemTotal,
+                shipCountryResolved: shipCc,
+                shipCost: shipCost,
+                weightGrams: cartWeightGrams(),
+                lineCount: (cart.data.items || []).length,
+                paypalItemLines: built.items.length,
               });
+              return actions.order
+                .create({
+                  purchase_units: [
+                    {
+                      reference_id: "cart",
+                      description: "Cart order",
+                      items: built.items,
+                      amount: orderAmountValue(itemTotal, shipCost, cur),
+                    },
+                  ],
+                  application_context: {
+                    shipping_preference: "GET_FROM_FILE",
+                    user_action: "PAY_NOW",
+                  },
+                })
+                .then(function (orderId) {
+                  paypalDebug("createOrder OK", { orderId: orderId });
+                  return orderId;
+                })
+                .catch(function (err) {
+                  paypalDebug("createOrder FAILED", { error: paypalSerializeError(err) });
+                  throw err;
+                });
             },
             onApprove: function (data, actions) {
-              return actions.order.capture().then(function () {
+              paypalDebug("onApprove start", { orderID: data.orderID });
+              return actions.order.capture().then(function (details) {
+                paypalDebug("onApprove capture OK", {
+                  status: details && details.status,
+                  payerEmail: details && details.payer && details.payer.email_address,
+                });
                 cart.data.items = [];
                 cart.saveToLocalStorage();
                 destroyPayPalButtons();
@@ -185,6 +447,7 @@
               });
             },
             onError: function (err) {
+              paypalDebug("Buttons onError", { error: paypalSerializeError(err) });
               console.error("PayPal error", err);
               window.alert("Payment could not be completed. Please try again.");
             },
@@ -238,6 +501,8 @@
         if (summaryEl) {
           summaryEl.hidden = false;
         }
+
+        bindShipCountryOnce();
 
         var subtotal = 0;
         var rowsHtml = items
@@ -300,6 +565,13 @@
         }
         if (totalWeightEl && typeof cart.getTotalWeightKg === "function") {
           totalWeightEl.textContent = formatTotalWeightKg(cart.getTotalWeightKg());
+        }
+        var shipCostDisplay = shippingCostForCountryCode(getCartShipToCountryCode());
+        if (shippingEstimateEl) {
+          shippingEstimateEl.textContent = formatMoney(shipCostDisplay, currency);
+        }
+        if (estimatedTotalEl) {
+          estimatedTotalEl.textContent = formatMoney(subtotal + shipCostDisplay, currency);
         }
         ensurePayPalButtons();
       }

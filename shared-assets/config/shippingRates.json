@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "notes": "Match PayPal JS SDK onShippingChange: data.shipping_address.country_code is ISO 3166-1 alpha-2 (e.g. AU, NZ, US). weight is tier ceiling in grams; pick smallest tier where cart weight <= weight.",
+  "notes": "Cart page maps country (ISO 3166-1 alpha-2: AU, NZ, etc.) to a zone; default zone is used for other codes (e.g. cart Other → US lookup). weight is tier ceiling in grams; pick smallest tier where cart weight <= weight.",
   "currency": "AUD",
   "rates": [
     {

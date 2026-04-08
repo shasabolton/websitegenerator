@@ -522,6 +522,54 @@ a:hover {
   color: #111827;
 }
 
+.cart-ship-to-row {
+  margin: 14px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  font-size: 1.05rem;
+  color: #374151;
+}
+
+.cart-ship-to-label {
+  margin: 0;
+  font-weight: 500;
+  color: #111827;
+}
+
+.cart-ship-to-country {
+  min-width: 200px;
+  padding: 6px 10px;
+  font-size: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  color: #111827;
+}
+
+.cart-ship-to-country:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.cart-shipping-estimate-row,
+.cart-estimated-total-row {
+  margin: 8px 0 0;
+  font-size: 1.05rem;
+  color: #374151;
+}
+
+.cart-estimated-total-row {
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.cart-shipping-estimate-row strong,
+.cart-estimated-total-row strong {
+  color: #111827;
+}
+
 .cart-paypal-section {
   margin-top: 20px;
   padding-top: 16px;
