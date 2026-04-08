@@ -34,61 +34,47 @@ function buildShopCategoryHref(categoryName) {
   return `shop/${slugify(categoryName)}`;
 }
 
-function normalizeHrefForBase(rawHref) {
-  const href = String(rawHref || "").trim();
-  if (!href) {
-    return "#";
-  }
-  if (
-    href.startsWith("#") ||
-    href.startsWith("http://") ||
-    href.startsWith("https://") ||
-    href.startsWith("mailto:") ||
-    href.startsWith("tel:")
-  ) {
-    return href;
-  }
-  // Keep URLs base-friendly (GitHub Pages <base href="/repo/">). Root-absolute paths ignore <base>.
-  return href.replace(/^\/+/, "");
-}
-
 function buildNavigationHtml(navigationConfig, categoryNames = []) {
   const items = Array.isArray(navigationConfig?.items) ? navigationConfig.items : [];
   return items
     .map((item) => {
       const label = escapeHtml(item.label || "");
-      const href = escapeHtml(normalizeHrefForBase(item.href || "#"));
+      const href = escapeHtml(item.href || "#");
       const isShopItem = String(item?.label || "").trim().toLowerCase() === "shop";
-      const configuredChildren = Array.isArray(item.children) ? item.children : [];
-      let children = configuredChildren;
+      let children = Array.isArray(item.children) ? item.children : [];
       if (isShopItem && Array.isArray(categoryNames) && categoryNames.length > 0) {
         const autoChildren = categoryNames.map((category) => ({
           label: category,
           href: buildShopCategoryHref(category),
         }));
-        children = [...configuredChildren, ...autoChildren];
+        // Keep any configured Shop children first (e.g. "Shop home"), then append generated categories.
+        children = [...children, ...autoChildren];
       }
       if (children.length === 0) {
         return `<li class="nav-item"><a href="${href}">${label}</a></li>`;
       }
-
-      const submenuId = `submenu-${slugify(item.label || "menu")}-${Math.random()
-        .toString(16)
-        .slice(2)}`;
       const childrenHtml = children
         .map((child) => {
           const childLabel = escapeHtml(child.label || "");
-          const childHref = escapeHtml(normalizeHrefForBase(child.href || "#"));
+          const childHref = escapeHtml(child.href || "#");
           return `<li><a href="${childHref}">${childLabel}</a></li>`;
         })
         .join("");
+
+      if (isShopItem) {
+        return `
+          <li class="nav-item nav-item-has-children">
+            <details class="nav-dropdown">
+              <summary>${label}</summary>
+              <ul class="submenu">${childrenHtml}</ul>
+            </details>
+          </li>
+        `;
+      }
       return `
         <li class="nav-item nav-item-has-children">
-          <div class="nav-parent">
-            <a class="nav-link" href="${href}">${label}</a>
-            <button type="button" class="nav-dropdown-toggle" aria-expanded="false" aria-controls="${submenuId}" aria-label="Open ${label} menu"></button>
-          </div>
-          <ul class="submenu" id="${submenuId}">${childrenHtml}</ul>
+          <a href="${href}">${label}</a>
+          <ul class="submenu">${childrenHtml}</ul>
         </li>
       `;
     })

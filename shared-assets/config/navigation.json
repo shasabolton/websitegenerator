@@ -5,8 +5,8 @@
       "href": "shop",
       "children": [
         {
-          "label": "Categories",
-          "href": "#categories"
+          "label": "Shop home",
+          "href": "shop"
         }
       ]
     },
