@@ -474,7 +474,7 @@
         });
       }
 
-      function renderCartPage() {
+      function renderCartPageInner() {
         var items = cart.data.items || [];
         var currency = cart.data.currencyCode || "";
         if (currencyLabelEl) {
@@ -589,6 +589,31 @@
           estimatedTotalEl.textContent = formatMoney(subtotal + shipCostDisplay, currency);
         }
         ensurePayPalButtons();
+      }
+
+      function renderCartPage() {
+        var items = cart.data.items || [];
+        if (
+          items.length > 0 &&
+          window.productData &&
+          typeof window.productData.fetchProductDataJson === "function" &&
+          typeof window.productData.repriceCartItemsInPlace === "function"
+        ) {
+          window.productData
+            .fetchProductDataJson()
+            .then(function (data) {
+              var products = (data && data.products) || [];
+              if (window.productData.repriceCartItemsInPlace(cart.data, products)) {
+                cart.saveToLocalStorage();
+              }
+              renderCartPageInner();
+            })
+            .catch(function () {
+              renderCartPageInner();
+            });
+          return;
+        }
+        renderCartPageInner();
       }
 
       root.addEventListener("click", function (e) {

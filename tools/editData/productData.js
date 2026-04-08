@@ -171,6 +171,172 @@ function collectProductImageUrls(row) {
   return out;
 }
 
+function splitCommaList(raw) {
+  return String(raw ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function parseVariationPriceDeltas(raw, valueCount) {
+  const parts = String(raw ?? "").split(",");
+  const out = [];
+  for (let i = 0; i < valueCount; i += 1) {
+    const n = parseFloat(String(parts[i] ?? "").trim());
+    out.push(Number.isFinite(n) ? n : 0);
+  }
+  return out;
+}
+
+/**
+ * Variation axes with aligned value labels and price deltas (additive to `PRICE`).
+ * @param {object} row
+ * @returns {{ name: string, values: string[], deltas: number[] }[]}
+ */
+function variationAxesFromRow(row) {
+  const axes = [];
+  for (let i = 1; i <= 2; i += 1) {
+    const name = String(row[`VARIATION ${i} NAME`] || "").trim();
+    const values = splitCommaList(row[`VARIATION ${i} VALUES`]);
+    if (!name || values.length === 0) {
+      continue;
+    }
+    const deltas = parseVariationPriceDeltas(row[`VARIATION ${i} PRICE DELTA`], values.length);
+    axes.push({ name, values, deltas });
+  }
+  return axes;
+}
+
+/**
+ * @param {string} lineId - e.g. `SKU::name=value&name=value` from cart.
+ * @returns {Array<[string, string]> | null}
+ */
+function choicePairsFromLineId(lineId) {
+  const s = String(lineId || "").trim();
+  const sep = s.indexOf("::");
+  if (sep < 0) {
+    return null;
+  }
+  const q = s.slice(sep + 2).trim();
+  if (!q) {
+    return null;
+  }
+  /** @type {Array<[string, string]>} */
+  const pairs = [];
+  for (const part of q.split("&")) {
+    const eq = part.indexOf("=");
+    if (eq < 0) {
+      continue;
+    }
+    try {
+      pairs.push([decodeURIComponent(part.slice(0, eq)), decodeURIComponent(part.slice(eq + 1))]);
+    } catch {
+      pairs.push([part.slice(0, eq), part.slice(eq + 1)]);
+    }
+  }
+  return pairs.length ? pairs : null;
+}
+
+/**
+ * Base `PRICE` plus deltas for selected option per axis (matched by variation name and value label).
+ * @param {object} row
+ * @param {Array<[string, string]>} choicePairs
+ * @returns {number}
+ */
+function unitPriceFromRowAndChoices(row, choicePairs) {
+  const map = new Map(choicePairs.map(([n, v]) => [String(n).trim(), String(v).trim()]));
+  let base = parseFloat(String(row.PRICE ?? "0"));
+  if (!Number.isFinite(base) || base < 0) {
+    base = 0;
+  }
+  for (let i = 1; i <= 2; i += 1) {
+    const axisName = String(row[`VARIATION ${i} NAME`] || "").trim();
+    if (!axisName) {
+      continue;
+    }
+    const values = splitCommaList(row[`VARIATION ${i} VALUES`]);
+    if (values.length === 0) {
+      continue;
+    }
+    const chosen = map.get(axisName);
+    if (chosen === undefined) {
+      continue;
+    }
+    const idx = values.findIndex((v) => String(v).trim() === chosen);
+    if (idx < 0) {
+      continue;
+    }
+    const deltas = parseVariationPriceDeltas(row[`VARIATION ${i} PRICE DELTA`], values.length);
+    const d = deltas[idx];
+    if (Number.isFinite(d)) {
+      base += d;
+    }
+  }
+  return Math.round(base * 100) / 100;
+}
+
+/**
+ * Mutates `boot` from live catalog row (same `SKU`).
+ * @param {{ sku?: string, basePrice?: number, currencyCode?: string, variations?: unknown[] }} boot
+ * @param {object} row
+ */
+function applyCatalogRowToProductPricingBoot(boot, row) {
+  if (!boot || !row) {
+    return;
+  }
+  const sku = String(boot.sku || "").trim();
+  if (sku !== String(row.SKU || "").trim()) {
+    return;
+  }
+  let bp = parseFloat(String(row.PRICE ?? "0"));
+  if (!Number.isFinite(bp) || bp < 0) {
+    bp = 0;
+  }
+  boot.basePrice = bp;
+  boot.currencyCode = String(row.CURRENCY_CODE || "AUD")
+    .trim()
+    .toUpperCase();
+  if (!boot.currencyCode || !/^[A-Z]{3}$/.test(boot.currencyCode)) {
+    boot.currencyCode = "AUD";
+  }
+  boot.variations = variationAxesFromRow(row);
+}
+
+/**
+ * Refresh line `unitPrice` from catalog (`lineId` choices when present).
+ * @param {{ items: object[] }} cartData
+ * @param {object[]} products
+ * @returns {boolean} whether any line was changed
+ */
+function repriceCartItemsInPlace(cartData, products) {
+  const list = Array.isArray(products) ? products : [];
+  const items = cartData && Array.isArray(cartData.items) ? cartData.items : [];
+  let changed = false;
+  for (const item of items) {
+    const skuKey = String(item.sku ?? "").trim();
+    if (!skuKey) {
+      continue;
+    }
+    const row = list.find((p) => p && String(p.SKU ?? "").trim() === skuKey);
+    if (!row) {
+      continue;
+    }
+    const pairs = item.lineId ? choicePairsFromLineId(String(item.lineId)) : null;
+    let next =
+      pairs && pairs.length > 0 ? unitPriceFromRowAndChoices(row, pairs) : parseFloat(String(row.PRICE ?? "0"));
+    if (!Number.isFinite(next) || next < 0) {
+      next = 0;
+    }
+    next = Math.round(next * 100) / 100;
+    const prev = Number(item.unitPrice);
+    if (!Number.isFinite(prev) || Math.abs(prev - next) > 0.0005) {
+      item.unitPrice = next;
+      changed = true;
+    }
+  }
+  return changed;
+}
+
 function getCategoriesForFileTree(products) {
   const list = Array.isArray(products) ? products : [];
   const slugByRow = assignProductSlugsByCategory(list);
@@ -212,5 +378,10 @@ function getCategoriesForFileTree(products) {
     getProductSlugForRow,
     findProductByShopPath,
     collectProductImageUrls,
+    variationAxesFromRow,
+    choicePairsFromLineId,
+    unitPriceFromRowAndChoices,
+    applyCatalogRowToProductPricingBoot,
+    repriceCartItemsInPlace,
   };
 })();

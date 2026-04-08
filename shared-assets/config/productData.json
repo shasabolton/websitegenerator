@@ -22,9 +22,11 @@
     "VARIATION 1 TYPE",
     "VARIATION 1 NAME",
     "VARIATION 1 VALUES",
+    "VARIATION 1 PRICE DELTA",
     "VARIATION 2 TYPE",
     "VARIATION 2 NAME",
     "VARIATION 2 VALUES",
+    "VARIATION 2 PRICE DELTA",
     "SKU",
     "CATEGORY"
   ],
@@ -35,6 +37,7 @@
       "PRICE": "12",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "723",
+      "WEIGHT_KG": "0.25",
       "TAGS": "sword_through_finger,knife_illusion,mechanical_model,craft_project,executive_toy,mystery_box,puzzle_box,magic_dagger_trick,magician_gimmick,Stem_project,card_trick,laser_cutting_files,wooden_toy",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/f18e31/7352315017/il_fullxfull.7352315017_lnpb.jpg",
@@ -50,12 +53,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "1",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Mini Cryptex Puzzle Box Laser Cut Files, SVG DXF PDF, Spell and Spin learning toy",
@@ -63,6 +67,7 @@
       "PRICE": "10",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "944",
+      "WEIGHT_KG": "0.25",
       "TAGS": "davinci_code,puzzle_box,wooden_puzzle,spelling_toy,educational_toy,escape_room,secret_box,ring_box,laser_cut_files,engineering,mechanism,stem,Montessori",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/4d4af1/7431628092/il_fullxfull.7431628092_pq2y.jpg",
@@ -78,12 +83,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "2",
-      "CATEGORY": "puzzle boxes",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "puzzle boxes"
     },
     {
       "TITLE": "Slide Picture Puzzle Box Kit Davinci's Vitruvian man",
@@ -91,6 +97,7 @@
       "PRICE": "40",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "8",
+      "WEIGHT_KG": "0.25",
       "TAGS": "Puzzlebox,Vitruvian_Man,Laser_cut,Stem,Steam,Puzzle,Mechanism,Gift_for_men,Leonardo_davinci,Secret_box,Technical,Maker,Wooden_toy",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/ccf267/4561367052/il_fullxfull.4561367052_lf6h.jpg",
@@ -106,12 +113,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "4",
-      "CATEGORY": "puzzle boxes",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "puzzle boxes"
     },
     {
       "TITLE": "Mouse Maze Puzzle Box, wooden mystery Box",
@@ -119,6 +127,7 @@
       "PRICE": "40",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "7",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzle,puzzle_box,puzzle,maze,laser_cut,mouse,trick,magic,secret,gift,gift_box,brain,labyrinth",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/85639c/4250092607/il_fullxfull.4250092607_ktow.jpg",
@@ -134,12 +143,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Assembled,Kit",
+      "VARIATION 1 PRICE DELTA": "20,0",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "3",
-      "CATEGORY": "puzzle boxes",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "puzzle boxes"
     },
     {
       "TITLE": "Mechanical Calculator, Math and Science Toy, Wooden Mechanism, Model Engineering Kit",
@@ -147,6 +157,7 @@
       "PRICE": "50",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "981",
+      "WEIGHT_KG": "0.25",
       "TAGS": "mechanical_toy,math_toy,stem,mechanism,gadget,kes_adder,curta,dial_calculator,automata,office_toy,model_making,science,engineering",
       "MATERIALS": "Plywood",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/49b9ec/7764225703/il_fullxfull.7764225703_iat4.jpg",
@@ -162,12 +173,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "5",
-      "CATEGORY": "toys and games",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "toys and games"
     },
     {
       "TITLE": "Woodchopper whirligig plans, laser cut files, scroll saw, svg dxf pdf",
@@ -175,6 +187,7 @@
       "PRICE": "14",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "902",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzle,model,stem,craft,whirligig,automata,kinetic_art,scroll_saw,maker,karakuri,toy,woodchopper,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/5f3d80/4182614388/il_fullxfull.4182614388_pzqy.jpg",
@@ -190,12 +203,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "6",
-      "CATEGORY": "other",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "other"
     },
     {
       "TITLE": "Cam Box laser cutter plans svg dxf",
@@ -203,6 +217,7 @@
       "PRICE": "12",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "912",
+      "WEIGHT_KG": "0.25",
       "TAGS": "technology_teacher,stem,engineering,mechanism,automata,cams,science,education,robotics,wooden_puzzle,learning,build,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/5212ba/5833507789/il_fullxfull.5833507789_ch6z.jpg",
@@ -218,12 +233,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "7",
-      "CATEGORY": "other",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "other"
     },
     {
       "TITLE": "Hummingbird and Flower Automaton Laser Cut plans SVG DXF",
@@ -231,6 +247,7 @@
       "PRICE": "15",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "346",
+      "WEIGHT_KG": "0.25",
       "TAGS": "Hummingbird,Automata,Kits,Wooden_gift,STEM_education,Craft,Maker,Model,Engineering,Robotics,Technology,Woodwork,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/01063d/5695088708/il_fullxfull.5695088708_rwak.jpg",
@@ -246,12 +263,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "8",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Magic Empty Box Laser Cutter Files SVG DXF",
@@ -259,6 +277,7 @@
       "PRICE": "12",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "773",
+      "WEIGHT_KG": "0.25",
       "TAGS": "magic,trick,puzzle_box,mystery,secret,maker,craft,project,stem,education,technology,DIY,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/08527a/6018144899/il_fullxfull.6018144899_p5zp.jpg",
@@ -274,12 +293,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "10",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Magic Pencil Box Laser Cutter Plans SVG DXF PDF",
@@ -287,6 +307,7 @@
       "PRICE": "12",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "562",
+      "WEIGHT_KG": "0.25",
       "TAGS": "magic,box,trick,pencil,puzzle,wood,secret,prop,magician,plans,toy,mystery,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/a00cf2/6050321221/il_fullxfull.6050321221_1xu3.jpg",
@@ -302,12 +323,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "9",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Magic Drawer Box, Lasercut Files SVG DXF PDF, Wooden Production Box Illusion",
@@ -315,6 +337,7 @@
       "PRICE": "12",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "960",
+      "WEIGHT_KG": "0.25",
       "TAGS": "magic_trick,wooden_magic,puzzle_box,magician_prop,laser_cut_files,lasercut_magic_trick,illusion,STEM_project,wooden_toy,wooden_box,magic_shop,mechanism,secret_box",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/8edb68/7748820039/il_fullxfull.7748820039_pfre.jpg",
@@ -330,12 +353,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "11",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Musical Marble Tree Scroll Saw or Laser Cutter Plans PDF - SVG - DXF",
@@ -343,6 +367,7 @@
       "PRICE": "10",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "978",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzle,laser_cut,marbles,toy,music,xylophone,rain_stick,make,craft,model,fun,child,scroll_saw",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/61864a/3653840239/il_fullxfull.3653840239_jtlh.jpg",
@@ -358,12 +383,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "12",
-      "CATEGORY": "toys and games",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "toys and games"
     },
     {
       "TITLE": "Fisherman whirligig plans - SVG DXF PDF - laser cutting - scroll saw",
@@ -371,6 +397,7 @@
       "PRICE": "14",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "5",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzle,model,stem,craft,whirligig,automata,kinetic_art,dog,laser_cut,scroll_saw,maker,karakuri,toy",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/c0af1b/4227293783/il_fullxfull.4227293783_o4l3.jpg",
@@ -386,12 +413,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "13",
-      "CATEGORY": "other",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "other"
     },
     {
       "TITLE": "Dog and Cat Running Automata Laser Cutting plans svg dxf",
@@ -399,6 +427,7 @@
       "PRICE": "14",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "807",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzles,stem,automata,model_making,engineering,technology,dog,cat,machine,kinetic_art,sculpture,reindeer_automaton,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/52b9a2/6440075241/il_fullxfull.6440075241_ltt6.jpg",
@@ -414,12 +443,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "14",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Tortoise  Automata Kit - Wooden mechanical keepsake box",
@@ -427,6 +457,7 @@
       "PRICE": "55",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "18",
+      "WEIGHT_KG": "0.25",
       "TAGS": "tortoise,turtle,robot,automata,mechanical,sculpture,box,model,puzzle,STEM,engineering,toy,kinetic",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/0afdd3/3230052300/il_fullxfull.3230052300_ewkv.jpg",
@@ -442,12 +473,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "15",
-      "CATEGORY": "puzzle boxes",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "puzzle boxes"
     },
     {
       "TITLE": "Coke Can Magic Trick Box: Self-Working Illusion, DIY or Assembled",
@@ -455,6 +487,7 @@
       "PRICE": "50",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "7",
+      "WEIGHT_KG": "0.25",
       "TAGS": "magic_trick,puzzle_box,magical_prop,diy_magic,magic_production_box,illusion_box,appearing_coke_can,laser_cut_kit,lasercut_magic_trick,wooden_magic_trick,tilt_box,tip_over_box,gimmick_box",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/02f463/7151575797/il_fullxfull.7151575797_cs3t.jpg",
@@ -470,12 +503,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "assembly",
       "VARIATION 1 VALUES": "kit,assembled,Collector&#39;s Edition",
+      "VARIATION 1 PRICE DELTA": "0,20,0",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "16",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Plans for Wooden Hummingbird pole pet automata SVG DXF PDF",
@@ -483,6 +517,7 @@
       "PRICE": "14",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "14",
+      "WEIGHT_KG": "0.25",
       "TAGS": "mechanical_sculpture,karakuri,kinetic_art,kinetic_sculpture,perpetual_motion,automata,automaton,toy,wooden_model,father,bird,laser_cut,gears",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/1594f7/3932431940/il_fullxfull.3932431940_qg9d.jpg",
@@ -498,12 +533,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "17",
-      "CATEGORY": "toys and games",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "toys and games"
     },
     {
       "TITLE": "Mechanical Calculator Laser Cut Files SVG, DXF, Math Toy, Wooden Mechanism",
@@ -511,6 +547,7 @@
       "PRICE": "12",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "961",
+      "WEIGHT_KG": "0.25",
       "TAGS": "mechanical_toy,math_toy,technology_class,stem,mechanism,gadget,lasercut_plans,lasercut_files,kes_adder,curta,dial_calculator,automata,office_toy",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/5b8d66/7716315962/il_fullxfull.7716315962_p0ag.jpg",
@@ -526,12 +563,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "18",
-      "CATEGORY": "toys and games",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "toys and games"
     },
     {
       "TITLE": "Wind Powered Bird Whirligig Kit, Birch Plywood Fantail, Kinetic sculpture",
@@ -539,6 +577,7 @@
       "PRICE": "50",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "3",
+      "WEIGHT_KG": "0.25",
       "TAGS": "automata,bird,whirligig,stem,wind,kinetic,maker,laser_cut,karakuri,wooden_puzzle,model,fantail,sculpture",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/0ebaf9/5142894636/il_fullxfull.5142894636_j9vj.jpg",
@@ -554,12 +593,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled and oiled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "19",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Hummingbird and Flower Automaton, Hand Cranked Mechanism",
@@ -567,6 +607,7 @@
       "PRICE": "50",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "7",
+      "WEIGHT_KG": "0.25",
       "TAGS": "Hummingbird,Automata,Kits,Wooden_gift,STEM_education,Craft,Maker,Model,Engineering,Robotics,Technology,Woodwork,Laser_cut",
       "MATERIALS": "Wood",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/7b783d/7499575608/il_fullxfull.7499575608_1yih.jpg",
@@ -582,12 +623,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "20",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Magic Drawer Illusion Box – Vanish or Appear Objects Trick",
@@ -595,6 +637,7 @@
       "PRICE": "50",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "9",
+      "WEIGHT_KG": "0.25",
       "TAGS": "desk_toy,office_desk_toy,executive_gift,magic_desk_toy,wooden_desk_toy,conversation_piece,illusion_box,magic_trick_box,vanish_appear_box,mechanical_toy,brain_teaser_gift,unique_office_gift,handmade_wood_toy",
       "MATERIALS": "Wood",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/8edb68/7748820039/il_fullxfull.7748820039_pfre.jpg",
@@ -610,12 +653,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "21",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Wooden Hummingbird pole pet automata",
@@ -623,6 +667,7 @@
       "PRICE": "49",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "9",
+      "WEIGHT_KG": "0.25",
       "TAGS": "mechanical_sculpture,karakuri,kinetic_art,kinetic_sculpture,perpetual_motion,automata,automaton,toy,wooden_model,father,bird,laser_cut,gears",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/2f7cf2/3979887369/il_fullxfull.3979887369_p0lp.jpg",
@@ -638,12 +683,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Assembled for you,kit",
+      "VARIATION 1 PRICE DELTA": "20,0",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "22",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Dog Whirligig, Kinetic Wind Powered Garden Sculpture, DIY Kit or Fully Assembled",
@@ -651,6 +697,7 @@
       "PRICE": "75",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "1",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzle,model,stem,craft,whirligig,automata,kinetic_art,dog,laser_cut,maker,karakuri,toy,wind",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/705fde/4218904869/il_fullxfull.4218904869_62e3.jpg",
@@ -666,12 +713,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled + Painted",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "23",
-      "CATEGORY": "other",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "other"
     },
     {
       "TITLE": "Bird Whirligig Plans DXF SVG Laser cut or Scroll saw",
@@ -679,6 +727,7 @@
       "PRICE": "14",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "924",
+      "WEIGHT_KG": "0.25",
       "TAGS": "automata,bird,whirligig,stem,wind,kinetic,maker,karakuri,wooden_puzzle,model,fantail,sculpture,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/0ebaf9/5142894636/il_fullxfull.5142894636_j9vj.jpg",
@@ -694,12 +743,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "24",
-      "CATEGORY": "other",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "other"
     },
     {
       "TITLE": "Magic Frame Illusion-Appearing Image and words-customizable",
@@ -707,6 +757,7 @@
       "PRICE": "40",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "12",
+      "WEIGHT_KG": "0.25",
       "TAGS": "Laser_cut_files,Magic_Trick_picture,Magic_sign_illusion,Magician_prop,Magic_gimmick,Secret_box,Mystery_box,Escape_room,Stem_toy,Wooden_toy,Science_project,Technology_class,Diy_build",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/ed679c/6874432458/il_fullxfull.6874432458_ivk5.jpg",
@@ -722,12 +773,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "25",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Slide Picture Puzzle Box Plans SVG DXF PDF Davinci's Vitruvian man",
@@ -735,6 +787,7 @@
       "PRICE": "12",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "705",
+      "WEIGHT_KG": "0.25",
       "TAGS": "Puzzlebox,Vitruvian_Man,Stem,Steam,Puzzle,Mechanism,Gift_for_men,Leonardo_davinci,Secret_box,Technical,Maker,Wooden_toy,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/ccf267/4561367052/il_fullxfull.4561367052_lf6h.jpg",
@@ -750,12 +803,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "27",
-      "CATEGORY": "puzzle boxes",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "puzzle boxes"
     },
     {
       "TITLE": "Illusionist Pendant Puzzle Box Laser Cut Files",
@@ -763,6 +817,7 @@
       "PRICE": "6",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "785",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzle,puzzle_box,laser_cut_files,valentines,pendant,jewelry,love,mechanism,butterfly,mother,locket,magic,illusion",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/d88951/7760701430/il_fullxfull.7760701430_a01a.jpg",
@@ -778,12 +833,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "26",
-      "CATEGORY": "puzzle boxes",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "puzzle boxes"
     },
     {
       "TITLE": "Dice Tunnel Magic Trick Laser Cut Illusion DIY Kit",
@@ -791,6 +847,7 @@
       "PRICE": "40",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "6",
+      "WEIGHT_KG": "0.25",
       "TAGS": "magic_trick,dice_illusion,DIY_magic,wooden_mechanism,secret_box,wooden_toy_project,puzzle_box,magician_gimmick,laser_cut_dice,STEM_project,mystery_box,Executive_toy,office_toy",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/ce2a26/6799903374/il_fullxfull.6799903374_15kr.jpg",
@@ -806,12 +863,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "28",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Bird Zoetrope Kit, 3D Laser Cut Wooden Puzzle, Animation Machine",
@@ -819,6 +877,7 @@
       "PRICE": "40",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "10",
+      "WEIGHT_KG": "0.25",
       "TAGS": "animation,mechanical_sculpture,wooden_puzzle,mechanical_toy,bird,model,kinetic_art,mechanism,special,stem,automata,zoetrope,gears",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/ff0b3f/3659623310/il_fullxfull.3659623310_2in0.jpg",
@@ -834,12 +893,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "29",
-      "CATEGORY": "puzzle boxes",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "puzzle boxes"
     },
     {
       "TITLE": "Bird 3D Zoetrope laser cutter plans - SVG DXF",
@@ -847,6 +907,7 @@
       "PRICE": "12",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "23",
+      "WEIGHT_KG": "0.25",
       "TAGS": "animation,mechanical_sculpture,wooden_puzzle,mechanical_toy,bird,kinetic_art,mechanism,automata,zoetrope,gears,laser_cut,automata_plans,dxf_svg",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/ff0b3f/3659623310/il_fullxfull.3659623310_2in0.jpg",
@@ -862,12 +923,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "30",
-      "CATEGORY": "other",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "other"
     },
     {
       "TITLE": "Dog and Cat Running Automata kit",
@@ -875,6 +937,7 @@
       "PRICE": "49",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "11",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzles,stem,automata,craft,model_making,engineering,technology,dog,cat,machine,kinetic_art,sculpture,robotics",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/1291ff/5741377892/il_fullxfull.5741377892_mo3z.jpg",
@@ -890,12 +953,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "31",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Writing automaton plans scroll saw/laser cutter - Lanky Doodler  Mechanical Model SVG,DXF,PDF",
@@ -903,6 +967,7 @@
       "PRICE": "14",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "990",
+      "WEIGHT_KG": "0.25",
       "TAGS": "mechanical_sculpture,mechanical_toy,wooden_puzzle,kinetic_art,mechanism,mechanical_model,drawing_automaton,executive_toy,automata,scroll_saw_plans,engineering_toy,science_toy,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/53af33/7017683670/il_fullxfull.7017683670_px9j.jpg",
@@ -918,12 +983,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "32",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "DIY Swinging Monkey Automata Kit - Fun Craft Project for Kids and Adults",
@@ -931,6 +997,7 @@
       "PRICE": "40",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "12",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzles,model_making,laser_cutting,machine,kinetic_art,sculpture,stem_kit,mechanical_model,craft_project,engineering_toy,kinetic_sculpture,monkey_toy,automata_kit",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/5d0025/5850380013/il_fullxfull.5850380013_pu5w.jpg",
@@ -946,12 +1013,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "assembly",
       "VARIATION 1 VALUES": "kit,assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "33",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Mouse Maze Puzzle Box Plans- SVG DXF PDF- Laser cutting files - scroll saw",
@@ -959,6 +1027,7 @@
       "PRICE": "12",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "481",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzle,puzzle_box,puzzle,maze,mouse,trick,magic,secret,gift,gift_box,brain,labyrinth,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/85639c/4250092607/il_fullxfull.4250092607_ktow.jpg",
@@ -974,12 +1043,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "34",
-      "CATEGORY": "puzzle boxes",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "puzzle boxes"
     },
     {
       "TITLE": "Magic Frame-lasercut Files-Appearing Image and words-customizable-svg dxf pdf",
@@ -987,6 +1057,7 @@
       "PRICE": "12",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "963",
+      "WEIGHT_KG": "0.25",
       "TAGS": "Laser_cut_files,Magic_Trick_picture,Magic_sign_illusion,Magician_prop,Magic_gimmick,Secret_box,Mystery_box,Escape_room,Stem_toy,Wooden_toy,Science_project,Technology_class,Diy_build",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/ed679c/6874432458/il_fullxfull.6874432458_ivk5.jpg",
@@ -1002,12 +1073,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "36",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Dice Tunnel Magic Trick Laser Cut Files for Download - SVG - DXF - PDF - Illusion",
@@ -1015,6 +1087,7 @@
       "PRICE": "12",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "937",
+      "WEIGHT_KG": "0.25",
       "TAGS": "laser_cut_files,magic_trick,dice_illusion,DIY_magic,wooden_mechanism,secret_box,laser_cutter_plans,wooden_toy_project,scroll_saw_plans,puzzle_box,magician_gimmick,laser_cut_dice,STEM_project",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/d9abbc/6799905088/il_fullxfull.6799905088_judh.jpg",
@@ -1030,12 +1103,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "35",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Illusionist Pendant Puzzle Box Laser Cut DIY Kit",
@@ -1043,6 +1117,7 @@
       "PRICE": "30",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "62",
+      "WEIGHT_KG": "0.25",
       "TAGS": "laser_cut,wooden_puzzle,puzzle_box,valentines,pendant,jewelry,love,mechanism,butterfly,mother,locket,magic,model",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/e0dae1/7808588727/il_fullxfull.7808588727_2dg6.jpg",
@@ -1058,12 +1133,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "37",
-      "CATEGORY": "puzzle boxes",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "puzzle boxes"
     },
     {
       "TITLE": "Key Through Coin Magic Trick: Laser Cut Plans (SVG, PDF, DXF)",
@@ -1071,6 +1147,7 @@
       "PRICE": "10",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "874",
+      "WEIGHT_KG": "0.25",
       "TAGS": "laser_cutter_files,wooden_illusion,magic_trick_plans,key_through_coin,craft_project,secret_box,mystery_box,mechanism,magic_gimmick,contraption,diy_for_kids,stem_education,technology_class",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/e6742b/6634727819/il_fullxfull.6634727819_t7up.jpg",
@@ -1086,12 +1163,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "38",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Magic Trick Pencil Box Kit: Wooden 3D Puzzle, STEM Toy",
@@ -1099,6 +1177,7 @@
       "PRICE": "40",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "8",
+      "WEIGHT_KG": "0.25",
       "TAGS": "laser_cut,magic_trick,mystery_box,illusion,secret_box,wooden_diy_kit,mechanism,3d_puzzle,diy_model,executive_toy,magician_prop,construction_kit,mechanical_model",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/eebcd7/6002252572/il_fullxfull.6002252572_jwj9.jpg",
@@ -1114,12 +1193,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "assembly",
       "VARIATION 1 VALUES": "kit,assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "39",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Whirligig Hardware Kit: Stainless Steel & Brass Parts",
@@ -1127,6 +1207,7 @@
       "PRICE": "40",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "15",
+      "WEIGHT_KG": "0.25",
       "TAGS": "Whirligig,Garden_sculpture,Kinetic_sculpture",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/2d3dc8/5025710985/il_fullxfull.5025710985_st50.jpg",
@@ -1142,12 +1223,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Whirligig type",
       "VARIATION 1 VALUES": "Dog,Surfer,Fisherman,Woodchopper",
+      "VARIATION 1 PRICE DELTA": "0,0,0,0",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "40",
-      "CATEGORY": "other",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "other"
     },
     {
       "TITLE": "Whale Automata Toy Kit: Mechanical Pet, DIY Build",
@@ -1155,6 +1237,7 @@
       "PRICE": "32",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "6",
+      "WEIGHT_KG": "0.25",
       "TAGS": "whale,toy,automata,kinetic_art,STEM,mechanical_model,craft_kit,wooden_toy,smart_toys,build_it,put_together,gift,maker",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/d73939/2578454161/il_fullxfull.2578454161_t55f.jpg",
@@ -1170,12 +1253,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "41",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Gorilla Pulley Pet Automata Plans SVG DXF-Laser cut mechanical toy",
@@ -1183,6 +1267,7 @@
       "PRICE": "10",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "928",
+      "WEIGHT_KG": "0.25",
       "TAGS": "automata,toys,craft_kit,wooden_toys,gorilla,mechanical_model,kinetic_art,mechanical_toys,STEM,make,education,laser_cutting,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/7fe8fb/4872386232/il_fullxfull.4872386232_hgbf.jpg",
@@ -1198,12 +1283,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "42",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Magic Empty Box Illusion - DIY Magic Trick - Make anything appear and disappear",
@@ -1211,6 +1297,7 @@
       "PRICE": "40",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "4",
+      "WEIGHT_KG": "0.25",
       "TAGS": "magic,trick,puzzle_box,mystery,secret,maker,craft,project,stem,education,technology,DIY,lasercut",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/08527a/6018144899/il_fullxfull.6018144899_p5zp.jpg",
@@ -1226,12 +1313,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "43",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Newcomb's Paradox Magic Trick Laser Cut Files, SVG DXF PDF, Coin Illusion with Secret Mechanism, Mental Magic",
@@ -1239,6 +1327,7 @@
       "PRICE": "10",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "990",
+      "WEIGHT_KG": "0.25",
       "TAGS": "magic_trick,magic_shop_Australia,Newcomb's_Paradox,wooden_magic_tricks,coin_illusion,instant_money_trick,philosophy_toys,mechanical_toy,escape_room,mystery_box,secret_box,puzzle_box,magic_mechanism",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/423f4f/7352502921/il_fullxfull.7352502921_iu74.jpg",
@@ -1254,12 +1343,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "44",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Chicken And Egg Box Magic Trick laser cut files, svg dxf pdf, gozinta box",
@@ -1267,6 +1357,7 @@
       "PRICE": "12",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "993",
+      "WEIGHT_KG": "0.25",
       "TAGS": "magic_trick,lasercut_files,gozinta_box,puzzle_box,illusion,escape_room,wooden_magic_tricks,technology_class,maker,secret_box,dice_box_magic,math_toy,stem",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/2f7da6/7693611964/il_fullxfull.7693611964_frf6.jpg",
@@ -1282,12 +1373,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "45",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Mini Cryptex Puzzle Box – Word Lock Secret Drawer, Spelling Learning Toy",
@@ -1295,6 +1387,7 @@
       "PRICE": "40",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "10",
+      "WEIGHT_KG": "0.25",
       "TAGS": "Cryptex_puzzle,Puzzle_box,Word_puzzle,Brain_teaser_gift,Escape_room_prop,Secret_drawer_box,Spelling_toy,Learning_toy,Montessori_toy,Educational_gift,Stocking_stuffer,Desk_puzzle,Logic_puzzle",
       "MATERIALS": "Wood",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/4d4af1/7431628092/il_fullxfull.7431628092_pq2y.jpg",
@@ -1310,12 +1403,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "46",
-      "CATEGORY": "puzzle boxes",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "puzzle boxes"
     },
     {
       "TITLE": "Chicken And Egg Box Magic Trick, gozinta box, Impossible boxes, Each fits inside the other",
@@ -1323,6 +1417,7 @@
       "PRICE": "50",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "994",
+      "WEIGHT_KG": "0.25",
       "TAGS": "magic_trick,gozinta_box,puzzle_box,illusion,escape_room,wooden_magic_tricks,technology_class,maker,secret_box,dice_box_magic,math_toy,stem,laser_cut",
       "MATERIALS": "Wood",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/2f7da6/7693611964/il_fullxfull.7693611964_frf6.jpg",
@@ -1338,12 +1433,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembley",
       "VARIATION 1 VALUES": "Kit,Assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "47",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Woodchopper Whirligig Kit",
@@ -1351,6 +1447,7 @@
       "PRICE": "75",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "6",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzle,model,stem,craft,whirligig,automata,kinetic_art,laser_cut,maker,karakuri,toy,woodchopper,wind",
       "MATERIALS": "Wood",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/5f3d80/4182614388/il_fullxfull.4182614388_pzqy.jpg",
@@ -1366,12 +1463,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled + Painted",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "48",
-      "CATEGORY": "other",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "other"
     },
     {
       "TITLE": "Fisherman whirligig  Kit, Wind Powered Kinetic Garden Sculpture",
@@ -1379,6 +1477,7 @@
       "PRICE": "75",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "6",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzle,model,stem,craft,whirligig,automata,kinetic_art,dog,laser_cut,maker,karakuri,toy,wind",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/c0af1b/4227293783/il_fullxfull.4227293783_o4l3.jpg",
@@ -1394,12 +1493,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled + Painted",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "49",
-      "CATEGORY": "other",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "other"
     },
     {
       "TITLE": "Surfer Whirligig Kit",
@@ -1407,6 +1507,7 @@
       "PRICE": "75",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "5",
+      "WEIGHT_KG": "0.25",
       "TAGS": "kinetic_art,automaton,karakuri,whirligig,stem,wooden_puzzle,contraption,model,make,wind,garden,laser_cut,surfer",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/ff60a4/4199153987/il_fullxfull.4199153987_28b6.jpg",
@@ -1422,12 +1523,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled + Painted",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "50",
-      "CATEGORY": "other",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "other"
     },
     {
       "TITLE": "Surfer Whirligig Plans - SVG - PDF - laser cutting - scroll saw",
@@ -1435,6 +1537,7 @@
       "PRICE": "14",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "58",
+      "WEIGHT_KG": "0.25",
       "TAGS": "kinetic_art,automaton,karakuri,whirligig,stem,wooden_puzzle,contraption,model,make,wind,garden,scroll_saw,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/ff60a4/4199153987/il_fullxfull.4199153987_28b6.jpg",
@@ -1450,12 +1553,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "51",
-      "CATEGORY": "other",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "other"
     },
     {
       "TITLE": "Moving Head Illusion Robot Laser cut files svg dxf pdf",
@@ -1463,6 +1567,7 @@
       "PRICE": "10",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "986",
+      "WEIGHT_KG": "0.25",
       "TAGS": "illusion,robot,svg,automata,magic,toy,perspective,trick,maker,escape_room,educational,puzzle,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/063853/7017774114/il_fullxfull.7017774114_b3ak.jpg",
@@ -1478,12 +1583,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "52",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Fluttering Heart Automaton SVG DXF PDF laser cutter files",
@@ -1491,6 +1597,7 @@
       "PRICE": "12",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "894",
+      "WEIGHT_KG": "0.25",
       "TAGS": "kinetic_art,puzzle,wooden_puzzle,craft,valentines,gift,mechanism,robot,gizmo,romantic,karakuri,mechanical_sculpture,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/355899/4526666951/il_fullxfull.4526666951_igt0.jpg",
@@ -1506,12 +1613,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "53",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Electric Origami Hummingbird Plans - Paper Automata template",
@@ -1519,6 +1627,7 @@
       "PRICE": "4",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "84",
+      "WEIGHT_KG": "0.25",
       "TAGS": "kirigami,origami,mechanical,sculpture,robot,automata,plans,template,paper_craft,automaton,model,hummingbird,kinetic",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/853949/3578171720/il_fullxfull.3578171720_mcen.jpg",
@@ -1534,12 +1643,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "54",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Chocolate Train Counting Squares: Educational Math Toy SVG DXF (Digital Download)",
@@ -1547,6 +1657,7 @@
       "PRICE": "6",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "999",
+      "WEIGHT_KG": "0.25",
       "TAGS": "educational_toy,math_toy,STEM_Education,counting_cubes,lasercut_plans,laser_cutting_files,counting_game,montessori,wooden_toy,learning_tool,wooden_puzzle,wooden_train,chocolate_train",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/d7b646/7178466483/il_fullxfull.7178466483_ae2l.jpg",
@@ -1562,12 +1673,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "55",
-      "CATEGORY": "toys and games",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "toys and games"
     },
     {
       "TITLE": "Writing and Drawing automaton, Laser  Cut Mechanical Model, Science Kit",
@@ -1575,6 +1687,7 @@
       "PRICE": "49",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "9",
+      "WEIGHT_KG": "0.25",
       "TAGS": "mechanical_sculpture,mechanical_toy,wooden_puzzle,laser_cut,kinetic_art,mechanism,mechanical_model,drawing_automaton,executive_toy,automata,science,engineering,stem",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/399c2a/7428826811/il_fullxfull.7428826811_61kf.jpg",
@@ -1590,12 +1703,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Cam",
       "VARIATION 1 VALUES": "Custom message,Hello,Love you,Mum,Dad,Happy Bday,Merry Xmas",
+      "VARIATION 1 PRICE DELTA": "0,0,0,0,0,0,0",
       "VARIATION 2 TYPE": "Custom Property",
       "VARIATION 2 NAME": "Assembly",
       "VARIATION 2 VALUES": "Unassembled Kit,Assembled",
+      "VARIATION 2 PRICE DELTA": "0,20",
       "SKU": "56",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Swinging Monkey Automata Laser Cutting plans svg dxf",
@@ -1603,6 +1717,7 @@
       "PRICE": "14",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "944",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzles,stem,automata,craft,model_making,engineering,technology,dog,cat,machine,kinetic_art,sculpture,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/f4fe17/5850384031/il_fullxfull.5850384031_pu5w.jpg",
@@ -1618,12 +1733,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "57",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Automata kit Bird Money Bank - Gear Box Pets",
@@ -1631,6 +1747,7 @@
       "PRICE": "55",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "17",
+      "WEIGHT_KG": "0.25",
       "TAGS": "mechanical_model,wooden_puzzle,automata_kit,bird,money_bank,automaton,kinetic_art,mechanical_toy,flapping_bird,stem_education,robot,moving_toy,laser_cut",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/0222dd/3203550682/il_fullxfull.3203550682_iyzb.jpg",
@@ -1646,12 +1763,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "58",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Sword Through Finger Magic Trick, laser cut illusion puzzle, wooden DIY kit",
@@ -1659,6 +1777,7 @@
       "PRICE": "40",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "13",
+      "WEIGHT_KG": "0.25",
       "TAGS": "magic_trick,sword_trick,sword_through_finger,knife_illusion,mechanical_model,maker_kit,gimmick,craft_project,stem_kit,executive_toy,mystery_box,puzzle_box,laser_cut_kit",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/6131c9/7304342262/il_fullxfull.7304342262_3pqw.jpg",
@@ -1674,12 +1793,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "assembly",
       "VARIATION 1 VALUES": "kit,assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "60",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     },
     {
       "TITLE": "Climbing Gorilla Pulley Toy Kit: Pet Automata Mechanism",
@@ -1687,6 +1807,7 @@
       "PRICE": "32",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "10",
+      "WEIGHT_KG": "0.25",
       "TAGS": "automata,toys,craft_kit,wooden_toys,gorilla,mechanical_model,kinetic_art,mechanical_toys,STEM,make,education,gift",
       "MATERIALS": "Wood",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/7fe8fb/4872386232/il_fullxfull.4872386232_hgbf.jpg",
@@ -1702,12 +1823,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "59",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Goldfish Automata Kit - Wooden Mechanical Fish",
@@ -1715,6 +1837,7 @@
       "PRICE": "55",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "9",
+      "WEIGHT_KG": "0.25",
       "TAGS": "automata,goldfish,fish,mechanical,toy,kinetic,robot,model,moving_model,engineering,stem,puzzle,make",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/54d3fc/3277769191/il_fullxfull.3277769191_chd1.jpg",
@@ -1730,12 +1853,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "61",
-      "CATEGORY": "puzzle boxes",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "puzzle boxes"
     },
     {
       "TITLE": "Toddler Ride On Dog Toy Plans: Sweeping Car, DXF SVG PDF",
@@ -1743,6 +1867,7 @@
       "PRICE": "14",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "993",
+      "WEIGHT_KG": "0.25",
       "TAGS": "Ride_on,Dog,Wood,Educational,Bicycle,Rocking_horse,Car,Street_sweeper,Laser_cutter_plans,scroll_saw_plans,toddler_toy,scooter,laser_cut_files",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/78abf8/4998764623/il_fullxfull.4998764623_mqoe.jpg",
@@ -1758,12 +1883,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "62",
-      "CATEGORY": "toys and games",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "toys and games"
     },
     {
       "TITLE": "Mini Arcade Driving Game: Wind-Up Music Box, Laser Cut Wood Kit",
@@ -1771,6 +1897,7 @@
       "PRICE": "80",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "91",
+      "WEIGHT_KG": "0.25",
       "TAGS": "arcade_game,desk_toy,wind_up_toy,music_box,mechanical_model,car_toy,cool_stuff,dad_gift,stem_toy,construction_project,engineer,maker_kit,build_and_play",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/0551df/6652167125/il_fullxfull.6652167125_7sp9.jpg",
@@ -1786,12 +1913,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "theme",
       "VARIATION 1 VALUES": "Country Lane,City Traffic",
+      "VARIATION 1 PRICE DELTA": "0,0",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "63",
-      "CATEGORY": "toys and games",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "toys and games"
     },
     {
       "TITLE": "Fluttering Heart Automata Kit - Kinetic mechanical model - Valentines Gift",
@@ -1799,6 +1927,7 @@
       "PRICE": "40",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "10",
+      "WEIGHT_KG": "0.25",
       "TAGS": "kinetic_art,puzzle,wooden_puzzle,valentines,mechanism,robot,gizmo,karakuri,mechanical_sculpture,laser_cut,automata,stem,wings",
       "MATERIALS": "Wood",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/355899/4526666951/il_fullxfull.4526666951_igt0.jpg",
@@ -1814,12 +1943,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "64",
-      "CATEGORY": "automata",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "automata"
     },
     {
       "TITLE": "Wooden Ride On Car Street Sweeper, Wheely Dog for Toddlers, Pug Toy for Babies",
@@ -1827,6 +1957,7 @@
       "PRICE": "140",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "4",
+      "WEIGHT_KG": "0.25",
       "TAGS": "Ride_on,Dog,Pug,Mechanical,Interactive,Wood,Educational,Bicycle,Rocking_horse,Car,Street_sweeper,Pug_chug,scooter",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/78abf8/4998764623/il_fullxfull.4998764623_mqoe.jpg",
@@ -1842,12 +1973,13 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "65",
-      "CATEGORY": "toys and games",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "toys and games"
     },
     {
       "TITLE": "Musical Marble Tree Laser Cut Kit",
@@ -1855,6 +1987,7 @@
       "PRICE": "38",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "14",
+      "WEIGHT_KG": "0.25",
       "TAGS": "wooden_puzzle,laser_cut,marbles,toy,music,xylophone,rain_stick,make,craft,model,fun,child,calming",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/61864a/3653840239/il_fullxfull.3653840239_jtlh.jpg",
@@ -1870,12 +2003,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "66",
-      "CATEGORY": "toys and games",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "toys and games"
     },
     {
       "TITLE": "Newcomb's Paradox Magic Trick: Coin Illusion with Secret Mechanism, Mental Magic",
@@ -1883,6 +2017,7 @@
       "PRICE": "60",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "19",
+      "WEIGHT_KG": "0.25",
       "TAGS": "magic_trick,magic_shop_Australia,Newcomb's_Paradox,wooden_magic_tricks,coin_illusion,instant_money_trick,philosophy_toys,mechanical_toy,escape_room,mystery_box,secret_box,puzzle_box,magic_mechanism",
       "MATERIALS": "Plywood",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/a4bbac/7239250353/il_fullxfull.7239250353_iu74.jpg",
@@ -1898,12 +2033,13 @@
       "VARIATION 1 TYPE": "",
       "VARIATION 1 NAME": "",
       "VARIATION 1 VALUES": "",
+      "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
       "SKU": "67",
-      "CATEGORY": "magic tricks",
-      "WEIGHT_KG": "0.25"
+      "CATEGORY": "magic tricks"
     }
   ]
 }

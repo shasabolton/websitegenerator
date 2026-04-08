@@ -72,16 +72,22 @@ function parseVariationValuesCell(raw) {
 
 /**
  * @param {object} row - Product row from productData.json
- * @returns {{ name: string, values: string[] }[]}
+ * @returns {{ name: string, values: string[], deltas: number[] }[]}
  */
-function collectVariationAxes(row) {
+function collectVariationAxesWithDeltas(row) {
   const axes = [];
   for (let i = 1; i <= 2; i += 1) {
     const name = String(row[`VARIATION ${i} NAME`] || "").trim();
     const values = parseVariationValuesCell(row[`VARIATION ${i} VALUES`]);
-    if (name && values.length > 0) {
-      axes.push({ name, values });
+    if (!name || values.length === 0) {
+      continue;
     }
+    const parts = String(row[`VARIATION ${i} PRICE DELTA`] ?? "").split(",");
+    const deltas = values.map((_, idx) => {
+      const n = parseFloat(String(parts[idx] ?? "").trim());
+      return Number.isFinite(n) ? n : 0;
+    });
+    axes.push({ name, values, deltas });
   }
   return axes;
 }
@@ -197,12 +203,31 @@ async function generateProductBody(ctx) {
   `;
 
   const sku = String(row.SKU || "").trim();
-  const variationAxes = collectVariationAxes(row);
+  const variationAxes =
+    typeof window.productData?.variationAxesFromRow === "function"
+      ? window.productData.variationAxesFromRow(row)
+      : collectVariationAxesWithDeltas(row);
   const variationsHtml = buildProductVariationsHtml(variationAxes);
+  let basePrice = parseFloat(String(row.PRICE ?? "0"));
+  if (!Number.isFinite(basePrice) || basePrice < 0) {
+    basePrice = 0;
+  }
+  let currencyCode = String(row.CURRENCY_CODE || "AUD")
+    .trim()
+    .toUpperCase();
+  if (!/^[A-Z]{3}$/.test(currencyCode)) {
+    currencyCode = "AUD";
+  }
   const cartBootstrap = {
     sku,
     productPath: `shop/${categorySlugResolved}/${productSlug}`,
-    variations: variationAxes.map((a) => ({ name: a.name, values: a.values })),
+    basePrice,
+    currencyCode,
+    variations: variationAxes.map((a) => ({
+      name: a.name,
+      values: a.values,
+      deltas: a.deltas,
+    })),
   };
   const bootstrapJson = JSON.stringify(cartBootstrap);
   const productPriceDisplay = formatProductPriceDisplay(row);

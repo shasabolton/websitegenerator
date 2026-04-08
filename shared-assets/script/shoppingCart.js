@@ -215,7 +215,7 @@ class ShoppingCart {
    * Resolves `sku` via {@link skuToLineItem} using `window.productData.fetchProductDataJson()`, then {@link ShoppingCart#addLineItemToCart}.
    * @param {unknown} sku
    * @param {unknown} quantity
-   * @param {{ lineId?: unknown, variationSummary?: unknown, productPath?: unknown }} [options]
+   * @param {{ lineId?: unknown, variationSummary?: unknown, productPath?: unknown, unitPrice?: unknown }} [options]
    * @returns {Promise<boolean>}
    */
   async addToCartFromSku(sku, quantity, options) {
@@ -246,6 +246,10 @@ class ShoppingCart {
     const productPath = String(opt.productPath ?? "").trim();
     if (productPath) {
       line.productPath = productPath;
+    }
+    const unitPriceOpt = Number(opt.unitPrice);
+    if (Number.isFinite(unitPriceOpt) && unitPriceOpt >= 0) {
+      line.unitPrice = Math.round(unitPriceOpt * 100) / 100;
     }
     return this.addLineItemToCart(line);
   }

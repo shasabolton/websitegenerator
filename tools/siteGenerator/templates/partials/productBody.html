@@ -1,7 +1,7 @@
 <section class="page-content product-page">
   __BREADCRUMBS__
   <h1>__PRODUCT_TITLE__</h1>
-  <p class="product-body-price">__PRODUCT_PRICE__</p>
+  <p class="product-body-price" id="product-body-price">__PRODUCT_PRICE__</p>
   __PRODUCT_VARIATIONS_HTML__
   <p class="product-body-actions">
     <button type="button" class="product-add-to-cart-btn" id="product-add-to-cart-btn">Add to cart</button>
@@ -21,12 +21,106 @@
       var boot = __PRODUCT_CART_BOOTSTRAP_JSON__;
       var btn = document.getElementById("product-add-to-cart-btn");
       var feedback = document.getElementById("product-add-to-cart-feedback");
+      var priceEl = document.getElementById("product-body-price");
       var resetTimer;
+
+      function selectedUnitPrice() {
+        var base = Number(boot.basePrice);
+        if (!Number.isFinite(base) || base < 0) {
+          base = 0;
+        }
+        var total = base;
+        var vars = boot.variations || [];
+        for (var vi = 0; vi < vars.length; vi++) {
+          var ax = vars[vi];
+          var sel = document.getElementById("product-variation-" + (vi + 1));
+          var val = sel && sel.value != null ? String(sel.value).trim() : "";
+          var idx = -1;
+          if (ax.values && ax.values.length) {
+            for (var j = 0; j < ax.values.length; j++) {
+              if (String(ax.values[j]).trim() === val) {
+                idx = j;
+                break;
+              }
+            }
+          }
+          var deltas = ax.deltas || [];
+          if (idx >= 0 && idx < deltas.length) {
+            var d = Number(deltas[idx]);
+            if (Number.isFinite(d)) {
+              total += d;
+            }
+          }
+        }
+        return Math.round(total * 100) / 100;
+      }
+
+      function formatPriceDisplay(amount) {
+        var cur = String(boot.currencyCode || "AUD").trim().toUpperCase();
+        var n = Number(amount);
+        if (!Number.isFinite(n) || n < 0) {
+          n = 0;
+        }
+        if (/^[A-Z]{3}$/.test(cur)) {
+          try {
+            return new Intl.NumberFormat(undefined, { style: "currency", currency: cur }).format(n);
+          } catch (e) {}
+        }
+        return cur + " " + n.toFixed(2);
+      }
+
+      function updatePriceDisplay() {
+        if (!priceEl) {
+          return;
+        }
+        priceEl.textContent = formatPriceDisplay(selectedUnitPrice());
+      }
+
+      function bindVariationPricing() {
+        updatePriceDisplay();
+        var vars = boot.variations || [];
+        for (var vi = 0; vi < vars.length; vi++) {
+          var sel = document.getElementById("product-variation-" + (vi + 1));
+          if (sel) {
+            sel.addEventListener("change", updatePriceDisplay);
+          }
+        }
+      }
+
+      function syncPricingFromCatalogThenBind() {
+        var pd = window.productData;
+        if (
+          !pd ||
+          typeof pd.fetchProductDataJson !== "function" ||
+          typeof pd.applyCatalogRowToProductPricingBoot !== "function"
+        ) {
+          bindVariationPricing();
+          return;
+        }
+        pd.fetchProductDataJson()
+          .then(function (data) {
+            var products = (data && data.products) || [];
+            var row = products.find(function (p) {
+              return String(p.SKU || "").trim() === String(boot.sku || "").trim();
+            });
+            if (row) {
+              pd.applyCatalogRowToProductPricingBoot(boot, row);
+            }
+            bindVariationPricing();
+          })
+          .catch(function () {
+            bindVariationPricing();
+          });
+      }
+
       if (btn && cart && boot && boot.sku) {
+        syncPricingFromCatalogThenBind();
+
         btn.addEventListener("click", function () {
           var sku = String(boot.sku || "").trim();
           var opts = {
             productPath: String(boot.productPath || "").trim(),
+            unitPrice: selectedUnitPrice(),
           };
           var vars = boot.variations;
           if (vars && vars.length) {
