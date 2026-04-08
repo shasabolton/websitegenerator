@@ -118,15 +118,18 @@ async function runGenerateAnyPage(treePath) {
     fetchText("./setBase.js"),
     window.productData.fetchProductDataJson(),
   ]);
-  const products = Array.isArray(productData?.products) ? productData.products : [];
-  const ctxBase = { shopData, navigationConfig, products };
+  const productsFull = Array.isArray(productData?.products) ? productData.products : [];
+  const previewParams = window.previewTarget.parsePreviewTarget(window.location.search);
+  const digitalFilter = previewParams?.digital ?? null;
+  const productsForShop = window.productData.filterProductsByDigital(productsFull, digitalFilter);
+  const ctxBase = { shopData, navigationConfig, products: productsForShop };
 
   if (path === "cart") {
     const gen = window.generateCartBody?.buildCartBody;
     if (typeof gen !== "function") {
       throw new Error("generateCartBody.js must be loaded before preview.");
     }
-    const bodyPayload = await gen(ctxBase);
+    const bodyPayload = await gen({ ...ctxBase, products: productsFull });
     html = await mergeBodyIntoFullHtml(
       shopData,
       navigationConfig,

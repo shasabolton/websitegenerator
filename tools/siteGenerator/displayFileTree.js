@@ -48,12 +48,37 @@ function populateFileTree(fileTreeConfig, categoryData) {
   return tree;
 }
 
-async function buildPopulatedFileTree() {
+function parseDigitalFilterValue(raw) {
+  if (raw === true || raw === false) {
+    return raw;
+  }
+  const s = String(raw ?? "").trim().toLowerCase();
+  if (s === "true" || s === "digital") {
+    return true;
+  }
+  if (s === "false" || s === "physical") {
+    return false;
+  }
+  return null;
+}
+
+function getActiveDigitalFilterForPreviewLinks() {
+  const sel = document.getElementById("preview-digital-filter");
+  if (!sel) return null;
+  const raw = String(sel.value || "").trim();
+  if (raw === "all" || raw === "") {
+    return null;
+  }
+  return parseDigitalFilterValue(raw);
+}
+
+async function buildPopulatedFileTree(digitalFilter) {
   const [fileTreeConfig, { products }] = await Promise.all([
     fetchJson("../../shared-assets/config/fileTree.json"),
     window.productData.fetchProductDataJson(),
   ]);
-  const categoryData = window.productData.getCategoriesForFileTree(products);
+  const filter = parseDigitalFilterValue(digitalFilter);
+  const categoryData = window.productData.getCategoriesForFileTree(products, filter);
   return populateFileTree(fileTreeConfig, categoryData);
 }
 
@@ -65,7 +90,7 @@ function renderNodeAsDropdown(container, node) {
     row.className = "preview-picker-row";
     const cartLink = document.createElement("a");
     const treeHref = String(node.href || "cart").trim();
-    cartLink.href = window.previewTarget.buildPreviewUrl(treeHref);
+    cartLink.href = window.previewTarget.buildPreviewUrl(treeHref, getActiveDigitalFilterForPreviewLinks());
     cartLink.className = "preview-picker-page-link";
     cartLink.textContent = node.label || "Cart";
     row.appendChild(cartLink);
@@ -85,7 +110,7 @@ function renderNodeAsDropdown(container, node) {
     const shopRow = document.createElement("div");
     shopRow.className = "preview-picker-row";
     const shopLink = document.createElement("a");
-    shopLink.href = window.previewTarget.buildPreviewUrl("shop");
+    shopLink.href = window.previewTarget.buildPreviewUrl("shop", getActiveDigitalFilterForPreviewLinks());
     shopLink.className = "preview-picker-page-link";
     shopLink.textContent = "Shop page";
     shopRow.appendChild(shopLink);
@@ -106,7 +131,7 @@ function renderNodeAsDropdown(container, node) {
     if (!treeHref) {
       throw new Error("Category node missing href for preview link.");
     }
-    pageLink.href = window.previewTarget.buildPreviewUrl(treeHref);
+    pageLink.href = window.previewTarget.buildPreviewUrl(treeHref, getActiveDigitalFilterForPreviewLinks());
     pageLink.className = "preview-picker-page-link";
     pageLink.textContent = node.label || "Category";
     row.appendChild(pageLink);
@@ -119,7 +144,7 @@ function renderNodeAsDropdown(container, node) {
       if (!productHref) {
         throw new Error("Product node missing href for preview link.");
       }
-      productLink.href = window.previewTarget.buildPreviewUrl(productHref);
+      productLink.href = window.previewTarget.buildPreviewUrl(productHref, getActiveDigitalFilterForPreviewLinks());
       productLink.className = "preview-picker-page-link";
       productLink.textContent = product.label || "Product";
       productRow.appendChild(productLink);
@@ -162,15 +187,33 @@ function renderPreviewPicker(container, fileTree) {
 }
 
 async function initPreviewPicker(options = {}) {
-  const { containerId = "preview-picker-root" } = options;
+  const { containerId = "preview-picker-root", filterSelectId = "preview-digital-filter" } = options;
   const container = document.getElementById(containerId);
   if (!container) {
     throw new Error(`Preview picker container not found: #${containerId}`);
   }
 
-  const populatedTree = await buildPopulatedFileTree();
-  renderPreviewPicker(container, populatedTree);
-  return populatedTree;
+  const [fileTreeConfig, { products }] = await Promise.all([
+    fetchJson("../../shared-assets/config/fileTree.json"),
+    window.productData.fetchProductDataJson(),
+  ]);
+
+  const filterSelect = document.getElementById(filterSelectId);
+  let lastPopulatedTree = null;
+  const applyFilterFromUi = () => {
+    const raw = filterSelect ? filterSelect.value : "all";
+    const filter = parseDigitalFilterValue(raw === "all" ? null : raw);
+    const categoryData = window.productData.getCategoriesForFileTree(products, filter);
+    lastPopulatedTree = populateFileTree(fileTreeConfig, categoryData);
+    renderPreviewPicker(container, lastPopulatedTree);
+  };
+
+  if (filterSelect) {
+    filterSelect.addEventListener("change", applyFilterFromUi);
+  }
+
+  applyFilterFromUi();
+  return lastPopulatedTree;
 }
 
 window.displayFileTree = {
@@ -178,5 +221,6 @@ window.displayFileTree = {
   buildPopulatedFileTree,
   renderPreviewPicker,
   parsePreviewTarget: (search) => window.previewTarget.parsePreviewTarget(search),
-  buildPreviewUrl: (treePath) => window.previewTarget.buildPreviewUrl(treePath),
+  buildPreviewUrl: (treePath) =>
+    window.previewTarget.buildPreviewUrl(treePath, getActiveDigitalFilterForPreviewLinks()),
 };

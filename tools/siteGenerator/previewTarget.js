@@ -7,15 +7,32 @@ function parsePreviewTarget(search) {
   if (path == null || !String(path).trim()) {
     return null;
   }
-  return { path: decodeURIComponent(String(path).trim()) };
+  let digital = null;
+  const d = params.get("digital");
+  if (d != null && String(d).trim() !== "") {
+    const lower = String(d).trim().toLowerCase();
+    if (lower === "true" || lower === "1") {
+      digital = true;
+    } else if (lower === "false" || lower === "0") {
+      digital = false;
+    }
+  }
+  return { path: decodeURIComponent(String(path).trim()), digital };
 }
 
 /**
  * @param {string} treePath - File-tree href, e.g. `shop` or `shop/my-category`.
+ * @param {boolean | null | undefined} digitalFilter - When true/false, adds `digital=` to the query string for shop preview filtering.
  */
-function buildPreviewUrl(treePath) {
+function buildPreviewUrl(treePath, digitalFilter) {
   const path = String(treePath || "").trim();
-  return `${INDEX_HTML_PATH}?path=${encodeURIComponent(path)}`;
+  let url = `${INDEX_HTML_PATH}?path=${encodeURIComponent(path)}`;
+  if (digitalFilter === true) {
+    url += "&digital=true";
+  } else if (digitalFilter === false) {
+    url += "&digital=false";
+  }
+  return url;
 }
 
 function showPreviewBootError(error) {

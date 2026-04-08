@@ -337,12 +337,29 @@ function repriceCartItemsInPlace(cartData, products) {
   return changed;
 }
 
-function getCategoriesForFileTree(products) {
+/**
+ * @param {object[]} products
+ * @param {boolean | null | undefined} digitalFilter - true: DIGITAL only; false: non-digital; null/undefined: all
+ * @returns {object[]}
+ */
+function filterProductsByDigital(products, digitalFilter) {
+  const list = Array.isArray(products) ? products : [];
+  if (digitalFilter === true) {
+    return list.filter((row) => row && row.DIGITAL === true);
+  }
+  if (digitalFilter === false) {
+    return list.filter((row) => row && row.DIGITAL !== true);
+  }
+  return list;
+}
+
+function getCategoriesForFileTree(products, digitalFilter) {
   const list = Array.isArray(products) ? products : [];
   const slugByRow = assignProductSlugsByCategory(list);
+  const rows = filterProductsByDigital(list, digitalFilter);
   const categories = new Map();
 
-  for (const row of list) {
+  for (const row of rows) {
     const categoryName = String(row.CATEGORY || "").trim();
     if (!categoryName) {
       continue;
@@ -373,6 +390,7 @@ function getCategoriesForFileTree(products) {
   window.productData = {
     fetchProductDataJson,
     getProductsByCategory,
+    filterProductsByDigital,
     getCategoriesForFileTree,
     assignProductSlugsByCategory,
     getProductSlugForRow,

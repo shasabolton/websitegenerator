@@ -94,6 +94,30 @@
       .preview-picker-nested {
         padding-left: 14px;
       }
+
+      .preview-digital-filter {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+        margin-bottom: 14px;
+      }
+
+      .preview-digital-filter label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+      }
+
+      .preview-digital-filter select {
+        font-size: 14px;
+        padding: 6px 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: #fff;
+        color: #1f2937;
+        min-width: 11rem;
+      }
     </style>
   </head>
   <body>
@@ -104,6 +128,14 @@
           Open a page below (paths match the static site). This page reads <code>?path=…</code> from the URL, generates
           HTML, and replaces the whole document. Open <code>index.html</code> again (or use back) to pick another page.
         </p>
+        <div class="preview-digital-filter">
+          <label for="preview-digital-filter">Listings</label>
+          <select id="preview-digital-filter" aria-label="Filter listings by digital product">
+            <option value="all" selected>All listings</option>
+            <option value="true">Digital only</option>
+            <option value="false">Physical only</option>
+          </select>
+        </div>
         <div id="preview-picker-root" aria-live="polite"></div>
       </section>
     </main>
