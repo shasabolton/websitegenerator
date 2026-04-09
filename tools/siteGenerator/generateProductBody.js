@@ -163,19 +163,20 @@ async function buildImageCarouselHtml(images, productTitleRaw, carouselPartial) 
 }
 
 /**
- * @param {{ shopData: object, navigationConfig: object, products: object[], categorySlug: string, productSlug: string }} ctx
+ * @param {{ shopData: object, navigationConfig: object, products: object[], catalogProducts?: object[], productSlug: string }} ctx
  * @returns {Promise<{ bodyHtml: string, categoryNames: string[], pageTitle: string }>}
  */
 async function generateProductBody(ctx) {
   const fetchText = window.generateAnyPage.fetchText;
-  const { products, shopData, categorySlug, productSlug } = ctx;
-  const find = window.productData.findProductByShopPath;
+  const { products, shopData, productSlug, catalogProducts } = ctx;
+  const catalog = Array.isArray(catalogProducts) ? catalogProducts : products;
+  const find = window.productData.findProductBySlug;
   if (typeof find !== "function") {
-    throw new Error("productData.findProductByShopPath is required for product pages.");
+    throw new Error("productData.findProductBySlug is required for product pages.");
   }
-  const row = find(products, categorySlug, productSlug);
-  if (!row) {
-    throw new Error(`Product not found: shop/${categorySlug}/${productSlug}`);
+  const row = find(catalog, productSlug);
+  if (!row || !products.includes(row)) {
+    throw new Error(`Product not found: shop/${productSlug}`);
   }
 
   const [productBodyTemplate, carouselPartial] = await Promise.all([
@@ -218,9 +219,13 @@ async function generateProductBody(ctx) {
   if (!/^[A-Z]{3}$/.test(currencyCode)) {
     currencyCode = "AUD";
   }
+  const pathSegment =
+    typeof window.productData.getProductSlugForRow === "function"
+      ? window.productData.getProductSlugForRow(row, catalog)
+      : slugify(title);
   const cartBootstrap = {
     sku,
-    productPath: `shop/${categorySlugResolved}/${productSlug}`,
+    productPath: `shop/${pathSegment}`,
     basePrice,
     currencyCode,
     variations: variationAxes.map((a) => ({

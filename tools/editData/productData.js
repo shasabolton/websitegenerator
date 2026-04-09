@@ -55,54 +55,40 @@ function getProductsByCategory(products) {
 }
 
 /**
- * Stable URL segment per product row within its category (for `shop/<cat>/<product>`).
+ * Stable global URL segment per product row (for `shop/<product-slug>`).
+ * Slug uniqueness is enforced across the entire catalog, in array order.
  * @param {object[]} products
  * @returns {Map<object, string>}
  */
-function assignProductSlugsByCategory(products) {
+function assignProductSlugsGlobally(products) {
   const list = Array.isArray(products) ? products : [];
-  const byCat = new Map();
+  const slugByRow = new Map();
+  const taken = new Set();
   for (const row of list) {
-    const categoryName = String(row.CATEGORY || "").trim();
-    if (!categoryName) {
+    const title = String(row.TITLE || "").trim() || "product";
+    let s = slugify(title) || "product";
+    if (!taken.has(s)) {
+      taken.add(s);
+      slugByRow.set(row, s);
       continue;
     }
-    const key = categoryName.toLowerCase();
-    if (!byCat.has(key)) {
-      byCat.set(key, []);
-    }
-    byCat.get(key).push(row);
-  }
-
-  const slugByRow = new Map();
-  for (const [, rows] of byCat) {
-    const taken = new Set();
-    for (const row of rows) {
-      const title = String(row.TITLE || "").trim() || "product";
-      let s = slugify(title) || "product";
-      if (!taken.has(s)) {
-        taken.add(s);
-        slugByRow.set(row, s);
+    const sku = String(row.SKU || "").trim();
+    if (sku) {
+      const withSku = `${s}-${slugify(sku) || sku}`;
+      if (!taken.has(withSku)) {
+        taken.add(withSku);
+        slugByRow.set(row, withSku);
         continue;
       }
-      const sku = String(row.SKU || "").trim();
-      if (sku) {
-        const withSku = `${s}-${slugify(sku) || sku}`;
-        if (!taken.has(withSku)) {
-          taken.add(withSku);
-          slugByRow.set(row, withSku);
-          continue;
-        }
-      }
-      let i = 2;
-      let candidate = `${s}-${i}`;
-      while (taken.has(candidate)) {
-        i += 1;
-        candidate = `${s}-${i}`;
-      }
-      taken.add(candidate);
-      slugByRow.set(row, candidate);
     }
+    let i = 2;
+    let candidate = `${s}-${i}`;
+    while (taken.has(candidate)) {
+      i += 1;
+      candidate = `${s}-${i}`;
+    }
+    taken.add(candidate);
+    slugByRow.set(row, candidate);
   }
   return slugByRow;
 }
@@ -112,28 +98,22 @@ function assignProductSlugsByCategory(products) {
  * @param {object[]} products
  */
 function getProductSlugForRow(row, products) {
-  return assignProductSlugsByCategory(products).get(row) || slugify(String(row.TITLE || "").trim()) || "product";
+  return assignProductSlugsGlobally(products).get(row) || slugify(String(row.TITLE || "").trim()) || "product";
 }
 
 /**
  * @param {object[]} products
- * @param {string} categorySlug
  * @param {string} productSlug
  * @returns {object | null}
  */
-function findProductByShopPath(products, categorySlug, productSlug) {
+function findProductBySlug(products, productSlug) {
   const list = Array.isArray(products) ? products : [];
-  const catKey = String(categorySlug || "").trim().toLowerCase();
   const prodKey = String(productSlug || "").trim().toLowerCase();
-  if (!catKey || !prodKey) {
+  if (!prodKey) {
     return null;
   }
-  const slugByRow = assignProductSlugsByCategory(list);
+  const slugByRow = assignProductSlugsGlobally(list);
   for (const row of list) {
-    const categoryName = String(row.CATEGORY || "").trim();
-    if (!categoryName || slugify(categoryName) !== catKey) {
-      continue;
-    }
     const seg = slugByRow.get(row);
     if (seg && String(seg).toLowerCase() === prodKey) {
       return row;
@@ -355,7 +335,7 @@ function filterProductsByDigital(products, digitalFilter) {
 
 function getCategoriesForFileTree(products, digitalFilter) {
   const list = Array.isArray(products) ? products : [];
-  const slugByRow = assignProductSlugsByCategory(list);
+  const slugByRow = assignProductSlugsGlobally(list);
   const rows = filterProductsByDigital(list, digitalFilter);
   const categories = new Map();
 
@@ -376,10 +356,9 @@ function getCategoriesForFileTree(products, digitalFilter) {
     const productTitle = String(row.TITLE || "").trim();
     const segment = slugByRow.get(row);
     if (productTitle && segment) {
-      const catSlug = categories.get(key).slug;
       categories.get(key).products.push({
         label: productTitle,
-        href: `shop/${catSlug}/${segment}`,
+        href: `shop/${segment}`,
       });
     }
   }
@@ -392,9 +371,9 @@ function getCategoriesForFileTree(products, digitalFilter) {
     getProductsByCategory,
     filterProductsByDigital,
     getCategoriesForFileTree,
-    assignProductSlugsByCategory,
+    assignProductSlugsGlobally,
     getProductSlugForRow,
-    findProductByShopPath,
+    findProductBySlug,
     collectProductImageUrls,
     variationAxesFromRow,
     choicePairsFromLineId,

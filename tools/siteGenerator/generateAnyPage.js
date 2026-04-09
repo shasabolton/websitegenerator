@@ -103,7 +103,7 @@ async function mergeBodyIntoFullHtml(
 }
 
 /**
- * @param {string} treePath - Same shape as file-tree `href` (e.g. `shop`, `shop/my-category`).
+ * @param {string} treePath - Same shape as file-tree `href` (e.g. `shop`, `shop/my-category`, `shop/product-slug`).
  * @returns {Promise<string>} Complete HTML document.
  * Named `runGenerateAnyPage` so we do not create `window.generateAnyPage` as a function before assigning the API object (which would break `previewAnyPage`’s call to the generator).
  */
@@ -159,34 +159,32 @@ async function runGenerateAnyPage(treePath) {
   if (path.startsWith("shop/")) {
     const rest = path.slice("shop/".length);
     if (!rest) {
-      throw new Error('Invalid path: expected "shop/<category-slug>" or "shop/<category-slug>/<product-slug>".');
+      throw new Error('Invalid path: expected "shop/<product-slug>" or "shop/<category-slug>".');
     }
     const segments = rest.split("/").filter(Boolean);
-    if (segments.length === 1) {
-      const categoryName = resolveCategoryNameFromSlug(segments[0], productsForShop);
-      const gen = window.generateCategoryBody?.generateCategoryBody;
-      if (typeof gen !== "function") {
-        throw new Error("generateCategoryBody.js must be loaded before preview.");
-      }
-      const bodyPayload = await gen({ ...ctxBase, categoryName });
-      html = await mergeBodyIntoFullHtml(
-        shopData,
-        navigationConfig,
-        pageTemplate,
-        setBaseSource,
-        bodyPayload
+    if (segments.length !== 1) {
+      throw new Error(
+        `Invalid shop path: ${treePath} — use shop/<product-slug> or shop/<category-slug> (single segment only).`
       );
-      return html;
     }
-    if (segments.length === 2) {
+    const segment = segments[0];
+    const findProduct = window.productData?.findProductBySlug;
+    if (typeof findProduct !== "function") {
+      throw new Error("productData.findProductBySlug is required for shop paths.");
+    }
+    const rowFull = findProduct(productsFull, segment);
+    if (rowFull) {
+      if (!productsForShop.includes(rowFull)) {
+        throw new Error(`Product not found: shop/${segment}`);
+      }
       const gen = window.generateProductBody?.generateProductBody;
       if (typeof gen !== "function") {
         throw new Error("generateProductBody.js must be loaded before preview.");
       }
       const bodyPayload = await gen({
         ...ctxBase,
-        categorySlug: segments[0],
-        productSlug: segments[1],
+        catalogProducts: productsFull,
+        productSlug: segment,
       });
       html = await mergeBodyIntoFullHtml(
         shopData,
@@ -197,7 +195,20 @@ async function runGenerateAnyPage(treePath) {
       );
       return html;
     }
-    throw new Error(`Invalid shop path (too many segments): ${treePath}`);
+    const categoryName = resolveCategoryNameFromSlug(segment, productsForShop);
+    const gen = window.generateCategoryBody?.generateCategoryBody;
+    if (typeof gen !== "function") {
+      throw new Error("generateCategoryBody.js must be loaded before preview.");
+    }
+    const bodyPayload = await gen({ ...ctxBase, categoryName });
+    html = await mergeBodyIntoFullHtml(
+      shopData,
+      navigationConfig,
+      pageTemplate,
+      setBaseSource,
+      bodyPayload
+    );
+    return html;
   }
 
   throw new Error(`No preview generator for path: ${treePath}`);

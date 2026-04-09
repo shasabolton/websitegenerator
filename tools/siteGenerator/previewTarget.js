@@ -21,7 +21,7 @@ function parsePreviewTarget(search) {
 }
 
 /**
- * @param {string} treePath - File-tree href, e.g. `shop` or `shop/my-category`.
+ * @param {string} treePath - File-tree href, e.g. `shop`, `shop/my-category`, or `shop/product-slug`.
  * @param {boolean | null | undefined} digitalFilter - When true/false, adds `digital=` to the query string for shop preview filtering.
  */
 function buildPreviewUrl(treePath, digitalFilter) {
