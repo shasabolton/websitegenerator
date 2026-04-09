@@ -730,6 +730,58 @@ a:hover {
   background: #f3f4f6;
 }
 
+.image-carousel-thumb--video {
+  position: relative;
+}
+
+.image-carousel-thumb--video .image-carousel-thumb-img {
+  opacity: 0.92;
+}
+
+.image-carousel-thumb--video::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-40%, -50%);
+  border-style: solid;
+  border-width: 9px 0 9px 14px;
+  border-color: transparent transparent transparent rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+  pointer-events: none;
+}
+
+.image-carousel-slide--video .image-carousel-video-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0f172a;
+}
+
+.image-carousel-slide--video .image-carousel-embed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.product-video-youtube-link {
+  margin: 8px 0 0;
+  max-width: 640px;
+  font-size: 0.95rem;
+}
+
+.product-video-youtube-link a {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.product-video-youtube-link a:hover {
+  color: #1e40af;
+}
+
 @media (min-width: 768px) {
   .site-main {
     --site-inline-padding: 20px;

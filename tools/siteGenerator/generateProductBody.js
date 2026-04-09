@@ -46,18 +46,82 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "");
 }
 
-function buildCarouselSlidesHtml(images, productTitleRaw) {
+/** Primary demo video URL from catalog row (`VIDEO1` or legacy `video01`). */
+function resolveProductPrimaryVideoUrl(row) {
+  const a = String(row.VIDEO1 ?? row.video01 ?? "").trim();
+  if (a) {
+    return a;
+  }
+  return String(row.VIDEO_1 ?? "").trim();
+}
+
+/**
+ * @param {string} raw
+ * @returns {string | null} YouTube video id
+ */
+function parseYoutubeVideoId(raw) {
+  const s = String(raw || "").trim();
+  if (!s) {
+    return null;
+  }
+  try {
+    const u = new URL(s);
+    const host = u.hostname.replace(/^www\./i, "");
+    if (host === "youtu.be") {
+      const id = u.pathname.replace(/^\//, "").split("/")[0] || "";
+      return /^[\w-]{11}$/.test(id) ? id : null;
+    }
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      if (u.pathname.startsWith("/embed/")) {
+        const id = u.pathname.slice("/embed/".length).split("/")[0] || "";
+        return /^[\w-]{11}$/.test(id) ? id : null;
+      }
+      if (u.pathname === "/watch") {
+        const v = u.searchParams.get("v") || "";
+        return /^[\w-]{11}$/.test(v) ? v : null;
+      }
+      if (u.pathname.startsWith("/shorts/")) {
+        const id = u.pathname.slice("/shorts/".length).split("/")[0] || "";
+        return /^[\w-]{11}$/.test(id) ? id : null;
+      }
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+/**
+ * @typedef {{ kind: 'image', url: string } | { kind: 'video', videoId: string, watchUrl: string, embedUrl: string, thumbUrl: string }} CarouselItem
+ */
+
+/**
+ * @param {CarouselItem[]} items
+ * @param {string} productTitleRaw
+ */
+function buildCarouselSlidesHtml(items, productTitleRaw) {
   const altBase = productTitleRaw || "Product";
-  return images
-    .map((url, index) => {
-      const safeUrl = escapeHtml(url);
-      const alt = escapeHtml(`${altBase} — image ${index + 1} of ${images.length}`);
+  const n = items.length;
+  return items
+    .map((item, index) => {
       const active = index === 0 ? " is-active" : "";
-      const loading = index === 0 ? "eager" : "lazy";
-      const fetchPriority = index === 0 ? ' fetchpriority="high"' : "";
       const hidden = index === 0 ? 'aria-hidden="false"' : 'aria-hidden="true"';
-      return `<figure class="image-carousel-slide${active}" data-carousel-index="${index}" ${hidden}>
+      const ix = index + 1;
+      if (item.kind === "image") {
+        const safeUrl = escapeHtml(item.url);
+        const alt = escapeHtml(`${altBase} — image ${ix} of ${n}`);
+        const loading = index === 0 ? "eager" : "lazy";
+        const fetchPriority = index === 0 ? ' fetchpriority="high"' : "";
+        return `<figure class="image-carousel-slide${active}" data-carousel-index="${index}" data-carousel-slide-kind="image" ${hidden}>
   <img class="image-carousel-slide-img" src="${safeUrl}" alt="${alt}" loading="${loading}"${fetchPriority} />
+</figure>`;
+      }
+      const videoTitle = escapeHtml(`${altBase} — product video`);
+      const embedSrc = escapeHtml(`${item.embedUrl}?rel=0`);
+      return `<figure class="image-carousel-slide image-carousel-slide--video${active}" data-carousel-index="${index}" data-carousel-slide-kind="video" ${hidden}>
+  <div class="image-carousel-video-wrap">
+    <iframe class="image-carousel-embed" title="${videoTitle}" width="560" height="315" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy" data-embed-src="${embedSrc}"></iframe>
+  </div>
 </figure>`;
     })
     .join("\n");
@@ -122,17 +186,33 @@ function buildProductVariationsHtml(axes) {
   return `<div class="product-variations" role="group" aria-label="Options">${fields}</div>`;
 }
 
-function buildCarouselThumbsHtml(images, productTitleRaw) {
+/**
+ * @param {CarouselItem[]} items
+ * @param {string} productTitleRaw
+ */
+function buildCarouselThumbsHtml(items, productTitleRaw) {
   const labelBase = productTitleRaw || "Product";
-  return images
-    .map((url, index) => {
-      const safeUrl = escapeHtml(url);
+  const n = items.length;
+  return items
+    .map((item, index) => {
       const active = index === 0 ? " is-active" : "";
       const ariaCurrent = index === 0 ? ' aria-current="true"' : ' aria-current="false"';
-      const label = escapeHtml(`Show ${labelBase} image ${index + 1} of ${images.length}`);
-      return `<li class="image-carousel-thumb-item">
+      const ix = index + 1;
+      if (item.kind === "image") {
+        const safeUrl = escapeHtml(item.url);
+        const label = escapeHtml(`Show ${labelBase} image ${ix} of ${n}`);
+        return `<li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb${active}" data-carousel-index="${index}" aria-label="${label}"${ariaCurrent}>
     <img class="image-carousel-thumb-img" src="${safeUrl}" alt="" width="72" height="72" loading="eager" decoding="sync" />
+  </button>
+</li>`;
+      }
+      const safeThumb = escapeHtml(item.thumbUrl);
+      const label = escapeHtml(`Show ${labelBase} YouTube video (${ix} of ${n})`);
+      const videoBtnClass = `image-carousel-thumb image-carousel-thumb--video${active}`;
+      return `<li class="image-carousel-thumb-item">
+  <button type="button" class="${videoBtnClass}" data-carousel-index="${index}" aria-label="${label}"${ariaCurrent}>
+    <img class="image-carousel-thumb-img" src="${safeThumb}" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>`;
     })
@@ -140,12 +220,31 @@ function buildCarouselThumbsHtml(images, productTitleRaw) {
 }
 
 /**
- * @param {string[]} images
+ * @param {{ title: string, description: string, embedUrl: string, watchUrl: string, thumbnailUrl: string }} p
+ */
+function buildVideoObjectJsonLdScript(p) {
+  const name = String(p.title || "").trim().slice(0, 200) || "Product video";
+  const description = String(p.description || "").trim().slice(0, 5000);
+  const obj = {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name,
+    description: description || name,
+    thumbnailUrl: [p.thumbnailUrl],
+    embedUrl: p.embedUrl,
+    url: p.watchUrl,
+  };
+  return `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, "\\u003c")}</script>`;
+}
+
+/**
+ * @param {CarouselItem[]} items
  * @param {string} productTitleRaw
  * @param {string} carouselPartial
+ * @param {{ watchUrl: string } | null} youtubeMeta
  */
-async function buildImageCarouselHtml(images, productTitleRaw, carouselPartial) {
-  if (!Array.isArray(images) || images.length === 0) {
+async function buildImageCarouselHtml(items, productTitleRaw, carouselPartial, youtubeMeta) {
+  if (!Array.isArray(items) || items.length === 0) {
     return "";
   }
   const id =
@@ -153,13 +252,19 @@ async function buildImageCarouselHtml(images, productTitleRaw, carouselPartial) 
     Math.random().toString(36).slice(2, 10) +
     "-" +
     Math.random().toString(36).slice(2, 10);
-  const slides = buildCarouselSlidesHtml(images, productTitleRaw);
-  const thumbs = buildCarouselThumbsHtml(images, productTitleRaw);
-  return applyTemplate(carouselPartial, {
+  const slides = buildCarouselSlidesHtml(items, productTitleRaw);
+  const thumbs = buildCarouselThumbsHtml(items, productTitleRaw);
+  const carouselInner = applyTemplate(carouselPartial, {
     CAROUSEL_ID: escapeHtml(id),
     CAROUSEL_SLIDES: slides,
     CAROUSEL_THUMB_ITEMS: thumbs,
   });
+  if (!youtubeMeta?.watchUrl) {
+    return carouselInner;
+  }
+  const w = escapeHtml(youtubeMeta.watchUrl);
+  const crawl = `<p class="product-video-youtube-link"><a href="${w}" rel="noopener noreferrer">Watch this product video on YouTube</a></p>`;
+  return `${carouselInner}\n${crawl}`;
 }
 
 /**
@@ -190,8 +295,39 @@ async function generateProductBody(ctx) {
   const description = String(row.DESCRIPTION || "").trim();
   const titleEsc = escapeHtml(title);
   const images = window.productData.collectProductImageUrls(row);
+  const primaryVideoUrl = resolveProductPrimaryVideoUrl(row);
+  const youtubeId = parseYoutubeVideoId(primaryVideoUrl);
+  /** @type {CarouselItem[]} */
+  const carouselItems = images.map((url) => ({ kind: "image", url }));
+  let youtubeMetaForLd = null;
+  if (youtubeId) {
+    const watchUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
+    const embedUrl = `https://www.youtube.com/embed/${youtubeId}`;
+    const thumbUrl = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+    const videoItem = { kind: "video", videoId: youtubeId, watchUrl, embedUrl, thumbUrl };
+    youtubeMetaForLd = { watchUrl, embedUrl, thumbnailUrl: thumbUrl };
+    if (carouselItems.length > 0) {
+      carouselItems.splice(1, 0, videoItem);
+    } else {
+      carouselItems.push(videoItem);
+    }
+  }
 
-  const carouselHtml = await buildImageCarouselHtml(images, title, carouselPartial);
+  const carouselHtml = await buildImageCarouselHtml(
+    carouselItems,
+    title,
+    carouselPartial,
+    youtubeMetaForLd ? { watchUrl: youtubeMetaForLd.watchUrl } : null,
+  );
+  const videoJsonLd = youtubeMetaForLd
+    ? buildVideoObjectJsonLdScript({
+        title,
+        description,
+        embedUrl: youtubeMetaForLd.embedUrl,
+        watchUrl: youtubeMetaForLd.watchUrl,
+        thumbnailUrl: youtubeMetaForLd.thumbnailUrl,
+      })
+    : "";
 
   const breadcrumbsHtml = `
     <nav class="breadcrumbs" aria-label="Breadcrumb">
@@ -242,6 +378,7 @@ async function generateProductBody(ctx) {
     PRODUCT_PRICE: productPriceDisplay,
     PRODUCT_DESCRIPTION: escapeHtml(description),
     PRODUCT_CAROUSEL: carouselHtml,
+    PRODUCT_VIDEO_JSON_LD: videoJsonLd || "",
     PRODUCT_VARIATIONS_HTML: variationsHtml,
     PRODUCT_CART_BOOTSTRAP_JSON: bootstrapJson,
   });
