@@ -1,8 +1,24 @@
 const INDEX_HTML_PATH = "./index.html";
 
+/**
+ * Turn mistaken second `?` into `&` so `...&digital=false?instr=show` parses as two params.
+ */
+function normalizeQuerySearchForParams(search) {
+  let s = String(search || "");
+  if (s.startsWith("?")) {
+    s = s.slice(1);
+  }
+  let q = s.indexOf("?");
+  while (q >= 0) {
+    s = s.slice(0, q) + "&" + s.slice(q + 1);
+    q = s.indexOf("?");
+  }
+  return s;
+}
+
 function parsePreviewTarget(search) {
   const raw = typeof search === "string" ? search : "";
-  const params = new URLSearchParams(raw.startsWith("?") ? raw.slice(1) : raw);
+  const params = new URLSearchParams(normalizeQuerySearchForParams(raw));
   const path = params.get("path");
   if (path == null || !String(path).trim()) {
     return null;

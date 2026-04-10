@@ -138,6 +138,10 @@ function buildShoppingCartScriptPath() {
   return "shared-assets/script/shoppingCart.js";
 }
 
+function buildProductInstructionVideosScriptPath() {
+  return "shared-assets/script/productInstructionVideos.js";
+}
+
 async function generateHeaderAndFooter(shopData, navigationConfig, options = {}) {
   const [headerTemplate, footerTemplate] = await Promise.all([
     fetchTemplate("./templates/partials/header.html"),
@@ -152,6 +156,7 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
   const siteJsPath = escapeHtml(buildSiteJsPath());
   const productDataScriptPath = escapeHtml(buildProductDataScriptPath());
   const shoppingCartScriptPath = escapeHtml(buildShoppingCartScriptPath());
+  const productInstructionVideosScriptPath = escapeHtml(buildProductInstructionVideosScriptPath());
 
   const headerHtml = applyTemplate(headerTemplate, {
     SHOP_NAME: shopName,
@@ -175,6 +180,7 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
     siteJsPath,
     productDataScriptPath,
     shoppingCartScriptPath,
+    productInstructionVideosScriptPath,
   };
 }
 
@@ -185,5 +191,6 @@ window.generateHeaderAndFooter = {
   buildSiteJsPath,
   buildProductDataScriptPath,
   buildShoppingCartScriptPath,
+  buildProductInstructionVideosScriptPath,
   generateHeaderAndFooter,
 };

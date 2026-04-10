@@ -379,6 +379,7 @@ async function generateProductBody(ctx) {
     PRODUCT_DESCRIPTION: escapeHtml(description),
     PRODUCT_CAROUSEL: carouselHtml,
     PRODUCT_VIDEO_JSON_LD: videoJsonLd || "",
+    PRODUCT_SKU_ESC: escapeHtml(sku),
     PRODUCT_VARIATIONS_HTML: variationsHtml,
     PRODUCT_CART_BOOTSTRAP_JSON: bootstrapJson,
   });

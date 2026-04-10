@@ -36,7 +36,8 @@
     "ETSY_VIDEO2",
     "ETSY_VIDEO3",
     "VIDEO1",
-    "VIDEO2",
+    "INSTRUCTION VIDEOS",
+    "HIDE INSTRUCTIONS",
     "VIDEO3"
   ],
   "products": [
@@ -73,11 +74,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1799983825/sword-through-finger-magic-trick-laser-cutting-files-svg-dxf",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Mini Cryptex Puzzle Box Laser Cut Files, SVG DXF PDF, Spell and Spin learning toy",
@@ -112,11 +114,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4410641159/mini-cryptex-puzzle-box-laser-cut-files",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Slide Picture Puzzle Box Kit Davinci's Vitruvian man",
@@ -151,11 +154,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/slide-picture-puzzle-box",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1397559220/slide-picture-puzzle-box-kit-davincis-vitruvian-man",
       "VIDEO1": "https://www.youtube.com/watch?v=7rOhlLyPxK8",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Mouse Maze Puzzle Box, wooden mystery Box",
@@ -190,11 +194,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/mouse-maze-puzzle-box",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1298324346/mouse-maze-puzzle-box",
       "VIDEO1": "https://www.youtube.com/watch?v=AJI3ZOX1zKE",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Mechanical Calculator, Math and Science Toy, Wooden Mechanism, Model Engineering Kit",
@@ -229,11 +234,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/calculator",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4394447485/mechanical-calculator-math-and-science",
       "VIDEO1": "https://www.youtube.com/watch?v=_PlouOia6iI",
-      "VIDEO2": "https://www.youtube.com/watch?v=KqwQtG3sdUQ",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "https://www.youtube.com/watch?v=KqwQtG3sdUQ",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Woodchopper whirligig plans, laser cut files, scroll saw, svg dxf pdf",
@@ -268,11 +274,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1309705029/woodchopper-whirligig-plans-svg-dxf-pdf-laser-cutting-scroll-saw",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Cam Box laser cutter plans svg dxf",
@@ -307,11 +314,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1669544076/cam-box-laser-cutter-plans-svg-dxf",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Hummingbird and Flower Automaton Laser Cut plans SVG DXF",
@@ -346,11 +354,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1663037359/hummingbird-and-flower-automaton-laser",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Magic Empty Box Laser Cutter Files SVG DXF",
@@ -385,11 +394,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1726613777/magic-empty-box-laser-cutter-files-svg-dxf",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Magic Pencil Box Laser Cutter Plans SVG DXF PDF",
@@ -424,11 +434,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1693451382/magic-pencil-box-laser-cutter-plans-svg-dxf-pdf",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Magic Drawer Box, Lasercut Files SVG DXF PDF, Wooden Production Box Illusion",
@@ -463,11 +474,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4352432050/magic-drawer-box-lasercut-files-svg-dxf",
       "VIDEO1": "https://youtube.com/shorts/YgxOOQjwC8I?si=bXJI1epO3tRnAkr_",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Musical Marble Tree Scroll Saw or Laser Cutter Plans PDF - SVG - DXF",
@@ -502,11 +514,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1205692814/musical-marble-tree-scroll-saw-or-laser-cutter-plans-pdf-svg-dxf",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Fisherman whirligig plans - SVG DXF PDF - laser cutting - scroll saw",
@@ -541,11 +554,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1308995673/fisherman-whirligig-plans-svg-dxf-pdf-laser-cutting-scroll-saw",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Dog and Cat Running Automata Laser Cutting plans svg dxf",
@@ -580,11 +594,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1673829135/dog-and-cat-running-automata-laser-cutting-plans-svg-dxf",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Tortoise  Automata Kit - Wooden mechanical keepsake box",
@@ -619,11 +634,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/gearbox-pets",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1044371886/tortoise-automata-kit-wooden-mechanical",
       "VIDEO1": "https://www.youtube.com/watch?v=nsiMvxhGLGc",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Coke Can Magic Trick Box: Self-Working Illusion, DIY or Assembled",
@@ -658,11 +674,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/tiltbox",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4340941656/coke-can-magic-trick-box-self-working",
       "VIDEO1": "https://www.youtube.com/watch?v=vSmIfhzsnqU",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Plans for Wooden Hummingbird pole pet automata SVG DXF PDF",
@@ -697,11 +714,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1248569359/plans-for-wooden-hummingbird-pole-pet-automata-svg-dxf-pdf",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Mechanical Calculator Laser Cut Files SVG, DXF, Math Toy, Wooden Mechanism",
@@ -736,11 +754,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4388445643/mechanical-calculator-laser-cut-files",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Wind Powered Bird Whirligig Kit, Birch Plywood Fantail, Kinetic sculpture",
@@ -775,11 +794,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/whirligigs",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1520864030/bird-whirligig",
       "VIDEO1": "https://www.youtube.com/watch?v=2dOI0jCCwkk",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Hummingbird and Flower Automaton, Hand Cranked Mechanism",
@@ -814,15 +834,16 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/hummingbird-automaton-pulley-pet",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1648856402/hummingbird-and-flower-automaton-kit",
       "VIDEO1": "https://www.youtube.com/watch?v=IdFyy8YbUzg",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Magic Drawer Illusion Box – Vanish or Appear Objects Trick",
-      "DESCRIPTION": "Magic Drawer Illusion Box – Vanish or Appear Objects Instantly\n\nA beautifully crafted magic drawer illusion box that allows you to make small objects vanish or appear right before your audience’s eyes.\n\nOpen the drawer — it’s completely empty.\nClose it.\nOpen it again — now it’s full.\n\nSimple. Visual. Powerful.\n\n✨ Easy to Perform – Instantly Repeatable\n\nThis illusion is designed to be:\n\nEasy to perform (no sleight of hand required)\n\nSelf-working mechanics\n\nInstantly repeatable\n\nPerfect for beginners and experienced magicians alike\n\nIdeal for close-up magic, parlour performances, social media videos, or as a unique desk curiosity.\n\n🪵 Precision Laser Cut Birch Plywood\n\nMade from high-quality birch plywood\n\nPrecision laser cut for clean, accurate parts\n\nEtched with a striking three-arm herringbone pattern\n\nDurable, lightweight, and built for repeated use\n\nThe geometric etched design gives it a modern yet mysterious aesthetic that looks beautiful on display.\n\n🔧 DIY Kit or Fully Assembled\n\nChoose your option:\n\nDIY Kit – All parts precision cut and ready to assemble\n\nFully Assembled – Ready to perform out of the box\n\nThe kit can be assembled in under one hour. Parts are designed to fit cleanly; glue may be used for added durability.\n\n🎁 Perfect For\n\nMagic enthusiasts\n\nBeginner magicians\n\nEscape room props\n\nUnique gifts\n\nPuzzle and illusion collectors\n\nCreative desk toys\n\nCreate moments of astonishment.\nMake objects vanish. Make them appear. Repeat.\n\nShips carefully packaged from Australia.",
+      "DESCRIPTION": "Magic Drawer Illusion Box – Vanish or Appear Objects Instantly\n\nA beautifully crafted magic drawer illusion box: make small objects vanish or appear before your audience. Open the drawer — empty. Close it. Open again — full. Simple, visual, powerful.\n\nEasy to perform (no sleight of hand), self-working, and instantly repeatable. Suited to beginners and experienced magicians. Great for close-up, parlour, social media, or as a desk curiosity.\n\nPrecision laser-cut birch plywood with clean fits, a three-arm herringbone etch, and a durable, lightweight build. The geometric pattern looks modern and mysterious on display.\n\nChoose a DIY kit (parts ready to assemble in under about an hour; glue optional for extra strength) or fully assembled, ready to perform out of the box.\n\nPerfect for magic enthusiasts, beginners, escape room props, gifts, puzzle and illusion collectors, and creative desk toys.\n\nCreate moments of astonishment — vanish, appear, repeat. Ships carefully packaged from Australia.",
       "PRICE": "50",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "9",
@@ -853,11 +874,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/magicdrawer",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4456436784/magic-drawer-illusion-box-vanish-or",
       "VIDEO1": "https://youtube.com/shorts/YgxOOQjwC8I?si=bXJI1epO3tRnAkr_",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "https://www.youtube.com/watch?v=eJtonuQIIr0",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Wooden Hummingbird pole pet automata",
@@ -892,11 +914,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/pole-pet-hummingbird",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1234578674/wooden-hummingbird-pole-pet-automata",
       "VIDEO1": "https://www.youtube.com/watch?v=37MxcFBXaIE",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Dog Whirligig, Kinetic Wind Powered Garden Sculpture, DIY Kit or Fully Assembled",
@@ -931,11 +954,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/whirligigs",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1304794144/dog-whirligig-kinetic-wind-powered",
       "VIDEO1": "https://www.youtube.com/watch?v=2dOI0jCCwkk",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Bird Whirligig Plans DXF SVG Laser cut or Scroll saw",
@@ -970,11 +994,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1537196569/bird-whirligig-plans-dxf-svg-laser-cut-or-scroll-saw",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Magic Frame Illusion-Appearing Image and words-customizable",
@@ -1009,11 +1034,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/magicframe",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4312835913/magic-frame-illusion-appearing-image-and",
       "VIDEO1": "https://youtube.com/shorts/PPHBQ6G1QBw?si=T4hYaCrriR21V4PP",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Slide Picture Puzzle Box Plans SVG DXF PDF Davinci's Vitruvian man",
@@ -1048,11 +1074,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1402606889/slide-picture-puzzle-box-plans-svg-dxf-pdf-davincis-vitruvian-man",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Illusionist Pendant Puzzle Box Laser Cut Files",
@@ -1087,11 +1114,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1145803422/illusionist-pendant-puzzle-box-laser-cut-files",
       "VIDEO1": "https://youtube.com/shorts/O8DiGOL_0bY?si=2iNQFa2mNR-T0QV9",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Dice Tunnel Magic Trick Laser Cut Illusion DIY Kit",
@@ -1126,11 +1154,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/dicetunnel",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1904830395/dice-tunnel-magic-trick-laser-cut",
       "VIDEO1": "https://www.youtube.com/watch?v=uwkKtgWAh5s",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Bird Zoetrope Kit, 3D Laser Cut Wooden Puzzle, Animation Machine",
@@ -1165,11 +1194,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/bird-zoetrope-3d",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1176581489/bird-zoetrope-kit-3d-laser-cut-wooden",
       "VIDEO1": "https://www.youtube.com/watch?v=VbqJUwSNVTY",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Bird 3D Zoetrope laser cutter plans - SVG DXF",
@@ -1204,11 +1234,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1183751211/bird-3d-zoetrope-laser-cutter-plans-svg",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Dog and Cat Running Automata kit",
@@ -1243,11 +1274,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1685393879/dog-and-cat-running-automata-kit",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Writing automaton plans scroll saw/laser cutter - Lanky Doodler  Mechanical Model SVG,DXF,PDF",
@@ -1282,11 +1314,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1219046950/writing-automaton-plans-scroll-sawlaser-cutter-lanky-doodler-mechanical-model-svgdxfpdf",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "DIY Swinging Monkey Automata Kit - Fun Craft Project for Kids and Adults",
@@ -1321,11 +1354,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/au/listing/1687382429/diy-swinging-monkey-automata-kit-fun",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Mouse Maze Puzzle Box Plans- SVG DXF PDF- Laser cutting files - scroll saw",
@@ -1360,11 +1394,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1314876247/mouse-maze-puzzle-box-plans-svg-dxf-pdf-laser-cutting-files-scroll-saw",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Magic Frame-lasercut Files-Appearing Image and words-customizable-svg dxf pdf",
@@ -1399,11 +1434,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4307884988/magic-frame-lasercut-files-appearing",
       "VIDEO1": "https://youtube.com/shorts/PPHBQ6G1QBw?si=T4hYaCrriR21V4PP",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Dice Tunnel Magic Trick Laser Cut Files for Download - SVG - DXF - PDF - Illusion",
@@ -1438,11 +1474,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1904783961/dice-tunnel-magic-trick-laser-cut-files",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Illusionist Pendant Puzzle Box Laser Cut DIY Kit",
@@ -1477,11 +1514,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/blog/illusionist-puzzle-box",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1145863754/illusionist-pendant-puzzle-box-laser-cut-diy-kit",
       "VIDEO1": "https://youtube.com/shorts/O8DiGOL_0bY?si=2iNQFa2mNR-T0QV9",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Key Through Coin Magic Trick: Laser Cut Plans (SVG, PDF, DXF)",
@@ -1516,11 +1554,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1848306154/key-through-coin-magic-trick-laser-cut",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Magic Trick Pencil Box Kit: Wooden 3D Puzzle, STEM Toy",
@@ -1555,11 +1594,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/zigzagpencil",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1712090143/magic-trick-pencil-box-kit-wooden-slot-together-3d-puzzle",
       "VIDEO1": "https://www.youtube.com/watch?v=Pbc_9sFqIVo",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Whirligig Hardware Kit: Stainless Steel & Brass Parts",
@@ -1594,11 +1634,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/whirligigs",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1483891800/whirligig-hardware",
       "VIDEO1": "https://www.youtube.com/watch?v=2dOI0jCCwkk",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Whale Automata Toy Kit: Mechanical Pet, DIY Build",
@@ -1633,11 +1674,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/whale-pulley-pet-automaton-kit",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/857743194/whale-pulley-pet-automata-mechanical-toy-kit",
       "VIDEO1": "https://www.youtube.com/watch?v=lv8tzA6UX38",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Gorilla Pulley Pet Automata Plans SVG DXF-Laser cut mechanical toy",
@@ -1672,11 +1714,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1460040576/gorilla-pulley-pet-automata-plans-svg",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Magic Empty Box Illusion - DIY Magic Trick - Make anything appear and disappear",
@@ -1711,11 +1754,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/magicemptybox",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4314207574/magic-empty-box-illusion-diy-magic-trick",
       "VIDEO1": "https://www.youtube.com/watch?v=akagLvYdDdQ",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Newcomb's Paradox Magic Trick Laser Cut Files, SVG DXF PDF, Coin Illusion with Secret Mechanism, Mental Magic",
@@ -1750,11 +1794,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4389914906/newcombs-paradox-magic-trick-laser-cut",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Chicken And Egg Box Magic Trick laser cut files, svg dxf pdf, gozinta box",
@@ -1789,11 +1834,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4447337150/chicken-and-egg-box-magic-trick-laser",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Mini Cryptex Puzzle Box – Word Lock Secret Drawer, Spelling Learning Toy",
@@ -1828,11 +1874,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/minicryptex",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4455868533/mini-cryptex-puzzle-box-word-lock-secret",
       "VIDEO1": "https://www.youtube.com/watch?v=Xf0tI_sFk10",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Chicken And Egg Box Magic Trick, gozinta box, Impossible boxes, Each fits inside the other",
@@ -1867,11 +1914,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/chickenegg",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4455770147/chicken-and-egg-box-magic-trick-gozinta",
       "VIDEO1": "https://www.youtube.com/watch?v=WDhFJ-TDIU0",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Woodchopper Whirligig Kit",
@@ -1906,11 +1954,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/whirligigs",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1318813665/woodchopper-whirligig-kit",
       "VIDEO1": "https://www.youtube.com/watch?v=2dOI0jCCwkk",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Fisherman whirligig  Kit, Wind Powered Kinetic Garden Sculpture",
@@ -1945,11 +1994,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/whirligigs",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1318816303/fisherman-whirligig-kit",
       "VIDEO1": "https://www.youtube.com/watch?v=2dOI0jCCwkk",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Surfer Whirligig Kit",
@@ -1984,11 +2034,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/whirligigs",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1304795760/surfer-whirligig-kit",
       "VIDEO1": "https://www.youtube.com/watch?v=2dOI0jCCwkk",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Surfer Whirligig Plans - SVG - PDF - laser cutting - scroll saw",
@@ -2023,11 +2074,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1304343551/surfer-whirligig-plans-svg-pdf-laser-cutting-scroll-saw",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Moving Head Illusion Robot Laser cut files svg dxf pdf",
@@ -2062,11 +2114,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1757194619/moving-head-illusion-robot-laser-cut-files-svg-dxf-pdf",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Fluttering Heart Automaton SVG DXF PDF laser cutter files",
@@ -2101,11 +2154,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1383908465/fluttering-heart-automaton-svg-dxf-pdf-laser-cutter-files",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Electric Origami Hummingbird Plans - Paper Automata template",
@@ -2140,11 +2194,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/au/listing/1141433424/electric-origami-hummingbird-plans-paper",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Chocolate Train Counting Squares: Educational Math Toy SVG DXF (Digital Download)",
@@ -2179,11 +2234,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4356391398/chocolate-train-counting-squares",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Writing and Drawing automaton, Laser  Cut Mechanical Model, Science Kit",
@@ -2218,11 +2274,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/scriblo",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1218463674/writing-and-drawing-automaton-laser-cut",
       "VIDEO1": "https://www.youtube.com/watch?v=p0cGridgSFc",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Swinging Monkey Automata Laser Cutting plans svg dxf",
@@ -2257,11 +2314,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1687121533/swinging-monkey-automata-laser-cutting-plans-svg-dxf",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Automata kit Bird Money Bank - Gear Box Pets",
@@ -2296,11 +2354,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/gearbox-pets",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1051209415/automata-kit-bird-money-bank-gear-box-pets",
       "VIDEO1": "https://www.youtube.com/watch?v=nsiMvxhGLGc",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Sword Through Finger Magic Trick, laser cut illusion puzzle, wooden DIY kit",
@@ -2335,11 +2394,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/fingersword",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1785765256/sword-through-finger-magic-trick-laser-cut-illusion-puzzle",
       "VIDEO1": "https://www.youtube.com/watch?v=2LFEcOYopx4",
-      "VIDEO2": "https://www.youtube.com/watch?v=m7JEZrtqhQE",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "https://www.youtube.com/watch?v=m7JEZrtqhQE",
+      "HIDE INSTRUCTIONS": true
     },
     {
       "TITLE": "Climbing Gorilla Pulley Toy Kit: Pet Automata Mechanism",
@@ -2374,11 +2434,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/climbing-monkey-pulley-pet-automaton-kit",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/871653753/gorilla-pulley-pet-mechanism-automata-mechanical-toy",
       "VIDEO1": "https://www.youtube.com/watch?v=NOuMKkuGsXw",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Goldfish Automata Kit - Wooden Mechanical Fish",
@@ -2413,11 +2474,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/gearbox-pets",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1058355145/goldfish-automata-kit-wooden-mechanical-fish",
       "VIDEO1": "https://www.youtube.com/watch?v=nsiMvxhGLGc",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Toddler Ride On Dog Toy Plans: Sweeping Car, DXF SVG PDF",
@@ -2452,11 +2514,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1493385221/plans-for-ride-on-toddler-toy-dog-floor-sweeper-dxf-svg-pdf",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Mini Arcade Driving Game: Wind-Up Music Box, Laser Cut Wood Kit",
@@ -2491,11 +2554,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/tinydrive",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1851883992/mini-arcade-driving-game-wind-up-music-box-tiny-drive-wooden-laser-cut-construction-kit",
       "VIDEO1": "https://www.youtube.com/watch?v=MSCPpfvjkNY",
-      "VIDEO2": "https://www.youtube.com/watch?v=spfs6L1vvI0",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "https://www.youtube.com/watch?v=spfs6L1vvI0",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Fluttering Heart Automata Kit - Kinetic mechanical model - Valentines Gift",
@@ -2530,11 +2594,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/fluttering-heart",
       "ETSY_LISTING_URL": "https://www.etsy.com/listing/1090579492/fluttering-heart-automata-kit-kinetic-mechanical-model-valentines-gift",
       "VIDEO1": "https://www.youtube.com/watch?v=QZS1IcZWIbY",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Wooden Ride On Car Street Sweeper, Wheely Dog for Toddlers, Pug Toy for Babies",
@@ -2569,11 +2634,12 @@
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/au/listing/1492103439/wooden-ride-on-car-street-sweeper-wheely",
       "VIDEO1": "",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Musical Marble Tree Laser Cut Kit",
@@ -2608,11 +2674,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/marbletree",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1162664489/musical-marble-tree-laser-cut-kit",
       "VIDEO1": "https://www.youtube.com/watch?v=Y5o-PC2gxRM",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false
     },
     {
       "TITLE": "Newcomb's Paradox Magic Trick: Coin Illusion with Secret Mechanism, Mental Magic",
@@ -2647,11 +2714,12 @@
       "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/newcombsparadox",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/4367948988/newcombs-paradox-magic-trick-coin",
       "VIDEO1": "https://www.youtube.com/watch?v=FeXOHwqgDgY",
-      "VIDEO2": "",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
-      "ETSY_VIDEO3": ""
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": true
     }
   ]
 }

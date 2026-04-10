@@ -79,6 +79,7 @@ async function mergeBodyIntoFullHtml(
     siteJsPath,
     productDataScriptPath,
     shoppingCartScriptPath,
+    productInstructionVideosScriptPath,
   } = await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig, {
     categoryNames,
   });
@@ -94,6 +95,7 @@ async function mergeBodyIntoFullHtml(
     SITE_JS_PATH: siteJsPath,
     PRODUCT_DATA_SCRIPT_PATH: productDataScriptPath,
     SHOPPING_CART_SCRIPT_PATH: shoppingCartScriptPath,
+    PRODUCT_INSTRUCTION_VIDEOS_SCRIPT_PATH: productInstructionVideosScriptPath,
     SITE_CART_INIT_SCRIPT: siteCartInitScript,
     SET_BASE_SCRIPT: wrapInlineScript(setBaseSource),
     HEADER: headerHtml,

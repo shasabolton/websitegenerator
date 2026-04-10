@@ -1,6 +1,7 @@
 /**
  * One-off / maintenance: fetches each physical product's LEGACY_SHOP_URL,
- * extracts up to 3 YouTube URLs (iframe embed + links, page order), writes VIDEO1–3.
+ * extracts up to 3 YouTube URLs (iframe embed + links, page order), writes VIDEO1,
+ * INSTRUCTION VIDEOS (comma-separated 2nd and 3rd URLs), and clears VIDEO3.
  * Run: node tools/scrapeLegacyYoutube.js
  */
 const fs = require("fs");
@@ -58,18 +59,27 @@ async function fetchHtml(url) {
 
 async function main() {
   const data = JSON.parse(fs.readFileSync(productPath, "utf8"));
-  const cols = data.columns || [];
-  for (const k of ["VIDEO1", "VIDEO2", "VIDEO3"]) {
+  let cols = (data.columns || []).filter((c) => c !== "VIDEO2");
+  for (const k of ["VIDEO1", "INSTRUCTION VIDEOS", "VIDEO3"]) {
     if (!cols.includes(k)) cols.push(k);
+  }
+  if (!cols.includes("HIDE INSTRUCTIONS")) {
+    const hi = cols.indexOf("INSTRUCTION VIDEOS");
+    if (hi >= 0) cols.splice(hi + 1, 0, "HIDE INSTRUCTIONS");
+    else cols.push("HIDE INSTRUCTIONS");
   }
   data.columns = cols;
 
   const cache = new Map();
 
   for (const p of data.products) {
+    delete p.VIDEO2;
+    if (p["HIDE INSTRUCTIONS"] === undefined) {
+      p["HIDE INSTRUCTIONS"] = String(p.CATEGORY || "").trim().toLowerCase() === "magic tricks";
+    }
     if (p.DIGITAL) {
       p.VIDEO1 = "";
-      p.VIDEO2 = "";
+      p["INSTRUCTION VIDEOS"] = "";
       p.VIDEO3 = "";
       continue;
     }
@@ -77,7 +87,7 @@ async function main() {
     const url = (p.LEGACY_SHOP_URL || "").trim();
     if (!url) {
       p.VIDEO1 = "";
-      p.VIDEO2 = "";
+      p["INSTRUCTION VIDEOS"] = "";
       p.VIDEO3 = "";
       continue;
     }
@@ -97,8 +107,9 @@ async function main() {
     }
 
     p.VIDEO1 = urls[0] || "";
-    p.VIDEO2 = urls[1] || "";
-    p.VIDEO3 = urls[2] || "";
+    const instructionExtras = [urls[1], urls[2]].filter(Boolean);
+    p["INSTRUCTION VIDEOS"] = instructionExtras.join(", ");
+    p.VIDEO3 = "";
   }
 
   fs.writeFileSync(productPath, JSON.stringify(data, null, 2) + "\n");

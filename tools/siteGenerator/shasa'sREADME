@@ -2,8 +2,20 @@ flow
 
 click on file tree item
 launches specific generateAnyPage.previewAnyPage(target.path)
-This starts with var html = "" 
+This starts with templates/pages/allPAges.html
+
+This page handles the code that sets <base> = github repo name if severing from github.
+It sets base as "/" otherwise. So root relative urls work whether on 
+github pages, github custom domain or local server.
+
 generates the header and footer and calls the
 specific generator function to return the body html.
-siteGenerator.index then gets all its html replaced with the nre html
+
+siteGenerator.index then gets all its html replaced with the new html
 so that we can preview the generated page. 
+
+Unless we a exporting, then the exact same html will be written to files
+
+Instruction videos in product pages are shown from links dynamically. If the
+products hide instructions parameter = true, then the script checks that ?instr = shown
+is in the address bar before showing them.
