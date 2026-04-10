@@ -678,7 +678,7 @@
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
-      "INSTRUCTION VIDEOS": "",
+      "INSTRUCTION VIDEOS": "https://www.youtube.com/watch?v=sXj3tAQBmlA",
       "HIDE INSTRUCTIONS": true
     },
     {
@@ -1038,7 +1038,7 @@
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
-      "INSTRUCTION VIDEOS": "",
+      "INSTRUCTION VIDEOS": "https://youtu.be/vuHn7t345b4",
       "HIDE INSTRUCTIONS": true
     },
     {
@@ -1158,7 +1158,7 @@
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
-      "INSTRUCTION VIDEOS": "",
+      "INSTRUCTION VIDEOS": "https://youtu.be/pGDLD25tn5c",
       "HIDE INSTRUCTIONS": true
     },
     {
@@ -1553,12 +1553,12 @@
       "DIGITAL": true,
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1848306154/key-through-coin-magic-trick-laser-cut",
-      "VIDEO1": "",
+      "VIDEO1": "https://youtu.be/u2wWA0TB8Mg",
       "VIDEO3": "",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
-      "INSTRUCTION VIDEOS": "",
+      "INSTRUCTION VIDEOS": "https://youtu.be/R2I9NNy3Mcc",
       "HIDE INSTRUCTIONS": true
     },
     {
@@ -1918,7 +1918,7 @@
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
-      "INSTRUCTION VIDEOS": "",
+      "INSTRUCTION VIDEOS": "https://youtu.be/20YbJhav17c",
       "HIDE INSTRUCTIONS": true
     },
     {
@@ -2623,7 +2623,7 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled",
-      "VARIATION 1 PRICE DELTA": "0,20",
+      "VARIATION 1 PRICE DELTA": "0,40",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
@@ -2718,7 +2718,47 @@
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
-      "INSTRUCTION VIDEOS": "",
+      "INSTRUCTION VIDEOS": "https://youtu.be/GwpEC5nxEwE",
+      "HIDE INSTRUCTIONS": true
+    },
+    {
+      "TITLE": "Key Through Coin Magic Trick",
+      "DESCRIPTION": "The wooden coin is placed into a small box. The wooden key is then pushed right through the box and out the other side. The coin is removed and shown to be unharmed. How did the key pass through the coin?",
+      "PRICE": "40",
+      "CURRENCY_CODE": "AUD",
+      "QUANTITY": "874",
+      "WEIGHT_KG": "0.25",
+      "TAGS": "wooden_illusion,magic_trick_plans,key_through_coin,craft_project,secret_box,mystery_box,mechanism,magic_gimmick,contraption,diy_for_kids,stem_education,technology_class",
+      "MATERIALS": "",
+      "IMAGE1": "https://i.etsystatic.com/25031074/r/il/e6742b/6634727819/il_fullxfull.6634727819_t7up.jpg",
+      "IMAGE2": "https://i.etsystatic.com/25031074/r/il/10cf75/6634727809/il_fullxfull.6634727809_d423.jpg",
+      "IMAGE3": "https://i.etsystatic.com/25031074/r/il/fb45a4/6586611830/il_fullxfull.6586611830_dcex.jpg",
+      "IMAGE4": "https://i.etsystatic.com/25031074/r/il/a0059d/6586611900/il_fullxfull.6586611900_2wyj.jpg",
+      "IMAGE5": "https://i.etsystatic.com/25031074/r/il/9053c6/6586611874/il_fullxfull.6586611874_sgt8.jpg",
+      "IMAGE6": "https://i.etsystatic.com/25031074/r/il/f1f7fc/6634727867/il_fullxfull.6634727867_j4nr.jpg",
+      "IMAGE7": "https://i.etsystatic.com/25031074/r/il/e05585/6586611896/il_fullxfull.6586611896_druf.jpg",
+      "IMAGE8": "https://i.etsystatic.com/25031074/r/il/6d775e/6634727839/il_fullxfull.6634727839_1cht.jpg",
+      "IMAGE9": "",
+      "IMAGE10": "",
+      "VARIATION 1 TYPE": "Custom Property",
+      "VARIATION 1 NAME": "Assembly",
+      "VARIATION 1 VALUES": "Kit,Assembled",
+      "VARIATION 1 PRICE DELTA": "0,20",
+      "VARIATION 2 TYPE": "",
+      "VARIATION 2 NAME": "",
+      "VARIATION 2 VALUES": "",
+      "VARIATION 2 PRICE DELTA": "",
+      "SKU": "68",
+      "CATEGORY": "magic tricks",
+      "DIGITAL": false,
+      "LEGACY_SHOP_URL": "",
+      "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1848306154/key-through-coin-magic-trick-laser-cut",
+      "VIDEO1": "https://youtu.be/u2wWA0TB8Mg",
+      "VIDEO3": "",
+      "ETSY_VIDEO1": "",
+      "ETSY_VIDEO2": "",
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "https://youtu.be/R2I9NNy3Mcc",
       "HIDE INSTRUCTIONS": true
     }
   ]
