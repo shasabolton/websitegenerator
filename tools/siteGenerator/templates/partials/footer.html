@@ -2,9 +2,35 @@
   <div class="footer-content">
     <p class="footer-heading">Stay connected</p>
     <div class="footer-links">__SOCIAL_LINKS__</div>
-    <p class="mailing-list">
-      <a href="__MAILING_LIST_URL__">Join our mailing list</a>
-    </p>
+    <form
+      class="footer-subscribe-form"
+      action="https://docs.google.com/forms/d/e/1FAIpQLSe5K8SJbldzZ46AbY1LvyogCVWnCZPbln1rAUFi1vmc879KvQ/formResponse"
+      method="post"
+      target="_self"
+    >
+      <p class="footer-form-heading">Newsletter</p>
+      <div class="footer-form-field">
+        <label class="footer-form-label" for="footer-subscribe-name">Name</label>
+        <input
+          id="footer-subscribe-name"
+          class="footer-form-input"
+          name="entry.268156310"
+          type="text"
+          autocomplete="name"
+        />
+      </div>
+      <div class="footer-form-field">
+        <label class="footer-form-label" for="footer-subscribe-email">Email</label>
+        <input
+          id="footer-subscribe-email"
+          class="footer-form-input"
+          name="entry.866413073"
+          type="email"
+          autocomplete="email"
+        />
+      </div>
+      <button class="footer-subscribe-button" type="submit">Subscribe</button>
+    </form>
     <p class="footer-contact">__CONTACT_BLOCK__</p>
   </div>
 </footer>

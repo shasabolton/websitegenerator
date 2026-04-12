@@ -936,6 +936,13 @@ a:hover {
   margin-top: 32px;
 }
 
+.footer-content {
+  box-sizing: border-box;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 24px 28px;
+}
+
 .site-footer a {
   color: #93c5fd;
 }
@@ -951,11 +958,116 @@ a:hover {
 }
 
 .footer-links {
-  margin: 0 0 8px;
-  padding-left: 18px;
+  margin: 0 0 12px;
+  padding: 0;
 }
 
-.mailing-list,
+.footer-social-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.footer-social-item {
+  margin: 0;
+}
+
+.footer-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  color: #93c5fd;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  text-decoration: none;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.footer-social-link:hover {
+  color: #bfdbfe;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(147, 197, 253, 0.45);
+}
+
+.footer-social-svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.footer-social-item-text {
+  font-weight: 600;
+}
+
+.footer-subscribe-form {
+  margin: 16px 0 0;
+  max-width: 320px;
+}
+
+.footer-form-heading {
+  margin: 0 0 10px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #f8fafc;
+}
+
+.footer-form-field {
+  margin: 0 0 12px;
+}
+
+.footer-form-label {
+  display: block;
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.footer-form-input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  font: inherit;
+  font-size: 1rem;
+}
+
+.footer-form-input::placeholder {
+  color: rgba(226, 232, 240, 0.45);
+}
+
+.footer-form-input:focus {
+  outline: 2px solid rgba(96, 165, 250, 0.55);
+  outline-offset: 2px;
+  border-color: rgba(147, 197, 253, 0.5);
+}
+
+.footer-subscribe-button {
+  margin-top: 4px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(147, 197, 253, 0.45);
+  background: rgba(30, 58, 138, 0.9);
+  color: #e2e8f0;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.footer-subscribe-button:hover {
+  background: rgba(37, 99, 235, 0.95);
+  color: #fff;
+}
+
 .footer-contact {
-  margin: 6px 0 0;
+  margin: 16px 0 0;
 }

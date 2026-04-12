@@ -81,31 +81,34 @@ function buildNavigationHtml(navigationConfig, categoryNames = []) {
     .join("");
 }
 
+const instagramIconSvg = `<svg class="footer-social-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>`;
+
+const facebookIconSvg = `<svg class="footer-social-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>`;
+
 function buildSocialLinksHtml(shopData) {
   const links = [];
   const instagram = shopData?.social?.instagram;
   const facebook = shopData?.social?.facebook;
-  const newsletter = shopData?.websites?.newsletterSignup;
 
   if (instagram?.url) {
+    const url = escapeHtml(instagram.url);
     links.push(
-      `<li><a href="${escapeHtml(instagram.url)}" target="_blank" rel="noreferrer noopener">Instagram</a></li>`
+      `<li class="footer-social-item"><a class="footer-social-link" href="${url}" target="_blank" rel="noreferrer noopener" aria-label="Instagram">${instagramIconSvg}</a></li>`
     );
   }
 
   if (facebook?.url) {
+    const url = escapeHtml(facebook.url);
     links.push(
-      `<li><a href="${escapeHtml(facebook.url)}" target="_blank" rel="noreferrer noopener">Facebook</a></li>`
+      `<li class="footer-social-item"><a class="footer-social-link" href="${url}" target="_blank" rel="noreferrer noopener" aria-label="Facebook">${facebookIconSvg}</a></li>`
     );
   }
 
-  if (newsletter) {
-    links.push(
-      `<li><a href="${escapeHtml(newsletter)}" target="_blank" rel="noreferrer noopener">Mailing List</a></li>`
-    );
+  if (links.length === 0) {
+    return '<ul class="footer-social-list"><li class="footer-social-item footer-social-item-text">Social links coming soon</li></ul>';
   }
 
-  return links.length > 0 ? links.join("") : "<li>Social links coming soon</li>";
+  return `<ul class="footer-social-list">${links.join("")}</ul>`;
 }
 
 function buildFooterContactHtml(shopData) {
@@ -182,7 +185,6 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
   const footerHtml = applyTemplate(footerTemplate, {
     SHOP_NAME: shopName,
     SOCIAL_LINKS: buildSocialLinksHtml(shopData),
-    MAILING_LIST_URL: escapeHtml(shopData?.websites?.newsletterSignup || "#"),
     CONTACT_BLOCK: buildFooterContactHtml(shopData),
   });
 
