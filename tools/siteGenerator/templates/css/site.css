@@ -37,24 +37,74 @@ a:hover {
 
 .brand {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: 24px; /* 2× original 12px */
   margin-bottom: 10px;
 }
 
 .brand-logo {
-  width: 34px;
-  height: 34px;
-  border-radius: 7px;
+  width: 68px;
+  height: 68px; /* 2× original 34px */
+  border-radius: 14px; /* 2× original 7px */
   border: 1px solid rgba(226, 232, 240, 0.5);
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
   object-fit: cover;
 }
 
 .brand-name {
-  font-size: 1.1rem;
+  font-size: 2.2rem; /* 2× original 1.1rem */
   font-weight: 700;
   letter-spacing: 0.01em;
+}
+
+.site-search-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 220px;
+  min-width: 180px;
+  max-width: 360px;
+}
+
+.site-search-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  background: rgba(15, 23, 42, 0.55);
+  color: #f8fafc;
+  font: inherit;
+  font-size: 1rem;
+}
+
+.site-search-input::placeholder {
+  color: rgba(226, 232, 240, 0.5);
+}
+
+.site-search-input:focus {
+  outline: 2px solid rgba(96, 165, 250, 0.65);
+  outline-offset: 2px;
+  border-color: rgba(147, 197, 253, 0.55);
+}
+
+.site-search-submit {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(147, 197, 253, 0.45);
+  background: rgba(30, 58, 138, 0.85);
+  color: #e2e8f0;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.site-search-submit:hover {
+  background: rgba(37, 99, 235, 0.95);
+  color: #fff;
 }
 
 .nav-list {

@@ -122,6 +122,18 @@ function buildFaviconPath(shopData) {
   return shopData?.branding?.faviconPath || "shared-assets/images/branding/favicon.jpg";
 }
 
+function buildGoogleSiteSearchHostname(shopData) {
+  const raw = shopData?.websites?.primary;
+  if (!raw || typeof raw !== "string") {
+    return "";
+  }
+  try {
+    return new URL(raw).hostname;
+  } catch {
+    return "";
+  }
+}
+
 function buildSiteCssPath() {
   return "tools/siteGenerator/templates/css/site.css";
 }
@@ -158,10 +170,13 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
   const shoppingCartScriptPath = escapeHtml(buildShoppingCartScriptPath());
   const productInstructionVideosScriptPath = escapeHtml(buildProductInstructionVideosScriptPath());
 
+  const googleSiteHost = escapeHtml(buildGoogleSiteSearchHostname(shopData));
+
   const headerHtml = applyTemplate(headerTemplate, {
     SHOP_NAME: shopName,
     FAVICON_PATH: faviconPath,
     NAV_ITEMS: navHtml,
+    GOOGLE_SITE_HOST: googleSiteHost,
   });
 
   const footerHtml = applyTemplate(footerTemplate, {
@@ -188,6 +203,7 @@ window.generateHeaderAndFooter = {
   escapeHtml,
   slugify,
   buildShopCategoryHref,
+  buildGoogleSiteSearchHostname,
   buildSiteJsPath,
   buildProductDataScriptPath,
   buildShoppingCartScriptPath,

@@ -3,6 +3,26 @@
     <div class="brand">
       <img class="brand-logo" src="__FAVICON_PATH__" alt="__SHOP_NAME__ logo" />
       <span class="brand-name">__SHOP_NAME__</span>
+      <form
+        class="site-search-form"
+        id="site-search-form"
+        action="https://www.google.com/search"
+        method="get"
+        target="_blank"
+        data-search-site="__GOOGLE_SITE_HOST__"
+      >
+        <input type="hidden" name="q" value="" />
+        <label class="visually-hidden" for="site-search-query">Search this site with Google</label>
+        <input
+          id="site-search-query"
+          class="site-search-input"
+          type="search"
+          autocomplete="off"
+          placeholder="Search…"
+          data-site-search-input
+        />
+        <button class="site-search-submit" type="submit">Search</button>
+      </form>
     </div>
     <nav class="site-nav" aria-label="Main navigation">
       <ul class="nav-list">
@@ -11,3 +31,17 @@
     </nav>
   </div>
 </header>
+<script>
+  (function () {
+    var form = document.getElementById("site-search-form");
+    if (!form) return;
+    form.addEventListener("submit", function () {
+      var host = (form.getAttribute("data-search-site") || "").trim();
+      var input = form.querySelector("[data-site-search-input]");
+      var terms = (input && input.value ? input.value : "").trim();
+      var q = host ? "site:" + host + (terms ? " " + terms : "") : terms;
+      var hidden = form.querySelector('input[name="q"]');
+      if (hidden) hidden.value = q;
+    });
+  })();
+</script>
