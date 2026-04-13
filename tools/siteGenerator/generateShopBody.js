@@ -28,6 +28,36 @@ function categoryHref(category) {
 
 const EMPTY_THUMB_ROW = "<p class=\"product-thumb-empty\">No products in this category yet.</p>";
 
+/**
+ * Inserts trusted HTML from `shopData.about` (site-owner config only).
+ * @param {unknown} about
+ * @returns {string}
+ */
+function buildShopAboutBlock(about) {
+  const raw = String(about ?? "").trim();
+  if (!raw) {
+    return `<p class="shop-browse-lead">${escapeHtml(
+      "Browse the categories below to explore products."
+    )}</p>`;
+  }
+  return `<div class="shop-about">${raw}</div>`;
+}
+
+/**
+ * @param {object} [shopData]
+ * @returns {string}
+ */
+function buildShopIntroSection(shopData) {
+  const aboutBlock = buildShopAboutBlock(shopData?.about);
+  return `
+    <section class="page-content shop-intro" aria-labelledby="shop-heading">
+      <h1 id="shop-heading">Shop</h1>
+      ${aboutBlock}
+      <h2 class="shop-browse-heading">Browse categories</h2>
+    </section>
+  `;
+}
+
 function buildProductThumbsHtml(productThumbTemplate, products) {
   return products
     .map((product) =>
@@ -40,11 +70,12 @@ function buildProductThumbsHtml(productThumbTemplate, products) {
     .join("");
 }
 
-async function buildCategoryPreviewsHtml(products) {
+async function buildCategoryPreviewsHtml(products, shopData) {
+  const introHtml = buildShopIntroSection(shopData);
   const categories = window.productData.getProductsByCategory(products);
   if (categories.length === 0) {
     return {
-      html: "<section class=\"page-content\"><p>No categories found in product data.</p></section>",
+      html: `${introHtml}<section class="page-content"><p>No categories found in product data.</p></section>`,
       categoryNames: [],
     };
   }
@@ -74,13 +105,7 @@ async function buildCategoryPreviewsHtml(products) {
     })
     .join("");
 
-  const html = `
-    <section class="page-content">
-      <h1>Shop</h1>
-      <p>Browse categories from your product data.</p>
-    </section>
-    ${categorySections}
-  `;
+  const html = `${introHtml}${categorySections}`;
   return { html, categoryNames: categories.map((category) => category.name) };
 }
 
@@ -91,7 +116,7 @@ async function buildCategoryPreviewsHtml(products) {
  */
 async function generateShopBody(ctx) {
   const { products, shopData } = ctx;
-  const { html, categoryNames } = await buildCategoryPreviewsHtml(products);
+  const { html, categoryNames } = await buildCategoryPreviewsHtml(products, shopData);
   const shopNameEsc = escapeHtml(shopData?.shopName || "Shop");
   return {
     bodyHtml: html,
