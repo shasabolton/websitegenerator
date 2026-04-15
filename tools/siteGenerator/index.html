@@ -69,6 +69,14 @@
         border-left: 2px solid #e5e7eb;
       }
 
+      .preview-picker-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+        margin: 4px 0;
+      }
+
       .preview-picker-row .preview-picker-page-link {
         color: #2563eb;
         text-decoration: none;
@@ -77,6 +85,25 @@
 
       .preview-picker-row .preview-picker-page-link:hover {
         text-decoration: underline;
+      }
+
+      .preview-picker-download {
+        font-size: 13px;
+        padding: 4px 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: #fff;
+        color: #374151;
+        cursor: pointer;
+      }
+
+      .preview-picker-download:hover:not(:disabled) {
+        background: #f3f4f6;
+      }
+
+      .preview-picker-download:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
       }
 
       .preview-picker-error {
@@ -126,7 +153,8 @@
         <h2 id="preview-heading">Preview generated pages</h2>
         <p>
           Open a page below (paths match the static site). This page reads <code>?path=…</code> from the URL, generates
-          HTML, and replaces the whole document. Open <code>index.html</code> again (or use back) to pick another page.
+          HTML, and replaces the whole document.           Open <code>index.html</code> again (or use back) to pick another page.
+          Download saves a zip file; unzip to get a folder named for that page with <code>index.html</code> inside.
           Magic-trick pages with hidden instruction videos: append <code>&amp;instr=show</code> (ampersand, not a second
           <code>?</code>).
         </p>
@@ -143,6 +171,7 @@
     </main>
     <script src="../editData/productData.js"></script>
     <script src="./previewTarget.js"></script>
+    <script src="./vendor/jszip.min.js"></script>
     <script src="./displayFileTree.js"></script>
     <script src="./script.js"></script>
   </body>

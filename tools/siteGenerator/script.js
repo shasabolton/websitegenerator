@@ -17,13 +17,30 @@ function loadScript(src) {
   });
 }
 
+let previewGeneratorsLoadPromise = null;
+
+/**
+ * Loads header/footer + page generators (same chain as preview). Safe to call multiple times.
+ * Used by the preview picker download action while still on `index.html` without `?path=`.
+ */
+function loadPreviewGenerators() {
+  if (!previewGeneratorsLoadPromise) {
+    previewGeneratorsLoadPromise = (async () => {
+      await loadScript("./generateHeaderAndFooter.js");
+      await loadScript("./generateAnyPage.js");
+      await loadScript("./generateCartBody.js");
+      await loadScript("./generateShopBody.js");
+      await loadScript("./generateCategoryBody.js");
+      await loadScript("./generateProductBody.js");
+    })();
+  }
+  return previewGeneratorsLoadPromise;
+}
+
+window.loadPreviewGenerators = loadPreviewGenerators;
+
 async function runPreviewBootFromUrl() {
-  await loadScript("./generateHeaderAndFooter.js");
-  await loadScript("./generateAnyPage.js");
-  await loadScript("./generateCartBody.js");
-  await loadScript("./generateShopBody.js");
-  await loadScript("./generateCategoryBody.js");
-  await loadScript("./generateProductBody.js");
+  await loadPreviewGenerators();
   const target = window.previewTarget.parsePreviewTarget(window.location.search);
   if (!target?.path) {
     throw new Error("Preview boot: missing path in URL.");

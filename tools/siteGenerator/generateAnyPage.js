@@ -106,10 +106,11 @@ async function mergeBodyIntoFullHtml(
 
 /**
  * @param {string} treePath - Same shape as file-tree `href` (e.g. `shop`, `shop/my-category`, `shop/product-slug`).
+ * @param {{ digital?: boolean | null }} [options] - When `digital` is set, overrides the `digital` query param for shop listing filters.
  * @returns {Promise<string>} Complete HTML document.
  * Named `runGenerateAnyPage` so we do not create `window.generateAnyPage` as a function before assigning the API object (which would break `previewAnyPage`’s call to the generator).
  */
-async function runGenerateAnyPage(treePath) {
+async function runGenerateAnyPage(treePath, options = {}) {
   let html = "";
   const path = normalizeTreePath(treePath);
 
@@ -122,7 +123,9 @@ async function runGenerateAnyPage(treePath) {
   ]);
   const productsFull = Array.isArray(productData?.products) ? productData.products : [];
   const previewParams = window.previewTarget.parsePreviewTarget(window.location.search);
-  const digitalFilter = previewParams?.digital ?? null;
+  const digitalFilter = Object.prototype.hasOwnProperty.call(options, "digital")
+    ? options.digital
+    : previewParams?.digital ?? null;
   const productsForShop = window.productData.filterProductsByDigital(productsFull, digitalFilter);
   const ctxBase = { shopData, navigationConfig, products: productsForShop };
 

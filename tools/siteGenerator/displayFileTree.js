@@ -72,6 +72,85 @@ function getActiveDigitalFilterForPreviewLinks() {
   return parseDigitalFilterValue(raw);
 }
 
+/** Safe folder name for the page (matches previous single-file basename, without `.html`). */
+function treePathToDownloadFolderName(treePath) {
+  const p = String(treePath || "")
+    .trim()
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "");
+  if (!p) {
+    return "page";
+  }
+  const base = p.split("/").filter(Boolean).join("-");
+  const safe = base.replace(/[\\/:*?"<>|]+/g, "-") || "page";
+  return safe;
+}
+
+/**
+ * Browsers cannot save a directory in one step; we download a zip that unpacks to `folderName/index.html`.
+ */
+async function downloadPageFolderAsZip(folderName, html) {
+  if (typeof window.JSZip !== "function") {
+    throw new Error("JSZip is not loaded (expected ./vendor/jszip.min.js).");
+  }
+  const zip = new window.JSZip();
+  zip.folder(folderName).file("index.html", html);
+  const blob = await zip.generateAsync({ type: "blob" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${folderName}.zip`;
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function createDownloadButton(treeHref, pageLabel) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "preview-picker-download";
+  btn.textContent = "Download";
+  const nameHint = String(pageLabel || treeHref || "page").trim() || "page";
+  btn.setAttribute("aria-label", `Download zip with folder and index.html for ${nameHint}`);
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    try {
+      if (typeof window.loadPreviewGenerators === "function") {
+        await window.loadPreviewGenerators();
+      }
+      if (typeof window.generateAnyPage?.generateAnyPage !== "function") {
+        throw new Error("Page generators are not available.");
+      }
+      const digital = getActiveDigitalFilterForPreviewLinks();
+      const html = await window.generateAnyPage.generateAnyPage(treeHref, { digital });
+      await downloadPageFolderAsZip(treePathToDownloadFolderName(treeHref), html);
+    } catch (e) {
+      window.alert(e?.message || String(e));
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  return btn;
+}
+
+function appendPreviewPageRow(container, { label, treeHref, nested = false }) {
+  const row = document.createElement("div");
+  row.className = nested ? "preview-picker-row preview-picker-nested" : "preview-picker-row";
+  const pageLink = document.createElement("a");
+  const href = String(treeHref || "").trim();
+  if (!href) {
+    throw new Error("appendPreviewPageRow: missing treeHref.");
+  }
+  pageLink.href = window.previewTarget.buildPreviewUrl(href, getActiveDigitalFilterForPreviewLinks());
+  pageLink.className = "preview-picker-page-link";
+  pageLink.textContent = label;
+  row.appendChild(pageLink);
+  row.appendChild(createDownloadButton(href, label));
+  container.appendChild(row);
+}
+
 async function buildPopulatedFileTree(digitalFilter) {
   const [fileTreeConfig, { products }] = await Promise.all([
     fetchJson("../../shared-assets/config/fileTree.json"),
@@ -86,15 +165,8 @@ function renderNodeAsDropdown(container, node) {
   const labelLower = String(node?.label || "").trim().toLowerCase();
 
   if (labelLower === "cart") {
-    const row = document.createElement("div");
-    row.className = "preview-picker-row";
-    const cartLink = document.createElement("a");
     const treeHref = String(node.href || "cart").trim();
-    cartLink.href = window.previewTarget.buildPreviewUrl(treeHref, getActiveDigitalFilterForPreviewLinks());
-    cartLink.className = "preview-picker-page-link";
-    cartLink.textContent = node.label || "Cart";
-    row.appendChild(cartLink);
-    container.appendChild(row);
+    appendPreviewPageRow(container, { label: node.label || "Cart", treeHref });
     return;
   }
 
@@ -107,14 +179,7 @@ function renderNodeAsDropdown(container, node) {
     details.appendChild(summary);
     const body = document.createElement("div");
     body.className = "preview-picker-dropdown-body";
-    const shopRow = document.createElement("div");
-    shopRow.className = "preview-picker-row";
-    const shopLink = document.createElement("a");
-    shopLink.href = window.previewTarget.buildPreviewUrl("shop", getActiveDigitalFilterForPreviewLinks());
-    shopLink.className = "preview-picker-page-link";
-    shopLink.textContent = "Shop page";
-    shopRow.appendChild(shopLink);
-    body.appendChild(shopRow);
+    appendPreviewPageRow(body, { label: "Shop page", treeHref: "shop" });
     (node.children || []).forEach((child) => {
       renderNodeAsDropdown(body, child);
     });
@@ -124,31 +189,21 @@ function renderNodeAsDropdown(container, node) {
   }
 
   if (node.pageType === "category") {
-    const row = document.createElement("div");
-    row.className = "preview-picker-row";
-    const pageLink = document.createElement("a");
     const treeHref = String(node.href || "").trim();
     if (!treeHref) {
       throw new Error("Category node missing href for preview link.");
     }
-    pageLink.href = window.previewTarget.buildPreviewUrl(treeHref, getActiveDigitalFilterForPreviewLinks());
-    pageLink.className = "preview-picker-page-link";
-    pageLink.textContent = node.label || "Category";
-    row.appendChild(pageLink);
-    container.appendChild(row);
+    appendPreviewPageRow(container, { label: node.label || "Category", treeHref });
     (node.children || []).forEach((product) => {
-      const productRow = document.createElement("div");
-      productRow.className = "preview-picker-row preview-picker-nested";
-      const productLink = document.createElement("a");
       const productHref = String(product.href || "").trim();
       if (!productHref) {
         throw new Error("Product node missing href for preview link.");
       }
-      productLink.href = window.previewTarget.buildPreviewUrl(productHref, getActiveDigitalFilterForPreviewLinks());
-      productLink.className = "preview-picker-page-link";
-      productLink.textContent = product.label || "Product";
-      productRow.appendChild(productLink);
-      container.appendChild(productRow);
+      appendPreviewPageRow(container, {
+        label: product.label || "Product",
+        treeHref: productHref,
+        nested: true,
+      });
     });
     return;
   }
