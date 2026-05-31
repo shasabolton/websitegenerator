@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "slug": "welcome-to-the-blog",
+  "pageType": "blog",
+  "meta": {
+    "title": "Welcome to the Blog",
+    "description": "A quick hello and what you can expect from this space.",
+    "date": "2025-05-01",
+    "author": "Shasa Bolton",
+    "tags": ["announcement"]
+  },
+  "blocks": [
+    { "type": "title", "text": "Welcome to the Blog" },
+    { "type": "subtitle", "text": "Notes from the workshop" },
+    {
+      "type": "carousel",
+      "items": [
+        {
+          "kind": "image",
+          "url": "https://i.etsystatic.com/25031074/r/il/f18e31/7352315017/il_fullxfull.7352315017_lnpb.jpg"
+        },
+        {
+          "kind": "image",
+          "url": "https://i.etsystatic.com/25031074/r/il/edaf3c/7304361898/il_fullxfull.7304361898_anki.jpg"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "This is a placeholder post while we set up JSON-driven pages. Here you'll find build logs, design notes, and the occasional magic-trick reveal.\n\nThanks for following along — more posts coming soon."
+    },
+    { "type": "divider" },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "New here? Start with the shop to see what's available."
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "slug": "about",
+  "pageType": "page",
+  "meta": {
+    "title": "About",
+    "description": "Mechanical wooden kits, automata, magic tricks and puzzle boxes by Shasa Bolton."
+  },
+  "blocks": [
+    { "type": "title", "text": "About Contraption Cart" },
+    {
+      "type": "subtitle",
+      "text": "Mechanical wooden kits, automata, magic tricks and puzzle boxes"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "Contraption Cart is the home of original designs by **Shasa Bolton** — mechanical wooden automata, puzzle boxes, and DIY kits designed to be built, explored, and enjoyed.\n\nEach contraption combines engineering, creativity, and hands-on play. Available as laser-cut file downloads or fully assembled pieces, these creations suit adults, hobbyists, and kids working with guidance."
+    },
+    {
+      "type": "image",
+      "src": "shared-assets/images/branding/favicon.jpg",
+      "alt": "Contraption Cart branding",
+      "caption": "Turning simple parts into fascinating moving machines."
+    },
+    {
+      "type": "callout",
+      "variant": "note",
+      "text": "Browse the shop for magic tricks, puzzle boxes, automata, and more."
+    }
+  ]
+}

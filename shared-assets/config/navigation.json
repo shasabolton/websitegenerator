@@ -12,11 +12,11 @@
     },
     {
       "label": "Blog",
-      "href": "#blog"
+      "href": "blog"
     },
     {
       "label": "About",
-      "href": "#about"
+      "href": "about"
     }
   ]
 }

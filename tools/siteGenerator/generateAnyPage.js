@@ -216,6 +216,58 @@ async function runGenerateAnyPage(treePath, options = {}) {
     return html;
   }
 
+  if (path === "about") {
+    const gen = window.generateContentBody?.generateContentPageBody;
+    if (typeof gen !== "function") {
+      throw new Error("generateContentBody.js must be loaded before preview.");
+    }
+    const bodyPayload = await gen({ ...ctxBase, pagePath: "about" });
+    html = await mergeBodyIntoFullHtml(
+      shopData,
+      navigationConfig,
+      pageTemplate,
+      setBaseSource,
+      bodyPayload
+    );
+    return html;
+  }
+
+  if (path === "blog") {
+    const gen = window.generateContentBody?.generateBlogIndexBody;
+    if (typeof gen !== "function") {
+      throw new Error("generateContentBody.js must be loaded before preview.");
+    }
+    const bodyPayload = await gen(ctxBase);
+    html = await mergeBodyIntoFullHtml(
+      shopData,
+      navigationConfig,
+      pageTemplate,
+      setBaseSource,
+      bodyPayload
+    );
+    return html;
+  }
+
+  if (path.startsWith("blog/")) {
+    const slug = path.slice("blog/".length);
+    if (!slug || slug.includes("/")) {
+      throw new Error(`Invalid blog path: ${treePath} — use blog/<post-slug>.`);
+    }
+    const gen = window.generateContentBody?.generateContentPageBody;
+    if (typeof gen !== "function") {
+      throw new Error("generateContentBody.js must be loaded before preview.");
+    }
+    const bodyPayload = await gen({ ...ctxBase, pagePath: `blog/${slug}` });
+    html = await mergeBodyIntoFullHtml(
+      shopData,
+      navigationConfig,
+      pageTemplate,
+      setBaseSource,
+      bodyPayload
+    );
+    return html;
+  }
+
   throw new Error(`No preview generator for path: ${treePath}`);
 }
 
@@ -233,6 +285,7 @@ async function previewAnyPage(treePath) {
 window.generateAnyPage = {
   generateAnyPage: runGenerateAnyPage,
   previewAnyPage,
+  mergeBodyIntoFullHtml,
   fetchJson,
   fetchText,
   applyTemplate,

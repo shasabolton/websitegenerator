@@ -17,11 +17,21 @@
     },
     {
       "label": "Blog",
-      "href": "#blog"
+      "href": "blog",
+      "children": [
+        {
+          "label": "Welcome to the Blog",
+          "href": "blog/welcome-to-the-blog"
+        },
+        {
+          "label": "Designing a Puzzle Box",
+          "href": "blog/designing-a-puzzle-box"
+        }
+      ]
     },
     {
       "label": "About",
-      "href": "#about"
+      "href": "about"
     }
   ]
 }

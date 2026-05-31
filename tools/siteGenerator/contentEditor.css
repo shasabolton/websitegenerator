@@ -1,0 +1,229 @@
+.content-edit-mode {
+  padding-top: 48px;
+}
+
+.content-edit-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  padding: 8px 14px;
+  background: #1e293b;
+  color: #e2e8f0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.content-edit-topbar a {
+  color: #93c5fd;
+  text-decoration: none;
+}
+
+.content-edit-topbar a:hover {
+  text-decoration: underline;
+}
+
+.content-edit-topbar-path {
+  color: #94a3b8;
+  margin-left: auto;
+}
+
+.content-edit-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.content-edit-block {
+  position: relative;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 8px;
+  background: #fafafa;
+}
+
+.content-edit-block-toolbar {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  margin: 0 0 8px;
+}
+
+.content-edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  color: #374151;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.content-edit-btn.content-edit-gear {
+  font-size: 17px;
+}
+
+.content-edit-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.content-edit-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.content-edit-btn.content-edit-delete:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.content-edit-block-body {
+  min-height: 24px;
+}
+
+.content-edit-placeholder {
+  margin: 0;
+  padding: 12px;
+  color: #6b7280;
+  font-style: italic;
+  background: #f3f4f6;
+  border-radius: 6px;
+}
+
+.content-edit-add-row {
+  margin-top: 16px;
+}
+
+.content-edit-add-btn {
+  padding: 10px 18px;
+  border: 2px dashed #9ca3af;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.content-edit-add-btn:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.content-edit-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.content-edit-modal-backdrop.content-edit-modal-backdrop--open {
+  display: flex !important;
+}
+
+.content-edit-modal-backdrop[hidden] {
+  display: none !important;
+}
+
+.content-edit-modal {
+  width: min(520px, 100%);
+  max-height: min(90vh, 640px);
+  overflow: auto;
+  padding: 18px 20px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.content-edit-modal h2 {
+  margin: 0 0 14px;
+  font-size: 16px;
+  color: #111827;
+}
+
+.content-edit-field {
+  margin: 0 0 12px;
+}
+
+.content-edit-field label {
+  display: block;
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.content-edit-field input,
+.content-edit-field select,
+.content-edit-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 14px;
+}
+
+.content-edit-field textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.content-edit-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.content-edit-field-hint {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.content-edit-modal-actions button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.content-edit-modal-cancel {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+}
+
+.content-edit-modal-ok {
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.content-edit-modal-ok:hover {
+  background: #1d4ed8;
+}

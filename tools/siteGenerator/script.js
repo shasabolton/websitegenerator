@@ -32,6 +32,8 @@ function loadPreviewGenerators() {
       await loadScript("./generateShopBody.js");
       await loadScript("./generateCategoryBody.js");
       await loadScript("./generateProductBody.js");
+      await loadScript("./contentBlocks.js");
+      await loadScript("./generateContentBody.js");
     })();
   }
   return previewGeneratorsLoadPromise;
@@ -48,8 +50,24 @@ async function runPreviewBootFromUrl() {
   await window.generateAnyPage.previewAnyPage(target.path);
 }
 
+async function runEditBootFromUrl() {
+  await loadPreviewGenerators();
+  await loadScript("./contentEditor.js");
+  const target = window.previewTarget.parsePreviewTarget(window.location.search);
+  if (!target?.path) {
+    throw new Error("Edit boot: missing path in URL.");
+  }
+  await window.contentEditor.bootEditPage(target.path);
+}
+
 window.addEventListener("load", () => {
   const previewTarget = window.previewTarget.parsePreviewTarget(window.location.search);
+  if (previewTarget?.path && previewTarget.edit) {
+    runEditBootFromUrl().catch((error) => {
+      window.previewTarget.showPreviewBootError(error);
+    });
+    return;
+  }
   if (previewTarget?.path) {
     runPreviewBootFromUrl().catch((error) => {
       window.previewTarget.showPreviewBootError(error);

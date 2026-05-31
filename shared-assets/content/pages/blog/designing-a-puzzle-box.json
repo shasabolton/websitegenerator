@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "slug": "designing-a-puzzle-box",
+  "pageType": "blog",
+  "meta": {
+    "title": "Designing a Puzzle Box",
+    "description": "Sketches, prototypes, and the first working mechanism.",
+    "date": "2025-05-15",
+    "author": "Shasa Bolton",
+    "tags": ["puzzle-box", "design"]
+  },
+  "blocks": [
+    { "type": "title", "text": "Designing a Puzzle Box" },
+    { "type": "subtitle", "text": "From sketch to first click" },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "Every puzzle box starts as a rough sketch on paper. The goal is a satisfying *click* when the secret panel moves — without giving away the mechanism too early.\n\nThis dummy post walks through the early stages: sizing the box, choosing wood thickness, and testing a single sliding panel before adding layers."
+    },
+    {
+      "type": "image",
+      "src": "https://i.etsystatic.com/25031074/r/il/1a38a5/7304361938/il_fullxfull.7304361938_98n0.jpg",
+      "alt": "Puzzle box prototype",
+      "caption": "Early prototype — panels still oversized."
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "Next steps: refine the tolerances, add a second secret compartment, and test with fresh eyes (always the best QA)."
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "meta": {
+    "title": "Blog",
+    "description": "Notes on design, builds, and behind-the-scenes from Contraption Cart."
+  },
+  "posts": [
+    {
+      "slug": "welcome-to-the-blog",
+      "title": "Welcome to the Blog",
+      "date": "2025-05-01",
+      "excerpt": "A quick hello and what you can expect from this space.",
+      "cover": "https://i.etsystatic.com/25031074/r/il/f18e31/7352315017/il_fullxfull.7352315017_lnpb.jpg"
+    },
+    {
+      "slug": "designing-a-puzzle-box",
+      "title": "Designing a Puzzle Box",
+      "date": "2025-05-15",
+      "excerpt": "Sketches, prototypes, and the first working mechanism.",
+      "cover": "https://i.etsystatic.com/25031074/r/il/edaf3c/7304361898/il_fullxfull.7304361898_anki.jpg"
+    }
+  ]
+}

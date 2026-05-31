@@ -33,7 +33,13 @@ function parsePreviewTarget(search) {
       digital = false;
     }
   }
-  return { path: decodeURIComponent(String(path).trim()), digital };
+  let edit = false;
+  const e = params.get("edit");
+  if (e != null && String(e).trim() !== "") {
+    const lower = String(e).trim().toLowerCase();
+    edit = lower === "true" || lower === "1";
+  }
+  return { path: decodeURIComponent(String(path).trim()), digital, edit };
 }
 
 /**
@@ -49,6 +55,14 @@ function buildPreviewUrl(treePath, digitalFilter) {
     url += "&digital=false";
   }
   return url;
+}
+
+/**
+ * @param {string} treePath
+ * @param {boolean | null | undefined} digitalFilter
+ */
+function buildEditUrl(treePath, digitalFilter) {
+  return `${buildPreviewUrl(treePath, digitalFilter)}&edit=1`;
 }
 
 function showPreviewBootError(error) {
@@ -71,5 +85,6 @@ window.previewTarget = {
   INDEX_HTML_PATH,
   parsePreviewTarget,
   buildPreviewUrl,
+  buildEditUrl,
   showPreviewBootError,
 };

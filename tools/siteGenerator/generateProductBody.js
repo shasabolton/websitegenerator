@@ -395,4 +395,8 @@ async function generateProductBody(ctx) {
 
 window.generateProductBody = {
   generateProductBody,
+  parseYoutubeVideoId,
+  buildImageCarouselHtml,
+  buildCarouselSlidesHtml,
+  buildCarouselThumbsHtml,
 };

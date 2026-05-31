@@ -135,6 +135,18 @@ function createDownloadButton(treeHref, pageLabel) {
   return btn;
 }
 
+function isContentEditablePath(treeHref) {
+  const path = String(treeHref || "")
+    .trim()
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "")
+    .toLowerCase();
+  if (path === "about") {
+    return true;
+  }
+  return path.startsWith("blog/") && path.length > "blog/".length;
+}
+
 function appendPreviewPageRow(container, { label, treeHref, nested = false }) {
   const row = document.createElement("div");
   row.className = nested ? "preview-picker-row preview-picker-nested" : "preview-picker-row";
@@ -147,6 +159,13 @@ function appendPreviewPageRow(container, { label, treeHref, nested = false }) {
   pageLink.className = "preview-picker-page-link";
   pageLink.textContent = label;
   row.appendChild(pageLink);
+  if (isContentEditablePath(href)) {
+    const editLink = document.createElement("a");
+    editLink.href = window.previewTarget.buildEditUrl(href, getActiveDigitalFilterForPreviewLinks());
+    editLink.className = "preview-picker-edit-link";
+    editLink.textContent = "Edit";
+    row.appendChild(editLink);
+  }
   row.appendChild(createDownloadButton(href, label));
   container.appendChild(row);
 }
@@ -167,6 +186,32 @@ function renderNodeAsDropdown(container, node) {
   if (labelLower === "cart") {
     const treeHref = String(node.href || "cart").trim();
     appendPreviewPageRow(container, { label: node.label || "Cart", treeHref });
+    return;
+  }
+
+  if (labelLower === "blog") {
+    const details = document.createElement("details");
+    details.className = "preview-picker-dropdown";
+    details.open = true;
+    const summary = document.createElement("summary");
+    summary.textContent = node.label || "Blog";
+    details.appendChild(summary);
+    const body = document.createElement("div");
+    body.className = "preview-picker-dropdown-body";
+    appendPreviewPageRow(body, { label: "Blog index", treeHref: "blog" });
+    (node.children || []).forEach((child) => {
+      const childHref = String(child.href || "").trim();
+      if (!childHref) {
+        return;
+      }
+      appendPreviewPageRow(body, {
+        label: child.label || "Post",
+        treeHref: childHref,
+        nested: true,
+      });
+    });
+    details.appendChild(body);
+    container.appendChild(details);
     return;
   }
 
@@ -222,6 +267,12 @@ function renderNodeAsDropdown(container, node) {
     });
     details.appendChild(body);
     container.appendChild(details);
+    return;
+  }
+
+  const treeHref = String(node.href || "").trim();
+  if (treeHref && !treeHref.startsWith("#")) {
+    appendPreviewPageRow(container, { label: node.label || "Page", treeHref });
     return;
   }
 
