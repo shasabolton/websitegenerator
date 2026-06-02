@@ -20,12 +20,12 @@
       "href": "blog",
       "children": [
         {
-          "label": "Welcome to the Blog",
-          "href": "blog/welcome-to-the-blog"
-        },
-        {
           "label": "How Does A Mechanical Calculator Work",
           "href": "blog/how-does-a-mechanical-calculator-work"
+        },
+        {
+          "label": "Welcome to the Blog",
+          "href": "blog/welcome-to-the-blog"
         }
       ]
     },
