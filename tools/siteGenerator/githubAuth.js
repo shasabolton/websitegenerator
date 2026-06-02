@@ -20,6 +20,8 @@
   let cachedHubIndexUrl = null;
 
   const CONTENT_PAGES_PREFIX = "shared-assets/content/pages";
+  const FILE_TREE_PATH = "shared-assets/config/fileTree.json";
+  const BLOG_INDEX_PATH = "shared-assets/content/blog-index.json";
   const OAUTH_SCOPE = "repo";
   const DEFAULT_BRANCH = "main";
 
@@ -444,15 +446,262 @@
    * @param {string} pagePath - file-tree path, e.g. `about` or `blog/my-post`
    */
   function pagePathToContentRepoPath(pagePath) {
-    const normalized = String(pagePath || "")
-      .trim()
-      .replace(/^\/+/, "")
-      .replace(/\/+$/, "")
-      .toLowerCase();
+    const normalized = normalizePagePath(pagePath);
     if (!normalized || normalized.includes("..")) {
       throw new Error(`Invalid content page path: ${pagePath}`);
     }
     return `${CONTENT_PAGES_PREFIX}/${normalized}.json`;
+  }
+
+  function normalizePagePath(pagePath) {
+    return String(pagePath || "")
+      .trim()
+      .replace(/^\/+/, "")
+      .replace(/\/+$/, "")
+      .toLowerCase();
+  }
+
+  function isBlogPagePath(pagePath) {
+    return normalizePagePath(pagePath).startsWith("blog/");
+  }
+
+  function slugify(raw) {
+    const s = String(raw || "")
+      .trim()
+      .toLowerCase()
+      .replace(/['"]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    return s;
+  }
+
+  function resolveBlogSlug(pageData, originalPagePath) {
+    const originalSlug = normalizePagePath(originalPagePath).slice("blog/".length);
+    const fromSlug = slugify(pageData?.slug || "");
+    if (fromSlug) {
+      return fromSlug;
+    }
+    const fromTitle = slugify(pageData?.meta?.title || "");
+    if (fromTitle) {
+      return fromTitle;
+    }
+    const fallback = slugify(originalSlug);
+    if (fallback) {
+      return fallback;
+    }
+    throw new Error("Blog slug is empty. Set slug or meta title before pushing.");
+  }
+
+  function base64ToUtf8(base64) {
+    const normalized = String(base64 || "").replace(/\s+/g, "");
+    const binary = atob(normalized);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return new TextDecoder().decode(bytes);
+  }
+
+  async function readRepoJson(owner, repo, filePath, branch) {
+    const meta = await getFileMeta(owner, repo, filePath, branch);
+    if (!meta) {
+      throw new Error(`Required file missing in target repo: ${filePath}`);
+    }
+    const text = base64ToUtf8(meta.content || "");
+    let json;
+    try {
+      json = JSON.parse(text);
+    } catch {
+      throw new Error(`Invalid JSON in ${filePath}`);
+    }
+    return { meta, json };
+  }
+
+  async function deleteFileContent(owner, repo, filePath, message, branch, sha) {
+    if (!sha) {
+      return null;
+    }
+    const path = filePath
+      .split("/")
+      .map((s) => encodeURIComponent(s))
+      .join("/");
+    return githubApi(`/repos/${owner}/${repo}/contents/${path}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message,
+        sha,
+        branch: branch || DEFAULT_BRANCH,
+      }),
+    });
+  }
+
+  function deriveCoverFromPageData(pageData) {
+    const blocks = Array.isArray(pageData?.blocks) ? pageData.blocks : [];
+    for (const block of blocks) {
+      if (String(block?.type || "").toLowerCase() === "image" && block?.src) {
+        return String(block.src);
+      }
+      if (String(block?.type || "").toLowerCase() === "carousel" && Array.isArray(block?.items)) {
+        const firstImage = block.items.find((item) => String(item?.kind || "").toLowerCase() === "image" && item?.url);
+        if (firstImage?.url) {
+          return String(firstImage.url);
+        }
+      }
+    }
+    return "";
+  }
+
+  function updateFileTreeForBlog(fileTreeJson, oldPagePath, newPagePath, title) {
+    const root = fileTreeJson && typeof fileTreeJson === "object" ? fileTreeJson : {};
+    if (!Array.isArray(root.items)) {
+      throw new Error("fileTree.json missing items array");
+    }
+    const blogNode = root.items.find((item) => normalizePagePath(item?.href) === "blog");
+    if (!blogNode) {
+      throw new Error("fileTree.json missing Blog node");
+    }
+    if (!Array.isArray(blogNode.children)) {
+      blogNode.children = [];
+    }
+    const oldNorm = normalizePagePath(oldPagePath);
+    const newNorm = normalizePagePath(newPagePath);
+    let entry = blogNode.children.find((child) => normalizePagePath(child?.href) === oldNorm);
+    if (!entry) {
+      entry = blogNode.children.find((child) => normalizePagePath(child?.href) === newNorm);
+    }
+    if (!entry) {
+      entry = {};
+      blogNode.children.push(entry);
+    }
+    entry.label = String(title || "").trim() || "Untitled";
+    entry.href = newNorm;
+    return root;
+  }
+
+  function compareBlogPosts(a, b) {
+    const da = String(a?.date || "").trim();
+    const db = String(b?.date || "").trim();
+    if (da && db && da !== db) {
+      return db.localeCompare(da);
+    }
+    if (da && !db) {
+      return -1;
+    }
+    if (!da && db) {
+      return 1;
+    }
+    return String(a?.slug || "").localeCompare(String(b?.slug || ""));
+  }
+
+  function buildBlogPostFromPageData(pageData, slugFallback) {
+    const meta = pageData?.meta && typeof pageData.meta === "object" ? pageData.meta : {};
+    const slug = slugify(pageData?.slug || slugFallback);
+    if (!slug) {
+      return null;
+    }
+    return {
+      slug,
+      title: String(meta.title || pageData?.slug || slug || "Untitled").trim() || "Untitled",
+      date: String(meta.date || "").trim(),
+      excerpt: String(meta.description || "").trim(),
+      cover: deriveCoverFromPageData(pageData),
+    };
+  }
+
+  async function listRepoDirectory(owner, repo, dirPath, branch) {
+    const ref = encodeURIComponent(branch || DEFAULT_BRANCH);
+    const encodedPath = dirPath
+      .split("/")
+      .map((s) => encodeURIComponent(s))
+      .join("/");
+    const data = await githubApi(`/repos/${owner}/${repo}/contents/${encodedPath}?ref=${ref}`, { method: "GET" });
+    return Array.isArray(data) ? data : [];
+  }
+
+  async function rebuildBlogArtifacts(owner, repo, branch, currentPagePath, currentPageData) {
+    const fileTree = await readRepoJson(owner, repo, FILE_TREE_PATH, branch);
+    const blogIndex = await readRepoJson(owner, repo, BLOG_INDEX_PATH, branch);
+
+    const dirEntries = await listRepoDirectory(owner, repo, `${CONTENT_PAGES_PREFIX}/blog`, branch);
+    const blogFiles = dirEntries.filter((e) => e?.type === "file" && /\.json$/i.test(String(e?.name || "")));
+
+    const postsBySlug = new Map();
+    for (const entry of blogFiles) {
+      const slugFromName = String(entry.name || "").replace(/\.json$/i, "");
+      const repoPath = `${CONTENT_PAGES_PREFIX}/blog/${slugFromName}.json`;
+      const fileData = await readRepoJson(owner, repo, repoPath, branch);
+      const post = buildBlogPostFromPageData(fileData.json, slugFromName);
+      if (post) {
+        postsBySlug.set(post.slug, post);
+      }
+    }
+
+    const currentNorm = normalizePagePath(currentPagePath);
+    if (isBlogPagePath(currentNorm)) {
+      const currentSlugFallback = currentNorm.slice("blog/".length);
+      const currentPost = buildBlogPostFromPageData(currentPageData, currentSlugFallback);
+      if (currentPost) {
+        postsBySlug.set(currentPost.slug, currentPost);
+      }
+    }
+
+    const posts = Array.from(postsBySlug.values()).sort(compareBlogPosts);
+
+    const nextBlogIndex = blogIndex.json && typeof blogIndex.json === "object" ? blogIndex.json : {};
+    if (nextBlogIndex.version == null) {
+      nextBlogIndex.version = 1;
+    }
+    if (!nextBlogIndex.meta || typeof nextBlogIndex.meta !== "object") {
+      nextBlogIndex.meta = {};
+    }
+    nextBlogIndex.posts = posts;
+
+    const nextFileTree = fileTree.json && typeof fileTree.json === "object" ? fileTree.json : {};
+    if (!Array.isArray(nextFileTree.items)) {
+      throw new Error("fileTree.json missing items array");
+    }
+    const blogNode = nextFileTree.items.find((item) => normalizePagePath(item?.href) === "blog");
+    if (!blogNode) {
+      throw new Error("fileTree.json missing Blog node");
+    }
+    blogNode.children = posts.map((post) => ({
+      label: String(post.title || "Untitled"),
+      href: `blog/${post.slug}`,
+    }));
+
+    return {
+      fileTreeMeta: fileTree.meta,
+      blogIndexMeta: blogIndex.meta,
+      nextFileTree,
+      nextBlogIndex,
+    };
+  }
+
+  function updateBlogIndexForPost(blogIndexJson, oldSlug, newSlug, pageData) {
+    const root = blogIndexJson && typeof blogIndexJson === "object" ? blogIndexJson : {};
+    if (!Array.isArray(root.posts)) {
+      root.posts = [];
+    }
+    const meta = pageData?.meta && typeof pageData.meta === "object" ? pageData.meta : {};
+    const oldNorm = String(oldSlug || "").trim().toLowerCase();
+    const newNorm = String(newSlug || "").trim().toLowerCase();
+    let post = root.posts.find((p) => String(p?.slug || "").trim().toLowerCase() === oldNorm);
+    if (!post) {
+      post = root.posts.find((p) => String(p?.slug || "").trim().toLowerCase() === newNorm);
+    }
+    if (!post) {
+      post = {};
+      root.posts.push(post);
+    }
+    post.slug = newNorm;
+    post.title = String(meta.title || pageData?.slug || "Untitled").trim() || "Untitled";
+    post.date = String(meta.date || "").trim();
+    post.excerpt = String(meta.description || "").trim();
+    if (!post.cover) {
+      post.cover = deriveCoverFromPageData(pageData);
+    }
+    return root;
   }
 
   async function githubApi(path, options, token) {
@@ -576,23 +825,79 @@
       throw new Error("Select a GitHub repository on the site generator picker page.");
     }
     const branch = getBranch();
-    const repoPath = pagePathToContentRepoPath(pagePath);
-    const jsonText = `${JSON.stringify(pageData, null, 2)}\n`;
-    const message = `Update content: ${pagePath}`;
-
-    let meta = await getFileMeta(parsed.owner, parsed.repo, repoPath, branch);
-    let sha = meta?.sha || null;
-
-    try {
-      return await putFileContent(parsed.owner, parsed.repo, repoPath, message, jsonText, branch, sha);
-    } catch (err) {
-      if (sha && /sha/i.test(String(err.message))) {
-        meta = await getFileMeta(parsed.owner, parsed.repo, repoPath, branch);
-        sha = meta?.sha || null;
-        return putFileContent(parsed.owner, parsed.repo, repoPath, message, jsonText, branch, sha);
-      }
-      throw err;
+    const originalPagePath = normalizePagePath(pagePath);
+    const mutablePageData =
+      pageData && typeof pageData === "object" ? JSON.parse(JSON.stringify(pageData)) : { meta: {}, blocks: [] };
+    if (!mutablePageData.meta || typeof mutablePageData.meta !== "object") {
+      mutablePageData.meta = {};
     }
+
+    let targetPagePath = originalPagePath;
+    if (isBlogPagePath(originalPagePath)) {
+      const newSlug = resolveBlogSlug(mutablePageData, originalPagePath);
+      mutablePageData.slug = newSlug;
+      targetPagePath = `blog/${newSlug}`;
+    }
+
+    const oldRepoPath = pagePathToContentRepoPath(originalPagePath);
+    const newRepoPath = pagePathToContentRepoPath(targetPagePath);
+    const oldMeta = await getFileMeta(parsed.owner, parsed.repo, oldRepoPath, branch);
+    const targetMeta = oldRepoPath === newRepoPath ? oldMeta : await getFileMeta(parsed.owner, parsed.repo, newRepoPath, branch);
+    const pageJsonText = `${JSON.stringify(mutablePageData, null, 2)}\n`;
+    const pageMessage = `Update content: ${targetPagePath}`;
+
+    const pageWriteResult = await putFileContent(
+      parsed.owner,
+      parsed.repo,
+      newRepoPath,
+      pageMessage,
+      pageJsonText,
+      branch,
+      targetMeta?.sha || null,
+    );
+
+    if (oldRepoPath !== newRepoPath && oldMeta?.sha) {
+      await deleteFileContent(
+        parsed.owner,
+        parsed.repo,
+        oldRepoPath,
+        `Rename content page to ${targetPagePath}`,
+        branch,
+        oldMeta.sha,
+      );
+    }
+
+    if (isBlogPagePath(originalPagePath) || isBlogPagePath(targetPagePath)) {
+      const rebuilt = await rebuildBlogArtifacts(
+        parsed.owner,
+        parsed.repo,
+        branch,
+        targetPagePath,
+        mutablePageData,
+      );
+
+      await putFileContent(
+        parsed.owner,
+        parsed.repo,
+        FILE_TREE_PATH,
+        `Regenerate file tree blog links for ${targetPagePath}`,
+        `${JSON.stringify(rebuilt.nextFileTree, null, 2)}\n`,
+        branch,
+        rebuilt.fileTreeMeta?.sha || null,
+      );
+
+      await putFileContent(
+        parsed.owner,
+        parsed.repo,
+        BLOG_INDEX_PATH,
+        `Regenerate blog index for ${targetPagePath}`,
+        `${JSON.stringify(rebuilt.nextBlogIndex, null, 2)}\n`,
+        branch,
+        rebuilt.blogIndexMeta?.sha || null,
+      );
+    }
+
+    return pageWriteResult;
   }
 
   function assertRedirectUriAllowed(callback) {
