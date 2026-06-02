@@ -7,15 +7,20 @@
     "description": "Sketches, prototypes, and the first working mechanism.",
     "date": "2025-05-15",
     "author": "Shasa Bolton",
-    "tags": ["puzzle-box", "design"]
+    "tags": [
+      "puzzle-box",
+      "design"
+    ]
   },
   "blocks": [
-    { "type": "title", "text": "Designing a Puzzle Box" },
-    { "type": "subtitle", "text": "From sketch to first click" },
+    {
+      "type": "title",
+      "text": "How A Mechanical Calculator Works"
+    },
     {
       "type": "text",
       "format": "markdown",
-      "content": "Every puzzle box starts as a rough sketch on paper. The goal is a satisfying *click* when the secret panel moves — without giving away the mechanism too early.\n\nThis dummy post walks through the early stages: sizing the box, choosing wood thickness, and testing a single sliding panel before adding layers."
+      "content": "The fundamental requirement of a mechanical calculator is to perform the carry opperation. When a number dial has passes above 9, it must return back to 0 and add 1 to the place holder dial abover it. This must also happen in reverse. When a number dial passes bellow 0, it must return to 9 and subtract 1 from the place holder dial above it. With this in place, we can then do addition, subtraction, multiplication and division. \n\nThis mechanical calculator has 4 dials. One for each place holder. Each dial has the digits 0 to 9. So the returning to 9 to 0 and 0 to 9 is covered simply by the circular dial. How do we perform the carry to the next place holder up? We need a single gear tooth on the dial, so that whenever it passes between 0 and 9, the wheel above is turned by one tenth, thus adding or subtracting 1.\n\nThe video below demonstrates addition and subtraction, then read below to learn how to extend this to multiplication and division."
     },
     {
       "type": "image",
@@ -24,9 +29,22 @@
       "caption": "Early prototype — panels still oversized."
     },
     {
+      "type": "subtitle",
+      "text": "Advanced Operations"
+    },
+    {
       "type": "text",
-      "format": "plain",
-      "content": "Next steps: refine the tolerances, add a second secret compartment, and test with fresh eyes (always the best QA)."
+      "format": "markdown",
+      "content": "What is nice is how the machine makes it intuitive that more advanced opperations are built from the more fundamental operations."
+    },
+    {
+      "type": "subtitle",
+      "text": "Multiplication"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "Multiplication is essentially repeated addition.\n\nExample 3 x 7\n\n1) Set the machine to \"0\".\n\n2) Add 3 repeatedly, counting as you go. 1,2,3...\n\n3) Stop when you reach 7.\n\n4) Read the answer 21\n\n\nDivision\nDivision is essentially repeated subtraction. \n\nexample 22 / 3\n\n1) Set the dials to show 22.\n\n2) Subtract 3 repeatedly, counting as you go. 1,2,3,4...\n\n3) When you reach a number that is smaller than your diviser then stop. ...5,6,7\n\n4) You should now see \"1\" on the machine. This is smaller than 3 so stop.\n\n5) Your count equals the answer and the number on the machine is the remainder.  So 22/3 = 7 with a remainder of 1. "
     }
   ]
 }
