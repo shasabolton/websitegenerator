@@ -102,6 +102,54 @@
   min-height: 24px;
 }
 
+.content-edit-block-body .content-subtitle {
+  margin: 1.25rem 0 0.75rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #1f2937;
+}
+
+.content-edit-page-settings {
+  margin: 0 0 24px;
+  padding: 16px 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.content-edit-page-settings legend {
+  padding: 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.content-edit-page-path-hint {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.content-edit-page-path-hint code {
+  font-size: 12px;
+}
+
+.content-edit-page-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 12px 16px;
+}
+
+.content-edit-page-settings .content-edit-field--wide {
+  grid-column: 1 / -1;
+}
+
+.content-edit-blog-only[hidden] {
+  display: none !important;
+}
+
 .content-edit-placeholder {
   margin: 0;
   padding: 12px;

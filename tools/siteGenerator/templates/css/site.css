@@ -1127,10 +1127,11 @@ a:hover {
 }
 
 .content-subtitle {
-  margin: 0 0 16px;
-  font-size: 1.06rem;
-  line-height: 1.5;
-  color: #4b5563;
+  margin: 1.25rem 0 0.75rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #1f2937;
 }
 
 .content-meta {

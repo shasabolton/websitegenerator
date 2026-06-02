@@ -100,6 +100,10 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function escapeAttr(value) {
+  return escapeHtml(value);
+}
+
 function isEditableContentPath(treePath) {
   const path = String(treePath || "")
     .trim()
@@ -166,19 +170,165 @@ async function renderEditBlocksHtml(blocks, blockCtx) {
   return parts.join("\n");
 }
 
-async function buildEditBodyPayload(pageData, ctx) {
-  const { shopData, products, blockCtx } = ctx;
+function ensurePageDataShape(pageData) {
   const page = pageData && typeof pageData === "object" ? pageData : {};
-  const blocks = Array.isArray(page.blocks) ? page.blocks : [];
-  const meta = page.meta && typeof page.meta === "object" ? page.meta : {};
+  if (!page.meta || typeof page.meta !== "object") {
+    page.meta = {};
+  }
+  if (page.version == null || page.version === "") {
+    page.version = 1;
+  }
+  if (!page.slug) {
+    page.slug = "";
+  }
+  if (!page.pageType) {
+    page.pageType = "page";
+  }
+  if (!Array.isArray(page.blocks)) {
+    page.blocks = [];
+  }
+  return page;
+}
+
+function buildPageSettingsEditHtml(pageData, pagePath) {
+  const page = ensurePageDataShape(pageData);
+  const meta = page.meta;
   const pageType = String(page.pageType || "page").trim().toLowerCase();
+  const isBlog = pageType === "blog";
+  const tagsStr = Array.isArray(meta.tags) ? meta.tags.join(", ") : "";
+  const blogOnlyHidden = isBlog ? "" : ' hidden=""';
+
+  return `<fieldset class="content-edit-page-settings" data-content-edit-page-settings>
+  <legend>Page settings</legend>
+  <p class="content-edit-page-path-hint">Stored as <code>shared-assets/content/pages/${escapeHtml(pagePath)}.json</code></p>
+  <div class="content-edit-page-settings-grid">
+    <div class="content-edit-field">
+      <label for="content-edit-version">Version</label>
+      <input id="content-edit-version" type="number" min="1" step="1" data-page-field="version" value="${escapeAttr(String(page.version))}" />
+    </div>
+    <div class="content-edit-field">
+      <label for="content-edit-slug">Slug</label>
+      <input id="content-edit-slug" type="text" data-page-field="slug" value="${escapeAttr(String(page.slug || ""))}" autocomplete="off" />
+    </div>
+    <div class="content-edit-field">
+      <label for="content-edit-page-type">Page type</label>
+      <select id="content-edit-page-type" data-page-field="pageType">
+        <option value="page"${pageType === "page" ? " selected" : ""}>page</option>
+        <option value="blog"${pageType === "blog" ? " selected" : ""}>blog</option>
+      </select>
+    </div>
+    <div class="content-edit-field content-edit-field--wide">
+      <label for="content-edit-meta-title">Meta title</label>
+      <input id="content-edit-meta-title" type="text" data-page-field="meta.title" value="${escapeAttr(String(meta.title || ""))}" />
+    </div>
+    <div class="content-edit-field content-edit-field--wide">
+      <label for="content-edit-meta-description">Meta description</label>
+      <textarea id="content-edit-meta-description" rows="2" data-page-field="meta.description">${escapeHtml(String(meta.description || ""))}</textarea>
+    </div>
+    <div class="content-edit-field content-edit-blog-only" data-blog-field${blogOnlyHidden}>
+      <label for="content-edit-meta-date">Date</label>
+      <input id="content-edit-meta-date" type="date" data-page-field="meta.date" value="${escapeAttr(String(meta.date || ""))}" />
+    </div>
+    <div class="content-edit-field content-edit-blog-only" data-blog-field${blogOnlyHidden}>
+      <label for="content-edit-meta-author">Author</label>
+      <input id="content-edit-meta-author" type="text" data-page-field="meta.author" value="${escapeAttr(String(meta.author || ""))}" />
+    </div>
+    <div class="content-edit-field content-edit-field--wide content-edit-blog-only" data-blog-field${blogOnlyHidden}>
+      <label for="content-edit-meta-tags">Tags</label>
+      <input id="content-edit-meta-tags" type="text" data-page-field="meta.tags" value="${escapeAttr(tagsStr)}" placeholder="puzzle-box, design" />
+      <p class="content-edit-field-hint">Comma-separated</p>
+    </div>
+  </div>
+</fieldset>`;
+}
+
+function syncPageDataFromSettingsForm() {
+  const state = getState();
+  const root = document.querySelector("[data-content-edit-page-settings]");
+  if (!state?.pageData || !root) {
+    return;
+  }
+  const page = ensurePageDataShape(state.pageData);
+  const versionInput = root.querySelector('[data-page-field="version"]');
+  const version = parseInt(String(versionInput?.value || "1"), 10);
+  page.version = Number.isFinite(version) && version > 0 ? version : 1;
+
+  page.slug = String(root.querySelector('[data-page-field="slug"]')?.value || "").trim();
+  page.pageType = String(root.querySelector('[data-page-field="pageType"]')?.value || "page")
+    .trim()
+    .toLowerCase();
+
+  if (!page.meta || typeof page.meta !== "object") {
+    page.meta = {};
+  }
+  page.meta.title = String(root.querySelector('[data-page-field="meta.title"]')?.value || "").trim();
+  page.meta.description = String(root.querySelector('[data-page-field="meta.description"]')?.value || "").trim();
+
+  if (page.pageType === "blog") {
+    page.meta.date = String(root.querySelector('[data-page-field="meta.date"]')?.value || "").trim();
+    page.meta.author = String(root.querySelector('[data-page-field="meta.author"]')?.value || "").trim();
+    const tagsRaw = String(root.querySelector('[data-page-field="meta.tags"]')?.value || "");
+    page.meta.tags = tagsRaw
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+  } else {
+    delete page.meta.date;
+    delete page.meta.author;
+    delete page.meta.tags;
+  }
+}
+
+function updateBlogFieldsVisibility() {
+  const root = document.querySelector("[data-content-edit-page-settings]");
+  if (!root) {
+    return;
+  }
+  const isBlog = String(root.querySelector('[data-page-field="pageType"]')?.value || "").toLowerCase() === "blog";
+  root.querySelectorAll("[data-blog-field]").forEach((el) => {
+    if (isBlog) {
+      el.removeAttribute("hidden");
+    } else {
+      el.setAttribute("hidden", "");
+    }
+  });
+}
+
+function bindPageSettingsControls() {
+  const root = document.querySelector("[data-content-edit-page-settings]");
+  if (!root || root.dataset.bound === "true") {
+    return;
+  }
+  root.dataset.bound = "true";
+
+  const onChange = () => {
+    syncPageDataFromSettingsForm();
+    updateBlogFieldsVisibility();
+  };
+
+  root.querySelectorAll("input, select, textarea").forEach((el) => {
+    el.addEventListener("change", onChange);
+    if (el.tagName === "INPUT" && el.type === "text") {
+      el.addEventListener("input", onChange);
+    }
+    if (el.tagName === "TEXTAREA") {
+      el.addEventListener("input", onChange);
+    }
+  });
+}
+
+async function buildEditBodyPayload(pageData, ctx) {
+  const { shopData, products, blockCtx, pagePath } = ctx;
+  const page = ensurePageDataShape(pageData);
+  const blocks = Array.isArray(page.blocks) ? page.blocks : [];
+  const meta = page.meta;
   const pageTitle = String(meta.title || page.slug || "Page").trim() || "Page";
 
   const editTemplate = await window.generateAnyPage.fetchText("./templates/partials/contentPageEdit.html");
   const blocksHtml = await renderEditBlocksHtml(blocks, blockCtx);
-  const metaHtml = window.contentBlocks.buildContentMetaHtml(meta, pageType);
+  const settingsHtml = buildPageSettingsEditHtml(page, pagePath || "");
   const bodyHtml = window.contentBlocks.applyTemplate(editTemplate, {
-    CONTENT_META: metaHtml,
+    PAGE_SETTINGS: settingsHtml,
     CONTENT_BLOCKS: blocksHtml,
   });
 
@@ -340,6 +490,7 @@ ${footerHtml}`;
 
   bindModalControls();
   bindBlockControls();
+  bindPageSettingsControls();
 
   try {
     await loadScriptOnce(siteJsPath);
@@ -350,7 +501,10 @@ ${footerHtml}`;
   if (window.githubAuth?.initEditPushUi) {
     window.githubAuth.initEditPushUi({
       pagePath,
-      getPageData: () => getState()?.pageData,
+      getPageData: () => {
+        syncPageDataFromSettingsForm();
+        return getState()?.pageData;
+      },
     });
   }
 }
@@ -706,6 +860,7 @@ function addBlock() {
 function bindEditorEvents() {
   bindBlockControls();
   bindModalControls();
+  bindPageSettingsControls();
 }
 
 async function initEditorUi() {
@@ -751,6 +906,7 @@ async function bootEditPage(treePath) {
     shopData,
     products: productsForShop,
     blockCtx,
+    pagePath: treePath,
   });
 
   const headerFooter = await window.generateHeaderAndFooter.generateHeaderAndFooter(
