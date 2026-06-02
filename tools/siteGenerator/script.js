@@ -50,8 +50,14 @@ async function runPreviewBootFromUrl() {
   await window.generateAnyPage.previewAnyPage(target.path);
 }
 
+async function loadGithubAuthScripts() {
+  await loadScript("./githubAuth.config.js");
+  await loadScript("./githubAuth.js");
+}
+
 async function runEditBootFromUrl() {
   await loadPreviewGenerators();
+  await loadGithubAuthScripts();
   await loadScript("./contentEditor.js");
   const target = window.previewTarget.parsePreviewTarget(window.location.search);
   if (!target?.path) {
@@ -74,6 +80,22 @@ window.addEventListener("load", () => {
     });
     return;
   }
+
+  const hubRoot = document.getElementById("github-auth-root");
+  const bootHub = async () => {
+    if (window.githubAuth?.stripOAuthQueryFromUrl) {
+      window.githubAuth.stripOAuthQueryFromUrl();
+    }
+    if (window.githubAuth?.initHubUi && hubRoot) {
+      await window.githubAuth.initHubUi(hubRoot);
+    }
+  };
+
+  bootHub().catch((error) => {
+    if (hubRoot) {
+      hubRoot.innerHTML = `<p class="github-auth-error">${escapeHtml(error.message)}</p>`;
+    }
+  });
 
   if (window.displayFileTree?.initPreviewPicker) {
     window.displayFileTree.initPreviewPicker({ containerId: "preview-picker-root" }).catch((error) => {

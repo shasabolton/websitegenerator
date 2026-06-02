@@ -200,6 +200,7 @@ function buildTopbarHtml(pagePath) {
   return `<div class="content-edit-topbar" role="toolbar">
   <a href="${pickerUrl}">← Picker</a>
   <a href="${previewUrl}">Preview</a>
+  <span data-github-push-root></span>
   <span class="content-edit-topbar-path">Editing: ${escapeHtml(pagePath)}</span>
 </div>`;
 }
@@ -344,6 +345,13 @@ ${footerHtml}`;
     await loadScriptOnce(siteJsPath);
   } catch {
     // Carousel blocks may not switch slides; editing still works.
+  }
+
+  if (window.githubAuth?.initEditPushUi) {
+    window.githubAuth.initEditPushUi({
+      pagePath,
+      getPageData: () => getState()?.pageData,
+    });
   }
 }
 

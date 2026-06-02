@@ -138,6 +138,16 @@ All relative `href`/`src` in that document (that do not start with `/`) resolve 
 - Generated pages link to **`tools/siteGenerator/templates/css/site.css`** and the favicon using **base-relative** paths (`shared-assets/…`, `tools/siteGenerator/…`). `allPages.html` sets literal `<base href="/">` and runs inlined `setBase.js` **before** those `<link>` / `<img>` tags so resolution uses the correct root (including `/websitegenerator/` on GitHub Pages).
 - The picker UI on `index.html` uses **inline** styles in that file, not `site.css`.
 
+## GitHub token and push (content editor)
+
+The picker (`index.html`) uses a **personal access token** (not OAuth in the browser). Paste the token once on the hub; it is stored in **`localStorage`** on this device until you click **Sign out**, along with your repo and branch choice.
+
+1. Create a token: [Fine-grained](https://github.com/settings/tokens?type=beta) with **Contents: Read and write** on the repos you use, or a [classic token](https://github.com/settings/tokens) with the **`repo`** scope.
+2. On the generator hub, paste the token and click **Save & connect** (the field clears after save; the token stays in `localStorage`).
+3. Pick a repository and branch (default `main`), edit a page, then **Push to GitHub** to update `shared-assets/content/pages/<path>.json`.
+
+Optional: set `accessToken` in `githubAuth.config.js` only on a private machine — do not commit real tokens to git.
+
 ## Operational notes
 
 - **Caching:** fetches use `{ cache: "no-store" }` during development.

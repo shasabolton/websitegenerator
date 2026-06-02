@@ -157,9 +157,11 @@
         min-width: 11rem;
       }
     </style>
+    <link rel="stylesheet" href="./githubAuth.css" />
   </head>
   <body>
     <main>
+      <div id="github-auth-root" class="github-auth-panel" aria-live="polite"></div>
       <section class="preview-panel" aria-labelledby="preview-heading">
         <h2 id="preview-heading">Preview generated pages</h2>
         <p>
@@ -168,6 +170,7 @@
           Download saves a zip file; unzip to get a folder named for that page with <code>index.html</code> inside.
           Magic-trick pages with hidden instruction videos: append <code>&amp;instr=show</code> (ampersand, not a second
           <code>?</code>).
+          Save a GitHub access token above to push content page JSON from the editor.
         </p>
         <div class="preview-digital-filter">
           <label for="preview-digital-filter">Listings</label>
@@ -180,6 +183,8 @@
         <div id="preview-picker-root" aria-live="polite"></div>
       </section>
     </main>
+    <script src="./githubAuth.config.js"></script>
+    <script src="./githubAuth.js"></script>
     <script src="../editData/productData.js"></script>
     <script src="./previewTarget.js"></script>
     <script src="./vendor/jszip.min.js"></script>
