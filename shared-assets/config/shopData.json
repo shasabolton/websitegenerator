@@ -22,6 +22,10 @@
   "branding": {
     "faviconPath": "shared-assets/images/branding/favicon.jpg"
   },
+  "blog": {
+    "title": "Blog",
+    "description": "Notes on design, builds, and behind-the-scenes from Contraption Cart."
+  },
   "contact": {
     "email": "shasabolton@gmail.com",
     "phone": "+61 455295848",

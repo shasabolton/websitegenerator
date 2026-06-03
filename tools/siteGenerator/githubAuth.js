@@ -21,7 +21,6 @@
 
   const CONTENT_PAGES_PREFIX = "shared-assets/content/pages";
   const FILE_TREE_PATH = "shared-assets/config/fileTree.json";
-  const BLOG_INDEX_PATH = "shared-assets/content/blog-index.json";
   const OAUTH_SCOPE = "repo";
   const DEFAULT_BRANCH = "main";
 
@@ -536,22 +535,6 @@
     });
   }
 
-  function deriveCoverFromPageData(pageData) {
-    const blocks = Array.isArray(pageData?.blocks) ? pageData.blocks : [];
-    for (const block of blocks) {
-      if (String(block?.type || "").toLowerCase() === "image" && block?.src) {
-        return String(block.src);
-      }
-      if (String(block?.type || "").toLowerCase() === "carousel" && Array.isArray(block?.items)) {
-        const firstImage = block.items.find((item) => String(item?.kind || "").toLowerCase() === "image" && item?.url);
-        if (firstImage?.url) {
-          return String(firstImage.url);
-        }
-      }
-    }
-    return "";
-  }
-
   function updateFileTreeForBlog(fileTreeJson, oldPagePath, newPagePath, title) {
     const root = fileTreeJson && typeof fileTreeJson === "object" ? fileTreeJson : {};
     if (!Array.isArray(root.items)) {
@@ -576,131 +559,6 @@
     }
     entry.label = String(title || "").trim() || "Untitled";
     entry.href = newNorm;
-    return root;
-  }
-
-  function compareBlogPosts(a, b) {
-    const da = String(a?.date || "").trim();
-    const db = String(b?.date || "").trim();
-    if (da && db && da !== db) {
-      return db.localeCompare(da);
-    }
-    if (da && !db) {
-      return -1;
-    }
-    if (!da && db) {
-      return 1;
-    }
-    return String(a?.slug || "").localeCompare(String(b?.slug || ""));
-  }
-
-  function buildBlogPostFromPageData(pageData, slugFallback) {
-    const meta = pageData?.meta && typeof pageData.meta === "object" ? pageData.meta : {};
-    const slug = slugify(pageData?.slug || slugFallback);
-    if (!slug) {
-      return null;
-    }
-    return {
-      slug,
-      title: String(meta.title || pageData?.slug || slug || "Untitled").trim() || "Untitled",
-      date: String(meta.date || "").trim(),
-      excerpt: String(meta.description || "").trim(),
-      cover: deriveCoverFromPageData(pageData),
-    };
-  }
-
-  async function listRepoDirectory(owner, repo, dirPath, branch) {
-    const ref = encodeURIComponent(branch || DEFAULT_BRANCH);
-    const encodedPath = dirPath
-      .split("/")
-      .map((s) => encodeURIComponent(s))
-      .join("/");
-    const data = await githubApi(`/repos/${owner}/${repo}/contents/${encodedPath}?ref=${ref}`, { method: "GET" });
-    return Array.isArray(data) ? data : [];
-  }
-
-  async function rebuildBlogArtifacts(owner, repo, branch, currentPagePath, currentPageData) {
-    const fileTree = await readRepoJson(owner, repo, FILE_TREE_PATH, branch);
-    const blogIndex = await readRepoJson(owner, repo, BLOG_INDEX_PATH, branch);
-
-    const dirEntries = await listRepoDirectory(owner, repo, `${CONTENT_PAGES_PREFIX}/blog`, branch);
-    const blogFiles = dirEntries.filter((e) => e?.type === "file" && /\.json$/i.test(String(e?.name || "")));
-
-    const postsBySlug = new Map();
-    for (const entry of blogFiles) {
-      const slugFromName = String(entry.name || "").replace(/\.json$/i, "");
-      const repoPath = `${CONTENT_PAGES_PREFIX}/blog/${slugFromName}.json`;
-      const fileData = await readRepoJson(owner, repo, repoPath, branch);
-      const post = buildBlogPostFromPageData(fileData.json, slugFromName);
-      if (post) {
-        postsBySlug.set(post.slug, post);
-      }
-    }
-
-    const currentNorm = normalizePagePath(currentPagePath);
-    if (isBlogPagePath(currentNorm)) {
-      const currentSlugFallback = currentNorm.slice("blog/".length);
-      const currentPost = buildBlogPostFromPageData(currentPageData, currentSlugFallback);
-      if (currentPost) {
-        postsBySlug.set(currentPost.slug, currentPost);
-      }
-    }
-
-    const posts = Array.from(postsBySlug.values()).sort(compareBlogPosts);
-
-    const nextBlogIndex = blogIndex.json && typeof blogIndex.json === "object" ? blogIndex.json : {};
-    if (nextBlogIndex.version == null) {
-      nextBlogIndex.version = 1;
-    }
-    if (!nextBlogIndex.meta || typeof nextBlogIndex.meta !== "object") {
-      nextBlogIndex.meta = {};
-    }
-    nextBlogIndex.posts = posts;
-
-    const nextFileTree = fileTree.json && typeof fileTree.json === "object" ? fileTree.json : {};
-    if (!Array.isArray(nextFileTree.items)) {
-      throw new Error("fileTree.json missing items array");
-    }
-    const blogNode = nextFileTree.items.find((item) => normalizePagePath(item?.href) === "blog");
-    if (!blogNode) {
-      throw new Error("fileTree.json missing Blog node");
-    }
-    blogNode.children = posts.map((post) => ({
-      label: String(post.title || "Untitled"),
-      href: `blog/${post.slug}`,
-    }));
-
-    return {
-      fileTreeMeta: fileTree.meta,
-      blogIndexMeta: blogIndex.meta,
-      nextFileTree,
-      nextBlogIndex,
-    };
-  }
-
-  function updateBlogIndexForPost(blogIndexJson, oldSlug, newSlug, pageData) {
-    const root = blogIndexJson && typeof blogIndexJson === "object" ? blogIndexJson : {};
-    if (!Array.isArray(root.posts)) {
-      root.posts = [];
-    }
-    const meta = pageData?.meta && typeof pageData.meta === "object" ? pageData.meta : {};
-    const oldNorm = String(oldSlug || "").trim().toLowerCase();
-    const newNorm = String(newSlug || "").trim().toLowerCase();
-    let post = root.posts.find((p) => String(p?.slug || "").trim().toLowerCase() === oldNorm);
-    if (!post) {
-      post = root.posts.find((p) => String(p?.slug || "").trim().toLowerCase() === newNorm);
-    }
-    if (!post) {
-      post = {};
-      root.posts.push(post);
-    }
-    post.slug = newNorm;
-    post.title = String(meta.title || pageData?.slug || "Untitled").trim() || "Untitled";
-    post.date = String(meta.date || "").trim();
-    post.excerpt = String(meta.description || "").trim();
-    if (!post.cover) {
-      post.cover = deriveCoverFromPageData(pageData);
-    }
     return root;
   }
 
@@ -868,32 +726,24 @@
     }
 
     if (isBlogPagePath(originalPagePath) || isBlogPagePath(targetPagePath)) {
-      const rebuilt = await rebuildBlogArtifacts(
-        parsed.owner,
-        parsed.repo,
-        branch,
+      const fileTree = await readRepoJson(parsed.owner, parsed.repo, FILE_TREE_PATH, branch);
+      const title =
+        String(mutablePageData.meta?.title || mutablePageData.slug || "Untitled").trim() || "Untitled";
+      const nextFileTree = updateFileTreeForBlog(
+        fileTree.json,
+        originalPagePath,
         targetPagePath,
-        mutablePageData,
+        title,
       );
 
       await putFileContent(
         parsed.owner,
         parsed.repo,
         FILE_TREE_PATH,
-        `Regenerate file tree blog links for ${targetPagePath}`,
-        `${JSON.stringify(rebuilt.nextFileTree, null, 2)}\n`,
+        `Update file tree for ${targetPagePath}`,
+        `${JSON.stringify(nextFileTree, null, 2)}\n`,
         branch,
-        rebuilt.fileTreeMeta?.sha || null,
-      );
-
-      await putFileContent(
-        parsed.owner,
-        parsed.repo,
-        BLOG_INDEX_PATH,
-        `Regenerate blog index for ${targetPagePath}`,
-        `${JSON.stringify(rebuilt.nextBlogIndex, null, 2)}\n`,
-        branch,
-        rebuilt.blogIndexMeta?.sha || null,
+        fileTree.meta?.sha || null,
       );
     }
 

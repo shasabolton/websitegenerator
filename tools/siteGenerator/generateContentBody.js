@@ -1,5 +1,5 @@
 const CONTENT_PAGES_BASE = "../../shared-assets/content/pages";
-const BLOG_INDEX_URL = "../../shared-assets/content/blog-index.json";
+const FILE_TREE_URL = "../../shared-assets/config/fileTree.json";
 
 function escapeHtml(value) {
   return String(value)
@@ -106,6 +106,88 @@ async function generateContentPageBody(ctx) {
   return generateContentPageBodyFromData({ ...ctx, pageData: page });
 }
 
+function deriveCoverFromPageData(pageData) {
+  const blocks = Array.isArray(pageData?.blocks) ? pageData.blocks : [];
+  for (const block of blocks) {
+    if (String(block?.type || "").toLowerCase() === "image" && block?.src) {
+      return String(block.src);
+    }
+    if (String(block?.type || "").toLowerCase() === "carousel" && Array.isArray(block?.items)) {
+      const firstImage = block.items.find((item) => String(item?.kind || "").toLowerCase() === "image" && item?.url);
+      if (firstImage?.url) {
+        return String(firstImage.url);
+      }
+    }
+  }
+  return "";
+}
+
+function buildBlogPostSummary(pageData, slugFallback) {
+  const meta = pageData?.meta && typeof pageData.meta === "object" ? pageData.meta : {};
+  const slug = String(pageData?.slug || slugFallback || "")
+    .trim()
+    .toLowerCase();
+  if (!slug) {
+    return null;
+  }
+  return {
+    slug,
+    title: String(meta.title || pageData?.slug || slug || "Untitled").trim() || "Untitled",
+    date: String(meta.date || "").trim(),
+    excerpt: String(meta.description || "").trim(),
+    cover: deriveCoverFromPageData(pageData),
+  };
+}
+
+function compareBlogPosts(a, b) {
+  const da = String(a?.date || "").trim();
+  const db = String(b?.date || "").trim();
+  if (da && db && da !== db) {
+    return db.localeCompare(da);
+  }
+  if (da && !db) {
+    return -1;
+  }
+  if (!da && db) {
+    return 1;
+  }
+  return String(a?.slug || "").localeCompare(String(b?.slug || ""));
+}
+
+function getBlogSlugsFromFileTree(fileTree) {
+  const items = Array.isArray(fileTree?.items) ? fileTree.items : [];
+  const blogNode = items.find((item) => String(item?.href || "").trim().toLowerCase() === "blog");
+  const children = Array.isArray(blogNode?.children) ? blogNode.children : [];
+  return children
+    .map((child) => {
+      const href = String(child?.href || "")
+        .trim()
+        .toLowerCase()
+        .replace(/^\/+/, "")
+        .replace(/\/+$/, "");
+      if (!href.startsWith("blog/") || href.length <= "blog/".length) {
+        return null;
+      }
+      return href.slice("blog/".length);
+    })
+    .filter(Boolean);
+}
+
+async function loadBlogPostsFromFileTree(fileTree) {
+  const slugs = getBlogSlugsFromFileTree(fileTree);
+  const summaries = await Promise.all(
+    slugs.map(async (slug) => {
+      try {
+        const pageData = await loadContentPageJson(`blog/${slug}`);
+        return buildBlogPostSummary(pageData, slug);
+      } catch {
+        return null;
+      }
+    }),
+  );
+  return summaries.filter(Boolean).sort(compareBlogPosts);
+}
+
 function buildBlogIndexCard(post) {
   const slug = escapeHtml(String(post.slug || "").trim());
   const title = escapeHtml(String(post.title || "Untitled").trim() || "Untitled");
@@ -134,11 +216,14 @@ function buildBlogIndexCard(post) {
  */
 async function generateBlogIndexBody(ctx) {
   const { shopData, products } = ctx;
-  const index = await window.generateAnyPage.fetchJson(BLOG_INDEX_URL);
-  const meta = index?.meta && typeof index.meta === "object" ? index.meta : {};
-  const posts = Array.isArray(index?.posts) ? index.posts : [];
-  const pageTitle = String(meta.title || "Blog").trim() || "Blog";
-  const description = String(meta.description || "").trim();
+  const fetchJson = window.generateAnyPage.fetchJson;
+  const blogConfig = shopData?.blog && typeof shopData.blog === "object" ? shopData.blog : {};
+  const pageTitle = String(blogConfig.title || "Blog").trim() || "Blog";
+  const description = String(blogConfig.description || "").trim();
+  const headingEsc = escapeHtml(pageTitle);
+
+  const fileTree = await fetchJson(FILE_TREE_URL);
+  const posts = await loadBlogPostsFromFileTree(fileTree);
 
   const cardsHtml = posts.map(buildBlogIndexCard).join("\n");
   const descriptionHtml = description
@@ -146,7 +231,7 @@ async function generateBlogIndexBody(ctx) {
     : "";
 
   const bodyHtml = `<section class="page-content content-page blog-index">
-  <h1 class="content-title">Blog</h1>
+  <h1 class="content-title">${headingEsc}</h1>
   ${descriptionHtml}
   <div class="blog-index-list">
     ${cardsHtml || '<p class="blog-index-empty">No posts yet.</p>'}
