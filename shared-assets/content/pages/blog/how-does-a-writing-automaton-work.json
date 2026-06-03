@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "slug": "how-does-a-writing-automaton-work",
+  "pageType": "blog",
+  "meta": {
+    "title": "How Does A Writing Automaton Work",
+    "description": "An explanation of various mechanisms inside mechanical writing machines",
+    "date": "2026-06-03",
+    "author": "Shasa Bolton",
+    "tags": [
+      "automata",
+      "writing automaton",
+      "mechanical computing",
+      "cams"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "How does a Writing Automaton work?"
+    },
+    {
+      "type": "subtitle",
+      "text": "An explanation of various mechanisms inside mechanical writing machines"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "Explanation coming soon.\nScriblo, Skrippy, Lanky Doodler, Software"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": ""
+    },
+    {
+      "type": "image",
+      "src": "https://i.etsystatic.com/25031074/r/il/53af33/7017683670/il_fullxfull.7017683670_px9j.jpg",
+      "alt": "writing automaton pantograph method",
+      "caption": "writing automaton pantograph method",
+      "width": ""
+    }
+  ]
+}
