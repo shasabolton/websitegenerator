@@ -25,7 +25,7 @@ const BLOCK_SCHEMAS = {
   image: {
     label: "Image",
     fields: [
-      { key: "src", label: "Src / URL", type: "text" },
+      { key: "src", label: "Src / URL", type: "product_media", mediaKind: "image" },
       { key: "alt", label: "Alt text", type: "text" },
       { key: "caption", label: "Caption", type: "text" },
       {
@@ -55,7 +55,7 @@ const BLOCK_SCHEMAS = {
     label: "Video",
     fields: [
       { key: "videoId", label: "YouTube video ID", type: "text" },
-      { key: "url", label: "YouTube URL (alternative)", type: "text" },
+      { key: "url", label: "YouTube URL (alternative)", type: "product_media", mediaKind: "video" },
       { key: "title", label: "Title", type: "text" },
       { key: "caption", label: "Caption", type: "text" },
     ],
@@ -369,17 +369,28 @@ async function ensureDocumentBaseForEdit() {
   }
 }
 
-function ensureStylesheet(href) {
+function ensureStylesheet(href, options) {
   const normalized = String(href || "").trim();
   if (!normalized) {
     return;
   }
-  if (document.querySelector(`link[rel="stylesheet"][href="${normalized}"]`)) {
+  const opts = options && typeof options === "object" ? options : {};
+  let url = normalized;
+  if (opts.cacheBust) {
+    const sep = url.includes("?") ? "&" : "?";
+    url = `${url}${sep}t=${Date.now()}`;
+  }
+  const existing = document.querySelector(`link[rel="stylesheet"][data-href-base="${normalized}"]`);
+  if (existing) {
+    if (opts.cacheBust) {
+      existing.href = url;
+    }
     return;
   }
   const link = document.createElement("link");
   link.rel = "stylesheet";
-  link.href = normalized;
+  link.href = url;
+  link.setAttribute("data-href-base", normalized);
   document.head.appendChild(link);
 }
 
@@ -475,7 +486,7 @@ async function mountEditPageInPlace(pagePath, bodyPayload, headerFooter) {
 
   const { headerHtml, footerHtml, siteCssPath, siteJsPath } = headerFooter;
   ensureStylesheet(siteCssPath);
-  ensureStylesheet(`${EDITOR_ROOT}/contentEditor.css`);
+  ensureStylesheet(`${EDITOR_ROOT}/contentEditor.css`, { cacheBust: true });
 
   document.title = bodyPayload.pageTitle;
   document.body.className = "content-edit-mode";
@@ -569,7 +580,251 @@ function readCurrentFormValues(form) {
   return values;
 }
 
-function appendFieldInput(container, field, block) {
+const PRODUCT_VIDEO_COLUMN_KEYS = ["VIDEO1", "VIDEO3", "ETSY_VIDEO1", "ETSY_VIDEO2", "ETSY_VIDEO3"];
+
+function collectProductVideoUrls(row) {
+  const seen = new Set();
+  const out = [];
+  const add = (raw) => {
+    const u = String(raw || "").trim();
+    if (u && !seen.has(u)) {
+      seen.add(u);
+      out.push(u);
+    }
+  };
+  for (const key of PRODUCT_VIDEO_COLUMN_KEYS) {
+    add(row[key]);
+  }
+  const instruction = String(row["INSTRUCTION VIDEOS"] || "").trim();
+  if (instruction) {
+    for (const part of instruction.split(",")) {
+      add(part);
+    }
+  }
+  return out;
+}
+
+function searchProductsByTitle(query, products) {
+  const q = String(query || "")
+    .trim()
+    .toLowerCase();
+  const list = Array.isArray(products) ? products : [];
+  if (!q) {
+    return [];
+  }
+  return list
+    .filter((row) => String(row?.TITLE || "").toLowerCase().includes(q))
+    .slice(0, 24);
+}
+
+function getYoutubeVideoIdParser() {
+  return window.generateProductBody?.parseYoutubeVideoId || null;
+}
+
+function applyMediaUrlToForm(form, field, url, mediaKind) {
+  const urlInput = form.querySelector(`[name="${field.key}"]`);
+  if (urlInput) {
+    urlInput.value = url;
+  }
+  if (mediaKind === "video") {
+    const parseId = getYoutubeVideoIdParser();
+    const videoIdInput = form.querySelector('[name="videoId"]');
+    if (videoIdInput && typeof parseId === "function") {
+      videoIdInput.value = parseId(url) || "";
+    }
+  }
+}
+
+function buildProductMediaThumbnails(row, mediaKind) {
+  if (mediaKind === "video") {
+    const parseId = getYoutubeVideoIdParser();
+    return collectProductVideoUrls(row).map((url) => {
+      const videoId = typeof parseId === "function" ? parseId(url) : null;
+      const thumbUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "";
+      return { url, thumbUrl, isVideo: true };
+    });
+  }
+  const collectImages = window.productData?.collectProductImageUrls;
+  const urls = typeof collectImages === "function" ? collectImages(row) : [];
+  return urls.map((url) => ({ url, thumbUrl: url, isVideo: false }));
+}
+
+function bindProductMediaPicker({ wrap, field, form, modeSelect, urlInput, picker, products, mediaKind }) {
+  const searchInput = picker.querySelector("[data-product-search]");
+  const resultsEl = picker.querySelector("[data-product-results]");
+  const thumbsEl = picker.querySelector("[data-product-thumbs]");
+  function setMode(mode) {
+    const useProduct = mode === "product";
+    picker.hidden = !useProduct;
+    urlInput.hidden = useProduct;
+    wrap.classList.toggle("content-edit-field--product-mode", useProduct);
+    wrap.classList.toggle("content-edit-field--url-mode", !useProduct);
+    if (!useProduct) {
+      thumbsEl.hidden = true;
+      resultsEl.hidden = false;
+    }
+  }
+
+  function renderResults(rows) {
+    resultsEl.textContent = "";
+    if (!rows.length) {
+      resultsEl.hidden = false;
+      const empty = document.createElement("p");
+      empty.className = "content-edit-product-empty";
+      empty.textContent = searchInput.value.trim()
+        ? "No products match that title."
+        : "Type in the search box to find shop listings.";
+      resultsEl.appendChild(empty);
+      return;
+    }
+    resultsEl.hidden = false;
+    const list = document.createElement("ul");
+    list.className = "content-edit-product-list";
+    for (const row of rows) {
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "content-edit-product-list-btn";
+      btn.textContent = String(row.TITLE || "Untitled").trim() || "Untitled";
+      btn.addEventListener("click", () => {
+        resultsEl.hidden = true;
+        renderThumbs(row);
+      });
+      li.appendChild(btn);
+      list.appendChild(li);
+    }
+    resultsEl.appendChild(list);
+  }
+
+  function renderThumbs(row) {
+    const titleText = String(row.TITLE || "Untitled").trim() || "Untitled";
+    const items = buildProductMediaThumbnails(row, mediaKind);
+    thumbsEl.hidden = false;
+    thumbsEl.replaceChildren();
+
+    const heading = document.createElement("p");
+    heading.className = "content-edit-product-thumbs-heading";
+    heading.textContent = titleText;
+    thumbsEl.appendChild(heading);
+
+    if (!items.length) {
+      const empty = document.createElement("p");
+      empty.className = "content-edit-product-empty";
+      empty.textContent =
+        mediaKind === "video" ? "This product has no video URLs in the catalog." : "This product has no images in the catalog.";
+      thumbsEl.appendChild(empty);
+      return;
+    }
+
+    const grid = document.createElement("div");
+    grid.className = "content-edit-product-thumb-grid";
+    for (const item of items) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "content-edit-product-thumb-btn";
+      btn.title = item.url;
+      if (item.thumbUrl) {
+        const img = document.createElement("img");
+        img.src = item.thumbUrl;
+        img.alt = "";
+        img.loading = "lazy";
+        btn.appendChild(img);
+      } else {
+        btn.textContent = "Video";
+      }
+      btn.addEventListener("click", () => {
+        applyMediaUrlToForm(form, field, item.url, mediaKind);
+        modeSelect.value = "url";
+        setMode("url");
+      });
+      grid.appendChild(btn);
+    }
+    thumbsEl.appendChild(grid);
+
+    const back = document.createElement("button");
+    back.type = "button";
+    back.className = "content-edit-product-back";
+    back.textContent = "← Back to results";
+    back.addEventListener("click", () => {
+      thumbsEl.hidden = true;
+      resultsEl.hidden = false;
+      renderResults(searchProductsByTitle(searchInput.value, products));
+    });
+    thumbsEl.appendChild(back);
+  }
+
+  modeSelect.addEventListener("change", () => {
+    setMode(modeSelect.value);
+    if (modeSelect.value === "product") {
+      renderResults(searchProductsByTitle(searchInput.value, products));
+    }
+  });
+
+  searchInput.addEventListener("input", () => {
+    thumbsEl.hidden = true;
+    resultsEl.hidden = false;
+    renderResults(searchProductsByTitle(searchInput.value, products));
+  });
+
+  setMode("url");
+}
+
+function appendProductMediaFieldInput(container, field, block, form) {
+  const state = getState();
+  const products = Array.isArray(state?.products) ? state.products : [];
+  const mediaKind = field.mediaKind === "video" ? "video" : "image";
+  const value = fieldValueToInput(block, field);
+
+  const wrap = document.createElement("div");
+  wrap.className = "content-edit-field content-edit-field--wide content-edit-field--url-mode";
+  wrap.setAttribute("data-product-media-field", field.key);
+
+  const header = document.createElement("div");
+  header.className = "content-edit-media-header";
+
+  const label = document.createElement("label");
+  label.setAttribute("for", `cef-${field.key}`);
+  label.textContent = field.label;
+
+  const modeSelect = document.createElement("select");
+  modeSelect.className = "content-edit-media-mode";
+  modeSelect.setAttribute("data-media-mode-select", "");
+  modeSelect.setAttribute("aria-label", `${field.label} — how to choose`);
+  modeSelect.innerHTML =
+    '<option value="url">Enter URL</option><option value="product">Search product catalog</option>';
+
+  header.appendChild(label);
+  header.appendChild(modeSelect);
+  wrap.appendChild(header);
+
+  const urlInput = document.createElement("input");
+  urlInput.type = "text";
+  urlInput.id = `cef-${field.key}`;
+  urlInput.name = field.key;
+  urlInput.value = value;
+  urlInput.className = "content-edit-media-url-input";
+  urlInput.autocomplete = "off";
+  urlInput.placeholder = mediaKind === "video" ? "https://www.youtube.com/watch?v=…" : "https://…";
+  wrap.appendChild(urlInput);
+
+  const picker = document.createElement("div");
+  picker.className = "content-edit-product-picker";
+  picker.hidden = true;
+  picker.innerHTML = `<input type="search" class="content-edit-product-search" data-product-search placeholder="Search by product title…" autocomplete="off" />
+<div data-product-results class="content-edit-product-results"></div>
+<div data-product-thumbs class="content-edit-product-thumbs" hidden></div>`;
+  wrap.appendChild(picker);
+
+  container.appendChild(wrap);
+  bindProductMediaPicker({ wrap, field, form, modeSelect, urlInput, picker, products, mediaKind });
+}
+
+function appendFieldInput(container, field, block, form) {
+  if (field.type === "product_media") {
+    appendProductMediaFieldInput(container, field, block, form);
+    return;
+  }
+
   const value = fieldValueToInput(block, field);
   const wrap = document.createElement("div");
   wrap.className = "content-edit-field";
@@ -616,11 +871,11 @@ function appendFieldInput(container, field, block) {
   container.appendChild(wrap);
 }
 
-function populateModalFieldsContainer(container, type, block) {
+function populateModalFieldsContainer(container, type, block, form) {
   container.textContent = "";
   const schema = BLOCK_SCHEMAS[type] || BLOCK_SCHEMAS.text;
   for (const field of schema.fields) {
-    appendFieldInput(container, field, block);
+    appendFieldInput(container, field, block, form);
   }
 }
 
@@ -653,14 +908,14 @@ function populateModalForm(modalBody, type, block) {
 
   const fieldsWrap = document.createElement("div");
   fieldsWrap.setAttribute("data-content-edit-fields", "");
-  populateModalFieldsContainer(fieldsWrap, type, block);
+  populateModalFieldsContainer(fieldsWrap, type, block, form);
   form.appendChild(fieldsWrap);
 
   typeSelect.addEventListener("change", () => {
     const currentValues = readCurrentFormValues(form);
     const newType = typeSelect.value;
     const merged = { ...defaultBlockForType(newType), ...currentValues, type: newType };
-    populateModalFieldsContainer(fieldsWrap, newType, merged);
+    populateModalFieldsContainer(fieldsWrap, newType, merged, form);
   });
 
   modalBody.appendChild(form);
@@ -888,6 +1143,7 @@ async function bootEditPage(treePath) {
     pagePath: treePath,
     pageData: JSON.parse(JSON.stringify(pageData)),
     blockCtx,
+    products: [],
     modalIndex: null,
     eventsBound: false,
   };
@@ -901,6 +1157,7 @@ async function bootEditPage(treePath) {
   const previewParams = window.previewTarget.parsePreviewTarget(window.location.search);
   const digitalFilter = previewParams?.digital ?? null;
   const productsForShop = window.productData.filterProductsByDigital(products, digitalFilter);
+  window.__contentEditorState.products = productsForShop;
 
   const bodyPayload = await buildEditBodyPayload(window.__contentEditorState.pageData, {
     shopData,

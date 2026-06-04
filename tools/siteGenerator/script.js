@@ -7,12 +7,21 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-function loadScript(src) {
+function loadScript(src, options) {
+  const opts = options && typeof options === "object" ? options : {};
+  let url = String(src || "").trim();
+  if (!url) {
+    return Promise.resolve();
+  }
+  if (opts.cacheBust) {
+    const sep = url.includes("?") ? "&" : "?";
+    url = `${url}${sep}t=${Date.now()}`;
+  }
   return new Promise((resolve, reject) => {
     const s = document.createElement("script");
-    s.src = src;
+    s.src = url;
     s.onload = () => resolve();
-    s.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+    s.onerror = () => reject(new Error(`Failed to load script: ${url}`));
     document.body.appendChild(s);
   });
 }
@@ -58,7 +67,7 @@ async function loadGithubAuthScripts() {
 async function runEditBootFromUrl() {
   await loadPreviewGenerators();
   await loadGithubAuthScripts();
-  await loadScript("./contentEditor.js");
+  await loadScript("./contentEditor.js", { cacheBust: true });
   const target = window.previewTarget.parsePreviewTarget(window.location.search);
   if (!target?.path) {
     throw new Error("Edit boot: missing path in URL.");
