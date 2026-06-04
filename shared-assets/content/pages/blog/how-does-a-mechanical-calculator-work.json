@@ -25,16 +25,35 @@
       "text": "The mechanisims and operation of a mechanical calculator"
     },
     {
-      "type": "text",
-      "format": "markdown",
-      "content": "The fundamental requirement of a mechanical calculator is to perform the carry opperation. When a number dial has passes above 9, it must return back to 0 and add 1 to the place holder dial abover it. This must also happen in reverse. When a number dial passes bellow 0, it must return to 9 and subtract 1 from the place holder dial above it. With this in place, we can then do addition, subtraction, multiplication and division. \n\nThis mechanical calculator has 4 dials. One for each place holder. Each dial has the digits 0 to 9. So the returning to 9 to 0 and 0 to 9 is covered simply by the circular dial. How do we perform the carry to the next place holder up? We need a single gear tooth on the dial, so that whenever it passes between 0 and 9, the wheel above is turned by one tenth, thus adding or subtracting 1.\n\nThe video below demonstrates addition and subtraction, then read below to learn how to extend this to multiplication and division."
-    },
-    {
       "type": "image",
       "src": "https://i.etsystatic.com/25031074/r/il/49b9ec/7764225703/il_fullxfull.7764225703_iat4.jpg",
       "alt": "mechanical calculator with wood and gears",
       "caption": "wooden mechanical calculator",
       "width": ""
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "The fundamental requirement of a mechanical calculator is to perform the carry opperation. When a number dial passes above 9, it must return back to 0 and add 1 to the place holder dial above it. This must also happen in reverse. When a number dial passes bellow 0, it must return to 9 and subtract 1 from the place holder dial above it. With this in place, we can then do addition, subtraction, multiplication and division. \n\nThis mechanical calculator has 4 dials. One for each place holder. Each dial has the digits 0 to 9. So the returning to 9 to 0 and 0 to 9 is covered simply by the circular dial. How do we perform the carry to the next place holder up? We need a single gear tooth on the dial, so that whenever it passes between 9 and 0, the wheel above is turned by one tenth, thus adding or subtracting 1."
+    },
+    {
+      "type": "image",
+      "src": "https://i.etsystatic.com/25031074/r/il/f39eb8/7764254491/il_fullxfull.7764254491_jofd.jpg",
+      "alt": "Gears in mechanical calculator",
+      "caption": "Gears in mechanical calculator",
+      "width": ""
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "The video below demonstrates addition and subtraction, then read below to learn how to extend this to multiplication and division."
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/_PlouOia6iI?si=ZqF6FdjIVODjkVvF",
+      "title": "",
+      "caption": ""
     },
     {
       "type": "subtitle",
