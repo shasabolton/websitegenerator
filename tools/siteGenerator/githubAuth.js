@@ -21,6 +21,7 @@
 
   const CONTENT_PAGES_PREFIX = "shared-assets/content/pages";
   const FILE_TREE_PATH = "shared-assets/config/fileTree.json";
+  const PRODUCT_DATA_PATH = "shared-assets/config/productData.json";
   const OAUTH_SCOPE = "repo";
   const DEFAULT_BRANCH = "main";
 
@@ -750,6 +751,76 @@
     return pageWriteResult;
   }
 
+  function parseProductSlugFromPagePath(pagePath) {
+    const path = normalizePagePath(pagePath);
+    if (!path.startsWith("shop/") || path.length <= "shop/".length) {
+      return null;
+    }
+    const slug = path.slice("shop/".length);
+    if (!slug || slug.includes("/")) {
+      return null;
+    }
+    return slug;
+  }
+
+  function findProductRowIndexBySku(products, sku) {
+    const key = String(sku ?? "").trim();
+    if (!key) {
+      return -1;
+    }
+    return products.findIndex((row) => String(row?.SKU ?? "").trim() === key);
+  }
+
+  /**
+   * @param {string} pagePath - e.g. `shop/my-product-slug`
+   * @param {object} productRow - full product row to write
+   */
+  async function pushProductRow(pagePath, productRow) {
+    const fullName = getSelectedRepo();
+    const parsed = parseRepoFullName(fullName);
+    if (!parsed) {
+      throw new Error("Select a GitHub repository on the site generator picker page.");
+    }
+    const branch = getBranch();
+    const slug = parseProductSlugFromPagePath(pagePath);
+    if (!slug) {
+      throw new Error(`Invalid product path for push: ${pagePath}`);
+    }
+
+    const mutableRow =
+      productRow && typeof productRow === "object" ? JSON.parse(JSON.stringify(productRow)) : {};
+    const sku = String(mutableRow.SKU ?? "").trim();
+    if (!sku) {
+      throw new Error("Product row is missing SKU — cannot update productData.json safely.");
+    }
+
+    const fileData = await readRepoJson(parsed.owner, parsed.repo, PRODUCT_DATA_PATH, branch);
+    const root = fileData.json && typeof fileData.json === "object" ? fileData.json : {};
+    const products = Array.isArray(root.products) ? root.products : [];
+    const index = findProductRowIndexBySku(products, sku);
+    if (index < 0) {
+      throw new Error(`Product SKU ${sku} not found in remote productData.json`);
+    }
+
+    const existing = products[index] && typeof products[index] === "object" ? products[index] : {};
+    products[index] = { ...existing, ...mutableRow, SKU: existing.SKU ?? sku };
+
+    const nextRoot = { ...root, products };
+    if (nextRoot.version == null) {
+      nextRoot.version = 1;
+    }
+
+    return putFileContent(
+      parsed.owner,
+      parsed.repo,
+      PRODUCT_DATA_PATH,
+      `Update product: ${slug}`,
+      `${JSON.stringify(nextRoot, null, 2)}\n`,
+      branch,
+      fileData.meta?.sha || null,
+    );
+  }
+
   function assertRedirectUriAllowed(callback) {
     let url;
     try {
@@ -1116,11 +1187,13 @@ ${loginLine}
   }
 
   /**
-   * @param {{ pagePath: string, getPageData: () => object }} options
+   * @param {{ pagePath: string, getPageData: () => object, pushHandler?: (pagePath: string, data: object) => Promise<unknown> }} options
    */
   function initEditPushUi(options) {
     const pagePath = options?.pagePath;
     const getPageData = options?.getPageData;
+    const pushHandler =
+      typeof options?.pushHandler === "function" ? options.pushHandler : pushContentPage;
     const root = document.querySelector("[data-github-push-root]");
     if (!root || !pagePath || typeof getPageData !== "function") {
       return;
@@ -1140,7 +1213,7 @@ ${loginLine}
       root.innerHTML = `<button type="button" class="github-auth-push-btn" data-github-push>Push to GitHub</button>
 <span class="github-auth-push-status" data-github-push-status>${escapeHtml(getSelectedRepo())}@${escapeHtml(getBranch())}</span>`;
       root.querySelector("[data-github-push]")?.addEventListener("click", () => {
-        runPush(root, pagePath, getPageData).catch((err) => {
+        runPush(root, pagePath, getPageData, pushHandler).catch((err) => {
           setPushStatus(root, err?.message || String(err), "error");
         });
       });
@@ -1163,15 +1236,16 @@ ${loginLine}
     }
   }
 
-  async function runPush(root, pagePath, getPageData) {
+  async function runPush(root, pagePath, getPageData, pushHandler) {
     const btn = root.querySelector("[data-github-push]");
     if (btn) {
       btn.disabled = true;
     }
     setPushStatus(root, "Pushing…", null);
     try {
-      const pageData = getPageData();
-      const result = await pushContentPage(pagePath, pageData);
+      const data = getPageData();
+      const pushFn = typeof pushHandler === "function" ? pushHandler : pushContentPage;
+      const result = await pushFn(pagePath, data);
       const sha = result?.commit?.sha;
       const short = sha ? sha.slice(0, 7) : "ok";
       setPushStatus(root, `Pushed (${short})`, "ok");
@@ -1208,6 +1282,7 @@ ${loginLine}
     initHubUi,
     initEditPushUi,
     pushContentPage,
+    pushProductRow,
     pagePathToContentRepoPath,
     redirectUri,
     resolveHubIndexUrl,

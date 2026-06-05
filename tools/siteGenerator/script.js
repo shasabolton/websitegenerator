@@ -67,10 +67,25 @@ async function loadGithubAuthScripts() {
 async function runEditBootFromUrl() {
   await loadPreviewGenerators();
   await loadGithubAuthScripts();
+  await loadScript("./productCarouselMap.js", { cacheBust: true });
   await loadScript("./contentEditor.js", { cacheBust: true });
   const target = window.previewTarget.parsePreviewTarget(window.location.search);
   if (!target?.path) {
     throw new Error("Edit boot: missing path in URL.");
+  }
+  const path = String(target.path || "").trim().toLowerCase();
+  if (path.startsWith("shop/") && path.length > "shop/".length && !path.slice("shop/".length).includes("/")) {
+    const slug = path.slice("shop/".length);
+    const { products } = await window.productData.fetchProductDataJson();
+    const row = window.productData.findProductBySlug(products, slug);
+    if (row) {
+      await loadScript("./productEditor.js", { cacheBust: true });
+      if (!window.productEditor?.bootEditProduct) {
+        throw new Error("Product editor failed to load. Hard-refresh the page and try again.");
+      }
+      await window.productEditor.bootEditProduct(target.path);
+      return;
+    }
   }
   await window.contentEditor.bootEditPage(target.path);
 }

@@ -514,7 +514,7 @@ ${footerHtml}`;
 }
 
 function getState() {
-  return window.__contentEditorState || null;
+  return window.__contentEditorState || window.__productEditorState || null;
 }
 
 function fieldValueToInput(block, field) {
@@ -1682,6 +1682,16 @@ async function bootEditPage(treePath) {
   await mountEditPageInPlace(treePath, bodyPayload, headerFooter);
 }
 
+window.carouselEditor = {
+  getCarouselItemsFromEditor,
+  sanitizeCarouselItemsForSave,
+  mountCarouselEditor(container, form, items, label) {
+    const block = { items: Array.isArray(items) ? items : [] };
+    const field = { key: "items", label: label || "Slides", type: "carousel_items" };
+    appendCarouselItemsFieldInput(container, field, block, form);
+  },
+};
+
 window.contentEditor = {
   bootEditPage,
   initEditorUi,
@@ -1689,4 +1699,6 @@ window.contentEditor = {
   handleBlockAction,
   openModal,
   isEditableContentPath,
+  ensureDocumentBaseForEdit,
+  bindModalControls,
 };

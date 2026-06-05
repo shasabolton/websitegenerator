@@ -147,7 +147,7 @@ function isContentEditablePath(treeHref) {
   return path.startsWith("blog/") && path.length > "blog/".length;
 }
 
-function appendPreviewPageRow(container, { label, treeHref, nested = false }) {
+function appendPreviewPageRow(container, { label, treeHref, nested = false, productEdit = false }) {
   const row = document.createElement("div");
   row.className = nested ? "preview-picker-row preview-picker-nested" : "preview-picker-row";
   const pageLink = document.createElement("a");
@@ -159,7 +159,7 @@ function appendPreviewPageRow(container, { label, treeHref, nested = false }) {
   pageLink.className = "preview-picker-page-link";
   pageLink.textContent = label;
   row.appendChild(pageLink);
-  if (isContentEditablePath(href)) {
+  if (isContentEditablePath(href) || productEdit) {
     const editLink = document.createElement("a");
     editLink.href = window.previewTarget.buildEditUrl(href, getActiveDigitalFilterForPreviewLinks());
     editLink.className = "preview-picker-edit-link";
@@ -248,6 +248,7 @@ function renderNodeAsDropdown(container, node) {
         label: product.label || "Product",
         treeHref: productHref,
         nested: true,
+        productEdit: true,
       });
     });
     return;

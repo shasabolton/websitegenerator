@@ -612,3 +612,103 @@
   color: #6b7280;
   text-align: center;
 }
+
+.product-edit-mode {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f1f5f9;
+}
+
+.product-edit-mode .site-header,
+.product-edit-mode .site-footer {
+  flex-shrink: 0;
+}
+
+.product-edit-main {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2rem;
+  box-sizing: border-box;
+}
+
+.product-edit-form {
+  width: 100%;
+}
+
+.product-edit-settings {
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.product-edit-settings .content-edit-page-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 12px 16px;
+}
+
+.product-edit-settings .content-edit-field label {
+  display: block;
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.product-edit-settings .content-edit-field input,
+.product-edit-settings .content-edit-field select,
+.product-edit-settings .content-edit-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 14px;
+}
+
+.product-edit-settings textarea[name="DESCRIPTION"] {
+  min-height: 160px;
+  resize: vertical;
+}
+
+.product-edit-settings input[readonly] {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.product-edit-settings [data-product-carousel-mount] {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.product-edit-settings [data-product-carousel-mount] > .content-edit-field {
+  margin-bottom: 0;
+}
+
+.product-edit-mode .content-edit-carousel-editor {
+  background: #f8fafc;
+}
+
+.product-edit-category-new {
+  margin-top: 8px;
+}
+
+.product-edit-category-new[hidden] {
+  display: none !important;
+}
+
+.product-edit-variation {
+  margin: 20px 0 0;
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.product-edit-variation legend {
+  padding: 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+}
