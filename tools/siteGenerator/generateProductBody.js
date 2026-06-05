@@ -109,7 +109,8 @@ function buildCarouselSlidesHtml(items, productTitleRaw) {
       const ix = index + 1;
       if (item.kind === "image") {
         const safeUrl = escapeHtml(item.url);
-        const alt = escapeHtml(`${altBase} — image ${ix} of ${n}`);
+        const altRaw = String(item.alt || "").trim();
+        const alt = escapeHtml(altRaw || `${altBase} — image ${ix} of ${n}`);
         const loading = index === 0 ? "eager" : "lazy";
         const fetchPriority = index === 0 ? ' fetchpriority="high"' : "";
         return `<figure class="image-carousel-slide${active}" data-carousel-index="${index}" data-carousel-slide-kind="image" ${hidden}>

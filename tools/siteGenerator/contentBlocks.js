@@ -71,7 +71,20 @@ function normalizeCarouselItems(items, parseYoutubeVideoId) {
       if (!url) {
         throw new Error(`Carousel item ${index + 1}: image requires url.`);
       }
-      return { kind: "image", url };
+      const out = { kind: "image", url };
+      const alt = String(item.alt || "").trim();
+      if (alt) {
+        out.alt = alt;
+      }
+      const caption = String(item.caption || "").trim();
+      if (caption) {
+        out.caption = caption;
+      }
+      const width = String(item.width || "").trim().toLowerCase();
+      if (width === "wide" || width === "full") {
+        out.width = width;
+      }
+      return out;
     }
     if (kind === "video") {
       let videoId = String(item.videoId || "").trim();

@@ -42,14 +42,7 @@ const BLOCK_SCHEMAS = {
   },
   carousel: {
     label: "Carousel",
-    fields: [
-      {
-        key: "items",
-        label: "Items (JSON array)",
-        type: "json",
-        hint: '[{"kind":"image","url":"…"}] or {"kind":"video","videoId":"…"}',
-      },
-    ],
+    fields: [{ key: "items", label: "Slides", type: "carousel_items" }],
   },
   video: {
     label: "Video",
@@ -550,6 +543,156 @@ function readFieldValueFromInput(input, field) {
   return raw;
 }
 
+const CAROUSEL_IMAGE_ITEM_FIELDS = [
+  { key: "url", label: "Src / URL", type: "product_media", mediaKind: "image" },
+  { key: "alt", label: "Alt text", type: "text" },
+  { key: "caption", label: "Caption", type: "text" },
+  {
+    key: "width",
+    label: "Width",
+    type: "select",
+    options: [
+      { value: "", label: "Default" },
+      { value: "wide", label: "Wide" },
+      { value: "full", label: "Full" },
+    ],
+  },
+];
+
+const CAROUSEL_VIDEO_ITEM_FIELDS = [
+  { key: "videoId", label: "YouTube video ID", type: "text" },
+  { key: "url", label: "YouTube URL (alternative)", type: "product_media", mediaKind: "video" },
+  { key: "caption", label: "Caption", type: "text" },
+];
+
+function defaultCarouselImageItem() {
+  return { kind: "image", url: "", alt: "", caption: "", width: "" };
+}
+
+function defaultCarouselVideoItem() {
+  return { kind: "video", videoId: "", url: "", caption: "" };
+}
+
+function normalizeCarouselItemForEdit(item) {
+  if (!item || typeof item !== "object") {
+    return defaultCarouselImageItem();
+  }
+  const kind = String(item.kind || "image").trim().toLowerCase();
+  if (kind === "video") {
+    return {
+      kind: "video",
+      videoId: String(item.videoId || "").trim(),
+      url: String(item.url || "").trim(),
+      caption: String(item.caption || "").trim(),
+    };
+  }
+  return {
+    kind: "image",
+    url: String(item.url || item.src || "").trim(),
+    alt: String(item.alt || "").trim(),
+    caption: String(item.caption || "").trim(),
+    width: String(item.width || "").trim(),
+  };
+}
+
+function parseCarouselItemsForEdit(raw) {
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+  return raw.map((item) => normalizeCarouselItemForEdit(item));
+}
+
+function getCarouselItemPreviewUrl(item) {
+  const normalized = normalizeCarouselItemForEdit(item);
+  if (normalized.kind === "video") {
+    const parseId = getYoutubeVideoIdParser();
+    let videoId = normalized.videoId;
+    if (!videoId && typeof parseId === "function") {
+      videoId = parseId(normalized.url) || "";
+    }
+    return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "";
+  }
+  return normalized.url;
+}
+
+function serializeCarouselItemForSave(item) {
+  const normalized = normalizeCarouselItemForEdit(item);
+  if (normalized.kind === "video") {
+    const parseId = getYoutubeVideoIdParser();
+    let videoId = normalized.videoId;
+    if (!videoId && typeof parseId === "function") {
+      videoId = parseId(normalized.url) || "";
+    }
+    if (!/^[\w-]{11}$/.test(videoId)) {
+      return null;
+    }
+    const out = { kind: "video", videoId };
+    if (normalized.url) {
+      out.url = normalized.url;
+    }
+    if (normalized.caption) {
+      out.caption = normalized.caption;
+    }
+    return out;
+  }
+  if (!normalized.url) {
+    return null;
+  }
+  const out = { kind: "image", url: normalized.url };
+  if (normalized.alt) {
+    out.alt = normalized.alt;
+  }
+  if (normalized.caption) {
+    out.caption = normalized.caption;
+  }
+  if (normalized.width) {
+    out.width = normalized.width;
+  }
+  return out;
+}
+
+function sanitizeCarouselItemsForSave(items) {
+  const list = Array.isArray(items) ? items : [];
+  return list.map((item) => serializeCarouselItemForSave(item)).filter(Boolean);
+}
+
+function getCarouselItemsFromEditor(form) {
+  const editor = form?.querySelector("[data-carousel-editor]");
+  if (!editor) {
+    return [];
+  }
+  return Array.isArray(editor._carouselItems) ? editor._carouselItems.map((item) => ({ ...item })) : [];
+}
+
+function syncCarouselEditorItems(editor, items) {
+  const list = Array.isArray(items) ? items.map((item) => ({ ...item })) : [];
+  editor._carouselItems = list;
+  if (list.length === 0) {
+    editor._carouselActiveIndex = 0;
+  } else if (editor._carouselActiveIndex >= list.length) {
+    editor._carouselActiveIndex = list.length - 1;
+  } else if (editor._carouselActiveIndex < 0) {
+    editor._carouselActiveIndex = 0;
+  }
+  const hidden = editor.querySelector('[name="items"]');
+  if (hidden) {
+    hidden.value = JSON.stringify(sanitizeCarouselItemsForSave(list));
+  }
+}
+
+function collectCarouselItemFromForm(form, kind) {
+  const fields = kind === "video" ? CAROUSEL_VIDEO_ITEM_FIELDS : CAROUSEL_IMAGE_ITEM_FIELDS;
+  const item = kind === "video" ? defaultCarouselVideoItem() : defaultCarouselImageItem();
+  for (const field of fields) {
+    const input = form.querySelector(`[name="${field.key}"]`);
+    if (!input) {
+      continue;
+    }
+    item[field.key] = readFieldValueFromInput(input, field);
+  }
+  return item;
+}
+
 function collectFormBlockData(form, type) {
   const block = { type };
   const schema = BLOCK_SCHEMAS[type];
@@ -557,6 +700,10 @@ function collectFormBlockData(form, type) {
     return block;
   }
   for (const field of schema.fields) {
+    if (field.type === "carousel_items") {
+      block.items = sanitizeCarouselItemsForSave(getCarouselItemsFromEditor(form));
+      continue;
+    }
     const input = form.querySelector(`[name="${field.key}"]`);
     if (!input) {
       continue;
@@ -769,6 +916,230 @@ function bindProductMediaPicker({ wrap, field, form, modeSelect, urlInput, picke
   setMode("url");
 }
 
+function appendSchemaFields(container, fields, block, form) {
+  for (const field of fields) {
+    appendFieldInput(container, field, block, form);
+  }
+}
+
+function renderCarouselEditor(editor, items, activeIndex) {
+  const list = Array.isArray(items) ? items : [];
+  const active = list.length ? Math.min(Math.max(activeIndex, 0), list.length - 1) : 0;
+  editor._carouselActiveIndex = active;
+
+  const stage = editor.querySelector("[data-carousel-stage]");
+  const thumbs = editor.querySelector("[data-carousel-thumbs]");
+  const empty = editor.querySelector("[data-carousel-empty]");
+  if (!stage || !thumbs) {
+    return;
+  }
+
+  stage.replaceChildren();
+  thumbs.replaceChildren();
+
+  if (!list.length) {
+    if (empty) {
+      empty.hidden = false;
+    }
+    const placeholder = document.createElement("button");
+    placeholder.type = "button";
+    placeholder.className = "content-edit-carousel-stage-placeholder";
+    placeholder.textContent = "Click to add first slide";
+    placeholder.addEventListener("click", () => {
+      editor._onAddImage?.();
+    });
+    stage.appendChild(placeholder);
+    return;
+  }
+
+  if (empty) {
+    empty.hidden = true;
+  }
+
+  const activeItem = list[active];
+  const previewUrl = getCarouselItemPreviewUrl(activeItem);
+  const stageBtn = document.createElement("button");
+  stageBtn.type = "button";
+  stageBtn.className = "content-edit-carousel-stage-btn";
+  stageBtn.setAttribute("aria-label", "Edit active slide");
+  if (previewUrl) {
+    const img = document.createElement("img");
+    img.src = previewUrl;
+    img.alt = "";
+    img.className = "content-edit-carousel-stage-img";
+    stageBtn.appendChild(img);
+    if (activeItem.kind === "video") {
+      stageBtn.classList.add("content-edit-carousel-stage-btn--video");
+    }
+  } else {
+    stageBtn.classList.add("content-edit-carousel-stage-btn--empty");
+    stageBtn.textContent = activeItem.kind === "video" ? "Video (no URL yet)" : "Image (no URL yet)";
+  }
+  stageBtn.addEventListener("click", () => {
+    editor._onEditItem?.(active);
+  });
+  stage.appendChild(stageBtn);
+
+  list.forEach((item, index) => {
+    const li = document.createElement("li");
+    li.className = "content-edit-carousel-thumb-item";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "content-edit-carousel-thumb";
+    if (index === active) {
+      btn.classList.add("is-active");
+      btn.setAttribute("aria-current", "true");
+    } else {
+      btn.setAttribute("aria-current", "false");
+    }
+    btn.setAttribute("aria-label", `Slide ${index + 1}`);
+    const thumbUrl = getCarouselItemPreviewUrl(item);
+    if (thumbUrl) {
+      const img = document.createElement("img");
+      img.src = thumbUrl;
+      img.alt = "";
+      img.className = "content-edit-carousel-thumb-img";
+      btn.appendChild(img);
+      if (item.kind === "video") {
+        btn.classList.add("content-edit-carousel-thumb--video");
+      }
+    } else {
+      btn.classList.add("content-edit-carousel-thumb--empty");
+      btn.textContent = item.kind === "video" ? "▶" : "+";
+    }
+    btn.addEventListener("click", () => {
+      editor._carouselActiveIndex = index;
+      renderCarouselEditor(editor, editor._carouselItems, index);
+    });
+    btn.addEventListener("dblclick", (event) => {
+      event.preventDefault();
+      editor._onEditItem?.(index);
+    });
+    li.appendChild(btn);
+    thumbs.appendChild(li);
+  });
+}
+
+function bindCarouselEditor(editor, form) {
+  const addImageBtn = editor.querySelector("[data-carousel-add-image]");
+  const addVideoBtn = editor.querySelector("[data-carousel-add-video]");
+  const editBtn = editor.querySelector("[data-carousel-edit]");
+  const removeBtn = editor.querySelector("[data-carousel-remove]");
+  const leftBtn = editor.querySelector("[data-carousel-move-left]");
+  const rightBtn = editor.querySelector("[data-carousel-move-right]");
+
+  editor._onAddImage = () => {
+    const items = getCarouselItemsFromEditor(form);
+    items.push(defaultCarouselImageItem());
+    syncCarouselEditorItems(editor, items);
+    renderCarouselEditor(editor, items, items.length - 1);
+    openCarouselItemModal(form, editor, items.length - 1);
+  };
+
+  editor._onAddVideo = () => {
+    const items = getCarouselItemsFromEditor(form);
+    items.push(defaultCarouselVideoItem());
+    syncCarouselEditorItems(editor, items);
+    renderCarouselEditor(editor, items, items.length - 1);
+    openCarouselItemModal(form, editor, items.length - 1);
+  };
+
+  editor._onEditItem = (index) => {
+    openCarouselItemModal(form, editor, index);
+  };
+
+  addImageBtn?.addEventListener("click", (event) => {
+    event.preventDefault();
+    editor._onAddImage();
+  });
+  addVideoBtn?.addEventListener("click", (event) => {
+    event.preventDefault();
+    editor._onAddVideo();
+  });
+  editBtn?.addEventListener("click", (event) => {
+    event.preventDefault();
+    const items = getCarouselItemsFromEditor(form);
+    if (!items.length) {
+      return;
+    }
+    openCarouselItemModal(form, editor, editor._carouselActiveIndex || 0);
+  });
+  removeBtn?.addEventListener("click", (event) => {
+    event.preventDefault();
+    const items = getCarouselItemsFromEditor(form);
+    if (!items.length) {
+      return;
+    }
+    const index = editor._carouselActiveIndex || 0;
+    items.splice(index, 1);
+    syncCarouselEditorItems(editor, items);
+    renderCarouselEditor(editor, items, Math.min(index, items.length - 1));
+  });
+  leftBtn?.addEventListener("click", (event) => {
+    event.preventDefault();
+    const items = getCarouselItemsFromEditor(form);
+    const index = editor._carouselActiveIndex || 0;
+    if (index <= 0) {
+      return;
+    }
+    const tmp = items[index - 1];
+    items[index - 1] = items[index];
+    items[index] = tmp;
+    syncCarouselEditorItems(editor, items);
+    renderCarouselEditor(editor, items, index - 1);
+  });
+  rightBtn?.addEventListener("click", (event) => {
+    event.preventDefault();
+    const items = getCarouselItemsFromEditor(form);
+    const index = editor._carouselActiveIndex || 0;
+    if (index >= items.length - 1) {
+      return;
+    }
+    const tmp = items[index + 1];
+    items[index + 1] = items[index];
+    items[index] = tmp;
+    syncCarouselEditorItems(editor, items);
+    renderCarouselEditor(editor, items, index + 1);
+  });
+}
+
+function appendCarouselItemsFieldInput(container, field, block, form) {
+  const items = parseCarouselItemsForEdit(block.items);
+
+  const wrap = document.createElement("div");
+  wrap.className = "content-edit-field content-edit-field--wide";
+
+  const label = document.createElement("label");
+  label.textContent = field.label;
+  wrap.appendChild(label);
+
+  const editor = document.createElement("div");
+  editor.className = "content-edit-carousel-editor";
+  editor.setAttribute("data-carousel-editor", "");
+  editor.innerHTML = `<input type="hidden" name="items" value="[]" />
+<div class="content-edit-carousel-stage-wrap">
+  <div class="content-edit-carousel-stage" data-carousel-stage></div>
+  <p class="content-edit-carousel-empty" data-carousel-empty hidden>No slides yet.</p>
+</div>
+<ul class="content-edit-carousel-thumbs" data-carousel-thumbs></ul>
+<div class="content-edit-carousel-toolbar">
+  <button type="button" class="content-edit-carousel-tool" data-carousel-add-image>+ Image</button>
+  <button type="button" class="content-edit-carousel-tool" data-carousel-add-video>+ Video</button>
+  <button type="button" class="content-edit-carousel-tool" data-carousel-edit>Edit slide</button>
+  <button type="button" class="content-edit-carousel-tool content-edit-carousel-tool--danger" data-carousel-remove>Remove</button>
+  <button type="button" class="content-edit-carousel-tool" data-carousel-move-left aria-label="Move slide left">←</button>
+  <button type="button" class="content-edit-carousel-tool" data-carousel-move-right aria-label="Move slide right">→</button>
+</div>
+<p class="content-edit-field-hint">Click a slide or thumbnail to select. Double-click or use Edit slide to change src, alt, and caption.</p>`;
+
+  wrap.appendChild(editor);
+  container.appendChild(wrap);
+
+  syncCarouselEditorItems(editor, items);
+  renderCarouselEditor(editor, items, 0);
+  bindCarouselEditor(editor, form);
+}
+
 function appendProductMediaFieldInput(container, field, block, form) {
   const state = getState();
   const products = Array.isArray(state?.products) ? state.products : [];
@@ -820,6 +1191,10 @@ function appendProductMediaFieldInput(container, field, block, form) {
 }
 
 function appendFieldInput(container, field, block, form) {
+  if (field.type === "carousel_items") {
+    appendCarouselItemsFieldInput(container, field, block, form);
+    return;
+  }
   if (field.type === "product_media") {
     appendProductMediaFieldInput(container, field, block, form);
     return;
@@ -911,15 +1286,29 @@ function populateModalForm(modalBody, type, block) {
   populateModalFieldsContainer(fieldsWrap, type, block, form);
   form.appendChild(fieldsWrap);
 
+  let currentBlockType = type;
   typeSelect.addEventListener("change", () => {
-    const currentValues = readCurrentFormValues(form);
+    const prevType = String(currentBlockType || "text").trim().toLowerCase();
+    const partial = collectFormBlockData(form, prevType);
     const newType = typeSelect.value;
-    const merged = { ...defaultBlockForType(newType), ...currentValues, type: newType };
+    currentBlockType = newType;
+    const merged = { ...defaultBlockForType(newType), ...partial, type: newType };
     populateModalFieldsContainer(fieldsWrap, newType, merged, form);
+    updateBlockModalLayout(newType);
   });
 
   modalBody.appendChild(form);
+  updateBlockModalLayout(type);
   return form;
+}
+
+function updateBlockModalLayout(blockType) {
+  const backdrop = document.querySelector("[data-content-edit-modal]");
+  const modal = backdrop?.querySelector(".content-edit-modal");
+  if (!modal) {
+    return;
+  }
+  modal.classList.toggle("content-edit-modal--carousel", String(blockType || "").trim().toLowerCase() === "carousel");
 }
 
 function showModalBackdrop(backdrop) {
@@ -930,6 +1319,123 @@ function showModalBackdrop(backdrop) {
 function hideModalBackdrop(backdrop) {
   backdrop.classList.remove("content-edit-modal-backdrop--open");
   backdrop.hidden = true;
+}
+
+function ensureCarouselItemModalDom() {
+  let backdrop = document.querySelector("[data-carousel-item-modal]");
+  if (backdrop) {
+    return backdrop;
+  }
+  backdrop = document.createElement("div");
+  backdrop.className = "content-edit-modal-backdrop content-edit-carousel-item-modal-backdrop";
+  backdrop.setAttribute("data-carousel-item-modal", "");
+  backdrop.hidden = true;
+  backdrop.innerHTML = `<div class="content-edit-modal content-edit-modal--item" role="dialog" aria-modal="true" aria-labelledby="content-edit-carousel-item-title">
+  <h2 id="content-edit-carousel-item-title">Edit slide</h2>
+  <div data-carousel-item-modal-body></div>
+  <div class="content-edit-modal-actions">
+    <button type="button" class="content-edit-modal-cancel" data-carousel-item-cancel>Cancel</button>
+    <button type="button" class="content-edit-modal-ok" data-carousel-item-ok>OK</button>
+  </div>
+</div>`;
+  document.body.appendChild(backdrop);
+
+  const cancelBtn = backdrop.querySelector("[data-carousel-item-cancel]");
+  const okBtn = backdrop.querySelector("[data-carousel-item-ok]");
+  cancelBtn?.addEventListener("click", (event) => {
+    event.preventDefault();
+    closeCarouselItemModal();
+  });
+  okBtn?.addEventListener("click", (event) => {
+    event.preventDefault();
+    saveCarouselItemModal();
+  });
+  backdrop.addEventListener("click", (event) => {
+    if (event.target === backdrop) {
+      closeCarouselItemModal();
+    }
+  });
+
+  return backdrop;
+}
+
+function closeCarouselItemModal() {
+  const state = getState();
+  if (state) {
+    state.carouselItemEdit = null;
+  }
+  const backdrop = document.querySelector("[data-carousel-item-modal]");
+  if (backdrop) {
+    hideModalBackdrop(backdrop);
+  }
+}
+
+function openCarouselItemModal(parentForm, carouselEditor, itemIndex) {
+  const items = getCarouselItemsFromEditor(parentForm);
+  const item = items[itemIndex];
+  if (!item) {
+    return;
+  }
+
+  const state = getState();
+  if (!state) {
+    return;
+  }
+  state.carouselItemEdit = { parentForm, carouselEditor, itemIndex };
+
+  const kind = item.kind === "video" ? "video" : "image";
+  const backdrop = ensureCarouselItemModalDom();
+  const title = backdrop.querySelector("#content-edit-carousel-item-title");
+  const body = backdrop.querySelector("[data-carousel-item-modal-body]");
+  if (!body) {
+    return;
+  }
+  if (title) {
+    title.textContent = kind === "video" ? "Edit video slide" : "Edit image slide";
+  }
+
+  body.textContent = "";
+  const form = document.createElement("form");
+  form.className = "content-edit-modal-form";
+  form.setAttribute("data-carousel-item-form", "");
+  const fieldsWrap = document.createElement("div");
+  fieldsWrap.setAttribute("data-content-edit-fields", "");
+  const fields = kind === "video" ? CAROUSEL_VIDEO_ITEM_FIELDS : CAROUSEL_IMAGE_ITEM_FIELDS;
+  appendSchemaFields(fieldsWrap, fields, item, form);
+  form.appendChild(fieldsWrap);
+  body.appendChild(form);
+
+  showModalBackdrop(backdrop);
+}
+
+function saveCarouselItemModal() {
+  const state = getState();
+  const ctx = state?.carouselItemEdit;
+  if (!ctx) {
+    return;
+  }
+  const backdrop = document.querySelector("[data-carousel-item-modal]");
+  const form = backdrop?.querySelector("[data-carousel-item-form]");
+  if (!form) {
+    return;
+  }
+
+  const items = getCarouselItemsFromEditor(ctx.parentForm);
+  const existing = items[ctx.itemIndex];
+  const kind = existing?.kind === "video" ? "video" : "image";
+  try {
+    const updated = collectCarouselItemFromForm(form, kind);
+    updated.kind = kind;
+    if (kind === "video" && !serializeCarouselItemForSave(updated)) {
+      throw new Error("Video slide requires a valid YouTube URL or video ID.");
+    }
+    items[ctx.itemIndex] = updated;
+    syncCarouselEditorItems(ctx.carouselEditor, items);
+    renderCarouselEditor(ctx.carouselEditor, items, ctx.itemIndex);
+    closeCarouselItemModal();
+  } catch (err) {
+    window.alert(err?.message || String(err));
+  }
 }
 
 function ensureModalDom() {
@@ -954,6 +1460,7 @@ function ensureModalDom() {
 }
 
 function closeModal() {
+  closeCarouselItemModal();
   const state = getState();
   if (state) {
     state.modalIndex = null;
