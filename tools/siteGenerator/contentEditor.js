@@ -98,6 +98,9 @@ function escapeAttr(value) {
 }
 
 function isEditableContentPath(treePath) {
+  if (typeof window.generateContentBody?.isContentPagePath === "function") {
+    return window.generateContentBody.isContentPagePath(treePath);
+  }
   const path = String(treePath || "")
     .trim()
     .replace(/^\/+/, "")
@@ -1639,10 +1642,25 @@ async function initEditorUi() {
 
 async function bootEditPage(treePath) {
   if (!isEditableContentPath(treePath)) {
-    throw new Error(`Edit mode is only available for content pages (about, blog/<slug>). Got: ${treePath}`);
+    throw new Error(`Edit mode is only available for content pages. Got: ${treePath}`);
   }
 
-  const pageData = await window.generateContentBody.loadContentPageJson(treePath);
+  const previewParams = window.previewTarget.parsePreviewTarget(window.location.search);
+  const isNew = previewParams?.isNew === true;
+  let pageData;
+  if (isNew) {
+    const pendingHint =
+      typeof window.displayFileTree?.getPendingNewPage === "function"
+        ? window.displayFileTree.getPendingNewPage(treePath)
+        : null;
+    pageData = window.generateContentBody.createDefaultPageData(treePath, {
+      title: pendingHint?.title || "",
+      slug: pendingHint?.slug || "",
+      pageType: pendingHint?.pageType || undefined,
+    });
+  } else {
+    pageData = await window.generateContentBody.loadContentPageJson(treePath);
+  }
   const blockCtx = await window.generateContentBody.buildBlockRenderContext();
   blockCtx.lenient = true;
 
@@ -1653,6 +1671,7 @@ async function bootEditPage(treePath) {
     products: [],
     modalIndex: null,
     eventsBound: false,
+    isNew,
   };
 
   const [shopData, navigationConfig, fileTreeConfig, productData] = await Promise.all([
@@ -1665,7 +1684,6 @@ async function bootEditPage(treePath) {
     ? window.homePage.getHomePageHref(fileTreeConfig)
     : null;
   const products = Array.isArray(productData?.products) ? productData.products : [];
-  const previewParams = window.previewTarget.parsePreviewTarget(window.location.search);
   const digitalFilter = previewParams?.digital ?? null;
   const productsForShop = window.productData.filterProductsByDigital(products, digitalFilter);
   window.__contentEditorState.products = productsForShop;

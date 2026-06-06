@@ -122,7 +122,7 @@ async function mergeBodyIntoFullHtml(
 
 /**
  * @param {string} treePath - Same shape as file-tree `href` (e.g. `shop`, `shop/my-category`, `shop/product-slug`).
- * @param {{ digital?: boolean | null }} [options] - When `digital` is set, overrides the `digital` query param for shop listing filters.
+ * @param {{ digital?: boolean | null, isNew?: boolean }} [options] - When `digital` is set, overrides the `digital` query param for shop listing filters. When `isNew` is set, uses default content page data instead of loading JSON.
  * @returns {Promise<string>} Complete HTML document.
  * Named `runGenerateAnyPage` so we do not create `window.generateAnyPage` as a function before assigning the API object (which would break `previewAnyPage`’s call to the generator).
  */
@@ -147,6 +147,9 @@ async function runGenerateAnyPage(treePath, options = {}) {
   const digitalFilter = Object.prototype.hasOwnProperty.call(options, "digital")
     ? options.digital
     : previewParams?.digital ?? null;
+  const isNewPage = Object.prototype.hasOwnProperty.call(options, "isNew")
+    ? options.isNew === true
+    : previewParams?.isNew === true;
   const productsForShop = window.productData.filterProductsByDigital(productsFull, digitalFilter);
   const ctxBase = { shopData, navigationConfig, products: productsForShop, homePageHref };
 
@@ -245,24 +248,6 @@ async function runGenerateAnyPage(treePath, options = {}) {
     return html;
   }
 
-  if (path === "about") {
-    const gen = window.generateContentBody?.generateContentPageBody;
-    if (typeof gen !== "function") {
-      throw new Error("generateContentBody.js must be loaded before preview.");
-    }
-    const bodyPayload = await gen({ ...ctxBase, pagePath: "about" });
-    html = await mergeBodyIntoFullHtml(
-      shopData,
-      navigationConfig,
-      pageTemplate,
-      setBaseSource,
-      bodyPayload,
-      homePageHref,
-      path
-    );
-    return html;
-  }
-
   if (path === "blog") {
     const gen = window.generateContentBody?.generateBlogIndexBody;
     if (typeof gen !== "function") {
@@ -281,16 +266,33 @@ async function runGenerateAnyPage(treePath, options = {}) {
     return html;
   }
 
-  if (path.startsWith("blog/")) {
-    const slug = path.slice("blog/".length);
-    if (!slug || slug.includes("/")) {
-      throw new Error(`Invalid blog path: ${treePath} — use blog/<post-slug>.`);
-    }
-    const gen = window.generateContentBody?.generateContentPageBody;
-    if (typeof gen !== "function") {
+  const isContentPath = window.generateContentBody?.isContentPagePath;
+  if (typeof isContentPath === "function" && isContentPath(path)) {
+    const pagePath = path;
+    const fromData = window.generateContentBody?.generateContentPageBodyFromData;
+    const fromPath = window.generateContentBody?.generateContentPageBody;
+    const createDefault = window.generateContentBody?.createDefaultPageData;
+    if (typeof fromData !== "function" || typeof fromPath !== "function") {
       throw new Error("generateContentBody.js must be loaded before preview.");
     }
-    const bodyPayload = await gen({ ...ctxBase, pagePath: `blog/${slug}` });
+    const pendingHint =
+      isNewPage && typeof window.displayFileTree?.getPendingNewPage === "function"
+        ? window.displayFileTree.getPendingNewPage(pagePath)
+        : null;
+    const bodyPayload = isNewPage
+      ? await fromData({
+          ...ctxBase,
+          pagePath,
+          pageData:
+            typeof createDefault === "function"
+              ? createDefault(pagePath, {
+                  title: pendingHint?.title || "",
+                  slug: pendingHint?.slug || "",
+                  pageType: pendingHint?.pageType || undefined,
+                })
+              : { meta: {}, blocks: [] },
+        })
+      : await fromPath({ ...ctxBase, pagePath });
     html = await mergeBodyIntoFullHtml(
       shopData,
       navigationConfig,

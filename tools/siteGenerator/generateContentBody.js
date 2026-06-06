@@ -39,17 +39,73 @@ function getCategoryNames(products) {
   return categories.map((c) => c.name);
 }
 
-async function loadContentPageJson(pagePath) {
-  const fetchJson = window.generateAnyPage.fetchJson;
-  const normalized = String(pagePath || "")
+function normalizeContentPagePath(pagePath) {
+  return String(pagePath || "")
     .trim()
     .replace(/^\/+/, "")
     .replace(/\/+$/, "")
     .toLowerCase();
+}
+
+function isReservedSystemPath(pagePath) {
+  const path = normalizeContentPagePath(pagePath);
+  if (!path) {
+    return true;
+  }
+  if (path === "cart" || path === "shop" || path === "blog") {
+    return true;
+  }
+  return path.startsWith("shop/");
+}
+
+function isContentPagePath(pagePath) {
+  const path = normalizeContentPagePath(pagePath);
+  return Boolean(path) && !isReservedSystemPath(path);
+}
+
+async function loadContentPageJson(pagePath) {
+  const fetchJson = window.generateAnyPage.fetchJson;
+  const normalized = normalizeContentPagePath(pagePath);
   if (!normalized || normalized.includes("..")) {
     throw new Error(`Invalid content page path: ${pagePath}`);
   }
   return fetchJson(`${CONTENT_PAGES_BASE}/${normalized}.json`);
+}
+
+/**
+ * @param {string} pagePath
+ * @param {{ title?: string, slug?: string, pageType?: string }} [hints]
+ */
+function createDefaultPageData(pagePath, hints = {}) {
+  const normalized = normalizeContentPagePath(pagePath);
+  const isBlog = normalized.startsWith("blog/") && normalized.length > "blog/".length;
+  const slugFromPath = isBlog ? normalized.slice("blog/".length) : normalized === "about" ? "about" : normalized;
+  const pageType = String(hints.pageType || (isBlog ? "blog" : "page"))
+    .trim()
+    .toLowerCase();
+  const title = String(hints.title || "").trim();
+  const slug = String(hints.slug || slugFromPath).trim() || slugFromPath;
+  const today = new Date().toISOString().slice(0, 10);
+  const blocks = title
+    ? [
+        { type: "title", text: title },
+        { type: "text", format: "plain", content: "" },
+      ]
+    : [
+        { type: "title", text: "" },
+        { type: "text", format: "plain", content: "" },
+      ];
+  return {
+    version: 1,
+    slug,
+    pageType,
+    meta: {
+      title,
+      description: "",
+      ...(pageType === "blog" ? { date: today, author: "", tags: [] } : {}),
+    },
+    blocks,
+  };
 }
 
 async function buildBlockRenderContext() {
@@ -266,6 +322,9 @@ window.generateContentBody = {
   generateContentPageBodyFromData,
   generateBlogIndexBody,
   loadContentPageJson,
+  createDefaultPageData,
+  isReservedSystemPath,
+  isContentPagePath,
   buildBlockRenderContext,
   deriveCoverFromPageData,
 };

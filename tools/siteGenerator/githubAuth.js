@@ -536,6 +536,26 @@
     });
   }
 
+  function findFileTreeEntryByHref(items, href) {
+    const norm = normalizePagePath(href);
+    if (!Array.isArray(items)) {
+      return null;
+    }
+    for (let index = 0; index < items.length; index += 1) {
+      const item = items[index];
+      if (normalizePagePath(item?.href) === norm) {
+        return { item, list: items, index };
+      }
+      if (Array.isArray(item?.children)) {
+        const nested = findFileTreeEntryByHref(item.children, href);
+        if (nested) {
+          return nested;
+        }
+      }
+    }
+    return null;
+  }
+
   function updateFileTreeForBlog(fileTreeJson, oldPagePath, newPagePath, title) {
     const root = fileTreeJson && typeof fileTreeJson === "object" ? fileTreeJson : {};
     if (!Array.isArray(root.items)) {
@@ -561,6 +581,50 @@
     entry.label = String(title || "").trim() || "Untitled";
     entry.href = newNorm;
     return root;
+  }
+
+  function upsertContentPageInFileTree(fileTreeJson, oldPagePath, newPagePath, title) {
+    const root = fileTreeJson && typeof fileTreeJson === "object" ? fileTreeJson : {};
+    if (!Array.isArray(root.items)) {
+      throw new Error("fileTree.json missing items array");
+    }
+    const oldNorm = normalizePagePath(oldPagePath);
+    const newNorm = normalizePagePath(newPagePath);
+    const label = String(title || "").trim() || "Untitled";
+    let entry = findFileTreeEntryByHref(root.items, oldNorm)?.item;
+    if (!entry) {
+      entry = findFileTreeEntryByHref(root.items, newNorm)?.item;
+    }
+    if (entry) {
+      entry.label = label;
+      entry.href = newNorm;
+      return root;
+    }
+    if (isBlogPagePath(newNorm)) {
+      return updateFileTreeForBlog(root, oldPagePath, newPagePath, title);
+    }
+    root.items.push({ label, href: newNorm });
+    return root;
+  }
+
+  async function pushFileTree(fileTreeJson) {
+    const fullName = getSelectedRepo();
+    const parsed = parseRepoFullName(fullName);
+    if (!parsed) {
+      throw new Error("Select a GitHub repository on the site generator picker page.");
+    }
+    const branch = getBranch();
+    const fileTree = await readRepoJson(parsed.owner, parsed.repo, FILE_TREE_PATH, branch);
+    const nextTree = fileTreeJson && typeof fileTreeJson === "object" ? fileTreeJson : fileTree.json;
+    return putFileContent(
+      parsed.owner,
+      parsed.repo,
+      FILE_TREE_PATH,
+      "Update file tree layout",
+      `${JSON.stringify(nextTree, null, 2)}\n`,
+      branch,
+      fileTree.meta?.sha || null,
+    );
   }
 
   async function githubApi(path, options, token) {
@@ -696,6 +760,12 @@
       const newSlug = resolveBlogSlug(mutablePageData, originalPagePath);
       mutablePageData.slug = newSlug;
       targetPagePath = `blog/${newSlug}`;
+    } else {
+      const newSlug = slugify(mutablePageData?.slug || mutablePageData?.meta?.title || originalPagePath);
+      if (newSlug) {
+        mutablePageData.slug = newSlug;
+        targetPagePath = newSlug;
+      }
     }
 
     const oldRepoPath = pagePathToContentRepoPath(originalPagePath);
@@ -726,27 +796,25 @@
       );
     }
 
-    if (isBlogPagePath(originalPagePath) || isBlogPagePath(targetPagePath)) {
-      const fileTree = await readRepoJson(parsed.owner, parsed.repo, FILE_TREE_PATH, branch);
-      const title =
-        String(mutablePageData.meta?.title || mutablePageData.slug || "Untitled").trim() || "Untitled";
-      const nextFileTree = updateFileTreeForBlog(
-        fileTree.json,
-        originalPagePath,
-        targetPagePath,
-        title,
-      );
+    const fileTree = await readRepoJson(parsed.owner, parsed.repo, FILE_TREE_PATH, branch);
+    const title =
+      String(mutablePageData.meta?.title || mutablePageData.slug || "Untitled").trim() || "Untitled";
+    const nextFileTree = upsertContentPageInFileTree(
+      fileTree.json,
+      originalPagePath,
+      targetPagePath,
+      title,
+    );
 
-      await putFileContent(
-        parsed.owner,
-        parsed.repo,
-        FILE_TREE_PATH,
-        `Update file tree for ${targetPagePath}`,
-        `${JSON.stringify(nextFileTree, null, 2)}\n`,
-        branch,
-        fileTree.meta?.sha || null,
-      );
-    }
+    await putFileContent(
+      parsed.owner,
+      parsed.repo,
+      FILE_TREE_PATH,
+      `Update file tree for ${targetPagePath}`,
+      `${JSON.stringify(nextFileTree, null, 2)}\n`,
+      branch,
+      fileTree.meta?.sha || null,
+    );
 
     return pageWriteResult;
   }
@@ -1282,6 +1350,7 @@ ${loginLine}
     initHubUi,
     initEditPushUi,
     pushContentPage,
+    pushFileTree,
     pushProductRow,
     pagePathToContentRepoPath,
     redirectUri,

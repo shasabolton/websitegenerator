@@ -39,14 +39,20 @@ function parsePreviewTarget(search) {
     const lower = String(e).trim().toLowerCase();
     edit = lower === "true" || lower === "1";
   }
-  return { path: decodeURIComponent(String(path).trim()), digital, edit };
+  let isNew = false;
+  const n = params.get("new");
+  if (n != null && String(n).trim() !== "") {
+    const lower = String(n).trim().toLowerCase();
+    isNew = lower === "true" || lower === "1";
+  }
+  return { path: decodeURIComponent(String(path).trim()), digital, edit, isNew };
 }
 
 /**
  * @param {string} treePath - File-tree href, e.g. `shop`, `shop/my-category`, or `shop/product-slug`.
  * @param {boolean | null | undefined} digitalFilter - When true/false, adds `digital=` to the query string for shop preview filtering.
  */
-function buildPreviewUrl(treePath, digitalFilter) {
+function buildPreviewUrl(treePath, digitalFilter, isNew = false) {
   const path = String(treePath || "").trim();
   let url = `${INDEX_HTML_PATH}?path=${encodeURIComponent(path)}`;
   if (digitalFilter === true) {
@@ -54,15 +60,19 @@ function buildPreviewUrl(treePath, digitalFilter) {
   } else if (digitalFilter === false) {
     url += "&digital=false";
   }
+  if (isNew) {
+    url += "&new=1";
+  }
   return url;
 }
 
 /**
  * @param {string} treePath
  * @param {boolean | null | undefined} digitalFilter
+ * @param {boolean} [isNew]
  */
-function buildEditUrl(treePath, digitalFilter) {
-  return `${buildPreviewUrl(treePath, digitalFilter)}&edit=1`;
+function buildEditUrl(treePath, digitalFilter, isNew = false) {
+  return `${buildPreviewUrl(treePath, digitalFilter, isNew)}&edit=1`;
 }
 
 function showPreviewBootError(error) {
