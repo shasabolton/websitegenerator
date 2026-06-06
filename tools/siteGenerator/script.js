@@ -37,6 +37,7 @@ function loadPreviewGenerators() {
     previewGeneratorsLoadPromise = (async () => {
       await loadScript("./homePage.js");
       await loadScript("./generateHeaderAndFooter.js");
+      await loadScript("./structuredData.js");
       await loadScript("./generateAnyPage.js");
       await loadScript("./generateCartBody.js");
       await loadScript("./generateShopBody.js");

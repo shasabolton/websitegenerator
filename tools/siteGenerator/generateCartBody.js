@@ -38,10 +38,18 @@ async function buildCartBody(ctx) {
     PAYPAL_BUYER_COUNTRY_JSON: JSON.stringify(/^[A-Z]{2}$/.test(paypalBuyerCountry) ? paypalBuyerCountry : "AU"),
     SHIPPING_RATES_JSON: JSON.stringify(shippingRatesData),
   });
+  const truncateText = window.structuredData?.truncateText;
+  const metaDescription =
+    typeof truncateText === "function"
+      ? truncateText(`Review items in your ${shopData?.shopName || "shop"} shopping cart.`, 160)
+      : "Review items in your shopping cart.";
   return {
     bodyHtml,
     categoryNames: categories.map((c) => c.name),
     pageTitle: `${shopNameEsc} - Cart`,
+    seoContext: {
+      metaDescription,
+    },
   };
 }
 

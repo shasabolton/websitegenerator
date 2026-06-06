@@ -221,24 +221,6 @@ function buildCarouselThumbsHtml(items, productTitleRaw) {
 }
 
 /**
- * @param {{ title: string, description: string, embedUrl: string, watchUrl: string, thumbnailUrl: string }} p
- */
-function buildVideoObjectJsonLdScript(p) {
-  const name = String(p.title || "").trim().slice(0, 200) || "Product video";
-  const description = String(p.description || "").trim().slice(0, 5000);
-  const obj = {
-    "@context": "https://schema.org",
-    "@type": "VideoObject",
-    name,
-    description: description || name,
-    thumbnailUrl: [p.thumbnailUrl],
-    embedUrl: p.embedUrl,
-    url: p.watchUrl,
-  };
-  return `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, "\\u003c")}</script>`;
-}
-
-/**
  * @param {CarouselItem[]} items
  * @param {string} productTitleRaw
  * @param {string} carouselPartial
@@ -320,16 +302,6 @@ async function generateProductBody(ctx) {
     carouselPartial,
     youtubeMetaForLd ? { watchUrl: youtubeMetaForLd.watchUrl } : null,
   );
-  const videoJsonLd = youtubeMetaForLd
-    ? buildVideoObjectJsonLdScript({
-        title,
-        description,
-        embedUrl: youtubeMetaForLd.embedUrl,
-        watchUrl: youtubeMetaForLd.watchUrl,
-        thumbnailUrl: youtubeMetaForLd.thumbnailUrl,
-      })
-    : "";
-
   const homePageHref = ctx.homePageHref ?? null;
   const shopLandingHref = escapeHtml(
     window.homePage?.resolvePublicHref
@@ -390,7 +362,6 @@ async function generateProductBody(ctx) {
     PRODUCT_PRICE: productPriceDisplay,
     PRODUCT_DESCRIPTION: escapeHtml(description),
     PRODUCT_CAROUSEL: carouselHtml,
-    PRODUCT_VIDEO_JSON_LD: videoJsonLd || "",
     PRODUCT_SKU_ESC: escapeHtml(sku),
     PRODUCT_VARIATIONS_HTML: variationsHtml,
     PRODUCT_CART_BOOTSTRAP_JSON: bootstrapJson,
@@ -398,10 +369,23 @@ async function generateProductBody(ctx) {
 
   const categories = window.productData.getProductsByCategory(products);
   const shopNameEsc = escapeHtml(shopData?.shopName || "Shop");
+  const stripHtml = window.structuredData?.stripHtml;
+  const truncateText = window.structuredData?.truncateText;
+  const plainDescription = typeof stripHtml === "function" ? stripHtml(description) : description;
+  const metaDescription =
+    typeof truncateText === "function" ? truncateText(plainDescription, 160) : plainDescription;
+  const ogImage = images[0] || "";
   return {
     bodyHtml,
     categoryNames: categories.map((c) => c.name),
     pageTitle: `${shopNameEsc} - ${titleEsc}`,
+    seoContext: {
+      metaDescription,
+      ogImage,
+      productRow: row,
+      catalogProducts: catalog,
+      categoryName,
+    },
   };
 }
 

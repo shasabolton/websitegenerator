@@ -118,10 +118,27 @@ async function generateShopBody(ctx) {
   const { products, shopData } = ctx;
   const { html, categoryNames } = await buildCategoryPreviewsHtml(products, shopData);
   const shopNameEsc = escapeHtml(shopData?.shopName || "Shop");
+  const stripHtml = window.structuredData?.stripHtml;
+  const truncateText = window.structuredData?.truncateText;
+  const aboutText =
+    typeof stripHtml === "function" ? stripHtml(shopData?.about) : String(shopData?.about || "").trim();
+  const metaDescription =
+    typeof truncateText === "function"
+      ? truncateText(
+          aboutText ||
+            "Browse mechanical wooden kits, automata, puzzle boxes, and contraptions.",
+          160,
+        )
+      : aboutText;
   return {
     bodyHtml: html,
     categoryNames,
     pageTitle: `${shopNameEsc} - Shop`,
+    seoContext: {
+      metaDescription,
+      products,
+      catalogProducts: products,
+    },
   };
 }
 

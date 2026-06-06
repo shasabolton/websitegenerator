@@ -78,10 +78,23 @@ async function generateCategoryBody(ctx) {
   });
 
   const shopNameEsc = escapeHtml(shopData?.shopName || "Shop");
+  const truncateText = window.structuredData?.truncateText;
+  const metaDescription =
+    typeof truncateText === "function"
+      ? truncateText(`Shop ${target.name} products at ${shopData?.shopName || "our store"}.`, 160)
+      : `Shop ${target.name} products.`;
   return {
     bodyHtml,
     categoryNames: categories.map((category) => category.name),
     pageTitle: `${shopNameEsc} - ${escapeHtml(target.name)}`,
+    seoContext: {
+      metaDescription,
+      categoryName: target.name,
+      categoryProductRows: products.filter(
+        (row) => String(row.CATEGORY || "").trim().toLowerCase() === nameFilter,
+      ),
+      catalogProducts: products,
+    },
   };
 }
 

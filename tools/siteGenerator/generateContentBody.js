@@ -90,10 +90,19 @@ async function generateContentPageBodyFromData(ctx) {
     CONTENT_BLOCKS: blocksHtml,
   });
 
+  const truncateText = window.structuredData?.truncateText;
+  const metaDescription =
+    typeof truncateText === "function"
+      ? truncateText(String(meta.description || "").trim(), 160)
+      : String(meta.description || "").trim();
   return {
     bodyHtml,
     categoryNames: getCategoryNames(products),
     pageTitle: buildPageTitle(shopData, pageTitle),
+    seoContext: {
+      metaDescription,
+      pageData: page,
+    },
   };
 }
 
@@ -238,10 +247,17 @@ async function generateBlogIndexBody(ctx) {
   </div>
 </section>`;
 
+  const truncateText = window.structuredData?.truncateText;
+  const metaDescription =
+    typeof truncateText === "function" ? truncateText(description, 160) : description;
   return {
     bodyHtml,
     categoryNames: getCategoryNames(products),
     pageTitle: buildPageTitle(shopData, pageTitle),
+    seoContext: {
+      metaDescription,
+      blogPosts: posts,
+    },
   };
 }
 
@@ -251,4 +267,5 @@ window.generateContentBody = {
   generateBlogIndexBody,
   loadContentPageJson,
   buildBlockRenderContext,
+  deriveCoverFromPageData,
 };

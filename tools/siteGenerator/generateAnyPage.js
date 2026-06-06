@@ -69,9 +69,10 @@ async function mergeBodyIntoFullHtml(
   pageTemplate,
   setBaseSource,
   bodyPayload,
-  homePageHref = null
+  homePageHref = null,
+  treePath = ""
 ) {
-  const { bodyHtml, categoryNames, pageTitle } = bodyPayload;
+  const { bodyHtml, categoryNames, pageTitle, seoContext } = bodyPayload;
   const {
     headerHtml,
     footerHtml,
@@ -90,8 +91,21 @@ async function mergeBodyIntoFullHtml(
   const shopNameJson = JSON.stringify(shopData?.shopName || "");
   const siteCartInitScript = wrapInlineScript(`window.siteCart = new ShoppingCart(${shopNameJson});`);
 
+  const seo =
+    typeof window.structuredData?.buildForPage === "function"
+      ? window.structuredData.buildForPage({
+          treePath,
+          shopData,
+          homePageHref,
+          pageTitle,
+          seoContext: seoContext && typeof seoContext === "object" ? seoContext : {},
+        })
+      : { headSeoHtml: "", structuredDataHtml: "" };
+
   return applyTemplate(pageTemplate, {
     PAGE_TITLE: pageTitle,
+    HEAD_SEO: seo.headSeoHtml || "",
+    STRUCTURED_DATA: seo.structuredDataHtml || "",
     FAVICON_PATH: faviconPath,
     SITE_CSS_PATH: siteCssPath,
     SITE_JS_PATH: siteJsPath,
@@ -148,7 +162,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
       pageTemplate,
       setBaseSource,
       bodyPayload,
-      homePageHref
+      homePageHref,
+      path
     );
     return html;
   }
@@ -165,7 +180,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
       pageTemplate,
       setBaseSource,
       bodyPayload,
-      homePageHref
+      homePageHref,
+      path
     );
     return html;
   }
@@ -206,7 +222,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
         pageTemplate,
         setBaseSource,
         bodyPayload,
-        homePageHref
+        homePageHref,
+        path
       );
       return html;
     }
@@ -222,7 +239,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
       pageTemplate,
       setBaseSource,
       bodyPayload,
-      homePageHref
+      homePageHref,
+      path
     );
     return html;
   }
@@ -239,7 +257,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
       pageTemplate,
       setBaseSource,
       bodyPayload,
-      homePageHref
+      homePageHref,
+      path
     );
     return html;
   }
@@ -256,7 +275,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
       pageTemplate,
       setBaseSource,
       bodyPayload,
-      homePageHref
+      homePageHref,
+      path
     );
     return html;
   }
@@ -277,7 +297,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
       pageTemplate,
       setBaseSource,
       bodyPayload,
-      homePageHref
+      homePageHref,
+      path
     );
     return html;
   }
