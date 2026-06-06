@@ -68,7 +68,8 @@ async function mergeBodyIntoFullHtml(
   navigationConfig,
   pageTemplate,
   setBaseSource,
-  bodyPayload
+  bodyPayload,
+  homePageHref = null
 ) {
   const { bodyHtml, categoryNames, pageTitle } = bodyPayload;
   const {
@@ -82,6 +83,7 @@ async function mergeBodyIntoFullHtml(
     productInstructionVideosScriptPath,
   } = await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig, {
     categoryNames,
+    homePageHref,
   });
 
   // Cart init only; ShoppingCart/productData stay loadable when `window` is reused (preview). Guards live inside those files.
@@ -114,20 +116,25 @@ async function runGenerateAnyPage(treePath, options = {}) {
   let html = "";
   const path = normalizeTreePath(treePath);
 
-  const [shopData, navigationConfig, pageTemplate, setBaseSource, productData] = await Promise.all([
-    fetchJson("../../shared-assets/config/shopData.json"),
-    fetchJson("../../shared-assets/config/navigation.json"),
-    fetchText("./templates/pages/allPages.html"),
-    fetchText("./setBase.js"),
-    window.productData.fetchProductDataJson(),
-  ]);
+  const [shopData, navigationConfig, fileTreeConfig, pageTemplate, setBaseSource, productData] =
+    await Promise.all([
+      fetchJson("../../shared-assets/config/shopData.json"),
+      fetchJson("../../shared-assets/config/navigation.json"),
+      fetchJson("../../shared-assets/config/fileTree.json"),
+      fetchText("./templates/pages/allPages.html"),
+      fetchText("./setBase.js"),
+      window.productData.fetchProductDataJson(),
+    ]);
+  const homePageHref = window.homePage?.getHomePageHref
+    ? window.homePage.getHomePageHref(fileTreeConfig)
+    : null;
   const productsFull = Array.isArray(productData?.products) ? productData.products : [];
   const previewParams = window.previewTarget.parsePreviewTarget(window.location.search);
   const digitalFilter = Object.prototype.hasOwnProperty.call(options, "digital")
     ? options.digital
     : previewParams?.digital ?? null;
   const productsForShop = window.productData.filterProductsByDigital(productsFull, digitalFilter);
-  const ctxBase = { shopData, navigationConfig, products: productsForShop };
+  const ctxBase = { shopData, navigationConfig, products: productsForShop, homePageHref };
 
   if (path === "cart") {
     const gen = window.generateCartBody?.buildCartBody;
@@ -140,7 +147,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
       navigationConfig,
       pageTemplate,
       setBaseSource,
-      bodyPayload
+      bodyPayload,
+      homePageHref
     );
     return html;
   }
@@ -156,7 +164,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
       navigationConfig,
       pageTemplate,
       setBaseSource,
-      bodyPayload
+      bodyPayload,
+      homePageHref
     );
     return html;
   }
@@ -196,7 +205,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
         navigationConfig,
         pageTemplate,
         setBaseSource,
-        bodyPayload
+        bodyPayload,
+        homePageHref
       );
       return html;
     }
@@ -211,7 +221,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
       navigationConfig,
       pageTemplate,
       setBaseSource,
-      bodyPayload
+      bodyPayload,
+      homePageHref
     );
     return html;
   }
@@ -227,7 +238,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
       navigationConfig,
       pageTemplate,
       setBaseSource,
-      bodyPayload
+      bodyPayload,
+      homePageHref
     );
     return html;
   }
@@ -243,7 +255,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
       navigationConfig,
       pageTemplate,
       setBaseSource,
-      bodyPayload
+      bodyPayload,
+      homePageHref
     );
     return html;
   }
@@ -263,7 +276,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
       navigationConfig,
       pageTemplate,
       setBaseSource,
-      bodyPayload
+      bodyPayload,
+      homePageHref
     );
     return html;
   }

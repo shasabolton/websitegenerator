@@ -330,11 +330,22 @@ async function generateProductBody(ctx) {
       })
     : "";
 
+  const homePageHref = ctx.homePageHref ?? null;
+  const shopLandingHref = escapeHtml(
+    window.homePage?.resolvePublicHref
+      ? window.homePage.resolvePublicHref(homePageHref || "shop", homePageHref)
+      : "shop"
+  );
+  const categoryHref = escapeHtml(
+    window.homePage?.resolvePublicHref
+      ? window.homePage.resolvePublicHref(`shop/${categorySlugResolved}`, homePageHref)
+      : `shop/${categorySlugResolved}`
+  );
   const breadcrumbsHtml = `
     <nav class="breadcrumbs" aria-label="Breadcrumb">
-      <a href="shop/">Shop</a>
+      <a href="${shopLandingHref}">Shop</a>
       <span class="breadcrumbs-sep" aria-hidden="true">&rsaquo;</span>
-      <a href="shop/${escapeHtml(categorySlugResolved)}">${escapeHtml(categoryName)}</a>
+      <a href="${categoryHref}">${escapeHtml(categoryName)}</a>
       <span class="breadcrumbs-sep" aria-hidden="true">&rsaquo;</span>
       <span>${titleEsc}</span>
     </nav>

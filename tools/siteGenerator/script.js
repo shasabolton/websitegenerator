@@ -35,6 +35,7 @@ let previewGeneratorsLoadPromise = null;
 function loadPreviewGenerators() {
   if (!previewGeneratorsLoadPromise) {
     previewGeneratorsLoadPromise = (async () => {
+      await loadScript("./homePage.js");
       await loadScript("./generateHeaderAndFooter.js");
       await loadScript("./generateAnyPage.js");
       await loadScript("./generateCartBody.js");

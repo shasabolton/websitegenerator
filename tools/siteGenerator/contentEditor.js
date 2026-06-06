@@ -1655,11 +1655,15 @@ async function bootEditPage(treePath) {
     eventsBound: false,
   };
 
-  const [shopData, navigationConfig, productData] = await Promise.all([
+  const [shopData, navigationConfig, fileTreeConfig, productData] = await Promise.all([
     window.generateAnyPage.fetchJson("../../shared-assets/config/shopData.json"),
     window.generateAnyPage.fetchJson("../../shared-assets/config/navigation.json"),
+    window.generateAnyPage.fetchJson("../../shared-assets/config/fileTree.json"),
     window.productData.fetchProductDataJson(),
   ]);
+  const homePageHref = window.homePage?.getHomePageHref
+    ? window.homePage.getHomePageHref(fileTreeConfig)
+    : null;
   const products = Array.isArray(productData?.products) ? productData.products : [];
   const previewParams = window.previewTarget.parsePreviewTarget(window.location.search);
   const digitalFilter = previewParams?.digital ?? null;
@@ -1676,7 +1680,7 @@ async function bootEditPage(treePath) {
   const headerFooter = await window.generateHeaderAndFooter.generateHeaderAndFooter(
     shopData,
     navigationConfig,
-    { categoryNames: bodyPayload.categoryNames },
+    { categoryNames: bodyPayload.categoryNames, homePageHref },
   );
 
   await mountEditPageInPlace(treePath, bodyPayload, headerFooter);

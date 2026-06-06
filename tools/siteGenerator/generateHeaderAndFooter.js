@@ -34,12 +34,23 @@ function buildShopCategoryHref(categoryName) {
   return `shop/${slugify(categoryName)}`;
 }
 
-function buildNavigationHtml(navigationConfig, categoryNames = []) {
+function resolveNavHref(href, homePageHref) {
+  const raw = String(href ?? "").trim();
+  if (!raw || raw === "#") {
+    return "#";
+  }
+  if (window.homePage?.resolvePublicHref) {
+    return window.homePage.resolvePublicHref(raw, homePageHref);
+  }
+  return raw;
+}
+
+function buildNavigationHtml(navigationConfig, categoryNames = [], homePageHref = null) {
   const items = Array.isArray(navigationConfig?.items) ? navigationConfig.items : [];
   return items
     .map((item) => {
       const label = escapeHtml(item.label || "");
-      const href = escapeHtml(item.href || "#");
+      const href = escapeHtml(resolveNavHref(item.href, homePageHref));
       const isShopItem = String(item?.label || "").trim().toLowerCase() === "shop";
       let children = Array.isArray(item.children) ? item.children : [];
       if (isShopItem && Array.isArray(categoryNames) && categoryNames.length > 0) {
@@ -56,7 +67,7 @@ function buildNavigationHtml(navigationConfig, categoryNames = []) {
       const childrenHtml = children
         .map((child) => {
           const childLabel = escapeHtml(child.label || "");
-          const childHref = escapeHtml(child.href || "#");
+          const childHref = escapeHtml(resolveNavHref(child.href, homePageHref));
           return `<li><a href="${childHref}">${childLabel}</a></li>`;
         })
         .join("");
@@ -164,7 +175,8 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
   ]);
 
   const categoryNames = Array.isArray(options.categoryNames) ? options.categoryNames : [];
-  const navHtml = buildNavigationHtml(navigationConfig, categoryNames);
+  const homePageHref = options.homePageHref ?? null;
+  const navHtml = buildNavigationHtml(navigationConfig, categoryNames, homePageHref);
   const shopName = escapeHtml(shopData?.shopName || "Shop");
   const faviconPath = escapeHtml(buildFaviconPath(shopData));
   const siteCssPath = escapeHtml(buildSiteCssPath());

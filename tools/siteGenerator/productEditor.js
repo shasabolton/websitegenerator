@@ -435,14 +435,19 @@ async function bootEditProduct(treePath) {
     carouselItemEdit: null,
   };
 
-  const [shopData, navigationConfig] = await Promise.all([
+  const [shopData, navigationConfig, fileTreeConfig] = await Promise.all([
     window.generateAnyPage.fetchJson("../../shared-assets/config/shopData.json"),
     window.generateAnyPage.fetchJson("../../shared-assets/config/navigation.json"),
+    window.generateAnyPage.fetchJson("../../shared-assets/config/fileTree.json"),
   ]);
+  const homePageHref = window.homePage?.getHomePageHref
+    ? window.homePage.getHomePageHref(fileTreeConfig)
+    : null;
 
   const categories = window.productData.getProductsByCategory(productsForShop);
   const headerFooter = await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig, {
     categoryNames: categories.map((c) => c.name),
+    homePageHref,
   });
 
   await mountProductEditPage(normalizeProductPath(treePath), row, headerFooter, shopData);

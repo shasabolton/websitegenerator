@@ -56,9 +56,15 @@ async function generateCategoryBody(ctx) {
     PRODUCT_THUMBS: thumbsHtml || EMPTY_CATEGORY_THUMB_ROW,
   });
 
+  const homePageHref = ctx.homePageHref ?? null;
+  const shopLandingHref = escapeHtml(
+    window.homePage?.resolvePublicHref
+      ? window.homePage.resolvePublicHref(homePageHref || "shop", homePageHref)
+      : "shop"
+  );
   const breadcrumbsHtml = `
     <nav class="breadcrumbs" aria-label="Breadcrumb">
-      <a href="shop/">Shop</a>
+      <a href="${shopLandingHref}">Shop</a>
       <span class="breadcrumbs-sep" aria-hidden="true">&rsaquo;</span>
       <span>${escapeHtml(target.name)}</span>
     </nav>

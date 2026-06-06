@@ -133,21 +133,28 @@
         padding-left: 14px;
       }
 
-      .preview-digital-filter {
+      .preview-picker-filters {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 12px 20px;
+        margin-bottom: 14px;
+      }
+
+      .preview-picker-filter {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: 8px 12px;
-        margin-bottom: 14px;
       }
 
-      .preview-digital-filter label {
+      .preview-picker-filter label {
         font-size: 14px;
         font-weight: 600;
         color: #374151;
       }
 
-      .preview-digital-filter select {
+      .preview-picker-filter select {
         font-size: 14px;
         padding: 6px 10px;
         border: 1px solid #d1d5db;
@@ -172,13 +179,21 @@
           <code>?</code>).
           Save a GitHub access token above to push content page JSON from the editor.
         </p>
-        <div class="preview-digital-filter">
-          <label for="preview-digital-filter">Listings</label>
-          <select id="preview-digital-filter" aria-label="Filter listings by digital product">
-            <option value="all" selected>All listings</option>
-            <option value="true">Digital only</option>
-            <option value="false">Physical only</option>
-          </select>
+        <div class="preview-picker-filters">
+          <div class="preview-picker-filter">
+            <label for="preview-digital-filter">Listings</label>
+            <select id="preview-digital-filter" aria-label="Filter listings by digital product">
+              <option value="all" selected>All listings</option>
+              <option value="true">Digital only</option>
+              <option value="false">Physical only</option>
+            </select>
+          </div>
+          <div class="preview-picker-filter">
+            <label for="preview-category-filter">Category</label>
+            <select id="preview-category-filter" aria-label="Filter pages by product category">
+              <option value="all" selected>All categories</option>
+            </select>
+          </div>
         </div>
         <div id="preview-picker-root" aria-live="polite"></div>
       </section>
@@ -186,6 +201,7 @@
     <script src="./githubAuth.config.js"></script>
     <script src="./githubAuth.js"></script>
     <script src="../editData/productData.js"></script>
+    <script src="./homePage.js"></script>
     <script src="./previewTarget.js"></script>
     <script src="./vendor/jszip.min.js"></script>
     <script src="./displayFileTree.js"></script>

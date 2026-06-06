@@ -1,4 +1,5 @@
 {
+  "homePage": "shop",
   "items": [
     {
       "label": "Cart",
@@ -7,13 +8,7 @@
     {
       "label": "Shop",
       "href": "shop",
-      "children": [
-        {
-          "label": "Categories",
-          "href": "shop",
-          "children": []
-        }
-      ]
+      "children": []
     },
     {
       "label": "Blog",
