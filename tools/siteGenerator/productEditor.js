@@ -151,6 +151,7 @@ function buildCategoryFieldHtml(row) {
 
 function buildProductSettingsHtml(row, pagePath) {
   const digital = readBooleanField(row.DIGITAL);
+  const hideProduct = readBooleanField(row.HIDE);
   const hideInstructions = readBooleanField(row["HIDE INSTRUCTIONS"]);
 
   return `<fieldset class="content-edit-page-settings product-edit-settings" data-product-edit-settings>
@@ -189,6 +190,14 @@ function buildProductSettingsHtml(row, pagePath) {
         <option value="true"${digital ? " selected" : ""}>true (digital)</option>
       </select>
       <p class="content-edit-field-hint">Stored as boolean <code>true</code> or <code>false</code> in JSON.</p>
+    </div>
+    <div class="content-edit-field">
+      <label for="product-edit-hide">Hide from shop and navigation</label>
+      <select id="product-edit-hide" name="HIDE">
+        <option value="false"${hideProduct ? "" : " selected"}>false</option>
+        <option value="true"${hideProduct ? " selected" : ""}>true</option>
+      </select>
+      <p class="content-edit-field-hint">Hidden products stay editable but are omitted from shop listings and nav.</p>
     </div>
     <div class="content-edit-field">
       <label for="product-edit-sku">SKU</label>
@@ -291,6 +300,7 @@ function collectProductRowFromForm(form) {
   base.WEIGHT_KG = get("WEIGHT_KG");
   base.CATEGORY = collectCategoryFromForm(form);
   base.DIGITAL = readBooleanField(form.querySelector('[name="DIGITAL"]')?.value);
+  base.HIDE = readBooleanField(form.querySelector('[name="HIDE"]')?.value);
   base.MATERIALS = get("MATERIALS");
   base.TAGS = get("TAGS");
   base.LEGACY_SHOP_URL = get("LEGACY_SHOP_URL");
@@ -421,10 +431,9 @@ async function bootEditProduct(treePath) {
 
   const previewParams = window.previewTarget.parsePreviewTarget(window.location.search);
   const digitalFilter = previewParams?.digital ?? null;
-  const productsForShop = window.productData.filterProductsByDigital(productsFull, digitalFilter);
-  if (!productsForShop.includes(row)) {
-    throw new Error(`Product not found with current listing filter: shop/${slug}`);
-  }
+  const productsForShop = window.productData.filterVisibleProducts(
+    window.productData.filterProductsByDigital(productsFull, digitalFilter),
+  );
 
   window.__productEditorState = {
     pagePath: normalizeProductPath(treePath),

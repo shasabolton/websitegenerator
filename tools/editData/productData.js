@@ -17,6 +17,82 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "");
 }
 
+const PRODUCT_HIDE_OVERLAY_KEY = "siteGenerator.productHideOverlay";
+
+function readProductHideOverlay() {
+  try {
+    const raw = sessionStorage.getItem(PRODUCT_HIDE_OVERLAY_KEY);
+    if (!raw) {
+      return {};
+    }
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeProductHideOverlay(overlay) {
+  sessionStorage.setItem(PRODUCT_HIDE_OVERLAY_KEY, JSON.stringify(overlay));
+}
+
+function isProductRowHidden(row) {
+  if (!row || typeof row !== "object") {
+    return false;
+  }
+  return row.HIDE === true || String(row.HIDE ?? "").trim().toLowerCase() === "true";
+}
+
+function applyProductHideOverlay(products) {
+  const overlay = readProductHideOverlay();
+  if (!Object.keys(overlay).length) {
+    return products;
+  }
+  return products.map((row) => {
+    const sku = String(row?.SKU ?? "").trim();
+    if (!sku || !Object.prototype.hasOwnProperty.call(overlay, sku)) {
+      return row;
+    }
+    if (overlay[sku]) {
+      return { ...row, HIDE: true };
+    }
+    const next = { ...row };
+    delete next.HIDE;
+    return next;
+  });
+}
+
+function setProductHideBySku(sku, hide) {
+  const key = String(sku ?? "").trim();
+  if (!key) {
+    return;
+  }
+  const overlay = readProductHideOverlay();
+  if (hide) {
+    overlay[key] = true;
+  } else {
+    delete overlay[key];
+  }
+  writeProductHideOverlay(overlay);
+}
+
+function clearProductHideOverlayForSku(sku) {
+  const key = String(sku ?? "").trim();
+  if (!key) {
+    return;
+  }
+  const overlay = readProductHideOverlay();
+  if (!Object.prototype.hasOwnProperty.call(overlay, key)) {
+    return;
+  }
+  delete overlay[key];
+  writeProductHideOverlay(overlay);
+}
+
+function filterVisibleProducts(products) {
+  return (Array.isArray(products) ? products : []).filter((row) => row && !isProductRowHidden(row));
+}
+
 async function fetchProductDataJson() {
   const url = productDataJsonUrl();
   const response = await fetch(url, { cache: "no-store" });
@@ -24,13 +100,13 @@ async function fetchProductDataJson() {
     throw new Error(`Failed to load product data: ${url} (${response.status})`);
   }
   const data = await response.json();
-  const products = Array.isArray(data?.products) ? data.products : [];
+  const products = applyProductHideOverlay(Array.isArray(data?.products) ? data.products : []);
   const columns = Array.isArray(data?.columns) ? data.columns : [];
   return { version: data?.version, columns, products };
 }
 
 function getProductsByCategory(products) {
-  const list = Array.isArray(products) ? products : [];
+  const list = filterVisibleProducts(products);
   const categories = new Map();
 
   for (const row of list) {
@@ -370,6 +446,10 @@ function getCategoriesForFileTree(products, digitalFilter) {
     fetchProductDataJson,
     getProductsByCategory,
     filterProductsByDigital,
+    filterVisibleProducts,
+    isProductRowHidden,
+    setProductHideBySku,
+    clearProductHideOverlayForSku,
     getCategoriesForFileTree,
     assignProductSlugsGlobally,
     getProductSlugForRow,

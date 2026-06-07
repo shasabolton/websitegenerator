@@ -3,30 +3,36 @@
   "items": [
     {
       "label": "Cart",
-      "href": "cart"
+      "href": "cart",
+      "hide": false
     },
     {
       "label": "Shop",
       "href": "shop",
+      "hide": false,
       "children": []
     },
     {
       "label": "Blog",
       "href": "blog",
+      "hide": false,
       "children": [
         {
           "label": "How Does A Mechanical Calculator Work",
-          "href": "blog/how-does-a-mechanical-calculator-work"
+          "href": "blog/how-does-a-mechanical-calculator-work",
+          "hide": false
         },
         {
           "label": "How Does A Writing Automaton Work",
-          "href": "blog/how-does-a-writing-automaton-work"
+          "href": "blog/how-does-a-writing-automaton-work",
+          "hide": false
         }
       ]
     },
     {
       "label": "About",
-      "href": "about"
+      "href": "about",
+      "hide": false
     }
   ]
 }

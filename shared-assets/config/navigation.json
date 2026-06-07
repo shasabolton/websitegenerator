@@ -1,6 +1,10 @@
 {
   "items": [
     {
+      "label": "Cart",
+      "href": "cart"
+    },
+    {
       "label": "Shop",
       "href": "shop",
       "children": [
@@ -12,7 +16,17 @@
     },
     {
       "label": "Blog",
-      "href": "blog"
+      "href": "blog",
+      "children": [
+        {
+          "label": "How Does A Mechanical Calculator Work",
+          "href": "blog/how-does-a-mechanical-calculator-work"
+        },
+        {
+          "label": "How Does A Writing Automaton Work",
+          "href": "blog/how-does-a-writing-automaton-work"
+        }
+      ]
     },
     {
       "label": "About",

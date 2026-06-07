@@ -1,6 +1,15 @@
 const CONTENT_PAGES_BASE = "../../shared-assets/content/pages";
 const FILE_TREE_URL = "../../shared-assets/config/fileTree.json";
 
+async function loadFileTreeConfig() {
+  const fetchJson = window.generateAnyPage.fetchJson;
+  const base = await fetchJson(FILE_TREE_URL);
+  if (typeof window.displayFileTree?.applyFileTreeOverlay === "function") {
+    return window.displayFileTree.applyFileTreeOverlay(base);
+  }
+  return base;
+}
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -219,11 +228,19 @@ function compareBlogPosts(a, b) {
   return String(a?.slug || "").localeCompare(String(b?.slug || ""));
 }
 
+function isTreeNodeHidden(node) {
+  if (typeof window.displayFileTree?.isTreeNodeHidden === "function") {
+    return window.displayFileTree.isTreeNodeHidden(node);
+  }
+  return node?.hide === true;
+}
+
 function getBlogSlugsFromFileTree(fileTree) {
   const items = Array.isArray(fileTree?.items) ? fileTree.items : [];
   const blogNode = items.find((item) => String(item?.href || "").trim().toLowerCase() === "blog");
   const children = Array.isArray(blogNode?.children) ? blogNode.children : [];
   return children
+    .filter((child) => !isTreeNodeHidden(child))
     .map((child) => {
       const href = String(child?.href || "")
         .trim()
@@ -287,7 +304,7 @@ async function generateBlogIndexBody(ctx) {
   const description = String(blogConfig.description || "").trim();
   const headingEsc = escapeHtml(pageTitle);
 
-  const fileTree = await fetchJson(FILE_TREE_URL);
+  const fileTree = await loadFileTreeConfig();
   const posts = await loadBlogPostsFromFileTree(fileTree);
 
   const cardsHtml = posts.map(buildBlogIndexCard).join("\n");

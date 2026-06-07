@@ -21,6 +21,7 @@
 
   const CONTENT_PAGES_PREFIX = "shared-assets/content/pages";
   const FILE_TREE_PATH = "shared-assets/config/fileTree.json";
+  const NAVIGATION_PATH = "shared-assets/config/navigation.json";
   const PRODUCT_DATA_PATH = "shared-assets/config/productData.json";
   const OAUTH_SCOPE = "repo";
   const DEFAULT_BRANCH = "main";
@@ -465,6 +466,101 @@
     return normalizePagePath(pagePath).startsWith("blog/");
   }
 
+  function isContentPagePath(pagePath) {
+    const path = normalizePagePath(pagePath);
+    if (!path) {
+      return false;
+    }
+    if (path === "cart" || path === "shop" || path === "blog") {
+      return false;
+    }
+    return !path.startsWith("shop/");
+  }
+
+  function isTreeNodeHidden(node) {
+    return node?.hide === true;
+  }
+
+  function syncNavigationFromFileTree(fileTreeJson, existingNav) {
+    const existingItems = Array.isArray(existingNav?.items) ? existingNav.items : [];
+    const existingShop = existingItems.find((item) => normalizePagePath(item?.href) === "shop");
+
+    function mapVisibleChildren(children) {
+      return (Array.isArray(children) ? children : [])
+        .filter((child) => !isTreeNodeHidden(child))
+        .map((child) => mapTreeNodeToNavItem(child))
+        .filter(Boolean);
+    }
+
+    function mapTreeNodeToNavItem(node) {
+      if (isTreeNodeHidden(node)) {
+        return null;
+      }
+      const href = normalizePagePath(node?.href);
+      if (!href) {
+        return null;
+      }
+
+      if (href === "shop") {
+        return {
+          label: String(node.label || existingShop?.label || "Shop").trim() || "Shop",
+          href: "shop",
+          children:
+            Array.isArray(existingShop?.children) && existingShop.children.length
+              ? existingShop.children
+              : [{ label: "Shop home", href: "shop" }],
+        };
+      }
+
+      if (href === "blog") {
+        const children = (Array.isArray(node.children) ? node.children : [])
+          .filter((child) => !isTreeNodeHidden(child))
+          .map((child) => {
+            const childHref = normalizePagePath(child?.href);
+            if (!childHref || !isBlogPagePath(childHref)) {
+              return null;
+            }
+            return {
+              label: String(child.label || childHref).trim() || childHref,
+              href: childHref,
+            };
+          })
+          .filter(Boolean);
+        return {
+          label: String(node.label || "Blog").trim() || "Blog",
+          href: "blog",
+          ...(children.length ? { children } : {}),
+        };
+      }
+
+      const children = mapVisibleChildren(node.children);
+      return {
+        label: String(node.label || href).trim() || href,
+        href,
+        ...(children.length ? { children } : {}),
+      };
+    }
+
+    const items = (Array.isArray(fileTreeJson?.items) ? fileTreeJson.items : [])
+      .map((node) => mapTreeNodeToNavItem(node))
+      .filter(Boolean);
+    return { items };
+  }
+
+  async function pushNavigationFromFileTree(owner, repo, branch, fileTreeJson) {
+    const navigation = await readRepoJson(owner, repo, NAVIGATION_PATH, branch);
+    const nextNavigation = syncNavigationFromFileTree(fileTreeJson, navigation.json);
+    return putFileContent(
+      owner,
+      repo,
+      NAVIGATION_PATH,
+      "Sync navigation from file tree",
+      `${JSON.stringify(nextNavigation, null, 2)}\n`,
+      branch,
+      navigation.meta?.sha || null,
+    );
+  }
+
   function slugify(raw) {
     const s = String(raw || "")
       .trim()
@@ -616,7 +712,7 @@
     const branch = getBranch();
     const fileTree = await readRepoJson(parsed.owner, parsed.repo, FILE_TREE_PATH, branch);
     const nextTree = fileTreeJson && typeof fileTreeJson === "object" ? fileTreeJson : fileTree.json;
-    return putFileContent(
+    const fileTreeResult = await putFileContent(
       parsed.owner,
       parsed.repo,
       FILE_TREE_PATH,
@@ -625,6 +721,8 @@
       branch,
       fileTree.meta?.sha || null,
     );
+    await pushNavigationFromFileTree(parsed.owner, parsed.repo, branch, nextTree);
+    return fileTreeResult;
   }
 
   async function githubApi(path, options, token) {
@@ -816,6 +914,8 @@
       fileTree.meta?.sha || null,
     );
 
+    await pushNavigationFromFileTree(parsed.owner, parsed.repo, branch, nextFileTree);
+
     return pageWriteResult;
   }
 
@@ -878,7 +978,7 @@
       nextRoot.version = 1;
     }
 
-    return putFileContent(
+    const result = await putFileContent(
       parsed.owner,
       parsed.repo,
       PRODUCT_DATA_PATH,
@@ -887,6 +987,10 @@
       branch,
       fileData.meta?.sha || null,
     );
+    if (typeof window.productData?.clearProductHideOverlayForSku === "function") {
+      window.productData.clearProductHideOverlayForSku(sku);
+    }
+    return result;
   }
 
   function assertRedirectUriAllowed(callback) {
@@ -1351,6 +1455,7 @@ ${loginLine}
     initEditPushUi,
     pushContentPage,
     pushFileTree,
+    syncNavigationFromFileTree,
     pushProductRow,
     pagePathToContentRepoPath,
     redirectUri,

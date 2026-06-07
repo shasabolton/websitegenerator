@@ -153,6 +153,34 @@ function isShopGeneratedChild(node) {
   return pageType === "category" || pageType === "product";
 }
 
+function isProductTreeNode(node) {
+  return String(node?.pageType || "").trim().toLowerCase() === "product";
+}
+
+function isTreeNodeHidden(node, products = []) {
+  if (isProductTreeNode(node)) {
+    const path = normalizeTreeHref(node?.href || "");
+    if (!path.startsWith("shop/") || path.length <= "shop/".length) {
+      return false;
+    }
+    const slug = path.slice("shop/".length);
+    const find = window.productData?.findProductBySlug;
+    const isHidden = window.productData?.isProductRowHidden;
+    if (typeof find !== "function" || typeof isHidden !== "function") {
+      return false;
+    }
+    return isHidden(find(products, slug));
+  }
+  return node?.hide === true;
+}
+
+function canToggleTreeNodeHide(node) {
+  if (isProductTreeNode(node)) {
+    return Boolean(String(node?.href || "").trim());
+  }
+  return !isShopGeneratedChild(node) && Boolean(String(node?.href || "").trim());
+}
+
 function isReservedSystemPath(treeHref) {
   const path = normalizeTreeHref(treeHref);
   if (!path) {
@@ -298,6 +326,20 @@ function getNodeAtPath(tree, indexPath) {
     list = node.children;
   }
   return node;
+}
+
+function setNodeHideAtPath(tree, indexPath, hide) {
+  const nextTree = cloneTree(tree);
+  const node = getNodeAtPath(nextTree, indexPath);
+  if (!node) {
+    return null;
+  }
+  if (hide) {
+    node.hide = true;
+  } else {
+    delete node.hide;
+  }
+  return nextTree;
 }
 
 function getParentList(tree, indexPath) {
@@ -593,7 +635,8 @@ function appendTreeToolbar(container, callbacks) {
 
   const hint = document.createElement("p");
   hint.className = "preview-picker-tree-toolbar-hint";
-  hint.textContent = "Drag ⋮⋮ to reorder (drop between rows). Drop onto a page row to nest it as a child.";
+  hint.textContent =
+    "Drag ⋮⋮ to reorder (drop between rows). Drop onto a page row to nest it as a child. Hidden pages stay in the tree but are omitted from navigation, the blog index, or shop listings. Push product edits to save product hide to GitHub.";
   wrap.appendChild(hint);
   container.appendChild(wrap);
 }
@@ -872,6 +915,49 @@ function renderTreeNode(parent, node, indexPath, depth, callbacks) {
   labelEl.textContent = label;
   row.appendChild(labelEl);
 
+  if (canToggleTreeNodeHide(node)) {
+    const products = typeof callbacks.getProducts === "function" ? callbacks.getProducts() : [];
+    const hideLabel = document.createElement("label");
+    hideLabel.className = "preview-picker-tree-hide";
+    hideLabel.title = isProductTreeNode(node)
+      ? "Hide from shop listings and navigation (saved in productData.json on push)"
+      : "Hide from site navigation and blog index";
+    const hideInput = document.createElement("input");
+    hideInput.type = "checkbox";
+    hideInput.checked = isTreeNodeHidden(node, products);
+    hideInput.setAttribute(
+      "aria-label",
+      isProductTreeNode(node) ? `Hide ${label} from shop` : `Hide ${label} from navigation`,
+    );
+    hideInput.addEventListener("change", () => {
+      if (isProductTreeNode(node)) {
+        const path = normalizeTreeHref(href);
+        const slug = path.startsWith("shop/") ? path.slice("shop/".length) : "";
+        const find = window.productData?.findProductBySlug;
+        const setHide = window.productData?.setProductHideBySku;
+        const productList = typeof callbacks.getProducts === "function" ? callbacks.getProducts() : [];
+        const row = typeof find === "function" && slug ? find(productList, slug) : null;
+        if (!row || typeof setHide !== "function") {
+          hideInput.checked = isTreeNodeHidden(node, productList);
+          return;
+        }
+        setHide(row.SKU, hideInput.checked);
+        callbacks.onTreeChanged(callbacks.getCurrentTree());
+        return;
+      }
+      const nextTree = setNodeHideAtPath(callbacks.getCurrentTree(), indexPath, hideInput.checked);
+      if (!nextTree) {
+        hideInput.checked = isTreeNodeHidden(node, products);
+        return;
+      }
+      saveFileTreeOverlay(nextTree);
+      callbacks.onTreeChanged(nextTree);
+    });
+    hideLabel.appendChild(hideInput);
+    hideLabel.appendChild(document.createTextNode(" Hide"));
+    row.appendChild(hideLabel);
+  }
+
   const actions = document.createElement("div");
   actions.className = "preview-picker-tree-actions";
 
@@ -912,6 +998,9 @@ function renderTreeNode(parent, node, indexPath, depth, callbacks) {
   row.appendChild(actions);
   if (isNew) {
     row.classList.add("preview-picker-tree-row--new");
+  }
+  if (isTreeNodeHidden(node, typeof callbacks.getProducts === "function" ? callbacks.getProducts() : [])) {
+    row.classList.add("preview-picker-tree-row--hidden");
   }
 
   if (canAcceptNestedChildren(node)) {
@@ -973,6 +1062,7 @@ function renderPreviewPicker(container, fileTree, options = {}) {
   let dragSourcePath = null;
   const callbacks = {
     getCurrentTree: () => options.getCurrentTree?.() || fileTree,
+    getProducts: () => (typeof options.getProducts === "function" ? options.getProducts() : []),
     getDragSourcePath: () => dragSourcePath,
     setDragSourcePath: (path) => {
       dragSourcePath = path;
@@ -1010,16 +1100,20 @@ async function initPreviewPicker(options = {}) {
   const filterSelect = document.getElementById(filterSelectId);
   const categorySelect = document.getElementById(categoryFilterSelectId);
   let lastPopulatedTree = null;
+  let lastProducts = products;
 
-  const applyFilterFromUi = () => {
+  const applyFilterFromUi = async () => {
+    const productData = await window.productData.fetchProductDataJson();
+    lastProducts = productData.products;
     const raw = filterSelect ? filterSelect.value : "all";
     const filter = parseDigitalFilterValue(raw === "all" ? null : raw);
-    const categoryData = window.productData.getCategoriesForFileTree(products, filter);
+    const categoryData = window.productData.getCategoriesForFileTree(lastProducts, filter);
     syncCategoryFilterOptions(categorySelect, categoryData, true);
     const categoryFilter = getActiveCategoryFilter();
     lastPopulatedTree = populateFileTree(applyFileTreeOverlay(baseFileTreeConfig), categoryData, categoryFilter);
     renderPreviewPicker(container, lastPopulatedTree, {
       getCurrentTree: () => lastPopulatedTree,
+      getProducts: () => lastProducts,
       onPendingPageCreated: applyFilterFromUi,
       onTreeChanged: () => {
         applyFilterFromUi();
@@ -1044,6 +1138,8 @@ window.displayFileTree = {
   renderPreviewPicker,
   getPendingNewPage,
   getExportableFileTree,
+  applyFileTreeOverlay,
+  isTreeNodeHidden,
   parsePreviewTarget: (search) => window.previewTarget.parsePreviewTarget(search),
   buildPreviewUrl: (treePath) =>
     window.previewTarget.buildPreviewUrl(treePath, getActiveDigitalFilterForPreviewLinks()),

@@ -139,8 +139,16 @@ async function runGenerateAnyPage(treePath, options = {}) {
       fetchText("./setBase.js"),
       window.productData.fetchProductDataJson(),
     ]);
+  let effectiveFileTree = fileTreeConfig;
+  let effectiveNavigation = navigationConfig;
+  if (typeof window.displayFileTree?.applyFileTreeOverlay === "function") {
+    effectiveFileTree = window.displayFileTree.applyFileTreeOverlay(fileTreeConfig);
+    if (typeof window.githubAuth?.syncNavigationFromFileTree === "function") {
+      effectiveNavigation = window.githubAuth.syncNavigationFromFileTree(effectiveFileTree, navigationConfig);
+    }
+  }
   const homePageHref = window.homePage?.getHomePageHref
-    ? window.homePage.getHomePageHref(fileTreeConfig)
+    ? window.homePage.getHomePageHref(effectiveFileTree)
     : null;
   const productsFull = Array.isArray(productData?.products) ? productData.products : [];
   const previewParams = window.previewTarget.parsePreviewTarget(window.location.search);
@@ -150,8 +158,10 @@ async function runGenerateAnyPage(treePath, options = {}) {
   const isNewPage = Object.prototype.hasOwnProperty.call(options, "isNew")
     ? options.isNew === true
     : previewParams?.isNew === true;
-  const productsForShop = window.productData.filterProductsByDigital(productsFull, digitalFilter);
-  const ctxBase = { shopData, navigationConfig, products: productsForShop, homePageHref };
+  const productsForShop = window.productData.filterVisibleProducts(
+    window.productData.filterProductsByDigital(productsFull, digitalFilter),
+  );
+  const ctxBase = { shopData, navigationConfig: effectiveNavigation, products: productsForShop, homePageHref };
 
   if (path === "cart") {
     const gen = window.generateCartBody?.buildCartBody;
@@ -161,7 +171,7 @@ async function runGenerateAnyPage(treePath, options = {}) {
     const bodyPayload = await gen({ ...ctxBase, products: productsFull });
     html = await mergeBodyIntoFullHtml(
       shopData,
-      navigationConfig,
+      effectiveNavigation,
       pageTemplate,
       setBaseSource,
       bodyPayload,
@@ -179,7 +189,7 @@ async function runGenerateAnyPage(treePath, options = {}) {
     const bodyPayload = await gen(ctxBase);
     html = await mergeBodyIntoFullHtml(
       shopData,
-      navigationConfig,
+      effectiveNavigation,
       pageTemplate,
       setBaseSource,
       bodyPayload,
@@ -207,9 +217,6 @@ async function runGenerateAnyPage(treePath, options = {}) {
     }
     const rowFull = findProduct(productsFull, segment);
     if (rowFull) {
-      if (!productsForShop.includes(rowFull)) {
-        throw new Error(`Product not found: shop/${segment}`);
-      }
       const gen = window.generateProductBody?.generateProductBody;
       if (typeof gen !== "function") {
         throw new Error("generateProductBody.js must be loaded before preview.");
@@ -221,7 +228,7 @@ async function runGenerateAnyPage(treePath, options = {}) {
       });
       html = await mergeBodyIntoFullHtml(
         shopData,
-        navigationConfig,
+        effectiveNavigation,
         pageTemplate,
         setBaseSource,
         bodyPayload,
@@ -238,7 +245,7 @@ async function runGenerateAnyPage(treePath, options = {}) {
     const bodyPayload = await gen({ ...ctxBase, categoryName });
     html = await mergeBodyIntoFullHtml(
       shopData,
-      navigationConfig,
+      effectiveNavigation,
       pageTemplate,
       setBaseSource,
       bodyPayload,
@@ -256,7 +263,7 @@ async function runGenerateAnyPage(treePath, options = {}) {
     const bodyPayload = await gen(ctxBase);
     html = await mergeBodyIntoFullHtml(
       shopData,
-      navigationConfig,
+      effectiveNavigation,
       pageTemplate,
       setBaseSource,
       bodyPayload,
@@ -295,7 +302,7 @@ async function runGenerateAnyPage(treePath, options = {}) {
       : await fromPath({ ...ctxBase, pagePath });
     html = await mergeBodyIntoFullHtml(
       shopData,
-      navigationConfig,
+      effectiveNavigation,
       pageTemplate,
       setBaseSource,
       bodyPayload,

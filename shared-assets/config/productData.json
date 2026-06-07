@@ -38,6 +38,7 @@
     "VIDEO1",
     "INSTRUCTION VIDEOS",
     "HIDE INSTRUCTIONS",
+    "HIDE",
     "VIDEO3"
   ],
   "products": [
@@ -79,7 +80,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": true
     },
     {
       "TITLE": "Mini Cryptex Puzzle Box Laser Cut Files, SVG DXF PDF, Spell and Spin learning toy",
@@ -119,7 +121,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Slide Picture Puzzle Box Kit Davinci's Vitruvian man",
@@ -159,7 +162,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Mouse Maze Puzzle Box, wooden mystery Box",
@@ -199,7 +203,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Mechanical Calculator, Math and Science Toy, Wooden Mechanism, Model Engineering Kit",
@@ -239,7 +244,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "https://www.youtube.com/watch?v=KqwQtG3sdUQ",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Woodchopper whirligig plans, laser cut files, scroll saw, svg dxf pdf",
@@ -279,7 +285,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Cam Box laser cutter plans svg dxf",
@@ -319,7 +326,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Hummingbird and Flower Automaton Laser Cut plans SVG DXF",
@@ -359,7 +367,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Magic Empty Box Laser Cutter Files SVG DXF",
@@ -399,7 +408,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": true
     },
     {
       "TITLE": "Magic Pencil Box Laser Cutter Plans SVG DXF PDF",
@@ -439,7 +449,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": true
     },
     {
       "TITLE": "Magic Drawer Box, Lasercut Files SVG DXF PDF, Wooden Production Box Illusion",
@@ -479,7 +490,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": true
     },
     {
       "TITLE": "Musical Marble Tree Scroll Saw or Laser Cutter Plans PDF - SVG - DXF",
@@ -519,7 +531,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Fisherman whirligig plans - SVG DXF PDF - laser cutting - scroll saw",
@@ -559,7 +572,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Dog and Cat Running Automata Laser Cutting plans svg dxf",
@@ -599,7 +613,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Tortoise  Automata Kit - Wooden mechanical keepsake box",
@@ -639,7 +654,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Coke Can Magic Trick Box: Self-Working Illusion, DIY or Assembled",
@@ -679,7 +695,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "https://www.youtube.com/watch?v=sXj3tAQBmlA",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": false
     },
     {
       "TITLE": "Plans for Wooden Hummingbird pole pet automata SVG DXF PDF",
@@ -719,7 +736,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Mechanical Calculator Laser Cut Files SVG, DXF, Math Toy, Wooden Mechanism",
@@ -759,7 +777,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Wind Powered Bird Whirligig Kit, Birch Plywood Fantail, Kinetic sculpture",
@@ -799,7 +818,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Hummingbird and Flower Automaton, Hand Cranked Mechanism",
@@ -839,7 +859,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Magic Drawer Illusion Box – Vanish or Appear Objects Trick",
@@ -879,7 +900,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "https://www.youtube.com/watch?v=eJtonuQIIr0",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": false
     },
     {
       "TITLE": "Wooden Hummingbird pole pet automata",
@@ -919,7 +941,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Dog Whirligig, Kinetic Wind Powered Garden Sculpture, DIY Kit or Fully Assembled",
@@ -959,7 +982,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Bird Whirligig Plans DXF SVG Laser cut or Scroll saw",
@@ -999,7 +1023,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Magic Frame Illusion-Appearing Image and words-customizable",
@@ -1039,7 +1064,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "https://youtu.be/vuHn7t345b4",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": false
     },
     {
       "TITLE": "Slide Picture Puzzle Box Plans SVG DXF PDF Davinci's Vitruvian man",
@@ -1079,7 +1105,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Illusionist Pendant Puzzle Box Laser Cut Files",
@@ -1119,7 +1146,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Dice Tunnel Magic Trick Laser Cut Illusion DIY Kit",
@@ -1159,7 +1187,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "https://youtu.be/pGDLD25tn5c",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": false
     },
     {
       "TITLE": "Bird Zoetrope Kit, 3D Laser Cut Wooden Puzzle, Animation Machine",
@@ -1199,7 +1228,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Bird 3D Zoetrope laser cutter plans - SVG DXF",
@@ -1239,7 +1269,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Dog and Cat Running Automata kit",
@@ -1279,7 +1310,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Writing automaton plans scroll saw/laser cutter - Lanky Doodler  Mechanical Model SVG,DXF,PDF",
@@ -1319,7 +1351,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "DIY Swinging Monkey Automata Kit - Fun Craft Project for Kids and Adults",
@@ -1359,7 +1392,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Mouse Maze Puzzle Box Plans- SVG DXF PDF- Laser cutting files - scroll saw",
@@ -1399,7 +1433,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Magic Frame-lasercut Files-Appearing Image and words-customizable-svg dxf pdf",
@@ -1439,7 +1474,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": true
     },
     {
       "TITLE": "Dice Tunnel Magic Trick Laser Cut Files for Download - SVG - DXF - PDF - Illusion",
@@ -1479,7 +1515,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": true
     },
     {
       "TITLE": "Illusionist Pendant Puzzle Box Laser Cut DIY Kit",
@@ -1519,7 +1556,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Key Through Coin Magic Trick: Laser Cut Plans (SVG, PDF, DXF)",
@@ -1559,7 +1597,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "https://youtu.be/R2I9NNy3Mcc",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": true
     },
     {
       "TITLE": "Magic Trick Pencil Box Kit: Wooden 3D Puzzle, STEM Toy",
@@ -1599,7 +1638,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": false
     },
     {
       "TITLE": "Whirligig Hardware Kit: Stainless Steel & Brass Parts",
@@ -1639,7 +1679,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Whale Automata Toy Kit: Mechanical Pet, DIY Build",
@@ -1679,7 +1720,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Gorilla Pulley Pet Automata Plans SVG DXF-Laser cut mechanical toy",
@@ -1719,7 +1761,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Magic Empty Box Illusion - DIY Magic Trick - Make anything appear and disappear",
@@ -1759,7 +1802,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": false
     },
     {
       "TITLE": "Newcomb's Paradox Magic Trick Laser Cut Files, SVG DXF PDF, Coin Illusion with Secret Mechanism, Mental Magic",
@@ -1799,7 +1843,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": true
     },
     {
       "TITLE": "Chicken And Egg Box Magic Trick laser cut files, svg dxf pdf, gozinta box",
@@ -1839,7 +1884,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": true
     },
     {
       "TITLE": "Mini Cryptex Puzzle Box – Word Lock Secret Drawer, Spelling Learning Toy",
@@ -1879,7 +1925,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Chicken And Egg Box Magic Trick, gozinta box, Impossible boxes, Each fits inside the other",
@@ -1919,7 +1966,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "https://youtu.be/20YbJhav17c",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": false
     },
     {
       "TITLE": "Woodchopper Whirligig Kit",
@@ -1959,7 +2007,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Fisherman whirligig  Kit, Wind Powered Kinetic Garden Sculpture",
@@ -1999,7 +2048,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Surfer Whirligig Kit",
@@ -2039,7 +2089,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Surfer Whirligig Plans - SVG - PDF - laser cutting - scroll saw",
@@ -2079,7 +2130,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Moving Head Illusion Robot Laser cut files svg dxf pdf",
@@ -2119,7 +2171,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": true
     },
     {
       "TITLE": "Fluttering Heart Automaton SVG DXF PDF laser cutter files",
@@ -2159,7 +2212,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Electric Origami Hummingbird Plans - Paper Automata template",
@@ -2199,7 +2253,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Chocolate Train Counting Squares: Educational Math Toy SVG DXF (Digital Download)",
@@ -2239,7 +2294,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "lankydoodler",
@@ -2279,7 +2335,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "https://youtu.be/3HoDbg39oxU?si=cZMEb9ZzB7UiP0Bd",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Swinging Monkey Automata Laser Cutting plans svg dxf",
@@ -2319,7 +2376,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Automata kit Bird Money Bank - Gear Box Pets",
@@ -2359,7 +2417,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Sword Through Finger Magic Trick, laser cut illusion puzzle, wooden DIY kit",
@@ -2399,7 +2458,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "https://www.youtube.com/watch?v=m7JEZrtqhQE",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": false
     },
     {
       "TITLE": "Climbing Gorilla Pulley Toy Kit: Pet Automata Mechanism",
@@ -2439,7 +2499,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Goldfish Automata Kit - Wooden Mechanical Fish",
@@ -2479,7 +2540,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Toddler Ride On Dog Toy Plans: Sweeping Car, DXF SVG PDF",
@@ -2519,7 +2581,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": true
     },
     {
       "TITLE": "Mini Arcade Driving Game: Wind-Up Music Box, Laser Cut Wood Kit",
@@ -2559,7 +2622,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "https://www.youtube.com/watch?v=spfs6L1vvI0",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Fluttering Heart Automata Kit - Kinetic mechanical model - Valentines Gift",
@@ -2599,7 +2663,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Wooden Ride On Car Street Sweeper, Wheely Dog for Toddlers, Pug Toy for Babies",
@@ -2639,7 +2704,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Musical Marble Tree Laser Cut Kit",
@@ -2679,7 +2745,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "",
-      "HIDE INSTRUCTIONS": false
+      "HIDE INSTRUCTIONS": false,
+      "HIDE": false
     },
     {
       "TITLE": "Newcomb's Paradox Magic Trick: Coin Illusion with Secret Mechanism, Mental Magic",
@@ -2719,7 +2786,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "https://youtu.be/GwpEC5nxEwE",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": false
     },
     {
       "TITLE": "Key Through Coin Magic Trick",
@@ -2759,7 +2827,8 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "INSTRUCTION VIDEOS": "https://youtu.be/R2I9NNy3Mcc",
-      "HIDE INSTRUCTIONS": true
+      "HIDE INSTRUCTIONS": true,
+      "HIDE": false
     }
   ]
 }
