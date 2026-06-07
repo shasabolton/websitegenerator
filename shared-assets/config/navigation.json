@@ -1,10 +1,6 @@
 {
   "items": [
     {
-      "label": "Cart",
-      "href": "cart"
-    },
-    {
       "label": "Shop",
       "href": "shop"
     },
