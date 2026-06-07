@@ -502,14 +502,14 @@
       }
 
       if (href === "shop") {
-        return {
+        const item = {
           label: String(node.label || existingShop?.label || "Shop").trim() || "Shop",
           href: "shop",
-          children:
-            Array.isArray(existingShop?.children) && existingShop.children.length
-              ? existingShop.children
-              : [{ label: "Shop home", href: "shop" }],
         };
+        if (Array.isArray(existingShop?.children) && existingShop.children.length) {
+          item.children = existingShop.children;
+        }
+        return item;
       }
 
       if (href === "blog") {

@@ -6,13 +6,7 @@
     },
     {
       "label": "Shop",
-      "href": "shop",
-      "children": [
-        {
-          "label": "Shop home",
-          "href": "shop"
-        }
-      ]
+      "href": "shop"
     },
     {
       "label": "Blog",

@@ -58,7 +58,6 @@ function buildNavigationHtml(navigationConfig, categoryNames = [], homePageHref 
           label: category,
           href: buildShopCategoryHref(category),
         }));
-        // Keep any configured Shop children first (e.g. "Shop home"), then append generated categories.
         children = [...children, ...autoChildren];
       }
       if (children.length === 0) {
@@ -72,16 +71,6 @@ function buildNavigationHtml(navigationConfig, categoryNames = [], homePageHref 
         })
         .join("");
 
-      if (isShopItem) {
-        return `
-          <li class="nav-item nav-item-has-children">
-            <details class="nav-dropdown">
-              <summary>${label}</summary>
-              <ul class="submenu">${childrenHtml}</ul>
-            </details>
-          </li>
-        `;
-      }
       return `
         <li class="nav-item nav-item-has-children">
           <a href="${href}">${label}</a>
