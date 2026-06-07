@@ -4,7 +4,7 @@
     {
       "label": "Cart",
       "href": "cart",
-      "hide": false
+      "hide": true
     },
     {
       "label": "Shop",
