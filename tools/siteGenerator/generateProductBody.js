@@ -272,7 +272,7 @@ async function generateProductBody(ctx) {
     fetchText("./templates/partials/imageCarousel.html"),
   ]);
 
-  const categoryName = String(row.CATEGORY || "").trim();
+  const categoryName = window.productData.resolveProductCategory(row);
   const categorySlugResolved = slugify(categoryName);
   const title = String(row.TITLE || "Untitled Product").trim() || "Untitled Product";
   const description = String(row.DESCRIPTION || "").trim();

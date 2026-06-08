@@ -993,6 +993,104 @@
     return result;
   }
 
+  /**
+   * Apply sparse field patches to productData.json in one commit.
+   * @param {Array<{ sku: string, column: string, value: unknown }>} patches
+   * @param {{ commitMessage?: string }} [options]
+   */
+  async function pushProductDataPatches(patches, options = {}) {
+    const list = Array.isArray(patches) ? patches : [];
+    const newProducts = Array.isArray(options.newProducts) ? options.newProducts : [];
+    if (!list.length && !newProducts.length) {
+      throw new Error("No product data changes selected.");
+    }
+
+    const fullName = getSelectedRepo();
+    const parsed = parseRepoFullName(fullName);
+    if (!parsed) {
+      throw new Error("Select a GitHub repository on the site generator picker page.");
+    }
+    const branch = getBranch();
+
+    const fileData = await readRepoJson(parsed.owner, parsed.repo, PRODUCT_DATA_PATH, branch);
+    const root = fileData.json && typeof fileData.json === "object" ? fileData.json : {};
+    const products = Array.isArray(root.products) ? root.products.slice() : [];
+    const columns = Array.isArray(root.columns) ? root.columns.slice() : [];
+    const columnSet = new Set(columns);
+
+    const touchedSkus = new Set();
+    for (const patch of list) {
+      const sku = String(patch?.sku ?? "").trim();
+      const column = String(patch?.column ?? "").trim();
+      if (!sku || !column || column === "SKU") {
+        continue;
+      }
+      const index = findProductRowIndexBySku(products, sku);
+      if (index < 0) {
+        throw new Error(`Product SKU ${sku} not found in remote productData.json`);
+      }
+      const existing =
+        products[index] && typeof products[index] === "object" ? { ...products[index] } : {};
+      existing[column] = patch.value;
+      products[index] = existing;
+      touchedSkus.add(sku);
+    }
+
+    for (const row of newProducts) {
+      const sku = String(row?.SKU ?? "").trim();
+      if (!sku) {
+        continue;
+      }
+      if (findProductRowIndexBySku(products, sku) >= 0) {
+        throw new Error(`Product SKU ${sku} already exists in productData.json`);
+      }
+      products.push(row);
+      touchedSkus.add(sku);
+      for (const key of Object.keys(row)) {
+        if (key && !columnSet.has(key)) {
+          columns.push(key);
+          columnSet.add(key);
+        }
+      }
+    }
+
+    const nextRoot = { ...root, products, columns };
+    if (nextRoot.version == null) {
+      nextRoot.version = 1;
+    }
+
+    const cellCount = list.filter((p) => String(p?.sku ?? "").trim() && String(p?.column ?? "").trim()).length;
+    const newCount = newProducts.filter((row) => String(row?.SKU ?? "").trim()).length;
+    const productCount = touchedSkus.size;
+    const messageParts = [];
+    if (cellCount) {
+      messageParts.push(`${cellCount} field update${cellCount === 1 ? "" : "s"}`);
+    }
+    if (newCount) {
+      messageParts.push(`${newCount} new product${newCount === 1 ? "" : "s"}`);
+    }
+    const commitMessage =
+      String(options.commitMessage || "").trim() ||
+      `Merge product CSV: ${messageParts.join(", ")} on ${productCount} product${productCount === 1 ? "" : "s"}`;
+
+    const result = await putFileContent(
+      parsed.owner,
+      parsed.repo,
+      PRODUCT_DATA_PATH,
+      commitMessage,
+      `${JSON.stringify(nextRoot, null, 2)}\n`,
+      branch,
+      fileData.meta?.sha || null,
+    );
+
+    if (typeof window.productData?.clearProductHideOverlayForSku === "function") {
+      for (const sku of touchedSkus) {
+        window.productData.clearProductHideOverlayForSku(sku);
+      }
+    }
+    return result;
+  }
+
   function assertRedirectUriAllowed(callback) {
     let url;
     try {
@@ -1457,6 +1555,7 @@ ${loginLine}
     pushFileTree,
     syncNavigationFromFileTree,
     pushProductRow,
+    pushProductDataPatches,
     pagePathToContentRepoPath,
     redirectUri,
     resolveHubIndexUrl,

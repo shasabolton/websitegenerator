@@ -90,9 +90,7 @@ async function generateCategoryBody(ctx) {
     seoContext: {
       metaDescription,
       categoryName: target.name,
-      categoryProductRows: products.filter(
-        (row) => String(row.CATEGORY || "").trim().toLowerCase() === nameFilter,
-      ),
+      categoryProductRows: products.filter((row) => window.productData.rowMatchesCategory(row, target.name)),
       catalogProducts: products,
     },
   };

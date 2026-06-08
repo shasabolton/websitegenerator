@@ -17,6 +17,31 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "");
 }
 
+const DEFAULT_PRODUCT_CATEGORY = "Other";
+
+function resolveProductCategory(row) {
+  const name = String(row?.CATEGORY || "").trim();
+  return name || DEFAULT_PRODUCT_CATEGORY;
+}
+
+function rowMatchesCategory(row, categoryName) {
+  return resolveProductCategory(row).toLowerCase() === String(categoryName || "").trim().toLowerCase();
+}
+
+function sortCategoriesWithOtherLast(entries, nameKey) {
+  return entries.sort((a, b) => {
+    const aName = String(a[nameKey] || "").trim();
+    const bName = String(b[nameKey] || "").trim();
+    if (aName === DEFAULT_PRODUCT_CATEGORY) {
+      return 1;
+    }
+    if (bName === DEFAULT_PRODUCT_CATEGORY) {
+      return -1;
+    }
+    return aName.localeCompare(bName);
+  });
+}
+
 const PRODUCT_HIDE_OVERLAY_KEY = "siteGenerator.productHideOverlay";
 
 function readProductHideOverlay() {
@@ -110,10 +135,7 @@ function getProductsByCategory(products) {
   const categories = new Map();
 
   for (const row of list) {
-    const category = String(row.CATEGORY || "").trim();
-    if (!category) {
-      continue;
-    }
+    const category = resolveProductCategory(row);
     const key = category.toLowerCase();
     if (!categories.has(key)) {
       categories.set(key, {
@@ -127,7 +149,7 @@ function getProductsByCategory(products) {
     categories.get(key).products.push({ title, image });
   }
 
-  return Array.from(categories.values());
+  return sortCategoriesWithOtherLast(Array.from(categories.values()), "name");
 }
 
 /**
@@ -416,10 +438,7 @@ function getCategoriesForFileTree(products, digitalFilter) {
   const categories = new Map();
 
   for (const row of rows) {
-    const categoryName = String(row.CATEGORY || "").trim();
-    if (!categoryName) {
-      continue;
-    }
+    const categoryName = resolveProductCategory(row);
     const key = categoryName.toLowerCase();
     if (!categories.has(key)) {
       categories.set(key, {
@@ -439,7 +458,7 @@ function getCategoriesForFileTree(products, digitalFilter) {
     }
   }
 
-  return Array.from(categories.values());
+  return sortCategoriesWithOtherLast(Array.from(categories.values()), "label");
 }
 
   window.productData = {
@@ -460,5 +479,8 @@ function getCategoriesForFileTree(products, digitalFilter) {
     unitPriceFromRowAndChoices,
     applyCatalogRowToProductPricingBoot,
     repriceCartItemsInPlace,
+    DEFAULT_PRODUCT_CATEGORY,
+    resolveProductCategory,
+    rowMatchesCategory,
   };
 })();

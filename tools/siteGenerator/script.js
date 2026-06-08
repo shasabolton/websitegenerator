@@ -131,4 +131,8 @@ window.addEventListener("load", () => {
       }
     });
   }
+
+  if (window.productDataMerge?.init) {
+    window.productDataMerge.init();
+  }
 });

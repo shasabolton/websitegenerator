@@ -424,10 +424,21 @@
       }
     </style>
     <link rel="stylesheet" href="./githubAuth.css" />
+    <link rel="stylesheet" href="./productDataMerge.css" />
   </head>
   <body>
     <main>
       <div id="github-auth-root" class="github-auth-panel" aria-live="polite"></div>
+      <div id="product-merge-root">
+        <section class="preview-panel product-merge-entry" aria-labelledby="product-merge-heading">
+          <h2 id="product-merge-heading">Product data</h2>
+          <p>
+            Upload an Etsy or product CSV export to review differences against
+            <code>shared-assets/config/productData.json</code>, choose which fields to update, and push to GitHub.
+          </p>
+          <button type="button" id="product-merge-start" class="product-merge-start-btn">Import product CSV…</button>
+        </section>
+      </div>
       <section class="preview-panel" aria-labelledby="preview-heading">
         <h2 id="preview-heading">Preview generated pages</h2>
         <p>
@@ -459,6 +470,45 @@
         <div id="preview-picker-root" aria-live="polite"></div>
       </section>
     </main>
+    <div id="product-merge-overlay" class="product-merge-overlay" hidden aria-labelledby="product-merge-dialog-title" role="dialog">
+      <div class="product-merge-dialog">
+        <div class="product-merge-header">
+          <h2 id="product-merge-dialog-title">Merge product CSV</h2>
+          <button type="button" class="product-merge-close" data-merge-close aria-label="Close">Close</button>
+        </div>
+        <p class="product-merge-error" data-merge-error hidden></p>
+        <div class="product-merge-upload-zone">
+          <p>Choose a CSV file with the same columns as your product export. Listings are matched by <strong>SKU</strong>.</p>
+          <div class="product-merge-upload-row">
+            <input type="file" class="product-merge-file-input" data-merge-file accept=".csv,text/csv" />
+          </div>
+        </div>
+        <div class="product-merge-summary" data-merge-summary hidden></div>
+        <div class="product-merge-toolbar">
+          <div class="product-merge-tabs" role="tablist" aria-label="Review mode">
+            <button type="button" class="product-merge-tab product-merge-tab--active" data-merge-tab="property" role="tab">By property</button>
+            <button type="button" class="product-merge-tab" data-merge-tab="product" role="tab">By product</button>
+            <button type="button" class="product-merge-tab" data-merge-tab="spreadsheet" role="tab">Spreadsheet</button>
+          </div>
+          <span class="product-merge-toolbar-spacer"></span>
+          <label><input type="checkbox" data-merge-only-csv-columns checked /> Only columns in CSV</label>
+          <label><input type="checkbox" data-merge-hide-images /> Hide image columns</label>
+          <button type="button" class="product-merge-btn" data-merge-select-all>Select all visible</button>
+          <button type="button" class="product-merge-btn" data-merge-select-none>Clear selection</button>
+        </div>
+        <div class="product-merge-body" data-merge-body>
+          <p class="product-merge-empty">Upload a CSV file to compare against the current productData.json.</p>
+        </div>
+        <div class="product-merge-footer">
+          <span class="product-merge-footer-status" data-merge-footer-status>Select changes to merge into productData.json</span>
+          <button type="button" class="product-merge-btn" data-merge-download-preview disabled>Download preview JSON</button>
+          <button type="button" class="product-merge-btn product-merge-btn-primary" data-merge-commit disabled>Merge product data</button>
+        </div>
+      </div>
+    </div>
+    <div class="product-merge-detail-overlay" data-merge-detail-overlay hidden>
+      <div class="product-merge-detail-dialog" data-merge-detail-content role="document"></div>
+    </div>
     <script src="./githubAuth.config.js"></script>
     <script src="./githubAuth.js"></script>
     <script src="../editData/productData.js"></script>
@@ -466,6 +516,7 @@
     <script src="./previewTarget.js"></script>
     <script src="./vendor/jszip.min.js"></script>
     <script src="./displayFileTree.js"></script>
+    <script src="./productDataMerge.js"></script>
     <script src="./script.js"></script>
   </body>
   </html>
