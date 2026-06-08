@@ -24,6 +24,21 @@ function resolveProductCategory(row) {
   return name || DEFAULT_PRODUCT_CATEGORY;
 }
 
+/**
+ * Website-facing product name: SHORT_TITLE when set, otherwise TITLE.
+ * @param {object | null | undefined} row
+ * @param {string} [fallback]
+ * @returns {string}
+ */
+function resolveProductDisplayTitle(row, fallback = "Untitled Product") {
+  const shortTitle = String(row?.SHORT_TITLE ?? "").trim();
+  if (shortTitle) {
+    return shortTitle;
+  }
+  const title = String(row?.TITLE ?? "").trim();
+  return title || fallback;
+}
+
 function rowMatchesCategory(row, categoryName) {
   return resolveProductCategory(row).toLowerCase() === String(categoryName || "").trim().toLowerCase();
 }
@@ -144,7 +159,7 @@ function getProductsByCategory(products) {
         products: [],
       });
     }
-    const title = String(row.TITLE || "Untitled Product").trim() || "Untitled Product";
+    const title = resolveProductDisplayTitle(row);
     const image = String(row.IMAGE1 || "").trim();
     categories.get(key).products.push({ title, image });
   }
@@ -163,7 +178,7 @@ function assignProductSlugsGlobally(products) {
   const slugByRow = new Map();
   const taken = new Set();
   for (const row of list) {
-    const title = String(row.TITLE || "").trim() || "product";
+    const title = resolveProductDisplayTitle(row, "product");
     let s = slugify(title) || "product";
     if (!taken.has(s)) {
       taken.add(s);
@@ -196,7 +211,11 @@ function assignProductSlugsGlobally(products) {
  * @param {object[]} products
  */
 function getProductSlugForRow(row, products) {
-  return assignProductSlugsGlobally(products).get(row) || slugify(String(row.TITLE || "").trim()) || "product";
+  return (
+    assignProductSlugsGlobally(products).get(row) ||
+    slugify(resolveProductDisplayTitle(row, "")) ||
+    "product"
+  );
 }
 
 /**
@@ -448,7 +467,7 @@ function getCategoriesForFileTree(products, digitalFilter) {
         products: [],
       });
     }
-    const productTitle = String(row.TITLE || "").trim();
+    const productTitle = resolveProductDisplayTitle(row, "");
     const segment = slugByRow.get(row);
     if (productTitle && segment) {
       categories.get(key).products.push({
@@ -481,6 +500,7 @@ function getCategoriesForFileTree(products, digitalFilter) {
     repriceCartItemsInPlace,
     DEFAULT_PRODUCT_CATEGORY,
     resolveProductCategory,
+    resolveProductDisplayTitle,
     rowMatchesCategory,
   };
 })();

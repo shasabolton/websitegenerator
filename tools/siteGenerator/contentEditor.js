@@ -762,8 +762,17 @@ function searchProductsByTitle(query, products) {
   if (!q) {
     return [];
   }
+  const resolveTitle = window.productData?.resolveProductDisplayTitle;
   return list
-    .filter((row) => String(row?.TITLE || "").toLowerCase().includes(q))
+    .filter((row) => {
+      const displayTitle =
+        typeof resolveTitle === "function"
+          ? resolveTitle(row, "")
+          : String(row?.TITLE || "").trim();
+      const etsyTitle = String(row?.TITLE || "").trim();
+      const haystack = `${displayTitle} ${etsyTitle}`.toLowerCase();
+      return haystack.includes(q);
+    })
     .slice(0, 24);
 }
 
@@ -835,7 +844,11 @@ function bindProductMediaPicker({ wrap, field, form, modeSelect, urlInput, picke
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "content-edit-product-list-btn";
-      btn.textContent = String(row.TITLE || "Untitled").trim() || "Untitled";
+      const resolveTitle = window.productData?.resolveProductDisplayTitle;
+      btn.textContent =
+        typeof resolveTitle === "function"
+          ? resolveTitle(row, "Untitled")
+          : String(row.TITLE || "Untitled").trim() || "Untitled";
       btn.addEventListener("click", () => {
         resultsEl.hidden = true;
         renderThumbs(row);
@@ -847,7 +860,11 @@ function bindProductMediaPicker({ wrap, field, form, modeSelect, urlInput, picke
   }
 
   function renderThumbs(row) {
-    const titleText = String(row.TITLE || "Untitled").trim() || "Untitled";
+    const resolveTitle = window.productData?.resolveProductDisplayTitle;
+    const titleText =
+      typeof resolveTitle === "function"
+        ? resolveTitle(row, "Untitled")
+        : String(row.TITLE || "Untitled").trim() || "Untitled";
     const items = buildProductMediaThumbnails(row, mediaKind);
     thumbsEl.hidden = false;
     thumbsEl.replaceChildren();

@@ -161,6 +161,12 @@ function buildProductSettingsHtml(row, pagePath) {
     <div class="content-edit-field content-edit-field--wide">
       <label for="product-edit-title">Title</label>
       <input id="product-edit-title" type="text" name="TITLE" value="${escapeAttr(String(row.TITLE || ""))}" />
+      <p class="content-edit-field-hint">Etsy listing title (imported from CSV).</p>
+    </div>
+    <div class="content-edit-field content-edit-field--wide">
+      <label for="product-edit-short-title">Short title</label>
+      <input id="product-edit-short-title" type="text" name="SHORT_TITLE" value="${escapeAttr(String(row.SHORT_TITLE || ""))}" />
+      <p class="content-edit-field-hint">Used on the website, navigation, and URLs when set. Falls back to title when empty.</p>
     </div>
     <div class="content-edit-field content-edit-field--wide">
       <label for="product-edit-description">Description</label>
@@ -293,6 +299,7 @@ function collectProductRowFromForm(form) {
   const get = (name) => String(form.querySelector(`[name="${name}"]`)?.value ?? "").trim();
 
   base.TITLE = get("TITLE");
+  base.SHORT_TITLE = get("SHORT_TITLE");
   base.DESCRIPTION = get("DESCRIPTION");
   base.PRICE = get("PRICE");
   base.CURRENCY_CODE = get("CURRENCY_CODE") || "AUD";
@@ -363,7 +370,11 @@ async function mountProductEditPage(pagePath, row, headerFooter, shopData) {
   ensureStylesheet(siteCssPath);
   ensureStylesheet(`${EDITOR_ROOT}/contentEditor.css`, { cacheBust: true });
 
-  const title = String(row.TITLE || "Product").trim() || "Product";
+  const resolveTitle = window.productData?.resolveProductDisplayTitle;
+  const title =
+    typeof resolveTitle === "function"
+      ? resolveTitle(row, "Product")
+      : String(row.TITLE || "Product").trim() || "Product";
   const shopName = escapeHtml(shopData?.shopName || "Site");
   document.title = `${shopName} - Edit ${title}`;
   document.body.className = "content-edit-mode product-edit-mode";

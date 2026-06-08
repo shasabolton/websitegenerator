@@ -163,7 +163,11 @@
     if (!urls.length) {
       return;
     }
-    const title = String(row.TITLE || "Product").trim() || "Product";
+    const resolveTitle = window.productData?.resolveProductDisplayTitle;
+    const title =
+      typeof resolveTitle === "function"
+        ? resolveTitle(row, "Product")
+        : String(row.TITLE || "Product").trim() || "Product";
     const inner = buildInstructionVideosInnerHtml(title, urls);
     if (!inner) {
       return;

@@ -274,7 +274,7 @@ async function generateProductBody(ctx) {
 
   const categoryName = window.productData.resolveProductCategory(row);
   const categorySlugResolved = slugify(categoryName);
-  const title = String(row.TITLE || "Untitled Product").trim() || "Untitled Product";
+  const title = window.productData.resolveProductDisplayTitle(row);
   const description = String(row.DESCRIPTION || "").trim();
   const titleEsc = escapeHtml(title);
   const images = window.productData.collectProductImageUrls(row);

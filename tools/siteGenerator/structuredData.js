@@ -271,7 +271,11 @@ function buildProductNode(row, catalog, shopData, siteOrigin, homePageHref, cate
   if (typeof getSlug !== "function" || typeof collectImages !== "function") {
     return null;
   }
-  const title = String(row.TITLE || "Untitled Product").trim() || "Untitled Product";
+  const resolveTitle = window.productData?.resolveProductDisplayTitle;
+  const title =
+    typeof resolveTitle === "function"
+      ? resolveTitle(row)
+      : String(row.TITLE || "Untitled Product").trim() || "Untitled Product";
   const slug = getSlug(row, catalog);
   const treePath = `shop/${slug}`;
   const url = resolveAbsoluteUrl(siteOrigin, treePath, homePageHref);
@@ -319,7 +323,11 @@ function buildItemListFromProducts(products, catalog, siteOrigin, homePageHref) 
   const elements = products
     .map((row, index) => {
       const slug = getSlug(row, catalog);
-      const name = String(row.TITLE || "").trim();
+      const resolveTitle = window.productData?.resolveProductDisplayTitle;
+      const name =
+        typeof resolveTitle === "function"
+          ? resolveTitle(row, "")
+          : String(row.TITLE || "").trim();
       if (!slug || !name) {
         return null;
       }
@@ -522,7 +530,11 @@ function buildForPage(input) {
       const row = seoContext.productRow;
       const categoryName = String(seoContext.categoryName || row.CATEGORY || "").trim();
       const categorySlug = slugify(categoryName);
-      const title = String(row.TITLE || "Product").trim();
+      const resolveTitle = window.productData?.resolveProductDisplayTitle;
+      const title =
+        typeof resolveTitle === "function"
+          ? resolveTitle(row, "Product")
+          : String(row.TITLE || "Product").trim();
       const crumbs = prependHomeCrumbIfNeeded(
         [
           { name: "Shop", path: "shop" },

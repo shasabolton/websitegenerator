@@ -102,7 +102,10 @@ function skuToLineItem(sku, products) {
   /** @type {CartLineItem} */
   const line = {
     sku: skuKey,
-    title: String(row.TITLE || "").trim() || "Item",
+    title:
+      (typeof window.productData?.resolveProductDisplayTitle === "function"
+        ? window.productData.resolveProductDisplayTitle(row, "Item")
+        : String(row.TITLE || "").trim()) || "Item",
     quantity: 1,
     unitPrice,
     unitWeightKg,
