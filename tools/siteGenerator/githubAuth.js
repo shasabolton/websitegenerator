@@ -513,23 +513,9 @@
       }
 
       if (href === "blog") {
-        const children = (Array.isArray(node.children) ? node.children : [])
-          .filter((child) => !isTreeNodeHidden(child))
-          .map((child) => {
-            const childHref = normalizePagePath(child?.href);
-            if (!childHref || !isBlogPagePath(childHref)) {
-              return null;
-            }
-            return {
-              label: String(child.label || childHref).trim() || childHref,
-              href: childHref,
-            };
-          })
-          .filter(Boolean);
         return {
           label: String(node.label || "Blog").trim() || "Blog",
           href: "blog",
-          ...(children.length ? { children } : {}),
         };
       }
 
