@@ -973,7 +973,16 @@
     const existing = products[index] && typeof products[index] === "object" ? products[index] : {};
     products[index] = { ...existing, ...mutableRow, SKU: existing.SKU ?? sku };
 
-    const nextRoot = { ...root, products };
+    const columns = Array.isArray(root.columns) ? root.columns.slice() : [];
+    const columnSet = new Set(columns);
+    for (const key of ["SLUG", "REDIRECTS"]) {
+      if (!columnSet.has(key)) {
+        columns.push(key);
+        columnSet.add(key);
+      }
+    }
+
+    const nextRoot = { ...root, products, columns };
     if (nextRoot.version == null) {
       nextRoot.version = 1;
     }

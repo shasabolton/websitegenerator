@@ -17,6 +17,50 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "");
 }
 
+function normalizeRedirectPath(raw) {
+  return String(raw || "")
+    .trim()
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "")
+    .toLowerCase();
+}
+
+/**
+ * @param {unknown} value - JSON array or comma/newline-separated string
+ * @returns {string[]}
+ */
+function parseRedirectsList(value) {
+  if (Array.isArray(value)) {
+    return value.map((entry) => normalizeRedirectPath(entry)).filter(Boolean);
+  }
+  return String(value ?? "")
+    .split(/[,\n]+/)
+    .map((entry) => normalizeRedirectPath(entry))
+    .filter(Boolean);
+}
+
+/**
+ * @param {string} segment - `shop/<segment>` slug part
+ * @param {string} redirectPath - stored redirect (segment or full path)
+ */
+function redirectPathMatchesProductSlug(segment, redirectPath) {
+  const key = normalizeRedirectPath(segment);
+  const redirect = normalizeRedirectPath(redirectPath);
+  if (!key || !redirect) {
+    return false;
+  }
+  if (redirect === key) {
+    return true;
+  }
+  if (redirect === `shop/${key}`) {
+    return true;
+  }
+  if (redirect.startsWith("shop/") && redirect.slice("shop/".length) === key) {
+    return true;
+  }
+  return false;
+}
+
 const DEFAULT_PRODUCT_CATEGORY = "Other";
 
 function resolveProductCategory(row) {
@@ -178,8 +222,9 @@ function assignProductSlugsGlobally(products) {
   const slugByRow = new Map();
   const taken = new Set();
   for (const row of list) {
+    const explicit = slugify(String(row?.SLUG ?? "").trim());
     const title = resolveProductDisplayTitle(row, "product");
-    let s = slugify(title) || "product";
+    let s = explicit || slugify(title) || "product";
     if (!taken.has(s)) {
       taken.add(s);
       slugByRow.set(row, s);
@@ -225,14 +270,18 @@ function getProductSlugForRow(row, products) {
  */
 function findProductBySlug(products, productSlug) {
   const list = Array.isArray(products) ? products : [];
-  const prodKey = String(productSlug || "").trim().toLowerCase();
+  const prodKey = normalizeRedirectPath(productSlug);
   if (!prodKey) {
     return null;
   }
   const slugByRow = assignProductSlugsGlobally(list);
   for (const row of list) {
     const seg = slugByRow.get(row);
-    if (seg && String(seg).toLowerCase() === prodKey) {
+    if (seg && normalizeRedirectPath(seg) === prodKey) {
+      return row;
+    }
+    const redirects = parseRedirectsList(row?.REDIRECTS);
+    if (redirects.some((redirect) => redirectPathMatchesProductSlug(prodKey, redirect))) {
       return row;
     }
   }
@@ -492,6 +541,10 @@ function getCategoriesForFileTree(products, digitalFilter) {
     assignProductSlugsGlobally,
     getProductSlugForRow,
     findProductBySlug,
+    parseRedirectsList,
+    normalizeRedirectPath,
+    redirectPathMatchesProductSlug,
+    slugify,
     collectProductImageUrls,
     variationAxesFromRow,
     choicePairsFromLineId,

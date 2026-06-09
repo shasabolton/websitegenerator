@@ -192,6 +192,7 @@ function buildPageSettingsEditHtml(pageData, pagePath) {
   const pageType = String(page.pageType || "page").trim().toLowerCase();
   const isBlog = pageType === "blog";
   const tagsStr = Array.isArray(meta.tags) ? meta.tags.join(", ") : "";
+  const redirectsStr = Array.isArray(meta.redirects) ? meta.redirects.join(", ") : "";
   const blogOnlyHidden = isBlog ? "" : ' hidden=""';
 
   return `<fieldset class="content-edit-page-settings" data-content-edit-page-settings>
@@ -220,6 +221,11 @@ function buildPageSettingsEditHtml(pageData, pagePath) {
     <div class="content-edit-field content-edit-field--wide">
       <label for="content-edit-meta-description">Meta description</label>
       <textarea id="content-edit-meta-description" rows="2" data-page-field="meta.description">${escapeHtml(String(meta.description || ""))}</textarea>
+    </div>
+    <div class="content-edit-field content-edit-field--wide">
+      <label for="content-edit-meta-redirects">Redirects</label>
+      <input id="content-edit-meta-redirects" type="text" data-page-field="meta.redirects" value="${escapeAttr(redirectsStr)}" placeholder="blog/old-post, about-v1" />
+      <p class="content-edit-field-hint">Old paths that should redirect to this page. Comma-separated site paths (no leading slash).</p>
     </div>
     <div class="content-edit-field content-edit-blog-only" data-blog-field${blogOnlyHidden}>
       <label for="content-edit-meta-date">Date</label>
@@ -259,6 +265,21 @@ function syncPageDataFromSettingsForm() {
   }
   page.meta.title = String(root.querySelector('[data-page-field="meta.title"]')?.value || "").trim();
   page.meta.description = String(root.querySelector('[data-page-field="meta.description"]')?.value || "").trim();
+  const parseRedirects = window.productData?.parseRedirectsList;
+  const normalizeRedirect = window.productData?.normalizeRedirectPath;
+  const redirectsRaw = String(root.querySelector('[data-page-field="meta.redirects"]')?.value || "");
+  const redirects =
+    typeof parseRedirects === "function"
+      ? parseRedirects(redirectsRaw)
+      : redirectsRaw
+          .split(",")
+          .map((entry) => (typeof normalizeRedirect === "function" ? normalizeRedirect(entry) : entry.trim()))
+          .filter(Boolean);
+  if (redirects.length) {
+    page.meta.redirects = redirects;
+  } else {
+    delete page.meta.redirects;
+  }
 
   if (page.pageType === "blog") {
     page.meta.date = String(root.querySelector('[data-page-field="meta.date"]')?.value || "").trim();

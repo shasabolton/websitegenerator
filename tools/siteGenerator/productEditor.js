@@ -166,7 +166,12 @@ function buildProductSettingsHtml(row, pagePath) {
     <div class="content-edit-field content-edit-field--wide">
       <label for="product-edit-short-title">Short title</label>
       <input id="product-edit-short-title" type="text" name="SHORT_TITLE" value="${escapeAttr(String(row.SHORT_TITLE || ""))}" />
-      <p class="content-edit-field-hint">Used on the website, navigation, and URLs when set. Falls back to title when empty.</p>
+      <p class="content-edit-field-hint">Used on the website and navigation when set. Falls back to title when empty.</p>
+    </div>
+    <div class="content-edit-field content-edit-field--wide">
+      <label for="product-edit-slug">Slug</label>
+      <input id="product-edit-slug" type="text" name="SLUG" value="${escapeAttr(String(row.SLUG || ""))}" autocomplete="off" />
+      <p class="content-edit-field-hint">Stable URL segment for <code>shop/&lt;slug&gt;</code>. Leave blank to derive from short title or title.</p>
     </div>
     <div class="content-edit-field content-edit-field--wide">
       <label for="product-edit-description">Description</label>
@@ -218,6 +223,13 @@ function buildProductSettingsHtml(row, pagePath) {
       <label for="product-edit-tags">Tags</label>
       <input id="product-edit-tags" type="text" name="TAGS" value="${escapeAttr(String(row.TAGS || ""))}" />
       <p class="content-edit-field-hint">Comma-separated</p>
+    </div>
+    <div class="content-edit-field content-edit-field--wide">
+      <label for="product-edit-redirects">Redirects</label>
+      <input id="product-edit-redirects" type="text" name="REDIRECTS" value="${escapeAttr(
+        Array.isArray(row.REDIRECTS) ? row.REDIRECTS.join(", ") : String(row.REDIRECTS || ""),
+      )}" placeholder="shop/old-name, old-name" />
+      <p class="content-edit-field-hint">Old paths that should redirect to this product. Comma-separated (e.g. <code>shop/calculator</code> or <code>calculator</code>).</p>
     </div>
     <div class="content-edit-field content-edit-field--wide">
       <label for="product-edit-legacy-url">Legacy shop URL</label>
@@ -298,8 +310,16 @@ function collectProductRowFromForm(form) {
   const base = JSON.parse(JSON.stringify(state.productRow));
   const get = (name) => String(form.querySelector(`[name="${name}"]`)?.value ?? "").trim();
 
+  const slugify = window.productData?.slugify;
+  const parseRedirects = window.productData?.parseRedirectsList;
+
   base.TITLE = get("TITLE");
   base.SHORT_TITLE = get("SHORT_TITLE");
+  const slugRaw = get("SLUG");
+  base.SLUG = typeof slugify === "function" ? slugify(slugRaw) : slugRaw;
+  const redirectsRaw = get("REDIRECTS");
+  base.REDIRECTS =
+    typeof parseRedirects === "function" ? parseRedirects(redirectsRaw) : redirectsRaw ? [redirectsRaw] : [];
   base.DESCRIPTION = get("DESCRIPTION");
   base.PRICE = get("PRICE");
   base.CURRENCY_CODE = get("CURRENCY_CODE") || "AUD";
