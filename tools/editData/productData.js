@@ -278,7 +278,8 @@ function getProductsByCategory(products) {
     }
     const title = resolveProductDisplayTitle(row);
     const image = String(row.IMAGE1 || "").trim();
-    categories.get(key).products.push({ title, image });
+    const slug = getProductSlugForRow(row, list);
+    categories.get(key).products.push({ title, image, href: `shop/${slug}` });
   }
 
   return sortCategoriesWithOtherLast(Array.from(categories.values()), "name");

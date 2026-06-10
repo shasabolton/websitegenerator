@@ -21,7 +21,7 @@ function buildProductThumbsHtml(productThumbTemplate, products) {
   return products
     .map((product) =>
       applyTemplate(productThumbTemplate, {
-        PRODUCT_IMAGE: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
+        PRODUCT_HREF: escapeHtml(product.href || "shop"),
         PRODUCT_IMAGE_URL: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
         PRODUCT_TITLE: escapeHtml(product.title),
       })
