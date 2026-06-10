@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Default base for custom domain / local server; sync script below may set /repo/ on GitHub Pages. -->
+    <base href="/" data-site-base="true" />
+    <script>
+(function () {
+  const GITHUB_PAGES_REPO = "websitegenerator";
+  const hostname = window.location.hostname;
+  const onGithubPages = hostname === "github.io" || hostname.endsWith(".github.io");
+
+  let baseHref = "/";
+  if (onGithubPages) {
+    const segments = window.location.pathname.split("/").filter(Boolean);
+    if (segments.length > 0) {
+      const first = segments[0];
+      baseHref =
+        first === GITHUB_PAGES_REPO ? `/${GITHUB_PAGES_REPO}/` : `/${first}/`;
+    }
+  }
+
+  let baseEl = document.querySelector("base[data-site-base]");
+  if (!baseEl) {
+    baseEl = document.createElement("base");
+    baseEl.setAttribute("data-site-base", "true");
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport && viewport.parentNode) {
+      viewport.insertAdjacentElement("afterend", baseEl);
+    } else {
+      document.head.insertBefore(baseEl, document.head.firstChild);
+    }
+  }
+  baseEl.href = baseHref;
+})();
+
+</script>
+    <title>Contraption Cart - Shop</title>
+    <meta name="description" content="Mechanical Wooden Kits, Automata, Magic Tricks &amp;amp; Puzzle Boxes Original designs by Shasa Bolton Discover mechanical wooden automata, puzzle boxes, and DIY k…" />
+    <link rel="canonical" href="https://www.contraptioncart.com/" />
+    <meta property="og:title" content="Contraption Cart - Shop" />
+    <meta name="twitter:title" content="Contraption Cart - Shop" />
+    <meta property="og:description" content="Mechanical Wooden Kits, Automata, Magic Tricks &amp;amp; Puzzle Boxes Original designs by Shasa Bolton Discover mechanical wooden automata, puzzle boxes, and DIY k…" />
+    <meta name="twitter:description" content="Mechanical Wooden Kits, Automata, Magic Tricks &amp;amp; Puzzle Boxes Original designs by Shasa Bolton Discover mechanical wooden automata, puzzle boxes, and DIY k…" />
+    <meta property="og:url" content="https://www.contraptioncart.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" />
+    <meta name="twitter:image" content="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:site_name" content="Contraption Cart" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.contraptioncart.com/#organization","name":"Contraption Cart","url":"https://www.contraptioncart.com/","logo":"https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg","email":"shasabolton@gmail.com","sameAs":["https://www.instagram.com/contraptioncart","https://www.facebook.com/contraptioncart/","https://contraptioncart.etsy.com"]},{"@type":"WebSite","@id":"https://www.contraptioncart.com/#website","name":"Contraption Cart","url":"https://www.contraptioncart.com/","publisher":{"@id":"https://www.contraptioncart.com/#organization"},"potentialAction":{"@type":"SearchAction","target":"https://www.google.com/search?q={search_term_string}+site:www.contraptioncart.com","query-input":"required name=search_term_string"}},{"@type":"CollectionPage","@id":"https://www.contraptioncart.com/#webpage","url":"https://www.contraptioncart.com/","name":"Shop","description":"Mechanical Wooden Kits, Automata, Magic Tricks &amp; Puzzle Boxes Original designs by Shasa Bolton Discover mechanical wooden automata, puzzle boxes, and DIY k…","isPartOf":{"@id":"https://www.contraptioncart.com/#website"},"publisher":{"@id":"https://www.contraptioncart.com/#organization"},"about":{"@id":"https://www.contraptioncart.com/#organization"}},{"@type":"Store","@id":"https://www.contraptioncart.com/#store","name":"Contraption Cart","url":"https://www.contraptioncart.com/","image":"https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg","parentOrganization":{"@id":"https://www.contraptioncart.com/#organization"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Shop","item":"https://www.contraptioncart.com/"}]},{"@type":"ItemList","itemListElement":[{"@type":"ListItem","position":1,"name":"Slide Picture Puzzle Box","url":"https://www.contraptioncart.com/shop/slide-picture-puzzle-box"},{"@type":"ListItem","position":2,"name":"Mouse Maze Puzzle Box","url":"https://www.contraptioncart.com/shop/mouse-maze-puzzle-box"},{"@type":"ListItem","position":3,"name":"Mechanical Calculator","url":"https://www.contraptioncart.com/shop/mechanical-calculator"},{"@type":"ListItem","position":4,"name":"Tortoise Tally","url":"https://www.contraptioncart.com/shop/tortoise-tally"},{"@type":"ListItem","position":5,"name":"Instant Coke","url":"https://www.contraptioncart.com/shop/instant-coke"},{"@type":"ListItem","position":6,"name":"Fantail Whirligig","url":"https://www.contraptioncart.com/shop/fantail-whirligig"},{"@type":"ListItem","position":7,"name":"Hummingbird and Flower Automaton","url":"https://www.contraptioncart.com/shop/hummingbird-and-flower-automaton"},{"@type":"ListItem","position":8,"name":"Magic Drawer","url":"https://www.contraptioncart.com/shop/magic-drawer"},{"@type":"ListItem","position":9,"name":"Hummingbird Pole Pet","url":"https://www.contraptioncart.com/shop/hummingbird-pole-pet"},{"@type":"ListItem","position":10,"name":"Dog Whirligig","url":"https://www.contraptioncart.com/shop/dog-whirligig"},{"@type":"ListItem","position":11,"name":"Magic Frame","url":"https://www.contraptioncart.com/shop/magic-frame"},{"@type":"ListItem","position":12,"name":"Dice Tunnel","url":"https://www.contraptioncart.com/shop/dice-tunnel"},{"@type":"ListItem","position":13,"name":"Bird Zoetrope","url":"https://www.contraptioncart.com/shop/bird-zoetrope"},{"@type":"ListItem","position":14,"name":"Dog and Cat Running Automata kit","url":"https://www.contraptioncart.com/shop/dog-and-cat-running-automata-kit"},{"@type":"ListItem","position":15,"name":"DIY Swinging Monkey Automata Kit - Fun Craft Project for Kids and Adults","url":"https://www.contraptioncart.com/shop/diy-swinging-monkey-automata-kit-fun-craft-project-for-kids-and-adults"},{"@type":"ListItem","position":16,"name":"Illusionist Pendant Puzzle Box","url":"https://www.contraptioncart.com/shop/illusionist-pendant-puzzle-box"},{"@type":"ListItem","position":17,"name":"Zig Zag Pencil","url":"https://www.contraptioncart.com/shop/zig-zag-pencil"},{"@type":"ListItem","position":18,"name":"Whirligig Hardware","url":"https://www.contraptioncart.com/shop/whirligig-hardware"},{"@type":"ListItem","position":19,"name":"Whale Pulley Pet","url":"https://www.contraptioncart.com/shop/whale-pulley-pet"},{"@type":"ListItem","position":20,"name":"Magic Empty Box","url":"https://www.contraptioncart.com/shop/magic-empty-box"},{"@type":"ListItem","position":21,"name":"Mini Cryptex","url":"https://www.contraptioncart.com/shop/mini-cryptex"},{"@type":"ListItem","position":22,"name":"Chicken And Egg","url":"https://www.contraptioncart.com/shop/chicken-and-egg"},{"@type":"ListItem","position":23,"name":"Woodchopper Whirligig","url":"https://www.contraptioncart.com/shop/woodchopper-whirligig"},{"@type":"ListItem","position":24,"name":"Fisherman Whirligig","url":"https://www.contraptioncart.com/shop/fisherman-whirligig"},{"@type":"ListItem","position":25,"name":"Surfer Whirligig","url":"https://www.contraptioncart.com/shop/surfer-whirligig"},{"@type":"ListItem","position":26,"name":"Electric Origami Hummingbird Plans - Paper Automata template","url":"https://www.contraptioncart.com/shop/electric-origami-hummingbird-plans-paper-automata-template"},{"@type":"ListItem","position":27,"name":"Lankydoodler","url":"https://www.contraptioncart.com/shop/lankydoodler"},{"@type":"ListItem","position":28,"name":"Bird Bank","url":"https://www.contraptioncart.com/shop/bird-bank"},{"@type":"ListItem","position":29,"name":"Sword Through Finger","url":"https://www.contraptioncart.com/shop/sword-through-finger"},{"@type":"ListItem","position":30,"name":"Gorilla Pulley Pet","url":"https://www.contraptioncart.com/shop/gorilla-pulley-pet"},{"@type":"ListItem","position":31,"name":"Goldfish","url":"https://www.contraptioncart.com/shop/goldfish"},{"@type":"ListItem","position":32,"name":"Tiny Drive","url":"https://www.contraptioncart.com/shop/tiny-drive"},{"@type":"ListItem","position":33,"name":"Fluttering Heart","url":"https://www.contraptioncart.com/shop/fluttering-heart"},{"@type":"ListItem","position":34,"name":"Wooden Ride On Car Street Sweeper, Wheely Dog for Toddlers, Pug Toy for Babies","url":"https://www.contraptioncart.com/shop/wooden-ride-on-car-street-sweeper-wheely-dog-for-toddlers-pug-toy-for-babies"},{"@type":"ListItem","position":35,"name":"Marble Tree","url":"https://www.contraptioncart.com/shop/marble-tree"},{"@type":"ListItem","position":36,"name":"Newcomb's Paradox","url":"https://www.contraptioncart.com/shop/newcomb-s-paradox"},{"@type":"ListItem","position":37,"name":"Key Through Coin Magic Trick","url":"https://www.contraptioncart.com/shop/key-through-coin-magic-trick"}]}]}</script>
+    <link rel="icon" type="image/jpeg" href="shared-assets/images/branding/favicon.jpg" />
+    <link rel="stylesheet" href="tools/siteGenerator/templates/css/site.css" />
+  </head>
+  <body>
+    <!--
+      Global scripts below run in the same `window` as the siteGenerator preview shell after `document.write()`.
+      Each file must avoid redeclaring top-level const/let/class (use an IIFE + guard). New shared scripts: same pattern.
+    -->
+    <script src="tools/editData/productData.js"></script>
+    <script src="shared-assets/script/shoppingCart.js"></script>
+    <script>
+window.siteCart = new ShoppingCart("Contraption Cart");
+</script>
+    <header class="site-header">
+  <div class="site-header-inner">
+    <div class="header-top">
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="site-nav-flyout"
+        aria-label="Open menu"
+      >
+        <span class="nav-toggle-icon" aria-hidden="true">
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+        </span>
+      </button>
+      <div class="brand">
+        <img class="brand-logo" src="shared-assets/images/branding/favicon.jpg" alt="Contraption Cart logo" />
+        <span class="brand-name">Contraption Cart</span>
+      </div>
+      <a class="header-cart-link" href="/cart" aria-label="Shopping cart">
+        <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+        </svg>
+      </a>
+    </div>
+    <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
+      <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
+      <div class="nav-flyout-panel">
+        <form
+          class="site-search-form"
+          id="site-search-form"
+          action="https://www.google.com/search"
+          method="get"
+          target="_blank"
+          data-search-site="www.contraptioncart.com"
+        >
+          <input type="hidden" name="q" value="" />
+          <label class="visually-hidden" for="site-search-query">Search this site with Google</label>
+          <input
+            id="site-search-query"
+            class="site-search-input"
+            type="search"
+            autocomplete="off"
+            placeholder="Search…"
+            data-site-search-input
+          />
+          <button class="site-search-submit" type="submit">Search</button>
+        </form>
+        <nav class="site-nav" aria-label="Main navigation">
+          <ul class="nav-list">
+            
+        <li class="nav-item nav-item-has-children">
+          <a href=".">Shop</a>
+          <ul class="submenu"><li><a href="shop/automata">automata</a></li><li><a href="shop/magic-tricks">magic tricks</a></li><li><a href="shop/puzzle-boxes">puzzle boxes</a></li><li><a href="shop/toys-and-games">toys and games</a></li><li><a href="shop/whirligigs">whirligigs</a></li></ul>
+        </li>
+      <li class="nav-item"><a href="blog">Blog</a></li><li class="nav-item"><a href="about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+<script>
+  (function () {
+    var form = document.getElementById("site-search-form");
+    if (form) {
+      form.addEventListener("submit", function () {
+        var host = (form.getAttribute("data-search-site") || "").trim();
+        var input = form.querySelector("[data-site-search-input]");
+        var terms = (input && input.value ? input.value : "").trim();
+        var q = host ? "site:" + host + (terms ? " " + terms : "") : terms;
+        var hidden = form.querySelector('input[name="q"]');
+        if (hidden) hidden.value = q;
+      });
+    }
+
+    var header = document.querySelector(".site-header");
+    var toggle = document.querySelector(".nav-toggle");
+    var flyout = document.getElementById("site-nav-flyout");
+    if (!header || !toggle || !flyout) return;
+
+    var mobileQuery = window.matchMedia("(max-width: 767px)");
+
+    function setNavOpen(open) {
+      header.classList.toggle("is-nav-open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      if (mobileQuery.matches) {
+        flyout.setAttribute("aria-hidden", open ? "false" : "true");
+        document.body.classList.toggle("nav-scroll-lock", open);
+      }
+    }
+
+    function syncNavForViewport() {
+      if (!mobileQuery.matches) {
+        setNavOpen(false);
+        flyout.removeAttribute("aria-hidden");
+        document.body.classList.remove("nav-scroll-lock");
+      } else if (!header.classList.contains("is-nav-open")) {
+        flyout.setAttribute("aria-hidden", "true");
+      }
+    }
+
+    toggle.addEventListener("click", function () {
+      setNavOpen(!header.classList.contains("is-nav-open"));
+    });
+
+    flyout.querySelectorAll("[data-nav-close]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        setNavOpen(false);
+      });
+    });
+
+    flyout.querySelectorAll(".nav-list a").forEach(function (link) {
+      link.addEventListener("click", function () {
+        if (mobileQuery.matches) {
+          setNavOpen(false);
+        }
+      });
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && header.classList.contains("is-nav-open")) {
+        setNavOpen(false);
+        toggle.focus();
+      }
+    });
+
+    if (typeof mobileQuery.addEventListener === "function") {
+      mobileQuery.addEventListener("change", syncNavForViewport);
+    } else if (typeof mobileQuery.addListener === "function") {
+      mobileQuery.addListener(syncNavForViewport);
+    }
+    syncNavForViewport();
+  })();
+</script>
+
+    <main class="site-main">
+      
+    <section class="page-content shop-intro" aria-labelledby="shop-heading">
+      <h1 id="shop-heading">Shop</h1>
+      <div class="shop-about"><p class="shop-about-tagline"><strong>Mechanical Wooden Kits, Automata, Magic Tricks &amp; Puzzle Boxes</strong><br>Original designs by Shasa Bolton</p><p>Discover mechanical wooden automata, puzzle boxes, and DIY kits designed to be built, explored, and enjoyed. Each contraption combines engineering, creativity, and hands-on play.</p><p>Available as kits or fully assembled, these creations are perfect for adults, hobbyists, and kids working with guidance — turning simple parts into fascinating moving machines.</p></div>
+      <h2 class="shop-browse-heading">Browse categories</h2>
+    </section>
+  <section class="category-preview" id="shop-category-automata">
+  <div class="category-preview-band">
+    <div class="category-preview-header">
+      <h2>
+        <a class="category-heading-link" href="shop/automata">
+          automata <span class="category-heading-chevron" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </h2>
+    </div>
+  </div>
+  <div class="product-thumb-row">
+  <article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/0afdd3/3230052300/il_fullxfull.3230052300_ewkv.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/0afdd3/3230052300/il_fullxfull.3230052300_ewkv.jpg" alt="Tortoise Tally" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Tortoise Tally</h3>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/7b783d/7499575608/il_fullxfull.7499575608_1yih.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/7b783d/7499575608/il_fullxfull.7499575608_1yih.jpg" alt="Hummingbird and Flower Automaton" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Hummingbird and Flower Automaton</h3>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/2f7cf2/3979887369/il_fullxfull.3979887369_p0lp.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/2f7cf2/3979887369/il_fullxfull.3979887369_p0lp.jpg" alt="Hummingbird Pole Pet" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Hummingbird Pole Pet</h3>
+</article>
+
+</div>
+
+</section>
+<section class="category-preview" id="shop-category-magic-tricks">
+  <div class="category-preview-band">
+    <div class="category-preview-header">
+      <h2>
+        <a class="category-heading-link" href="shop/magic-tricks">
+          magic tricks <span class="category-heading-chevron" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </h2>
+    </div>
+  </div>
+  <div class="product-thumb-row">
+  <article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/02f463/7151575797/il_fullxfull.7151575797_cs3t.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/02f463/7151575797/il_fullxfull.7151575797_cs3t.jpg" alt="Instant Coke" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Instant Coke</h3>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/8edb68/7748820039/il_fullxfull.7748820039_pfre.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/8edb68/7748820039/il_fullxfull.7748820039_pfre.jpg" alt="Magic Drawer" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Magic Drawer</h3>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/ed679c/6874432458/il_fullxfull.6874432458_ivk5.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/ed679c/6874432458/il_fullxfull.6874432458_ivk5.jpg" alt="Magic Frame" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Magic Frame</h3>
+</article>
+
+</div>
+
+</section>
+<section class="category-preview" id="shop-category-puzzle-boxes">
+  <div class="category-preview-band">
+    <div class="category-preview-header">
+      <h2>
+        <a class="category-heading-link" href="shop/puzzle-boxes">
+          puzzle boxes <span class="category-heading-chevron" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </h2>
+    </div>
+  </div>
+  <div class="product-thumb-row">
+  <article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/ccf267/4561367052/il_fullxfull.4561367052_lf6h.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/ccf267/4561367052/il_fullxfull.4561367052_lf6h.jpg" alt="Slide Picture Puzzle Box" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Slide Picture Puzzle Box</h3>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/85639c/4250092607/il_fullxfull.4250092607_ktow.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/85639c/4250092607/il_fullxfull.4250092607_ktow.jpg" alt="Mouse Maze Puzzle Box" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Mouse Maze Puzzle Box</h3>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/e0dae1/7808588727/il_fullxfull.7808588727_2dg6.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/e0dae1/7808588727/il_fullxfull.7808588727_2dg6.jpg" alt="Illusionist Pendant Puzzle Box" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Illusionist Pendant Puzzle Box</h3>
+</article>
+
+</div>
+
+</section>
+<section class="category-preview" id="shop-category-toys-and-games">
+  <div class="category-preview-band">
+    <div class="category-preview-header">
+      <h2>
+        <a class="category-heading-link" href="shop/toys-and-games">
+          toys and games <span class="category-heading-chevron" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </h2>
+    </div>
+  </div>
+  <div class="product-thumb-row">
+  <article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/49b9ec/7764225703/il_fullxfull.7764225703_iat4.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/49b9ec/7764225703/il_fullxfull.7764225703_iat4.jpg" alt="Mechanical Calculator" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Mechanical Calculator</h3>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/0551df/6652167125/il_fullxfull.6652167125_7sp9.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/0551df/6652167125/il_fullxfull.6652167125_7sp9.jpg" alt="Tiny Drive" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Tiny Drive</h3>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/78abf8/4998764623/il_fullxfull.4998764623_mqoe.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/78abf8/4998764623/il_fullxfull.4998764623_mqoe.jpg" alt="Wooden Ride On Car Street Sweeper, Wheely Dog for Toddlers, Pug Toy for Babies" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Wooden Ride On Car Street Sweeper, Wheely Dog for Toddlers, Pug Toy for Babies</h3>
+</article>
+
+</div>
+
+</section>
+<section class="category-preview" id="shop-category-whirligigs">
+  <div class="category-preview-band">
+    <div class="category-preview-header">
+      <h2>
+        <a class="category-heading-link" href="shop/whirligigs">
+          whirligigs <span class="category-heading-chevron" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </h2>
+    </div>
+  </div>
+  <div class="product-thumb-row">
+  <article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/0ebaf9/5142894636/il_fullxfull.5142894636_j9vj.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/0ebaf9/5142894636/il_fullxfull.5142894636_j9vj.jpg" alt="Fantail Whirligig" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Fantail Whirligig</h3>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/705fde/4218904869/il_fullxfull.4218904869_62e3.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/705fde/4218904869/il_fullxfull.4218904869_62e3.jpg" alt="Dog Whirligig" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Dog Whirligig</h3>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="https://i.etsystatic.com/25031074/r/il/2d3dc8/5025710985/il_fullxfull.5025710985_st50.jpg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/2d3dc8/5025710985/il_fullxfull.5025710985_st50.jpg" alt="Whirligig Hardware" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">Whirligig Hardware</h3>
+</article>
+
+</div>
+
+</section>
+
+    </main>
+    <footer class="site-footer">
+  <div class="footer-content">
+    <p class="footer-heading">Stay connected</p>
+    <div class="footer-links"><ul class="footer-social-list"><li class="footer-social-item"><a class="footer-social-link" href="https://www.instagram.com/contraptioncart" target="_blank" rel="noreferrer noopener" aria-label="Instagram"><svg class="footer-social-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg></a></li><li class="footer-social-item"><a class="footer-social-link" href="https://www.facebook.com/contraptioncart/" target="_blank" rel="noreferrer noopener" aria-label="Facebook"><svg class="footer-social-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg></a></li></ul></div>
+    <form
+      class="footer-subscribe-form"
+      action="https://docs.google.com/forms/d/e/1FAIpQLSe5K8SJbldzZ46AbY1LvyogCVWnCZPbln1rAUFi1vmc879KvQ/formResponse"
+      method="post"
+      target="_self"
+    >
+      <p class="footer-form-heading">Newsletter</p>
+      <div class="footer-form-field">
+        <label class="footer-form-label" for="footer-subscribe-name">Name</label>
+        <input
+          id="footer-subscribe-name"
+          class="footer-form-input"
+          name="entry.268156310"
+          type="text"
+          autocomplete="name"
+        />
+      </div>
+      <div class="footer-form-field">
+        <label class="footer-form-label" for="footer-subscribe-email">Email</label>
+        <input
+          id="footer-subscribe-email"
+          class="footer-form-input"
+          name="entry.866413073"
+          type="email"
+          autocomplete="email"
+        />
+      </div>
+      <button class="footer-subscribe-button" type="submit">Subscribe</button>
+    </form>
+    <p class="footer-contact">Contact: <a href="mailto:shasabolton@gmail.com">shasabolton@gmail.com</a></p>
+  </div>
+</footer>
+
+    <script src="tools/siteGenerator/templates/js/image-carousel.js" defer></script>
+    <script src="shared-assets/script/productInstructionVideos.js" defer></script>
+  </body>
+</html>
