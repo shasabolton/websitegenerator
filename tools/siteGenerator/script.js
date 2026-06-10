@@ -52,6 +52,64 @@ function loadPreviewGenerators() {
 
 window.loadPreviewGenerators = loadPreviewGenerators;
 
+function initHubPublishSiteUi(hubRoot) {
+  const publishBtn = document.getElementById("github-publish-site-root");
+  const publishStatus = document.getElementById("github-publish-site-status");
+  if (!publishBtn || !window.githubAuth?.publishFullSite) {
+    return;
+  }
+
+  const setPublishUi = (signedIn, repo) => {
+    publishBtn.hidden = !signedIn || !repo;
+    if (!signedIn) {
+      publishStatus.textContent = "";
+      publishStatus.classList.remove("github-auth-push-status--error", "github-auth-push-status--ok");
+      return;
+    }
+    if (!repo) {
+      publishStatus.textContent = "Select a repository to publish the full site.";
+      return;
+    }
+    publishStatus.textContent = `${repo}@${window.githubAuth.getBranch()}`;
+  };
+
+  const refreshPublishUi = () => {
+    setPublishUi(window.githubAuth.isSignedIn(), window.githubAuth.getSelectedRepo());
+  };
+
+  publishBtn.addEventListener("click", async () => {
+    publishBtn.disabled = true;
+    const setStatus = (msg, kind) => {
+      publishStatus.textContent = msg;
+      publishStatus.classList.remove("github-auth-push-status--error", "github-auth-push-status--ok");
+      if (kind === "error") {
+        publishStatus.classList.add("github-auth-push-status--error");
+      } else if (kind === "ok") {
+        publishStatus.classList.add("github-auth-push-status--ok");
+      }
+    };
+    try {
+      setStatus("Starting full-site publish…", null);
+      const result = await window.githubAuth.publishFullSite({
+        onProgress: (msg) => setStatus(msg, null),
+      });
+      const sha = result?.commit?.sha;
+      const short = sha ? sha.slice(0, 7) : "ok";
+      setStatus(`Published site (${short})`, "ok");
+    } catch (err) {
+      setStatus(err?.message || String(err), "error");
+    } finally {
+      publishBtn.disabled = false;
+    }
+  });
+
+  refreshPublishUi();
+  if (hubRoot) {
+    const observer = new MutationObserver(() => refreshPublishUi());
+    observer.observe(hubRoot, { childList: true, subtree: true });
+  }
+}
+
 async function runPreviewBootFromUrl() {
   await loadPreviewGenerators();
   const target = window.previewTarget.parsePreviewTarget(window.location.search);
@@ -122,6 +180,8 @@ window.addEventListener("load", () => {
       hubRoot.innerHTML = `<p class="github-auth-error">${escapeHtml(error.message)}</p>`;
     }
   });
+
+  initHubPublishSiteUi(hubRoot);
 
   if (window.displayFileTree?.initPreviewPicker) {
     window.displayFileTree.initPreviewPicker({ containerId: "preview-picker-root" }).catch((error) => {

@@ -1,7 +1,10 @@
 const CONTENT_PAGES_BASE = "../../shared-assets/content/pages";
 const FILE_TREE_URL = "../../shared-assets/config/fileTree.json";
 
-async function loadFileTreeConfig() {
+async function loadFileTreeConfig(fileTreeOverride) {
+  if (fileTreeOverride && typeof fileTreeOverride === "object") {
+    return fileTreeOverride;
+  }
   const fetchJson = window.generateAnyPage.fetchJson;
   const base = await fetchJson(FILE_TREE_URL);
   if (typeof window.displayFileTree?.applyFileTreeOverlay === "function") {
@@ -255,12 +258,28 @@ function getBlogSlugsFromFileTree(fileTree) {
     .filter(Boolean);
 }
 
-async function loadBlogPostsFromFileTree(fileTree) {
+function resolveContentPageData(pagePath, contentPages) {
+  const normalized = normalizeContentPagePath(pagePath);
+  if (contentPages && typeof contentPages.get === "function") {
+    const fromMap = contentPages.get(normalized);
+    if (fromMap && typeof fromMap === "object") {
+      return fromMap;
+    }
+  }
+  return null;
+}
+
+async function loadBlogPostsFromFileTree(fileTree, contentPages) {
   const slugs = getBlogSlugsFromFileTree(fileTree);
   const summaries = await Promise.all(
     slugs.map(async (slug) => {
+      const pagePath = `blog/${slug}`;
+      const fromContext = resolveContentPageData(pagePath, contentPages);
+      if (fromContext) {
+        return buildBlogPostSummary(fromContext, slug);
+      }
       try {
-        const pageData = await loadContentPageJson(`blog/${slug}`);
+        const pageData = await loadContentPageJson(pagePath);
         return buildBlogPostSummary(pageData, slug);
       } catch {
         return null;
@@ -297,15 +316,14 @@ function buildBlogIndexCard(post) {
  * @param {{ shopData: object, navigationConfig: object, products: object[] }} ctx
  */
 async function generateBlogIndexBody(ctx) {
-  const { shopData, products } = ctx;
-  const fetchJson = window.generateAnyPage.fetchJson;
+  const { shopData, products, fileTree: fileTreeOverride, contentPages } = ctx;
   const blogConfig = shopData?.blog && typeof shopData.blog === "object" ? shopData.blog : {};
   const pageTitle = String(blogConfig.title || "Blog").trim() || "Blog";
   const description = String(blogConfig.description || "").trim();
   const headingEsc = escapeHtml(pageTitle);
 
-  const fileTree = await loadFileTreeConfig();
-  const posts = await loadBlogPostsFromFileTree(fileTree);
+  const fileTree = await loadFileTreeConfig(fileTreeOverride);
+  const posts = await loadBlogPostsFromFileTree(fileTree, contentPages);
 
   const cardsHtml = posts.map(buildBlogIndexCard).join("\n");
   const descriptionHtml = description

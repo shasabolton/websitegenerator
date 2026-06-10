@@ -129,19 +129,39 @@ async function mergeBodyIntoFullHtml(
 async function runGenerateAnyPage(treePath, options = {}) {
   let html = "";
   const path = normalizeTreePath(treePath);
+  const publishContext =
+    options.publishContext && typeof options.publishContext === "object" ? options.publishContext : null;
 
-  const [shopData, navigationConfig, fileTreeConfig, pageTemplate, setBaseSource, productData] =
-    await Promise.all([
-      fetchJson("../../shared-assets/config/shopData.json"),
+  const [shopData, pageTemplate, setBaseSource] = await Promise.all([
+    fetchJson("../../shared-assets/config/shopData.json"),
+    fetchText("./templates/pages/allPages.html"),
+    fetchText("./setBase.js"),
+  ]);
+
+  let navigationConfig;
+  let fileTreeConfig;
+  let productData;
+  if (publishContext) {
+    navigationConfig =
+      publishContext.navigation && typeof publishContext.navigation === "object"
+        ? publishContext.navigation
+        : { items: [] };
+    fileTreeConfig =
+      publishContext.fileTree && typeof publishContext.fileTree === "object"
+        ? publishContext.fileTree
+        : { items: [] };
+    productData = { products: Array.isArray(publishContext.products) ? publishContext.products : [] };
+  } else {
+    [navigationConfig, fileTreeConfig, productData] = await Promise.all([
       fetchJson("../../shared-assets/config/navigation.json"),
       fetchJson("../../shared-assets/config/fileTree.json"),
-      fetchText("./templates/pages/allPages.html"),
-      fetchText("./setBase.js"),
       window.productData.fetchProductDataJson(),
     ]);
+  }
+
   let effectiveFileTree = fileTreeConfig;
   let effectiveNavigation = navigationConfig;
-  if (typeof window.displayFileTree?.applyFileTreeOverlay === "function") {
+  if (!publishContext && typeof window.displayFileTree?.applyFileTreeOverlay === "function") {
     effectiveFileTree = window.displayFileTree.applyFileTreeOverlay(fileTreeConfig);
     if (typeof window.githubAuth?.syncNavigationFromFileTree === "function") {
       effectiveNavigation = window.githubAuth.syncNavigationFromFileTree(effectiveFileTree, navigationConfig);
@@ -151,6 +171,7 @@ async function runGenerateAnyPage(treePath, options = {}) {
     ? window.homePage.getHomePageHref(effectiveFileTree)
     : null;
   const productsFull = Array.isArray(productData?.products) ? productData.products : [];
+  const contentPages = publishContext?.contentPages;
   const previewParams = window.previewTarget.parsePreviewTarget(window.location.search);
   const digitalFilter = Object.prototype.hasOwnProperty.call(options, "digital")
     ? options.digital
@@ -260,7 +281,11 @@ async function runGenerateAnyPage(treePath, options = {}) {
     if (typeof gen !== "function") {
       throw new Error("generateContentBody.js must be loaded before preview.");
     }
-    const bodyPayload = await gen(ctxBase);
+    const bodyPayload = await gen({
+      ...ctxBase,
+      fileTree: effectiveFileTree,
+      contentPages,
+    });
     html = await mergeBodyIntoFullHtml(
       shopData,
       effectiveNavigation,
@@ -286,20 +311,24 @@ async function runGenerateAnyPage(treePath, options = {}) {
       isNewPage && typeof window.displayFileTree?.getPendingNewPage === "function"
         ? window.displayFileTree.getPendingNewPage(pagePath)
         : null;
-    const bodyPayload = isNewPage
-      ? await fromData({
-          ...ctxBase,
-          pagePath,
-          pageData:
-            typeof createDefault === "function"
-              ? createDefault(pagePath, {
-                  title: pendingHint?.title || "",
-                  slug: pendingHint?.slug || "",
-                  pageType: pendingHint?.pageType || undefined,
-                })
-              : { meta: {}, blocks: [] },
-        })
-      : await fromPath({ ...ctxBase, pagePath });
+    const contextPageData =
+      contentPages && typeof contentPages.get === "function" ? contentPages.get(path) : null;
+    const bodyPayload = contextPageData
+      ? await fromData({ ...ctxBase, pagePath, pageData: contextPageData })
+      : isNewPage
+        ? await fromData({
+            ...ctxBase,
+            pagePath,
+            pageData:
+              typeof createDefault === "function"
+                ? createDefault(pagePath, {
+                    title: pendingHint?.title || "",
+                    slug: pendingHint?.slug || "",
+                    pageType: pendingHint?.pageType || undefined,
+                  })
+                : { meta: {}, blocks: [] },
+          })
+        : await fromPath({ ...ctxBase, pagePath });
     html = await mergeBodyIntoFullHtml(
       shopData,
       effectiveNavigation,

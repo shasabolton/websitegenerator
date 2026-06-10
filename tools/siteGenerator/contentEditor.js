@@ -533,6 +533,29 @@ ${footerHtml}`;
         syncPageDataFromSettingsForm();
         return getState()?.pageData;
       },
+      publishHandler: (path, data, opts) => window.githubAuth.publishContentPageLive(path, data, opts),
+      buildPublishOptions: async (pushResult) => {
+        const state = getState();
+        const productsFull = Array.isArray(state?.products) ? state.products : [];
+        let fileTree;
+        if (pushResult?.nextFileTree) {
+          fileTree = pushResult.nextFileTree;
+        } else {
+          fileTree = await window.generateAnyPage.fetchJson("../../shared-assets/config/fileTree.json");
+        }
+        let products = productsFull;
+        try {
+          const productData = await window.productData.fetchProductDataJson();
+          products = Array.isArray(productData?.products) ? productData.products : productsFull;
+        } catch {
+          /* use editor cache */
+        }
+        return {
+          fileTree,
+          products,
+          pageData: pushResult?.pageData || state?.pageData,
+        };
+      },
     });
   }
 }

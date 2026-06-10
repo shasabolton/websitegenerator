@@ -183,6 +183,24 @@
   cursor: pointer;
 }
 
+.content-edit-topbar .github-auth-push-btn--primary {
+  background: #059669;
+  border-color: #059669;
+}
+
+.content-edit-topbar .github-auth-push-btn--primary:hover:not(:disabled) {
+  background: #047857;
+}
+
+.content-edit-topbar .github-auth-push-btn--publish {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.content-edit-topbar .github-auth-push-btn--publish:hover:not(:disabled) {
+  background: #1e40af;
+}
+
 .content-edit-topbar .github-auth-push-btn:hover:not(:disabled) {
   background: #475569;
 }

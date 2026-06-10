@@ -443,6 +443,14 @@ ${footerHtml}`;
       pagePath,
       getPageData: () => collectProductRowFromForm(form),
       pushHandler: (path, data) => window.githubAuth.pushProductRow(path, data),
+      publishHandler: (path, data, opts) => window.githubAuth.publishProductPageLive(path, data, opts),
+      buildPublishOptions: async (pushResult) => {
+        const state = getProductState();
+        const products = Array.isArray(pushResult?.products)
+          ? pushResult.products
+          : state?.productsFull || [];
+        return { products };
+      },
     });
   }
 }

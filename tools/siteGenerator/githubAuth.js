@@ -23,8 +23,10 @@
   const FILE_TREE_PATH = "shared-assets/config/fileTree.json";
   const NAVIGATION_PATH = "shared-assets/config/navigation.json";
   const PRODUCT_DATA_PATH = "shared-assets/config/productData.json";
+  const MANIFEST_PATH = ".generated/manifest.json";
   const OAUTH_SCOPE = "repo";
   const DEFAULT_BRANCH = "main";
+  const BLOB_CONCURRENCY = 5;
 
   function getConfig() {
     return window.githubAuthConfig && typeof window.githubAuthConfig === "object"
@@ -902,7 +904,12 @@
 
     await pushNavigationFromFileTree(parsed.owner, parsed.repo, branch, nextFileTree);
 
-    return pageWriteResult;
+    return {
+      ...pageWriteResult,
+      targetPagePath,
+      pageData: mutablePageData,
+      nextFileTree,
+    };
   }
 
   function parseProductSlugFromPagePath(pagePath) {
@@ -985,7 +992,546 @@
     if (typeof window.productData?.clearProductHideOverlayForSku === "function") {
       window.productData.clearProductHideOverlayForSku(sku);
     }
-    return result;
+    return {
+      ...result,
+      products,
+      productRow: products[index],
+    };
+  }
+
+  function requireSelectedRepo() {
+    const fullName = getSelectedRepo();
+    const parsed = parseRepoFullName(fullName);
+    if (!parsed) {
+      throw new Error("Select a GitHub repository on the site generator picker page.");
+    }
+    return { fullName, ...parsed, branch: getBranch() };
+  }
+
+  async function readRemoteManifest(owner, repo, branch) {
+    const meta = await getFileMeta(owner, repo, MANIFEST_PATH, branch);
+    if (!meta?.content) {
+      return { version: 1, generatedAt: null, outputs: [] };
+    }
+    try {
+      const json = JSON.parse(base64ToUtf8(meta.content));
+      const outputs = Array.isArray(json?.outputs) ? json.outputs.map(String) : [];
+      return {
+        version: json?.version ?? 1,
+        generatedAt: json?.generatedAt ?? null,
+        outputs,
+      };
+    } catch {
+      return { version: 1, generatedAt: null, outputs: [] };
+    }
+  }
+
+  function buildManifestJson(outputs) {
+    const list = Array.from(new Set(outputs.map(String).filter(Boolean))).sort();
+    return {
+      version: 1,
+      generatedAt: new Date().toISOString(),
+      outputs: list,
+    };
+  }
+
+  async function mapWithConcurrency(items, concurrency, worker) {
+    const list = Array.isArray(items) ? items : [];
+    if (!list.length) {
+      return [];
+    }
+    const results = new Array(list.length);
+    let nextIndex = 0;
+    async function runWorker() {
+      for (;;) {
+        const index = nextIndex;
+        nextIndex += 1;
+        if (index >= list.length) {
+          break;
+        }
+        results[index] = await worker(list[index], index);
+      }
+    }
+    const workers = Array.from({ length: Math.min(concurrency, list.length) }, () => runWorker());
+    await Promise.all(workers);
+    return results;
+  }
+
+  /**
+   * @param {{ message: string, fileChanges: Array<{ path: string, content?: string, delete?: boolean }> }} options
+   */
+  async function publishSiteCommit({ message, fileChanges }) {
+    const { owner, repo, branch } = requireSelectedRepo();
+    const changes = Array.isArray(fileChanges) ? fileChanges : [];
+    if (!changes.length) {
+      throw new Error("No file changes to publish.");
+    }
+
+    async function commitOnce() {
+      const refName = `heads/${branch || DEFAULT_BRANCH}`;
+      const ref = await githubApi(`/repos/${owner}/${repo}/git/ref/${encodeURIComponent(refName)}`, {
+        method: "GET",
+      });
+      const parentSha = ref?.object?.sha;
+      if (!parentSha) {
+        throw new Error(`Branch ref not found: ${branch}`);
+      }
+      const parentCommit = await githubApi(`/repos/${owner}/${repo}/git/commits/${parentSha}`, {
+        method: "GET",
+      });
+      const baseTreeSha = parentCommit?.tree?.sha;
+      if (!baseTreeSha) {
+        throw new Error("Could not read base tree for publish commit.");
+      }
+
+      const upserts = changes.filter((c) => c && !c.delete);
+      const deletes = changes.filter((c) => c && c.delete);
+
+      const blobShas = await mapWithConcurrency(upserts, BLOB_CONCURRENCY, async (change) => {
+        const blob = await githubApi(`/repos/${owner}/${repo}/git/blobs`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: utf8ToBase64(String(change.content ?? "")),
+            encoding: "base64",
+          }),
+        });
+        if (!blob?.sha) {
+          throw new Error(`Blob creation failed for ${change.path}`);
+        }
+        return { path: change.path, sha: blob.sha };
+      });
+
+      const treeEntries = [
+        ...blobShas.map(({ path, sha }) => ({
+          path,
+          mode: "100644",
+          type: "blob",
+          sha,
+        })),
+        ...deletes.map((change) => ({
+          path: change.path,
+          sha: null,
+        })),
+      ];
+
+      const tree = await githubApi(`/repos/${owner}/${repo}/git/trees`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          base_tree: baseTreeSha,
+          tree: treeEntries,
+        }),
+      });
+      if (!tree?.sha) {
+        throw new Error("Git tree creation failed.");
+      }
+
+      const commit = await githubApi(`/repos/${owner}/${repo}/git/commits`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          tree: tree.sha,
+          parents: [parentSha],
+        }),
+      });
+      if (!commit?.sha) {
+        throw new Error("Git commit creation failed.");
+      }
+
+      try {
+        await githubApi(`/repos/${owner}/${repo}/git/refs/${encodeURIComponent(refName)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sha: commit.sha, force: false }),
+        });
+      } catch (err) {
+        if (err?.status === 422) {
+          throw Object.assign(new Error("Branch moved during publish; retrying."), { retryable: true });
+        }
+        throw err;
+      }
+      return commit;
+    }
+
+    try {
+      return await commitOnce();
+    } catch (err) {
+      if (err?.retryable) {
+        return commitOnce();
+      }
+      throw err;
+    }
+  }
+
+  async function loadNavigationBase(owner, repo, branch) {
+    try {
+      const { json } = await readRepoJson(owner, repo, NAVIGATION_PATH, branch);
+      return json;
+    } catch {
+      if (typeof window.generateAnyPage?.fetchJson === "function") {
+        return window.generateAnyPage.fetchJson("../../shared-assets/config/navigation.json");
+      }
+      return { items: [] };
+    }
+  }
+
+  async function loadContentPageData(pagePath) {
+    const normalized = normalizePagePath(pagePath);
+    if (typeof window.generateContentBody?.loadContentPageJson === "function") {
+      try {
+        return await window.generateContentBody.loadContentPageJson(normalized);
+      } catch {
+        /* fall through to GitHub */
+      }
+    }
+    const { owner, repo, branch } = requireSelectedRepo();
+    const repoPath = pagePathToContentRepoPath(normalized);
+    const meta = await getFileMeta(owner, repo, repoPath, branch);
+    if (!meta?.content) {
+      throw new Error(`Content page not found: ${normalized}`);
+    }
+    return JSON.parse(base64ToUtf8(meta.content));
+  }
+
+  function getBlogSlugsFromFileTree(fileTree) {
+    const items = Array.isArray(fileTree?.items) ? fileTree.items : [];
+    const blogNode = items.find((item) => normalizePagePath(item?.href) === "blog");
+    const children = Array.isArray(blogNode?.children) ? blogNode.children : [];
+    return children
+      .filter((child) => !isTreeNodeHidden(child))
+      .map((child) => {
+        const href = normalizePagePath(child?.href || "");
+        if (!href.startsWith("blog/") || href.length <= "blog/".length) {
+          return null;
+        }
+        return href.slice("blog/".length);
+      })
+      .filter(Boolean);
+  }
+
+  async function buildContentPagesMap(fileTree, seedPages) {
+    const map = new Map();
+    if (seedPages && typeof seedPages.forEach === "function") {
+      seedPages.forEach((value, key) => {
+        map.set(normalizePagePath(key), value);
+      });
+    } else if (seedPages && typeof seedPages === "object") {
+      for (const [key, value] of Object.entries(seedPages)) {
+        map.set(normalizePagePath(key), value);
+      }
+    }
+    const slugs = getBlogSlugsFromFileTree(fileTree);
+    await Promise.all(
+      slugs.map(async (slug) => {
+        const pagePath = `blog/${slug}`;
+        if (map.has(pagePath)) {
+          return;
+        }
+        try {
+          const pageData = await loadContentPageData(pagePath);
+          map.set(pagePath, pageData);
+        } catch {
+          /* skip missing posts */
+        }
+      }),
+    );
+    return map;
+  }
+
+  /**
+   * @param {{ fileTree: object, navigation?: object, products: object[], contentPages?: Map | object }} partial
+   */
+  async function buildPublishContext(partial) {
+    const fileTree = partial?.fileTree && typeof partial.fileTree === "object" ? partial.fileTree : { items: [] };
+    const { owner, repo, branch } = requireSelectedRepo();
+    const navigationBase = await loadNavigationBase(owner, repo, branch);
+    const navigation = syncNavigationFromFileTree(fileTree, navigationBase);
+    const products = Array.isArray(partial?.products) ? partial.products : [];
+    const contentPages = await buildContentPagesMap(fileTree, partial?.contentPages);
+    return { fileTree, navigation, products, contentPages };
+  }
+
+  function treePathToOutputRelativePath(treePath, homePageHref) {
+    if (typeof window.displayFileTree?.treePathToOutputRelativePath === "function") {
+      return window.displayFileTree.treePathToOutputRelativePath(treePath, homePageHref);
+    }
+    const folder =
+      typeof window.displayFileTree?.treePathToDownloadFolderName === "function"
+        ? window.displayFileTree.treePathToDownloadFolderName(treePath, homePageHref)
+        : String(treePath || "").trim().replace(/^\/+/, "").replace(/\/+$/, "");
+    if (!folder) {
+      return "index.html";
+    }
+    return `${folder}/index.html`;
+  }
+
+  function getHomePageHrefFromFileTree(fileTree) {
+    return window.homePage?.getHomePageHref ? window.homePage.getHomePageHref(fileTree) : null;
+  }
+
+  async function ensurePreviewGeneratorsLoaded() {
+    if (typeof window.loadPreviewGenerators === "function") {
+      await window.loadPreviewGenerators();
+      return;
+    }
+    throw new Error("Page generators are not available. Open from the site generator hub.");
+  }
+
+  async function generateHtmlForTreePath(treePath, publishContext) {
+    await ensurePreviewGeneratorsLoaded();
+    if (typeof window.generateAnyPage?.generateAnyPage !== "function") {
+      throw new Error("generateAnyPage is not loaded.");
+    }
+    const options = publishContext ? { publishContext } : {};
+    return window.generateAnyPage.generateAnyPage(treePath, options);
+  }
+
+  function uniqueOutputPaths(treePaths, homePageHref) {
+    const seen = new Set();
+    const outputs = [];
+    for (const treePath of treePaths) {
+      const rel = treePathToOutputRelativePath(treePath, homePageHref);
+      if (!rel || seen.has(rel)) {
+        continue;
+      }
+      seen.add(rel);
+      outputs.push(rel);
+    }
+    return outputs;
+  }
+
+  function getContentPagePublishTreePaths(targetPagePath) {
+    const path = normalizePagePath(targetPagePath);
+    const paths = [path];
+    if (isBlogPagePath(path)) {
+      paths.push("blog");
+    }
+    return paths;
+  }
+
+  function getProductPublishTreePaths(pagePath, products) {
+    const slug = parseProductSlugFromPagePath(pagePath);
+    if (!slug) {
+      throw new Error(`Invalid product path for publish: ${pagePath}`);
+    }
+    const paths = [`shop/${slug}`];
+    const find = window.productData?.findProductBySlug;
+    const row = typeof find === "function" ? find(products, slug) : null;
+    if (row && typeof window.productData?.getProductsByCategory === "function") {
+      const categories = window.productData.getProductsByCategory(products);
+      const categoryName = String(row.CATEGORY || "").trim();
+      const match = categories.find((c) => String(c.name || "").trim() === categoryName);
+      if (match?.slug) {
+        paths.push(`shop/${match.slug}`);
+      }
+    }
+    paths.push("shop");
+    return paths;
+  }
+
+  async function publishHtmlOutputs({
+    message,
+    treePaths,
+    publishContext,
+    homePageHref,
+    mergeManifest = true,
+    deleteStaleFromManifest = false,
+  }) {
+    const { owner, repo, branch } = requireSelectedRepo();
+    const outputPaths = uniqueOutputPaths(treePaths, homePageHref);
+    const fileChanges = [];
+    const generatedByPath = new Map();
+    for (let i = 0; i < treePaths.length; i += 1) {
+      const treePath = treePaths[i];
+      const relPath = treePathToOutputRelativePath(treePath, homePageHref);
+      if (!relPath || generatedByPath.has(relPath)) {
+        continue;
+      }
+      const html = await generateHtmlForTreePath(treePath, publishContext);
+      generatedByPath.set(relPath, html);
+    }
+    for (const [path, content] of generatedByPath) {
+      fileChanges.push({ path, content });
+    }
+
+    const oldManifest = await readRemoteManifest(owner, repo, branch);
+    let nextOutputs = outputPaths.slice();
+    if (mergeManifest) {
+      const merged = new Set(oldManifest.outputs || []);
+      for (const path of outputPaths) {
+        merged.add(path);
+      }
+      nextOutputs = Array.from(merged).sort();
+    }
+    if (deleteStaleFromManifest) {
+      const stale = (oldManifest.outputs || []).filter((path) => !nextOutputs.includes(path));
+      for (const path of stale) {
+        fileChanges.push({ path, delete: true });
+      }
+    }
+    const manifest = buildManifestJson(nextOutputs);
+    fileChanges.push({
+      path: MANIFEST_PATH,
+      content: `${JSON.stringify(manifest, null, 2)}\n`,
+    });
+
+    const commit = await publishSiteCommit({ message, fileChanges });
+    return { commit, manifest, outputPaths: nextOutputs };
+  }
+
+  /**
+   * @param {string} pagePath
+   * @param {object} pageData
+   * @param {{ fileTree?: object, products?: object[], onProgress?: (msg: string) => void }} [options]
+   */
+  async function publishContentPageLive(pagePath, pageData, options = {}) {
+    const onProgress = typeof options.onProgress === "function" ? options.onProgress : () => {};
+    onProgress("Preparing publish context…");
+    let fileTree = options.fileTree;
+    let products = options.products;
+    if (!fileTree || !products) {
+      const { owner, repo, branch } = requireSelectedRepo();
+      if (!fileTree) {
+        const remoteTree = await readRepoJson(owner, repo, FILE_TREE_PATH, branch);
+        fileTree = remoteTree.json;
+      }
+      if (!products) {
+        const remoteProducts = await readRepoJson(owner, repo, PRODUCT_DATA_PATH, branch);
+        products = Array.isArray(remoteProducts.json?.products) ? remoteProducts.json.products : [];
+      }
+    }
+    const mutablePageData =
+      pageData && typeof pageData === "object" ? JSON.parse(JSON.stringify(pageData)) : { meta: {}, blocks: [] };
+    let targetPagePath = normalizePagePath(pagePath);
+    if (isBlogPagePath(targetPagePath)) {
+      const newSlug = resolveBlogSlug(mutablePageData, targetPagePath);
+      mutablePageData.slug = newSlug;
+      targetPagePath = `blog/${newSlug}`;
+    } else {
+      const newSlug = slugify(mutablePageData?.slug || mutablePageData?.meta?.title || targetPagePath);
+      if (newSlug) {
+        mutablePageData.slug = newSlug;
+        targetPagePath = newSlug;
+      }
+    }
+    const contentPages = new Map();
+    contentPages.set(targetPagePath, mutablePageData);
+    const publishContext = await buildPublishContext({ fileTree, products, contentPages });
+    const homePageHref = getHomePageHrefFromFileTree(fileTree);
+    const treePaths = getContentPagePublishTreePaths(targetPagePath);
+    onProgress(`Generating ${treePaths.length} page${treePaths.length === 1 ? "" : "s"}…`);
+    onProgress("Uploading…");
+    return publishHtmlOutputs({
+      message: `Publish content: ${targetPagePath}`,
+      treePaths,
+      publishContext,
+      homePageHref,
+      mergeManifest: true,
+      deleteStaleFromManifest: false,
+    });
+  }
+
+  /**
+   * @param {string} pagePath
+   * @param {object} productRow
+   * @param {{ products?: object[], onProgress?: (msg: string) => void }} [options]
+   */
+  async function publishProductPageLive(pagePath, productRow, options = {}) {
+    const onProgress = typeof options.onProgress === "function" ? options.onProgress : () => {};
+    onProgress("Preparing publish context…");
+    let products = options.products;
+    let fileTree;
+    const { owner, repo, branch } = requireSelectedRepo();
+    if (!products) {
+      const remoteProducts = await readRepoJson(owner, repo, PRODUCT_DATA_PATH, branch);
+      products = Array.isArray(remoteProducts.json?.products) ? remoteProducts.json.products : [];
+    }
+    const remoteTree = await readRepoJson(owner, repo, FILE_TREE_PATH, branch);
+    fileTree = remoteTree.json;
+    const sku = String(productRow?.SKU ?? "").trim();
+    const index = findProductRowIndexBySku(products, sku);
+    if (index >= 0) {
+      const existing = products[index] && typeof products[index] === "object" ? products[index] : {};
+      products = products.slice();
+      products[index] = { ...existing, ...productRow, SKU: existing.SKU ?? sku };
+    }
+    const publishContext = await buildPublishContext({ fileTree, products });
+    const homePageHref = getHomePageHrefFromFileTree(fileTree);
+    const treePaths = getProductPublishTreePaths(pagePath, products);
+    onProgress(`Generating ${treePaths.length} page${treePaths.length === 1 ? "" : "s"}…`);
+    onProgress("Uploading…");
+    return publishHtmlOutputs({
+      message: `Publish product: ${parseProductSlugFromPagePath(pagePath) || pagePath}`,
+      treePaths,
+      publishContext,
+      homePageHref,
+      mergeManifest: true,
+      deleteStaleFromManifest: false,
+    });
+  }
+
+  /**
+   * @param {{ onProgress?: (msg: string) => void }} [options]
+   */
+  async function publishFullSite(options = {}) {
+    const onProgress = typeof options.onProgress === "function" ? options.onProgress : () => {};
+    onProgress("Loading site structure…");
+    if (typeof window.displayFileTree?.buildPopulatedFileTree !== "function") {
+      throw new Error("displayFileTree.buildPopulatedFileTree is required for full-site publish.");
+    }
+    const populatedTree = await window.displayFileTree.buildPopulatedFileTree(null, null);
+    const collectPaths =
+      typeof window.displayFileTree?.collectAllKnownPaths === "function"
+        ? window.displayFileTree.collectAllKnownPaths
+        : null;
+    if (!collectPaths) {
+      throw new Error("displayFileTree.collectAllKnownPaths is required for full-site publish.");
+    }
+    const treePaths = Array.from(collectPaths(populatedTree)).sort();
+    const { owner, repo, branch } = requireSelectedRepo();
+    const remoteProducts = await readRepoJson(owner, repo, PRODUCT_DATA_PATH, branch);
+    const products = Array.isArray(remoteProducts.json?.products) ? remoteProducts.json.products : [];
+    const exportableTree =
+      typeof window.displayFileTree?.getExportableFileTree === "function"
+        ? window.displayFileTree.getExportableFileTree(populatedTree)
+        : populatedTree;
+    const publishContext = await buildPublishContext({ fileTree: exportableTree, products });
+    const homePageHref = getHomePageHrefFromFileTree(exportableTree);
+    const fileChanges = [];
+    const generatedByPath = new Map();
+    for (let i = 0; i < treePaths.length; i += 1) {
+      const treePath = treePaths[i];
+      onProgress(`Generating ${i + 1}/${treePaths.length}: ${treePath}`);
+      const relPath = treePathToOutputRelativePath(treePath, homePageHref);
+      if (!relPath || generatedByPath.has(relPath)) {
+        continue;
+      }
+      const html = await generateHtmlForTreePath(treePath, publishContext);
+      generatedByPath.set(relPath, html);
+    }
+    for (const [path, content] of generatedByPath) {
+      fileChanges.push({ path, content });
+    }
+    const outputPaths = Array.from(generatedByPath.keys()).sort();
+    const oldManifest = await readRemoteManifest(owner, repo, branch);
+    const nextOutputs = Array.from(new Set(outputPaths)).sort();
+    const stale = (oldManifest.outputs || []).filter((path) => !nextOutputs.includes(path));
+    for (const path of stale) {
+      fileChanges.push({ path, delete: true });
+    }
+    const manifest = buildManifestJson(nextOutputs);
+    fileChanges.push({
+      path: MANIFEST_PATH,
+      content: `${JSON.stringify(manifest, null, 2)}\n`,
+    });
+    onProgress("Uploading…");
+    const commit = await publishSiteCommit({
+      message: "Publish full site",
+      fileChanges,
+    });
+    return { commit, manifest, outputPaths: nextOutputs };
   }
 
   /**
@@ -1452,19 +1998,35 @@ ${loginLine}
   }
 
   /**
-   * @param {{ pagePath: string, getPageData: () => object, pushHandler?: (pagePath: string, data: object) => Promise<unknown> }} options
+   * @param {{
+   *   pagePath: string,
+   *   getPageData: () => object,
+   *   pushHandler?: (pagePath: string, data: object) => Promise<unknown>,
+   *   publishHandler?: (pagePath: string, data: object, ctx?: object) => Promise<unknown>,
+   *   buildPublishOptions?: (pushResult?: object) => Promise<object> | object,
+   * }} options
    */
   function initEditPushUi(options) {
     const pagePath = options?.pagePath;
     const getPageData = options?.getPageData;
     const pushHandler =
       typeof options?.pushHandler === "function" ? options.pushHandler : pushContentPage;
+    const publishHandler = options?.publishHandler;
+    const buildPublishOptions = options?.buildPublishOptions;
     const root = document.querySelector("[data-github-push-root]");
     if (!root || !pagePath || typeof getPageData !== "function") {
       return;
     }
 
     ensureGithubStylesheet();
+
+    const bindAction = (selector, runner) => {
+      root.querySelector(selector)?.addEventListener("click", () => {
+        runner().catch((err) => {
+          setPushStatus(root, err?.message || String(err), "error");
+        });
+      });
+    };
 
     const updateUi = () => {
       if (!isSignedIn()) {
@@ -1475,13 +2037,27 @@ ${loginLine}
         root.innerHTML = `<span class="github-auth-push-status">Select repo on picker</span>`;
         return;
       }
-      root.innerHTML = `<button type="button" class="github-auth-push-btn" data-github-push>Push to GitHub</button>
+      const publishBtn =
+        typeof publishHandler === "function"
+          ? `<button type="button" class="github-auth-push-btn github-auth-push-btn--publish" data-github-publish>Publish HTML</button>`
+          : "";
+      const pushPublishBtn =
+        typeof publishHandler === "function"
+          ? `<button type="button" class="github-auth-push-btn github-auth-push-btn--primary" data-github-push-publish>Push &amp; publish</button>`
+          : "";
+      root.innerHTML = `${pushPublishBtn}
+<button type="button" class="github-auth-push-btn" data-github-push>Push to GitHub</button>
+${publishBtn}
 <span class="github-auth-push-status" data-github-push-status>${escapeHtml(getSelectedRepo())}@${escapeHtml(getBranch())}</span>`;
-      root.querySelector("[data-github-push]")?.addEventListener("click", () => {
-        runPush(root, pagePath, getPageData, pushHandler).catch((err) => {
-          setPushStatus(root, err?.message || String(err), "error");
-        });
-      });
+      bindAction("[data-github-push]", () => runPush(root, pagePath, getPageData, pushHandler));
+      if (typeof publishHandler === "function") {
+        bindAction("[data-github-publish]", () =>
+          runPublish(root, pagePath, getPageData, publishHandler, buildPublishOptions),
+        );
+        bindAction("[data-github-push-publish]", () =>
+          runPushAndPublish(root, pagePath, getPageData, pushHandler, publishHandler, buildPublishOptions),
+        );
+      }
     };
 
     updateUi();
@@ -1501,24 +2077,124 @@ ${loginLine}
     }
   }
 
+  function setPushButtonsDisabled(root, disabled) {
+    root.querySelectorAll("[data-github-push], [data-github-publish], [data-github-push-publish]").forEach((btn) => {
+      btn.disabled = disabled;
+    });
+  }
+
   async function runPush(root, pagePath, getPageData, pushHandler) {
-    const btn = root.querySelector("[data-github-push]");
-    if (btn) {
-      btn.disabled = true;
-    }
+    setPushButtonsDisabled(root, true);
     setPushStatus(root, "Pushing…", null);
     try {
       const data = getPageData();
       const pushFn = typeof pushHandler === "function" ? pushHandler : pushContentPage;
       const result = await pushFn(pagePath, data);
+      const sha = result?.commit?.sha || result?.sha;
+      const short = sha ? String(sha).slice(0, 7) : "ok";
+      setPushStatus(root, `Pushed (${short})`, "ok");
+      return result;
+    } finally {
+      setPushButtonsDisabled(root, false);
+    }
+  }
+
+  async function runPublish(root, pagePath, getPageData, publishHandler, buildPublishOptions) {
+    setPushButtonsDisabled(root, true);
+    setPushStatus(root, "Publishing…", null);
+    try {
+      const data = getPageData();
+      const extra =
+        typeof buildPublishOptions === "function" ? await buildPublishOptions() : buildPublishOptions || {};
+      const onProgress = (msg) => setPushStatus(root, msg, null);
+      const result = await publishHandler(pagePath, data, { ...extra, onProgress });
       const sha = result?.commit?.sha;
       const short = sha ? sha.slice(0, 7) : "ok";
-      setPushStatus(root, `Pushed (${short})`, "ok");
+      setPushStatus(root, `Published (${short})`, "ok");
+      return result;
     } finally {
-      if (btn) {
-        btn.disabled = false;
-      }
+      setPushButtonsDisabled(root, false);
     }
+  }
+
+  async function runPushAndPublish(
+    root,
+    pagePath,
+    getPageData,
+    pushHandler,
+    publishHandler,
+    buildPublishOptions,
+  ) {
+    setPushButtonsDisabled(root, true);
+    setPushStatus(root, "Pushing source…", null);
+    try {
+      const data = getPageData();
+      const pushFn = typeof pushHandler === "function" ? pushHandler : pushContentPage;
+      const pushResult = await pushFn(pagePath, data);
+      setPushStatus(root, "Publishing HTML…", null);
+      const extra =
+        typeof buildPublishOptions === "function"
+          ? await buildPublishOptions(pushResult)
+          : buildPublishOptions || {};
+      const onProgress = (msg) => setPushStatus(root, msg, null);
+      const publishResult = await publishHandler(pagePath, data, { ...extra, onProgress });
+      const sha = publishResult?.commit?.sha || pushResult?.commit?.sha;
+      const short = sha ? String(sha).slice(0, 7) : "ok";
+      setPushStatus(root, `Pushed & published (${short})`, "ok");
+      return publishResult;
+    } finally {
+      setPushButtonsDisabled(root, false);
+    }
+  }
+
+  function initPublishSiteUi(root) {
+    if (!root) {
+      return;
+    }
+    ensureGithubStylesheet();
+    const render = () => {
+      if (!isSignedIn()) {
+        root.innerHTML = `<span class="github-auth-push-status">Sign in above to publish the site.</span>`;
+        return;
+      }
+      if (!getSelectedRepo()) {
+        root.innerHTML = `<span class="github-auth-push-status">Select a repository above to publish.</span>`;
+        return;
+      }
+      root.innerHTML = `<button type="button" class="github-auth-btn github-auth-btn-primary" data-github-publish-site>Publish site</button>
+<span class="github-auth-push-status" data-github-publish-site-status>${escapeHtml(getSelectedRepo())}@${escapeHtml(getBranch())}</span>`;
+      const btn = root.querySelector("[data-github-publish-site]");
+      const status = root.querySelector("[data-github-publish-site-status]");
+      btn?.addEventListener("click", async () => {
+        btn.disabled = true;
+        const setStatus = (msg, kind) => {
+          if (!status) {
+            return;
+          }
+          status.textContent = msg;
+          status.classList.remove("github-auth-push-status--error", "github-auth-push-status--ok");
+          if (kind === "error") {
+            status.classList.add("github-auth-push-status--error");
+          } else if (kind === "ok") {
+            status.classList.add("github-auth-push-status--ok");
+          }
+        };
+        try {
+          setStatus("Starting full-site publish…", null);
+          const result = await publishFullSite({
+            onProgress: (msg) => setStatus(msg, null),
+          });
+          const sha = result?.commit?.sha;
+          const short = sha ? sha.slice(0, 7) : "ok";
+          setStatus(`Published site (${short})`, "ok");
+        } catch (err) {
+          setStatus(err?.message || String(err), "error");
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    };
+    render();
   }
 
   window.githubAuth = {
@@ -1546,6 +2222,12 @@ ${loginLine}
     clearOAuthPending,
     initHubUi,
     initEditPushUi,
+    initPublishSiteUi,
+    publishSiteCommit,
+    publishContentPageLive,
+    publishProductPageLive,
+    publishFullSite,
+    buildPublishContext,
     pushContentPage,
     pushFileTree,
     syncNavigationFromFileTree,

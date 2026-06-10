@@ -468,6 +468,15 @@ function getExportableFileTree(tree) {
   return stripGeneratedShopChildren(tree);
 }
 
+/** Output path relative to repo root (`index.html` or `about/index.html`). */
+function treePathToOutputRelativePath(treePath, homePageHref = cachedHomePageHref) {
+  const folder = treePathToDownloadFolderName(treePath, homePageHref);
+  if (!folder) {
+    return "index.html";
+  }
+  return `${folder}/index.html`;
+}
+
 /** Safe folder name for the page (matches previous single-file basename, without `.html`). */
 function treePathToDownloadFolderName(treePath, homePageHref = cachedHomePageHref) {
   if (window.homePage?.resolveDeployFolder) {
@@ -1140,6 +1149,9 @@ window.displayFileTree = {
   getExportableFileTree,
   applyFileTreeOverlay,
   isTreeNodeHidden,
+  collectAllKnownPaths,
+  treePathToDownloadFolderName,
+  treePathToOutputRelativePath,
   parsePreviewTarget: (search) => window.previewTarget.parsePreviewTarget(search),
   buildPreviewUrl: (treePath) =>
     window.previewTarget.buildPreviewUrl(treePath, getActiveDigitalFilterForPreviewLinks()),

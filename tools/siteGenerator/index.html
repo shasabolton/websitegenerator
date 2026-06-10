@@ -422,6 +422,27 @@
       .preview-picker-dropzone--active {
         background: #93c5fd;
       }
+
+      .preview-picker-publish-site {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px 16px;
+        margin-bottom: 14px;
+      }
+
+      .preview-picker-publish-site .github-auth-push-status {
+        color: #6b7280;
+        font-size: 13px;
+      }
+
+      .preview-picker-publish-site .github-auth-push-status--error {
+        color: #b91c1c;
+      }
+
+      .preview-picker-publish-site .github-auth-push-status--ok {
+        color: #047857;
+      }
     </style>
     <link rel="stylesheet" href="./githubAuth.css" />
     <link rel="stylesheet" href="./productDataMerge.css" />
@@ -449,7 +470,8 @@
           Download saves a zip file; unzip to get a folder named for that page with <code>index.html</code> inside.
           Magic-trick pages with hidden instruction videos: append <code>&amp;instr=show</code> (ampersand, not a second
           <code>?</code>).
-          Save a GitHub access token above to push content page JSON from the editor.
+          Save a GitHub access token above to push JSON from editors or use <strong>Publish site</strong> to generate and
+          upload all HTML via the Git Trees API. Content and product editors offer <strong>Push &amp; publish</strong>.
         </p>
         <div class="preview-picker-filters">
           <div class="preview-picker-filter">
@@ -466,6 +488,12 @@
               <option value="all" selected>All categories</option>
             </select>
           </div>
+        </div>
+        <div class="preview-picker-publish-site">
+          <button type="button" id="github-publish-site-root" class="github-auth-btn github-auth-btn-primary" hidden>
+            Publish site
+          </button>
+          <span id="github-publish-site-status" class="github-auth-push-status" aria-live="polite"></span>
         </div>
         <div id="preview-picker-root" aria-live="polite"></div>
       </section>
