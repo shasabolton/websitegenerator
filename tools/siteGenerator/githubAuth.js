@@ -1121,6 +1121,8 @@
         })),
         ...deletes.map((change) => ({
           path: change.path,
+          mode: "100644",
+          type: "blob",
           sha: null,
         })),
       ];
