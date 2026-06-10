@@ -111,6 +111,7 @@ function createDefaultPageData(pagePath, hints = {}) {
     version: 1,
     slug,
     pageType,
+    draft: false,
     meta: {
       title,
       description: "",
@@ -238,12 +239,19 @@ function isTreeNodeHidden(node) {
   return node?.hide === true;
 }
 
+function isTreeNodeDraft(node) {
+  if (typeof window.displayFileTree?.isTreeNodeDraft === "function") {
+    return window.displayFileTree.isTreeNodeDraft(node);
+  }
+  return node?.draft === true;
+}
+
 function getBlogSlugsFromFileTree(fileTree) {
   const items = Array.isArray(fileTree?.items) ? fileTree.items : [];
   const blogNode = items.find((item) => String(item?.href || "").trim().toLowerCase() === "blog");
   const children = Array.isArray(blogNode?.children) ? blogNode.children : [];
   return children
-    .filter((child) => !isTreeNodeHidden(child))
+    .filter((child) => !isTreeNodeHidden(child) && !isTreeNodeDraft(child))
     .map((child) => {
       const href = String(child?.href || "")
         .trim()

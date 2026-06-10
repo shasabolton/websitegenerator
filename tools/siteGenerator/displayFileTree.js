@@ -174,11 +174,83 @@ function isTreeNodeHidden(node, products = []) {
   return node?.hide === true;
 }
 
+function isTreeNodeDraft(node, products = []) {
+  if (isProductTreeNode(node)) {
+    const path = normalizeTreeHref(node?.href || "");
+    if (!path.startsWith("shop/") || path.length <= "shop/".length) {
+      return false;
+    }
+    const slug = path.slice("shop/".length);
+    const find = window.productData?.findProductBySlug;
+    const isDraft = window.productData?.isProductRowDraft;
+    if (typeof find !== "function" || typeof isDraft !== "function") {
+      return false;
+    }
+    return isDraft(find(products, slug));
+  }
+  return node?.draft === true;
+}
+
+function findTreeNodeByHref(items, href) {
+  const norm = normalizeTreeHref(href);
+  if (!Array.isArray(items) || !norm) {
+    return null;
+  }
+  for (const item of items) {
+    if (normalizeTreeHref(item?.href) === norm) {
+      return item;
+    }
+    const nested = findTreeNodeByHref(item?.children, href);
+    if (nested) {
+      return nested;
+    }
+  }
+  return null;
+}
+
+function isTreePathDraft(tree, treePath, products = []) {
+  const path = normalizeTreeHref(treePath);
+  if (!path) {
+    return false;
+  }
+  if (path.startsWith("shop/") && path.length > "shop/".length) {
+    const segment = path.slice("shop/".length);
+    if (!segment.includes("/")) {
+      const find = window.productData?.findProductBySlug;
+      const isDraft = window.productData?.isProductRowDraft;
+      if (typeof find === "function" && typeof isDraft === "function") {
+        const row = find(products, segment);
+        if (row) {
+          return isDraft(row);
+        }
+      }
+    }
+  }
+  const node = findTreeNodeByHref(tree?.items || [], path);
+  if (node) {
+    return isTreeNodeDraft(node, products);
+  }
+  return false;
+}
+
+function filterPathsForPublish(tree, paths, products = []) {
+  const list = paths instanceof Set ? Array.from(paths) : Array.isArray(paths) ? paths : [];
+  return list.filter((path) => !isTreePathDraft(tree, path, products));
+}
+
+function collectPublishablePaths(tree, products = []) {
+  return filterPathsForPublish(tree, collectAllKnownPaths(tree), products);
+}
+
 function canToggleTreeNodeHide(node) {
   if (isProductTreeNode(node)) {
     return Boolean(String(node?.href || "").trim());
   }
   return !isShopGeneratedChild(node) && Boolean(String(node?.href || "").trim());
+}
+
+function canToggleTreeNodeDraft(node) {
+  return canToggleTreeNodeHide(node);
 }
 
 function isReservedSystemPath(treeHref) {
@@ -338,6 +410,20 @@ function setNodeHideAtPath(tree, indexPath, hide) {
     node.hide = true;
   } else {
     delete node.hide;
+  }
+  return nextTree;
+}
+
+function setNodeDraftAtPath(tree, indexPath, draft) {
+  const nextTree = cloneTree(tree);
+  const node = getNodeAtPath(nextTree, indexPath);
+  if (!node) {
+    return null;
+  }
+  if (draft) {
+    node.draft = true;
+  } else {
+    delete node.draft;
   }
   return nextTree;
 }
@@ -645,7 +731,7 @@ function appendTreeToolbar(container, callbacks) {
   const hint = document.createElement("p");
   hint.className = "preview-picker-tree-toolbar-hint";
   hint.textContent =
-    "Drag ⋮⋮ to reorder (drop between rows). Drop onto a page row to nest it as a child. Hidden pages stay in the tree but are omitted from navigation, the blog index, or shop listings. Push product edits to save product hide to GitHub.";
+    "Drag ⋮⋮ to reorder (drop between rows). Drop onto a page row to nest it as a child. Hidden pages stay in the tree but are omitted from navigation, the blog index, or shop listings. Draft pages are not published as HTML. Push product edits to save product hide/draft to GitHub.";
   wrap.appendChild(hint);
   container.appendChild(wrap);
 }
@@ -745,7 +831,7 @@ function appendNewPageToolbar(container, fileTree, onCreated) {
     if (!Array.isArray(overlay.items)) {
       overlay.items = [];
     }
-    overlay.items.push({ label: title, href: path });
+    overlay.items.push({ label: title, href: path, draft: true });
     sessionStorage.setItem(FILE_TREE_OVERLAY_KEY, JSON.stringify(overlay));
 
     const pending = readPendingNewPages();
@@ -967,6 +1053,49 @@ function renderTreeNode(parent, node, indexPath, depth, callbacks) {
     row.appendChild(hideLabel);
   }
 
+  if (canToggleTreeNodeDraft(node)) {
+    const products = typeof callbacks.getProducts === "function" ? callbacks.getProducts() : [];
+    const draftLabel = document.createElement("label");
+    draftLabel.className = "preview-picker-tree-draft";
+    draftLabel.title = isProductTreeNode(node)
+      ? "Skip HTML publish (saved in productData.json on push)"
+      : "Skip HTML publish (saved in fileTree.json on push)";
+    const draftInput = document.createElement("input");
+    draftInput.type = "checkbox";
+    draftInput.checked = isTreeNodeDraft(node, products);
+    draftInput.setAttribute(
+      "aria-label",
+      isProductTreeNode(node) ? `Mark ${label} as draft` : `Mark ${label} as draft`,
+    );
+    draftInput.addEventListener("change", () => {
+      if (isProductTreeNode(node)) {
+        const path = normalizeTreeHref(href);
+        const slug = path.startsWith("shop/") ? path.slice("shop/".length) : "";
+        const find = window.productData?.findProductBySlug;
+        const setDraft = window.productData?.setProductDraftBySku;
+        const productList = typeof callbacks.getProducts === "function" ? callbacks.getProducts() : [];
+        const row = typeof find === "function" && slug ? find(productList, slug) : null;
+        if (!row || typeof setDraft !== "function") {
+          draftInput.checked = isTreeNodeDraft(node, productList);
+          return;
+        }
+        setDraft(row.SKU, draftInput.checked);
+        callbacks.onTreeChanged(callbacks.getCurrentTree());
+        return;
+      }
+      const nextTree = setNodeDraftAtPath(callbacks.getCurrentTree(), indexPath, draftInput.checked);
+      if (!nextTree) {
+        draftInput.checked = isTreeNodeDraft(node, products);
+        return;
+      }
+      saveFileTreeOverlay(nextTree);
+      callbacks.onTreeChanged(nextTree);
+    });
+    draftLabel.appendChild(draftInput);
+    draftLabel.appendChild(document.createTextNode(" Draft"));
+    row.appendChild(draftLabel);
+  }
+
   const actions = document.createElement("div");
   actions.className = "preview-picker-tree-actions";
 
@@ -1008,8 +1137,12 @@ function renderTreeNode(parent, node, indexPath, depth, callbacks) {
   if (isNew) {
     row.classList.add("preview-picker-tree-row--new");
   }
-  if (isTreeNodeHidden(node, typeof callbacks.getProducts === "function" ? callbacks.getProducts() : [])) {
+  const rowProducts = typeof callbacks.getProducts === "function" ? callbacks.getProducts() : [];
+  if (isTreeNodeHidden(node, rowProducts)) {
     row.classList.add("preview-picker-tree-row--hidden");
+  }
+  if (isTreeNodeDraft(node, rowProducts)) {
+    row.classList.add("preview-picker-tree-row--draft");
   }
 
   if (canAcceptNestedChildren(node)) {
@@ -1149,6 +1282,10 @@ window.displayFileTree = {
   getExportableFileTree,
   applyFileTreeOverlay,
   isTreeNodeHidden,
+  isTreeNodeDraft,
+  isTreePathDraft,
+  filterPathsForPublish,
+  collectPublishablePaths,
   collectAllKnownPaths,
   treePathToDownloadFolderName,
   treePathToOutputRelativePath,

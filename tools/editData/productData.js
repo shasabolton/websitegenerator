@@ -102,6 +102,7 @@ function sortCategoriesWithOtherLast(entries, nameKey) {
 }
 
 const PRODUCT_HIDE_OVERLAY_KEY = "siteGenerator.productHideOverlay";
+const PRODUCT_DRAFT_OVERLAY_KEY = "siteGenerator.productDraftOverlay";
 
 function readProductHideOverlay() {
   try {
@@ -173,6 +174,76 @@ function clearProductHideOverlayForSku(sku) {
   writeProductHideOverlay(overlay);
 }
 
+function readProductDraftOverlay() {
+  try {
+    const raw = sessionStorage.getItem(PRODUCT_DRAFT_OVERLAY_KEY);
+    if (!raw) {
+      return {};
+    }
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeProductDraftOverlay(overlay) {
+  sessionStorage.setItem(PRODUCT_DRAFT_OVERLAY_KEY, JSON.stringify(overlay));
+}
+
+function isProductRowDraft(row) {
+  if (!row || typeof row !== "object") {
+    return false;
+  }
+  return row.DRAFT === true || String(row.DRAFT ?? "").trim().toLowerCase() === "true";
+}
+
+function applyProductDraftOverlay(products) {
+  const overlay = readProductDraftOverlay();
+  if (!Object.keys(overlay).length) {
+    return products;
+  }
+  return products.map((row) => {
+    const sku = String(row?.SKU ?? "").trim();
+    if (!sku || !Object.prototype.hasOwnProperty.call(overlay, sku)) {
+      return row;
+    }
+    if (overlay[sku]) {
+      return { ...row, DRAFT: true };
+    }
+    const next = { ...row };
+    delete next.DRAFT;
+    return next;
+  });
+}
+
+function setProductDraftBySku(sku, draft) {
+  const key = String(sku ?? "").trim();
+  if (!key) {
+    return;
+  }
+  const overlay = readProductDraftOverlay();
+  if (draft) {
+    overlay[key] = true;
+  } else {
+    delete overlay[key];
+  }
+  writeProductDraftOverlay(overlay);
+}
+
+function clearProductDraftOverlayForSku(sku) {
+  const key = String(sku ?? "").trim();
+  if (!key) {
+    return;
+  }
+  const overlay = readProductDraftOverlay();
+  if (!Object.prototype.hasOwnProperty.call(overlay, key)) {
+    return;
+  }
+  delete overlay[key];
+  writeProductDraftOverlay(overlay);
+}
+
 function filterVisibleProducts(products) {
   return (Array.isArray(products) ? products : []).filter((row) => row && !isProductRowHidden(row));
 }
@@ -184,7 +255,9 @@ async function fetchProductDataJson() {
     throw new Error(`Failed to load product data: ${url} (${response.status})`);
   }
   const data = await response.json();
-  const products = applyProductHideOverlay(Array.isArray(data?.products) ? data.products : []);
+  const products = applyProductDraftOverlay(
+    applyProductHideOverlay(Array.isArray(data?.products) ? data.products : []),
+  );
   const columns = Array.isArray(data?.columns) ? data.columns : [];
   return { version: data?.version, columns, products };
 }
@@ -535,8 +608,11 @@ function getCategoriesForFileTree(products, digitalFilter) {
     filterProductsByDigital,
     filterVisibleProducts,
     isProductRowHidden,
+    isProductRowDraft,
     setProductHideBySku,
+    setProductDraftBySku,
     clearProductHideOverlayForSku,
+    clearProductDraftOverlayForSku,
     getCategoriesForFileTree,
     assignProductSlugsGlobally,
     getProductSlugForRow,

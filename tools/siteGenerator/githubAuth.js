@@ -968,7 +968,7 @@
 
     const columns = Array.isArray(root.columns) ? root.columns.slice() : [];
     const columnSet = new Set(columns);
-    for (const key of ["SLUG", "REDIRECTS"]) {
+    for (const key of ["SLUG", "REDIRECTS", "DRAFT"]) {
       if (!columnSet.has(key)) {
         columns.push(key);
         columnSet.add(key);
@@ -992,11 +992,21 @@
     if (typeof window.productData?.clearProductHideOverlayForSku === "function") {
       window.productData.clearProductHideOverlayForSku(sku);
     }
+    if (typeof window.productData?.clearProductDraftOverlayForSku === "function") {
+      window.productData.clearProductDraftOverlayForSku(sku);
+    }
     return {
       ...result,
       products,
       productRow: products[index],
     };
+  }
+
+  function filterTreePathsForPublish(treePaths, fileTree, products) {
+    if (typeof window.displayFileTree?.filterPathsForPublish === "function") {
+      return window.displayFileTree.filterPathsForPublish(fileTree, treePaths, products);
+    }
+    return Array.isArray(treePaths) ? treePaths : [];
   }
 
   function requireSelectedRepo() {
@@ -1195,12 +1205,19 @@
     return JSON.parse(base64ToUtf8(meta.content));
   }
 
+  function isTreeNodeDraft(node) {
+    if (typeof window.displayFileTree?.isTreeNodeDraft === "function") {
+      return window.displayFileTree.isTreeNodeDraft(node);
+    }
+    return node?.draft === true;
+  }
+
   function getBlogSlugsFromFileTree(fileTree) {
     const items = Array.isArray(fileTree?.items) ? fileTree.items : [];
     const blogNode = items.find((item) => normalizePagePath(item?.href) === "blog");
     const children = Array.isArray(blogNode?.children) ? blogNode.children : [];
     return children
-      .filter((child) => !isTreeNodeHidden(child))
+      .filter((child) => !isTreeNodeHidden(child) && !isTreeNodeDraft(child))
       .map((child) => {
         const href = normalizePagePath(child?.href || "");
         if (!href.startsWith("blog/") || href.length <= "blog/".length) {
@@ -1338,13 +1355,27 @@
     homePageHref,
     mergeManifest = true,
     deleteStaleFromManifest = false,
+    fileTree = null,
+    products = [],
   }) {
     const { owner, repo, branch } = requireSelectedRepo();
-    const outputPaths = uniqueOutputPaths(treePaths, homePageHref);
+    const draftTree =
+      fileTree && typeof fileTree === "object"
+        ? fileTree
+        : publishContext?.fileTree && typeof publishContext.fileTree === "object"
+          ? publishContext.fileTree
+          : { items: [] };
+    const draftProducts = Array.isArray(products) && products.length
+      ? products
+      : Array.isArray(publishContext?.products)
+        ? publishContext.products
+        : [];
+    const publishablePaths = filterTreePathsForPublish(treePaths, draftTree, draftProducts);
+    const outputPaths = uniqueOutputPaths(publishablePaths, homePageHref);
     const fileChanges = [];
     const generatedByPath = new Map();
-    for (let i = 0; i < treePaths.length; i += 1) {
-      const treePath = treePaths[i];
+    for (let i = 0; i < publishablePaths.length; i += 1) {
+      const treePath = publishablePaths[i];
       const relPath = treePathToOutputRelativePath(treePath, homePageHref);
       if (!relPath || generatedByPath.has(relPath)) {
         continue;
@@ -1489,14 +1520,18 @@
     if (!collectPaths) {
       throw new Error("displayFileTree.collectAllKnownPaths is required for full-site publish.");
     }
-    const treePaths = Array.from(collectPaths(populatedTree)).sort();
-    const { owner, repo, branch } = requireSelectedRepo();
-    const remoteProducts = await readRepoJson(owner, repo, PRODUCT_DATA_PATH, branch);
-    const products = Array.isArray(remoteProducts.json?.products) ? remoteProducts.json.products : [];
+    const allPaths = Array.from(collectPaths(populatedTree)).sort();
     const exportableTree =
       typeof window.displayFileTree?.getExportableFileTree === "function"
         ? window.displayFileTree.getExportableFileTree(populatedTree)
         : populatedTree;
+    const { owner, repo, branch } = requireSelectedRepo();
+    const remoteProducts = await readRepoJson(owner, repo, PRODUCT_DATA_PATH, branch);
+    const products = Array.isArray(remoteProducts.json?.products) ? remoteProducts.json.products : [];
+    const treePaths =
+      typeof window.displayFileTree?.filterPathsForPublish === "function"
+        ? window.displayFileTree.filterPathsForPublish(exportableTree, allPaths, products)
+        : allPaths;
     const publishContext = await buildPublishContext({ fileTree: exportableTree, products });
     const homePageHref = getHomePageHrefFromFileTree(exportableTree);
     const fileChanges = [];
