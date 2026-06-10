@@ -224,9 +224,8 @@ function buildCarouselThumbsHtml(items, productTitleRaw) {
  * @param {CarouselItem[]} items
  * @param {string} productTitleRaw
  * @param {string} carouselPartial
- * @param {{ watchUrl: string } | null} youtubeMeta
  */
-async function buildImageCarouselHtml(items, productTitleRaw, carouselPartial, youtubeMeta) {
+async function buildImageCarouselHtml(items, productTitleRaw, carouselPartial) {
   if (!Array.isArray(items) || items.length === 0) {
     return "";
   }
@@ -237,17 +236,11 @@ async function buildImageCarouselHtml(items, productTitleRaw, carouselPartial, y
     Math.random().toString(36).slice(2, 10);
   const slides = buildCarouselSlidesHtml(items, productTitleRaw);
   const thumbs = buildCarouselThumbsHtml(items, productTitleRaw);
-  const carouselInner = applyTemplate(carouselPartial, {
+  return applyTemplate(carouselPartial, {
     CAROUSEL_ID: escapeHtml(id),
     CAROUSEL_SLIDES: slides,
     CAROUSEL_THUMB_ITEMS: thumbs,
   });
-  if (!youtubeMeta?.watchUrl) {
-    return carouselInner;
-  }
-  const w = escapeHtml(youtubeMeta.watchUrl);
-  const crawl = `<p class="product-video-youtube-link"><a href="${w}" rel="noopener noreferrer">Watch this product video on YouTube</a></p>`;
-  return `${carouselInner}\n${crawl}`;
 }
 
 /**
@@ -282,13 +275,11 @@ async function generateProductBody(ctx) {
   const youtubeId = parseYoutubeVideoId(primaryVideoUrl);
   /** @type {CarouselItem[]} */
   const carouselItems = images.map((url) => ({ kind: "image", url }));
-  let youtubeMetaForLd = null;
   if (youtubeId) {
     const watchUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
     const embedUrl = `https://www.youtube.com/embed/${youtubeId}`;
     const thumbUrl = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
     const videoItem = { kind: "video", videoId: youtubeId, watchUrl, embedUrl, thumbUrl };
-    youtubeMetaForLd = { watchUrl, embedUrl, thumbnailUrl: thumbUrl };
     if (carouselItems.length > 0) {
       carouselItems.splice(1, 0, videoItem);
     } else {
@@ -296,12 +287,7 @@ async function generateProductBody(ctx) {
     }
   }
 
-  const carouselHtml = await buildImageCarouselHtml(
-    carouselItems,
-    title,
-    carouselPartial,
-    youtubeMetaForLd ? { watchUrl: youtubeMetaForLd.watchUrl } : null,
-  );
+  const carouselHtml = await buildImageCarouselHtml(carouselItems, title, carouselPartial);
   const homePageHref = ctx.homePageHref ?? null;
   const shopLandingHref = escapeHtml(
     window.homePage?.resolvePublicHref

@@ -134,7 +134,7 @@ function resolveVideoEmbed(block, parseYoutubeVideoId) {
  * @param {object} ctx
  * @param {string} ctx.carouselPartial
  * @param {(raw: string) => string | null} ctx.parseYoutubeVideoId
- * @param {(items: object[], label: string, partial: string, meta: object | null) => Promise<string>} ctx.buildImageCarouselHtml
+ * @param {(items: object[], label: string, partial: string) => Promise<string>} ctx.buildImageCarouselHtml
  */
 function editPlaceholder(message) {
   return `<p class="content-edit-placeholder">${escapeHtml(message)}</p>`;
@@ -210,7 +210,7 @@ async function renderBlock(block, ctx) {
       return "";
     }
     const label = String(block.label || block.title || "Gallery").trim() || "Gallery";
-    return ctx.buildImageCarouselHtml(items, label, ctx.carouselPartial, null);
+    return ctx.buildImageCarouselHtml(items, label, ctx.carouselPartial);
   }
 
   if (type === "video") {

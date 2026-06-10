@@ -659,12 +659,12 @@ body.nav-scroll-lock {
   outline-offset: 2px;
 }
 
-.product-body-actions {
+.product-page .product-body-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  margin: 12px 0 0;
+  margin: 6px 0 0;
 }
 
 .product-add-to-cart-btn {
@@ -1175,21 +1175,6 @@ body.nav-scroll-lock {
   height: 100%;
   border: 0;
   display: block;
-}
-
-.product-video-youtube-link {
-  margin: 8px 0 0;
-  max-width: 640px;
-  font-size: 0.95rem;
-}
-
-.product-video-youtube-link a {
-  color: #1d4ed8;
-  text-decoration: underline;
-}
-
-.product-video-youtube-link a:hover {
-  color: #1e40af;
 }
 
 @media (min-width: 768px) {
