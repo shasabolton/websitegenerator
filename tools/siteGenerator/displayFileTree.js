@@ -554,6 +554,23 @@ function getExportableFileTree(tree) {
   return stripGeneratedShopChildren(tree);
 }
 
+/** Sanitize each deploy path segment; preserve `/` nesting (do not flatten to hyphens). */
+function sanitizeDeployFolderPath(deployFolder) {
+  const normalized = String(deployFolder || "")
+    .trim()
+    .replace(/\\/g, "/")
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "");
+  if (!normalized) {
+    return "";
+  }
+  const segments = normalized
+    .split("/")
+    .map((segment) => String(segment || "").trim().replace(/[:*?"<>|]+/g, "-"))
+    .filter(Boolean);
+  return segments.join("/") || "page";
+}
+
 /** Output path relative to repo root (`index.html` or `about/index.html`). */
 function treePathToOutputRelativePath(treePath, homePageHref = cachedHomePageHref) {
   const folder = treePathToDownloadFolderName(treePath, homePageHref);
@@ -563,15 +580,14 @@ function treePathToOutputRelativePath(treePath, homePageHref = cachedHomePageHre
   return `${folder}/index.html`;
 }
 
-/** Safe folder name for the page (matches previous single-file basename, without `.html`). */
+/** Deploy folder path (`""` = site root; `blog/foo` = nested folder). */
 function treePathToDownloadFolderName(treePath, homePageHref = cachedHomePageHref) {
   if (window.homePage?.resolveDeployFolder) {
     const deployFolder = window.homePage.resolveDeployFolder(treePath, homePageHref);
     if (!deployFolder) {
       return "";
     }
-    const safe = deployFolder.replace(/[\\/:*?"<>|]+/g, "-") || "page";
-    return safe;
+    return sanitizeDeployFolderPath(deployFolder);
   }
   const p = String(treePath || "")
     .trim()
@@ -580,9 +596,7 @@ function treePathToDownloadFolderName(treePath, homePageHref = cachedHomePageHre
   if (!p) {
     return "page";
   }
-  const base = p.split("/").filter(Boolean).join("-");
-  const safe = base.replace(/[\\/:*?"<>|]+/g, "-") || "page";
-  return safe;
+  return sanitizeDeployFolderPath(p);
 }
 
 async function downloadPageFolderAsZip(folderName, html) {
