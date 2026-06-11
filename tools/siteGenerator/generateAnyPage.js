@@ -3,8 +3,18 @@
  * Body markup comes from `generateCartBody`, `generateShopBody`, `generateCategoryBody`, or `generateProductBody` (`{ bodyHtml, categoryNames, pageTitle }`).
  */
 
+function resolveFetchUrl(url) {
+  const raw = String(url || "").trim();
+  if (!raw || /^https?:\/\//i.test(raw) || raw.startsWith("data:")) {
+    return raw;
+  }
+  // Resolve against the document URL so `<base>` (added in edit/preview) does not break generator fetches.
+  return new URL(raw, window.location.href).href;
+}
+
 async function fetchJson(url) {
-  const response = await fetch(url, { cache: "no-store" });
+  const resolved = resolveFetchUrl(url);
+  const response = await fetch(resolved, { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Failed to load JSON: ${url} (${response.status})`);
   }
@@ -12,7 +22,8 @@ async function fetchJson(url) {
 }
 
 async function fetchText(url) {
-  const response = await fetch(url, { cache: "no-store" });
+  const resolved = resolveFetchUrl(url);
+  const response = await fetch(resolved, { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Failed to load file: ${url} (${response.status})`);
   }

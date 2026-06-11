@@ -4,9 +4,14 @@
   }
 
 function productDataJsonUrl() {
-  return document.querySelector("base[data-site-base]")
-    ? "shared-assets/config/productData.json"
-    : "../../shared-assets/config/productData.json";
+  if (/\/tools\/siteGenerator\//i.test(window.location.pathname)) {
+    return new URL("../../shared-assets/config/productData.json", window.location.href).href;
+  }
+  const baseEl = document.querySelector("base[data-site-base]");
+  if (baseEl?.href) {
+    return new URL("shared-assets/config/productData.json", baseEl.href).href;
+  }
+  return new URL("../../shared-assets/config/productData.json", window.location.href).href;
 }
 
 function slugify(value) {

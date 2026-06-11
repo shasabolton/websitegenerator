@@ -1,5 +1,8 @@
 async function fetchJson(url) {
-  const response = await fetch(url, { cache: "no-store" });
+  const raw = String(url || "").trim();
+  const resolved =
+    !raw || /^https?:\/\//i.test(raw) ? raw : new URL(raw, window.location.href).href;
+  const response = await fetch(resolved, { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Failed to load JSON: ${url} (${response.status})`);
   }
