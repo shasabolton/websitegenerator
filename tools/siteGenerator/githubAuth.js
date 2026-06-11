@@ -23,7 +23,11 @@
   const FILE_TREE_PATH = "shared-assets/config/fileTree.json";
   const NAVIGATION_PATH = "shared-assets/config/navigation.json";
   const PRODUCT_DATA_PATH = "shared-assets/config/productData.json";
+  const SHOP_DATA_PATH = "shared-assets/config/shopData.json";
   const MANIFEST_PATH = ".generated/manifest.json";
+  const SITEMAP_PATH = "sitemap.xml";
+  const ROBOTS_PATH = "robots.txt";
+  const SITEMAP_EXCLUDED_OUTPUTS = new Set(["cart/index.html"]);
   const OAUTH_SCOPE = "repo";
   const DEFAULT_BRANCH = "main";
   const BLOB_CONCURRENCY = 5;
@@ -1045,6 +1049,120 @@
     };
   }
 
+  function escapeXml(text) {
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+  }
+
+  function getSiteOriginFromShopData(shopData) {
+    const raw = shopData?.websites?.primary;
+    if (!raw || typeof raw !== "string") {
+      return "";
+    }
+    try {
+      return new URL(raw).origin;
+    } catch {
+      return "";
+    }
+  }
+
+  function outputRelativePathToPublicPath(outputPath) {
+    const normalized = String(outputPath || "").trim().replace(/\\/g, "/");
+    if (normalized === "index.html") {
+      return "";
+    }
+    if (normalized.endsWith("/index.html")) {
+      return normalized.slice(0, -"/index.html".length);
+    }
+    return null;
+  }
+
+  function outputRelativePathToLoc(siteOrigin, outputPath) {
+    const publicPath = outputRelativePathToPublicPath(outputPath);
+    if (publicPath === null) {
+      return null;
+    }
+    if (!siteOrigin) {
+      return publicPath ? `/${publicPath}` : "/";
+    }
+    return publicPath ? `${siteOrigin}/${publicPath}` : `${siteOrigin}/`;
+  }
+
+  function formatSitemapLastmod(isoTimestamp) {
+    const date = new Date(isoTimestamp);
+    if (Number.isNaN(date.getTime())) {
+      return null;
+    }
+    return date.toISOString().slice(0, 10);
+  }
+
+  function buildSitemapXml(outputs, shopData, generatedAt) {
+    const siteOrigin = getSiteOriginFromShopData(shopData);
+    const lastmod = formatSitemapLastmod(generatedAt);
+    const urls = [];
+    for (const outputPath of outputs) {
+      if (SITEMAP_EXCLUDED_OUTPUTS.has(outputPath)) {
+        continue;
+      }
+      const loc = outputRelativePathToLoc(siteOrigin, outputPath);
+      if (!loc) {
+        continue;
+      }
+      urls.push({ loc, lastmod });
+    }
+    urls.sort((a, b) => a.loc.localeCompare(b.loc));
+    const lines = [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ];
+    for (const entry of urls) {
+      lines.push("  <url>");
+      lines.push(`    <loc>${escapeXml(entry.loc)}</loc>`);
+      if (entry.lastmod) {
+        lines.push(`    <lastmod>${escapeXml(entry.lastmod)}</lastmod>`);
+      }
+      lines.push("  </url>");
+    }
+    lines.push("</urlset>");
+    return `${lines.join("\n")}\n`;
+  }
+
+  function buildRobotsTxt(shopData) {
+    const siteOrigin = getSiteOriginFromShopData(shopData);
+    const lines = ["User-agent: *", "Allow: /"];
+    if (siteOrigin) {
+      lines.push("", `Sitemap: ${siteOrigin}/sitemap.xml`);
+    }
+    return `${lines.join("\n")}\n`;
+  }
+
+  async function readShopDataFromRepo() {
+    const { owner, repo, branch } = requireSelectedRepo();
+    const remote = await readRepoJson(owner, repo, SHOP_DATA_PATH, branch);
+    return remote.json && typeof remote.json === "object" ? remote.json : {};
+  }
+
+  function appendPublishIndexFiles(fileChanges, nextOutputs, shopData) {
+    const manifest = buildManifestJson(nextOutputs);
+    fileChanges.push({
+      path: MANIFEST_PATH,
+      content: `${JSON.stringify(manifest, null, 2)}\n`,
+    });
+    fileChanges.push({
+      path: SITEMAP_PATH,
+      content: buildSitemapXml(nextOutputs, shopData, manifest.generatedAt),
+    });
+    fileChanges.push({
+      path: ROBOTS_PATH,
+      content: buildRobotsTxt(shopData),
+    });
+    return manifest;
+  }
+
   async function mapWithConcurrency(items, concurrency, worker) {
     const list = Array.isArray(items) ? items : [];
     if (!list.length) {
@@ -1404,11 +1522,8 @@
         fileChanges.push({ path, delete: true });
       }
     }
-    const manifest = buildManifestJson(nextOutputs);
-    fileChanges.push({
-      path: MANIFEST_PATH,
-      content: `${JSON.stringify(manifest, null, 2)}\n`,
-    });
+    const shopData = await readShopDataFromRepo();
+    const manifest = appendPublishIndexFiles(fileChanges, nextOutputs, shopData);
 
     const commit = await publishSiteCommit({ message, fileChanges });
     return { commit, manifest, outputPaths: nextOutputs };
@@ -1558,11 +1673,8 @@
     for (const path of stale) {
       fileChanges.push({ path, delete: true });
     }
-    const manifest = buildManifestJson(nextOutputs);
-    fileChanges.push({
-      path: MANIFEST_PATH,
-      content: `${JSON.stringify(manifest, null, 2)}\n`,
-    });
+    const shopData = await readShopDataFromRepo();
+    const manifest = appendPublishIndexFiles(fileChanges, nextOutputs, shopData);
     onProgress("Uploading…");
     const commit = await publishSiteCommit({
       message: "Publish full site",
