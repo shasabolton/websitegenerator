@@ -1297,7 +1297,7 @@
     {
       "TITLE": "Bird Zoetrope Kit, 3D Laser Cut Wooden Puzzle, Animation Machine",
       "SHORT_TITLE": "Bird Zoetrope",
-      "DESCRIPTION": "(See my other listings for the digital plans for this kit) Wind the handle to make the birds flap their wings. This works like a traditional film projector except rather than pictures there are 3D objects in each frame. The small gear is specially shaped so that rather than giving the big gear continuous motion, it is intermittent. This means there is a pause after each 45 degree rotation, allowing your eye to catch the bird as a still frame. When the handle is turned quickly these blend together into an animation. Most 3D Zoetropes use a strobe light to provide the still frame effect. I like this method because it does not require a dark room or electricity.\nThis mechanism comes in kit form with all of the parts for you to slot together. I attempt to make the fits tight enough so that no glue is needed, but PVA can be used on any loose parts. \nParts that seem to tight can be sanded.",
+      "DESCRIPTION": "Wind the handle to make the birds flap their wings. This works like a traditional film projector except rather than pictures there are 3D objects in each frame. The small gear is specially shaped so that rather than giving the big gear continuous motion, it is intermittent. This means there is a pause after each 45 degree rotation, allowing your eye to catch the bird as a still frame. When the handle is turned quickly these blend together into an animation. Most 3D Zoetropes use a strobe light to provide the still frame effect. I like this method because it does not require a dark room or electricity.\nThis mechanism comes in kit form with all of the parts for you to slot together. I attempt to make the fits tight enough so that no glue is needed, but PVA can be used on any loose parts.",
       "PRICE": "40",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "10",
@@ -1336,7 +1336,9 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "bird-zoetrope",
-      "REDIRECTS": []
+      "REDIRECTS": [
+        "shop/bird-zoetrope-3d"
+      ]
     },
     {
       "TITLE": "Bird 3D Zoetrope laser cutter plans - SVG DXF",
