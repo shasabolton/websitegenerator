@@ -62,6 +62,7 @@
       var paypalSdkLoading = false;
       var shipCountryListenerBound = false;
       var SHIP_COUNTRY_STORAGE_KEY = "websitegenerator-cart-ship-country";
+      var cachedProducts = null;
 
       if (!cart || !root) {
         return;
@@ -78,6 +79,28 @@
 
       function escAttr(s) {
         return escHtml(s).replace(/`/g, "&#96;");
+      }
+
+      function resolveLineProductHref(line) {
+        var path = String(line.productPath || "").trim();
+        if (path) {
+          return path;
+        }
+        var sku = String(line.sku || "").trim();
+        if (!sku || !cachedProducts || !window.productData) {
+          return "";
+        }
+        if (typeof window.productData.getProductSlugForRow !== "function") {
+          return "";
+        }
+        var row = cachedProducts.find(function (p) {
+          return p && String(p.SKU || "").trim() === sku;
+        });
+        if (!row) {
+          return "";
+        }
+        var seg = window.productData.getProductSlugForRow(row, cachedProducts);
+        return seg ? "shop/" + seg : "";
       }
 
       function formatMoney(amount, currency) {
@@ -524,11 +547,35 @@
             if (!Number.isFinite(unit)) unit = 0;
             var thumb = line.imageUrl ? String(line.imageUrl).trim() : "";
             var lineTotal = lineSubtotal(line);
-            var thumbBlock = thumb
-              ? '<div class="cart-line-thumb"><img src="' +
+            var productHref = resolveLineProductHref(line);
+            var thumbInner = thumb
+              ? '<img src="' +
                 escAttr(thumb) +
-                '" alt="" width="64" height="64" loading="lazy" decoding="async" /></div>'
-              : '<div class="cart-line-thumb cart-line-thumb--empty" aria-hidden="true"></div>';
+                '" alt="" width="64" height="64" loading="lazy" decoding="async" />'
+              : "";
+            var thumbBlock;
+            if (productHref) {
+              thumbBlock =
+                '<a class="cart-line-thumb-link" href="' +
+                escAttr(productHref) +
+                '"><div class="cart-line-thumb' +
+                (thumb ? "" : " cart-line-thumb--empty") +
+                '">' +
+                thumbInner +
+                "</div></a>";
+            } else if (thumb) {
+              thumbBlock = '<div class="cart-line-thumb">' + thumbInner + "</div>";
+            } else {
+              thumbBlock =
+                '<div class="cart-line-thumb cart-line-thumb--empty" aria-hidden="true"></div>';
+            }
+            var titleBlock = productHref
+              ? '<h3 class="cart-line-title"><a class="cart-line-title-link" href="' +
+                escAttr(productHref) +
+                '">' +
+                escHtml(title) +
+                "</a></h3>"
+              : '<h3 class="cart-line-title">' + escHtml(title) + "</h3>";
             var varBlock = varSumm
               ? '<p class="cart-line-variation">' + escHtml(varSumm) + "</p>"
               : "";
@@ -540,9 +587,7 @@
               '">' +
               thumbBlock +
               '<div class="cart-line-main">' +
-              '<h3 class="cart-line-title">' +
-              escHtml(title) +
-              "</h3>" +
+              titleBlock +
               varBlock +
               '<p class="cart-line-meta">SKU: ' +
               escHtml(sku) +
@@ -603,6 +648,7 @@
             .fetchProductDataJson()
             .then(function (data) {
               var products = (data && data.products) || [];
+              cachedProducts = products;
               if (window.productData.repriceCartItemsInPlace(cart.data, products)) {
                 cart.saveToLocalStorage();
               }

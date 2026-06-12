@@ -160,6 +160,31 @@ function isProductTreeNode(node) {
   return String(node?.pageType || "").trim().toLowerCase() === "product";
 }
 
+function isCategoryTreeNode(node) {
+  return String(node?.pageType || "").trim().toLowerCase() === "category";
+}
+
+function canDragProductsInTree() {
+  if (getActiveCategoryFilter()) {
+    return false;
+  }
+  return getActiveDigitalFilterForPreviewLinks() === null;
+}
+
+function canDragTreeNode(node) {
+  if (!isShopGeneratedChild(node)) {
+    return true;
+  }
+  return isProductTreeNode(node) && canDragProductsInTree();
+}
+
+function showTreeDropZones(node) {
+  if (!isShopGeneratedChild(node)) {
+    return true;
+  }
+  return isProductTreeNode(node) || isCategoryTreeNode(node);
+}
+
 function isTreeNodeHidden(node, products = []) {
   if (isProductTreeNode(node)) {
     const path = normalizeTreeHref(node?.href || "");
@@ -745,10 +770,46 @@ function appendTreeToolbar(container, callbacks) {
   });
   wrap.appendChild(saveBtn);
 
+  const saveOrderBtn = document.createElement("button");
+  saveOrderBtn.type = "button";
+  saveOrderBtn.className = "preview-picker-save-product-order";
+  saveOrderBtn.textContent = "Save product order to GitHub";
+  saveOrderBtn.addEventListener("click", async () => {
+    saveOrderBtn.disabled = true;
+    try {
+      if (!window.githubAuth?.pushProductOrder) {
+        throw new Error("GitHub product order push is not available.");
+      }
+      await window.githubAuth.pushProductOrder();
+      saveOrderBtn.textContent = "Saved";
+      window.setTimeout(() => {
+        saveOrderBtn.textContent = "Save product order to GitHub";
+        updateSaveOrderButtonState();
+      }, 2000);
+    } catch (err) {
+      window.alert(err?.message || String(err));
+    } finally {
+      saveOrderBtn.disabled = false;
+    }
+  });
+  wrap.appendChild(saveOrderBtn);
+
+  function updateSaveOrderButtonState() {
+    const hasOverlay =
+      typeof window.productData?.hasProductOrderOverlay === "function" &&
+      window.productData.hasProductOrderOverlay();
+    saveOrderBtn.disabled = !hasOverlay;
+    saveOrderBtn.title = hasOverlay
+      ? "Write reordered products array to productData.json on GitHub"
+      : "Drag products under Shop to change order (use All categories and All products filters first)";
+  }
+  updateSaveOrderButtonState();
+  callbacks.onProductOrderOverlayChanged = updateSaveOrderButtonState;
+
   const hint = document.createElement("p");
   hint.className = "preview-picker-tree-toolbar-hint";
   hint.textContent =
-    "Drag ⋮⋮ to reorder (drop between rows). Drop onto a page row to nest it as a child. Hidden pages stay in the tree but are omitted from navigation, the blog index, or shop listings. Draft pages are not published as HTML. Push product edits to save product hide/draft to GitHub.";
+    "Drag ⋮⋮ to reorder (drop between rows). Drop onto a page row to nest it as a child. Drag shop products to reorder them in productData.json (use All categories / All products filters). Hidden pages stay in the tree but are omitted from navigation, the blog index, or shop listings. Draft pages are not published as HTML. Push product edits to save product hide/draft to GitHub.";
   wrap.appendChild(hint);
   container.appendChild(wrap);
 }
@@ -875,13 +936,39 @@ function appendNewPageToolbar(container, fileTree, onCreated) {
 }
 
 function applyTreeMove(sourcePath, targetPath, position, callbacks) {
-  const nextTree = moveTreeNode(callbacks.getCurrentTree(), sourcePath, targetPath, position);
+  const tree = callbacks.getCurrentTree();
+  const sourceNode = getNodeAtPath(tree, sourcePath);
+  const isProductMove = isProductTreeNode(sourceNode);
+  const nextTree = moveTreeNode(tree, sourcePath, targetPath, position);
   if (!nextTree) {
     return false;
   }
-  saveFileTreeOverlay(nextTree);
+  if (isProductMove) {
+    if (!canDragProductsInTree()) {
+      return false;
+    }
+    const products = typeof callbacks.getProducts === "function" ? callbacks.getProducts() : [];
+    syncProductOrderOverlayFromTree(nextTree, products);
+    if (typeof callbacks.onProductOrderOverlayChanged === "function") {
+      callbacks.onProductOrderOverlayChanged();
+    }
+  } else {
+    saveFileTreeOverlay(nextTree);
+  }
   callbacks.onTreeChanged(nextTree);
   return true;
+}
+
+function findShopNode(tree) {
+  return (tree?.items || []).find((item) => normalizeTreeHref(item?.href) === "shop") || null;
+}
+
+function syncProductOrderOverlayFromTree(tree, products) {
+  const shopNode = findShopNode(tree);
+  if (!shopNode || typeof window.productData?.syncProductOrderFromShopTree !== "function") {
+    return;
+  }
+  window.productData.syncProductOrderFromShopTree(shopNode.children, products);
 }
 
 function canAcceptNestedChildren(node) {
@@ -973,8 +1060,8 @@ function bindRowNestDrop(row, indexPath, callbacks, nodeId) {
 }
 
 function renderTreeNode(parent, node, indexPath, depth, callbacks) {
-  const generatedChild = isShopGeneratedChild(node);
-  const canDrag = !generatedChild;
+  const canDrag = canDragTreeNode(node);
+  const showDropZones = showTreeDropZones(node);
   const nodeId = treeIdFromPath(indexPath);
   const href = String(node.href || "").trim();
   const label = String(node.label || href || "Page").trim() || "Page";
@@ -985,7 +1072,7 @@ function renderTreeNode(parent, node, indexPath, depth, callbacks) {
   block.className = "preview-picker-tree-block";
   block.dataset.treeId = nodeId;
 
-  if (canDrag) {
+  if (showDropZones) {
     block.appendChild(createDropZone("before", indexPath, callbacks, depth));
   }
 
@@ -1179,7 +1266,7 @@ function renderTreeNode(parent, node, indexPath, depth, callbacks) {
     block.appendChild(childWrap);
   }
 
-  if (canDrag) {
+  if (showDropZones) {
     block.appendChild(createDropZone("after", indexPath, callbacks, depth));
   }
 

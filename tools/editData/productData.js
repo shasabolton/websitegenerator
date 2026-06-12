@@ -108,6 +108,8 @@ function sortCategoriesWithOtherLast(entries, nameKey) {
 
 const PRODUCT_HIDE_OVERLAY_KEY = "siteGenerator.productHideOverlay";
 const PRODUCT_DRAFT_OVERLAY_KEY = "siteGenerator.productDraftOverlay";
+const PRODUCT_ORDER_OVERLAY_KEY = "siteGenerator.productOrderOverlay";
+const PRODUCT_CATEGORY_OVERLAY_KEY = "siteGenerator.productCategoryOverlay";
 
 function readProductHideOverlay() {
   try {
@@ -253,6 +255,158 @@ function filterVisibleProducts(products) {
   return (Array.isArray(products) ? products : []).filter((row) => row && !isProductRowHidden(row));
 }
 
+function readProductOrderOverlay() {
+  try {
+    const raw = sessionStorage.getItem(PRODUCT_ORDER_OVERLAY_KEY);
+    if (!raw) {
+      return null;
+    }
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed?.skus) ? parsed.skus : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeProductOrderOverlay(skus) {
+  const list = Array.isArray(skus) ? skus.map((sku) => String(sku ?? "").trim()).filter(Boolean) : [];
+  sessionStorage.setItem(PRODUCT_ORDER_OVERLAY_KEY, JSON.stringify({ skus: list }));
+}
+
+function clearProductOrderOverlay() {
+  sessionStorage.removeItem(PRODUCT_ORDER_OVERLAY_KEY);
+}
+
+function hasProductOrderOverlay() {
+  const skus = readProductOrderOverlay();
+  return Array.isArray(skus) && skus.length > 0;
+}
+
+function readProductCategoryOverlay() {
+  try {
+    const raw = sessionStorage.getItem(PRODUCT_CATEGORY_OVERLAY_KEY);
+    if (!raw) {
+      return {};
+    }
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeProductCategoryOverlay(overlay) {
+  sessionStorage.setItem(PRODUCT_CATEGORY_OVERLAY_KEY, JSON.stringify(overlay));
+}
+
+function clearProductCategoryOverlay() {
+  sessionStorage.removeItem(PRODUCT_CATEGORY_OVERLAY_KEY);
+}
+
+function applyProductCategoryOverlay(products) {
+  const overlay = readProductCategoryOverlay();
+  if (!Object.keys(overlay).length) {
+    return products;
+  }
+  return products.map((row) => {
+    const sku = String(row?.SKU ?? "").trim();
+    if (!sku || !Object.prototype.hasOwnProperty.call(overlay, sku)) {
+      return row;
+    }
+    return { ...row, CATEGORY: overlay[sku] };
+  });
+}
+
+function applyProductOrderOverlay(products) {
+  const skus = readProductOrderOverlay();
+  if (!skus || !skus.length) {
+    return products;
+  }
+  const list = Array.isArray(products) ? products : [];
+  const bySku = new Map();
+  for (const row of list) {
+    const sku = String(row?.SKU ?? "").trim();
+    if (sku) {
+      bySku.set(sku, row);
+    }
+  }
+  const used = new Set();
+  const ordered = [];
+  for (const sku of skus) {
+    const key = String(sku ?? "").trim();
+    if (!key || used.has(key)) {
+      continue;
+    }
+    const row = bySku.get(key);
+    if (row) {
+      ordered.push(row);
+      used.add(key);
+    }
+  }
+  for (const row of list) {
+    const sku = String(row?.SKU ?? "").trim();
+    if (!sku || used.has(sku)) {
+      continue;
+    }
+    ordered.push(row);
+    used.add(sku);
+  }
+  return ordered;
+}
+
+/**
+ * Read product order from populated shop tree children and persist session overlays.
+ * @param {object[]} shopChildren
+ * @param {object[]} products - catalog rows (with hide/draft overlays applied)
+ */
+function syncProductOrderFromShopTree(shopChildren, products) {
+  const children = Array.isArray(shopChildren) ? shopChildren : [];
+  const list = Array.isArray(products) ? products : [];
+  let currentCategory = null;
+  const skus = [];
+  const categoryOverlay = { ...readProductCategoryOverlay() };
+
+  for (const child of children) {
+    const pageType = String(child?.pageType || "").trim().toLowerCase();
+    if (pageType === "category") {
+      currentCategory = String(child?.category || child?.label || "").trim();
+      continue;
+    }
+    if (pageType !== "product") {
+      continue;
+    }
+    const href = String(child?.href || "")
+      .trim()
+      .replace(/^\/+/, "")
+      .replace(/\/+$/, "")
+      .toLowerCase();
+    if (!href.startsWith("shop/") || href.length <= "shop/".length) {
+      continue;
+    }
+    const slug = href.slice("shop/".length);
+    const row = findProductBySlug(list, slug);
+    if (!row) {
+      continue;
+    }
+    const sku = String(row?.SKU ?? "").trim();
+    if (!sku) {
+      continue;
+    }
+    skus.push(sku);
+    if (currentCategory) {
+      const rowCategory = resolveProductCategory(row);
+      if (rowCategory.toLowerCase() !== currentCategory.toLowerCase()) {
+        categoryOverlay[sku] = currentCategory;
+      } else {
+        delete categoryOverlay[sku];
+      }
+    }
+  }
+
+  writeProductOrderOverlay(skus);
+  writeProductCategoryOverlay(categoryOverlay);
+}
+
 async function fetchProductDataJson() {
   const url = productDataJsonUrl();
   const response = await fetch(url, { cache: "no-store" });
@@ -260,9 +414,10 @@ async function fetchProductDataJson() {
     throw new Error(`Failed to load product data: ${url} (${response.status})`);
   }
   const data = await response.json();
-  const products = applyProductDraftOverlay(
-    applyProductHideOverlay(Array.isArray(data?.products) ? data.products : []),
-  );
+  let products = applyProductHideOverlay(Array.isArray(data?.products) ? data.products : []);
+  products = applyProductDraftOverlay(products);
+  products = applyProductCategoryOverlay(products);
+  products = applyProductOrderOverlay(products);
   const columns = Array.isArray(data?.columns) ? data.columns : [];
   return { version: data?.version, columns, products };
 }
@@ -558,6 +713,12 @@ function repriceCartItemsInPlace(cartData, products) {
       item.unitPrice = next;
       changed = true;
     }
+    const segment = getProductSlugForRow(row, list);
+    const nextPath = segment ? `shop/${segment}` : "";
+    if (nextPath && String(item.productPath || "").trim() !== nextPath) {
+      item.productPath = nextPath;
+      changed = true;
+    }
   }
   return changed;
 }
@@ -619,6 +780,11 @@ function getCategoriesForFileTree(products, digitalFilter) {
     setProductDraftBySku,
     clearProductHideOverlayForSku,
     clearProductDraftOverlayForSku,
+    hasProductOrderOverlay,
+    clearProductOrderOverlay,
+    clearProductCategoryOverlay,
+    readProductCategoryOverlay,
+    syncProductOrderFromShopTree,
     getCategoriesForFileTree,
     assignProductSlugsGlobally,
     getProductSlugForRow,
