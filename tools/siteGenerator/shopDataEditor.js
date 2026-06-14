@@ -328,23 +328,39 @@
       return;
     }
 
-    root.innerHTML = `<p class="shop-data-loading">Loading shop data…</p>`;
+    root.innerHTML = "";
+    root.classList.add("shop-data-panel");
+
+    const details = document.createElement("details");
+    details.className = "shop-data-details";
+
+    const summary = document.createElement("summary");
+    summary.className = "shop-data-summary";
+    summary.textContent = "Shop data";
+
+    const body = document.createElement("div");
+    body.className = "shop-data-body";
+    body.innerHTML = `<p class="shop-data-loading">Loading shop data…</p>`;
+
+    details.appendChild(summary);
+    details.appendChild(body);
+    root.appendChild(details);
 
     let baseData;
     try {
       baseData = await fetchShopDataJson();
     } catch (err) {
-      root.innerHTML = `<p class="shop-data-error">${escapeHtml(err?.message || String(err))}</p>`;
+      body.innerHTML = `<p class="shop-data-error">${escapeHtml(err?.message || String(err))}</p>`;
       return;
     }
 
-    root.innerHTML = "";
+    body.innerHTML = "";
 
     const intro = document.createElement("p");
     intro.className = "shop-data-intro";
     intro.textContent =
       "Edit shared-assets/config/shopData.json. The shop intro is a single plain-text paragraph on the shop page. Publish the site after saving to update live HTML.";
-    root.appendChild(intro);
+    body.appendChild(intro);
 
     const form = document.createElement("form");
     form.className = "shop-data-form";
@@ -448,7 +464,7 @@
     footer.appendChild(status);
 
     form.appendChild(footer);
-    root.appendChild(form);
+    body.appendChild(form);
 
     function setStatus(message, kind) {
       status.textContent = message || "";
