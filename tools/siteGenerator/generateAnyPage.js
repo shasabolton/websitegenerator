@@ -144,7 +144,9 @@ async function runGenerateAnyPage(treePath, options = {}) {
     options.publishContext && typeof options.publishContext === "object" ? options.publishContext : null;
 
   const [shopData, pageTemplate, setBaseSource] = await Promise.all([
-    fetchJson("../../shared-assets/config/shopData.json"),
+    typeof window.shopDataEditor?.fetchShopDataJson === "function"
+      ? window.shopDataEditor.fetchShopDataJson()
+      : fetchJson("../../shared-assets/config/shopData.json"),
     fetchText("./templates/pages/allPages.html"),
     fetchText("./setBase.js"),
   ]);

@@ -38,6 +38,7 @@ function loadPreviewGenerators() {
       await loadScript("./homePage.js");
       await loadScript("./generateHeaderAndFooter.js");
       await loadScript("./structuredData.js");
+      await loadScript("./shopDataEditor.js");
       await loadScript("./generateAnyPage.js");
       await loadScript("./generateCartBody.js");
       await loadScript("./generateShopBody.js");
@@ -194,5 +195,9 @@ window.addEventListener("load", () => {
 
   if (window.productDataMerge?.init) {
     window.productDataMerge.init();
+  }
+
+  if (window.shopDataEditor?.initShopDataEditor) {
+    window.shopDataEditor.initShopDataEditor({ rootId: "shop-data-editor-root" });
   }
 });

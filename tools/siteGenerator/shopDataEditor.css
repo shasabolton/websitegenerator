@@ -1,0 +1,151 @@
+.shop-data-panel {
+  margin-bottom: 20px;
+}
+
+.shop-data-panel h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.shop-data-intro,
+.shop-data-loading {
+  margin: 0 0 12px;
+  color: #4b5563;
+  line-height: 1.45;
+  font-size: 14px;
+}
+
+.shop-data-error {
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+.shop-data-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.shop-data-section {
+  margin: 0;
+  padding: 12px 14px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.shop-data-section legend {
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.shop-data-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.shop-data-field:first-of-type {
+  margin-top: 4px;
+}
+
+.shop-data-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.shop-data-label--checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+}
+
+.shop-data-field input[type="text"],
+.shop-data-field input[type="url"],
+.shop-data-field input[type="email"],
+.shop-data-field input[type="tel"],
+.shop-data-field select,
+.shop-data-field textarea {
+  font-size: 14px;
+  padding: 7px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  max-width: 40rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.shop-data-field textarea {
+  resize: vertical;
+  min-height: 2.5rem;
+  line-height: 1.45;
+}
+
+.shop-data-hint {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.shop-data-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding-top: 4px;
+}
+
+.shop-data-btn {
+  font-size: 14px;
+  padding: 7px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+}
+
+.shop-data-btn:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.shop-data-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.shop-data-btn--primary {
+  background: #111827;
+  border-color: #111827;
+  color: #fff;
+}
+
+.shop-data-btn--primary:hover:not(:disabled) {
+  background: #1f2937;
+}
+
+.shop-data-btn--muted {
+  color: #6b7280;
+}
+
+.shop-data-status {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.shop-data-status--ok {
+  color: #047857;
+}
+
+.shop-data-status--error {
+  color: #b91c1c;
+}

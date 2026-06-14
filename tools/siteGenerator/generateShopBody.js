@@ -29,7 +29,7 @@ function categoryHref(category) {
 const EMPTY_THUMB_ROW = "<p class=\"product-thumb-empty\">No products in this category yet.</p>";
 
 /**
- * Inserts trusted HTML from `shopData.about` (site-owner config only).
+ * Shop intro: plain text in shopData.about (legacy HTML is stripped).
  * @param {unknown} about
  * @returns {string}
  */
@@ -40,7 +40,17 @@ function buildShopAboutBlock(about) {
       "Browse the categories below to explore products."
     )}</p>`;
   }
-  return `<div class="shop-about">${raw}</div>`;
+  const stripHtml = window.structuredData?.stripHtml;
+  const plain =
+    raw.includes("<") && typeof stripHtml === "function"
+      ? stripHtml(raw)
+      : raw.replace(/\s+/g, " ").trim();
+  if (!plain) {
+    return `<p class="shop-browse-lead">${escapeHtml(
+      "Browse the categories below to explore products."
+    )}</p>`;
+  }
+  return `<div class="shop-about"><p>${escapeHtml(plain)}</p></div>`;
 }
 
 /**

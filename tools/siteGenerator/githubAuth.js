@@ -717,6 +717,35 @@
     return fileTreeResult;
   }
 
+  async function pushShopData(shopDataJson) {
+    const fullName = getSelectedRepo();
+    const parsed = parseRepoFullName(fullName);
+    if (!parsed) {
+      throw new Error("Select a GitHub repository on the site generator picker page.");
+    }
+    const branch = getBranch();
+    const payload =
+      shopDataJson && typeof shopDataJson === "object"
+        ? shopDataJson
+        : typeof window.shopDataEditor?.normalizeShopData === "function"
+          ? window.shopDataEditor.normalizeShopData({})
+          : {};
+    const fileData = await readRepoJson(parsed.owner, parsed.repo, SHOP_DATA_PATH, branch);
+    const fileTreeResult = await putFileContent(
+      parsed.owner,
+      parsed.repo,
+      SHOP_DATA_PATH,
+      "Update shop data",
+      `${JSON.stringify(payload, null, 2)}\n`,
+      branch,
+      fileData.meta?.sha || null,
+    );
+    if (typeof window.shopDataEditor?.clearShopDataOverlay === "function") {
+      window.shopDataEditor.clearShopDataOverlay();
+    }
+    return fileTreeResult;
+  }
+
   async function githubApi(path, options, token) {
     const t = token || getToken();
     if (!t) {
@@ -2473,6 +2502,7 @@ ${publishBtn}
     buildPublishContext,
     pushContentPage,
     pushFileTree,
+    pushShopData,
     syncNavigationFromFileTree,
     pushProductRow,
     pushProductOrder,
