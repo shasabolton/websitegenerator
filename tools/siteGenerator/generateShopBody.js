@@ -68,18 +68,6 @@ function buildShopIntroSection(shopData) {
   `;
 }
 
-function buildProductThumbsHtml(productThumbTemplate, products) {
-  return products
-    .map((product) =>
-      applyTemplate(productThumbTemplate, {
-        PRODUCT_HREF: escapeHtml(product.href || "shop"),
-        PRODUCT_IMAGE_URL: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
-        PRODUCT_TITLE: escapeHtml(product.title),
-      })
-    )
-    .join("");
-}
-
 async function buildCategoryPreviewsHtml(products, shopData) {
   const introHtml = buildShopIntroSection(shopData);
   const categories = window.productData.getProductsByCategory(products);
@@ -100,7 +88,11 @@ async function buildCategoryPreviewsHtml(products, shopData) {
   const categorySections = categories
     .map((category) => {
       const slice = category.products.slice(0, 3);
-      const thumbsHtml = buildProductThumbsHtml(productThumbTemplate, slice);
+      const buildThumbs = window.generateProductBody?.buildProductThumbsHtml;
+      if (typeof buildThumbs !== "function") {
+        throw new Error("generateProductBody.js must be loaded before generateShopBody.");
+      }
+      const thumbsHtml = buildThumbs(productThumbTemplate, slice);
       const rowHtml = applyTemplate(productThumbRowTemplate, {
         PRODUCT_THUMBS: thumbsHtml || EMPTY_THUMB_ROW,
       });

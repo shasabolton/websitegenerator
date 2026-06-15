@@ -60,6 +60,7 @@
     -->
     <script src="tools/editData/productData.js"></script>
     <script src="shared-assets/script/shoppingCart.js"></script>
+    <script src="shared-assets/script/displayCurrency.js"></script>
     <script>
 window.siteCart = new ShoppingCart("Contraption Cart");
 </script>
@@ -83,13 +84,34 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <img class="brand-logo" src="shared-assets/images/branding/favicon.jpg" alt="Contraption Cart logo" />
         <span class="brand-name">Contraption Cart</span>
       </div>
-      <a class="header-cart-link" href="cart" aria-label="Shopping cart">
-        <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="9" cy="21" r="1" />
-          <circle cx="20" cy="21" r="1" />
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-        </svg>
-      </a>
+      <div class="header-actions">
+        <label class="visually-hidden" for="site-display-currency">Display currency</label>
+        <select
+          id="site-display-currency"
+          class="header-display-currency"
+          aria-label="Display currency"
+        >
+          <option value="AUD">AUD</option>
+          <option value="NZD">NZD</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="CAD">CAD</option>
+          <option value="JPY">JPY</option>
+          <option value="SGD">SGD</option>
+          <option value="HKD">HKD</option>
+          <option value="CHF">CHF</option>
+          <option value="SEK">SEK</option>
+          <option value="NOK">NOK</option>
+        </select>
+        <a class="header-cart-link" href="cart" aria-label="Shopping cart">
+          <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
+        </a>
+      </div>
     </div>
     <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
       <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
@@ -222,6 +244,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/mechanical-calculator">Mechanical Calculator</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="50">AUD$50.00</p>
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/tiny-drive">
@@ -230,6 +253,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/tiny-drive">Tiny Drive</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="80">AUD$80.00</p>
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/wooden-ride-on-car-street-sweeper-wheely-dog-for-toddlers-pug-toy-for-babies">
@@ -238,6 +262,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/wooden-ride-on-car-street-sweeper-wheely-dog-for-toddlers-pug-toy-for-babies">Wooden Ride On Car Street Sweeper, Wheely Dog for Toddlers, Pug Toy for Babies</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="140">AUD$140.00</p>
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/marble-tree">
@@ -246,6 +271,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/marble-tree">Marble Tree</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="38">AUD$38.00</p>
 </article>
 
 </div>

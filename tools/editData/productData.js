@@ -439,7 +439,14 @@ function getProductsByCategory(products) {
     const title = resolveProductDisplayTitle(row);
     const image = String(row.IMAGE1 || "").trim();
     const slug = getProductSlugForRow(row, list);
-    categories.get(key).products.push({ title, image, href: `shop/${slug}` });
+    const priceNum = parseFloat(String(row.PRICE ?? "").trim());
+    categories.get(key).products.push({
+      title,
+      image,
+      href: `shop/${slug}`,
+      priceAud: Number.isFinite(priceNum) && priceNum >= 0 ? priceNum : null,
+      priceRow: { PRICE: row.PRICE, CURRENCY_CODE: row.CURRENCY_CODE },
+    });
   }
 
   return sortCategoriesWithOtherLast(Array.from(categories.values()), "name");

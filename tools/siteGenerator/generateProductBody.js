@@ -12,23 +12,40 @@ function escapeHtml(value) {
  * @returns {string} HTML-safe formatted price, or empty string when not displayable.
  */
 function formatProductPriceDisplay(row) {
-  const currency = String(row.CURRENCY_CODE || "")
+  const currency = String(row.CURRENCY_CODE || "AUD")
     .trim()
     .toUpperCase();
   const priceNum = parseFloat(String(row.PRICE ?? "").trim());
   if (!Number.isFinite(priceNum) || priceNum < 0) {
     return "";
   }
+  const dc = window.siteDisplayCurrency;
+  if (dc && typeof dc.formatWithCode === "function") {
+    return escapeHtml(dc.formatWithCode(currency, priceNum));
+  }
+  const prefixes = {
+    AUD: "AUD$",
+    NZD: "NZD$",
+    USD: "USD$",
+    CAD: "CAD$",
+    GBP: "GBP£",
+    EUR: "EUR€",
+    JPY: "JPY¥",
+    SGD: "SGD$",
+    HKD: "HKD$",
+    CHF: "CHF ",
+    SEK: "SEK ",
+    NOK: "NOK ",
+  };
+  const prefix = prefixes[currency];
+  if (prefix) {
+    const amountStr = currency === "JPY" ? String(Math.round(priceNum)) : priceNum.toFixed(2);
+    return escapeHtml(prefix + amountStr);
+  }
   if (!/^[A-Z]{3}$/.test(currency)) {
     return escapeHtml(`${String(row.PRICE ?? "").trim()} ${currency}`.trim());
   }
-  try {
-    return escapeHtml(
-      new Intl.NumberFormat(undefined, { style: "currency", currency }).format(priceNum),
-    );
-  } catch {
-    return escapeHtml(`${currency} ${priceNum}`);
-  }
+  return escapeHtml(`${currency} ${priceNum.toFixed(2)}`);
 }
 
 function applyTemplate(template, values) {
@@ -36,6 +53,28 @@ function applyTemplate(template, values) {
     const token = new RegExp(`__${key}__`, "g");
     return current.replace(token, () => String(value));
   }, template);
+}
+
+function buildProductThumbsHtml(productThumbTemplate, products) {
+  return products
+    .map((product) => {
+      const priceAud = product.priceAud;
+      const priceDisplay =
+        product.priceRow && typeof formatProductPriceDisplay === "function"
+          ? formatProductPriceDisplay(product.priceRow)
+          : priceAud != null
+            ? escapeHtml(`AUD$${priceAud.toFixed(2)}`)
+            : "";
+      const priceAudAttr = priceAud != null ? escapeHtml(String(priceAud)) : "";
+      return applyTemplate(productThumbTemplate, {
+        PRODUCT_HREF: escapeHtml(product.href || "shop"),
+        PRODUCT_IMAGE_URL: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
+        PRODUCT_TITLE: escapeHtml(product.title),
+        PRODUCT_PRICE: priceDisplay,
+        PRODUCT_PRICE_AUD: priceAudAttr,
+      });
+    })
+    .join("");
 }
 
 function slugify(value) {
@@ -377,6 +416,8 @@ async function generateProductBody(ctx) {
 
 window.generateProductBody = {
   generateProductBody,
+  formatProductPriceDisplay,
+  buildProductThumbsHtml,
   parseYoutubeVideoId,
   buildImageCarouselHtml,
   buildCarouselSlidesHtml,

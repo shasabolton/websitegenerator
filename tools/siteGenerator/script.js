@@ -41,9 +41,9 @@ function loadPreviewGenerators() {
       await loadScript("./shopDataEditor.js");
       await loadScript("./generateAnyPage.js");
       await loadScript("./generateCartBody.js");
+      await loadScript("./generateProductBody.js");
       await loadScript("./generateShopBody.js");
       await loadScript("./generateCategoryBody.js");
-      await loadScript("./generateProductBody.js");
       await loadScript("./contentBlocks.js");
       await loadScript("./generateContentBody.js");
     })();

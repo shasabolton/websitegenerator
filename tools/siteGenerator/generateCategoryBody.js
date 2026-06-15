@@ -17,18 +17,6 @@ function applyTemplate(template, values) {
 const EMPTY_CATEGORY_THUMB_ROW =
   "<p class=\"product-thumb-empty\">No products in this category yet.</p>";
 
-function buildProductThumbsHtml(productThumbTemplate, products) {
-  return products
-    .map((product) =>
-      applyTemplate(productThumbTemplate, {
-        PRODUCT_HREF: escapeHtml(product.href || "shop"),
-        PRODUCT_IMAGE_URL: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
-        PRODUCT_TITLE: escapeHtml(product.title),
-      })
-    )
-    .join("");
-}
-
 /**
  * Single category page main column + full category list for nav.
  * @param {{ shopData: object, navigationConfig: object, products: object[], categoryName: string }} ctx
@@ -51,7 +39,11 @@ async function generateCategoryBody(ctx) {
     fetchText("./templates/partials/categoryPage.html"),
   ]);
 
-  const thumbsHtml = buildProductThumbsHtml(productThumbTemplate, target.products);
+  const buildThumbs = window.generateProductBody?.buildProductThumbsHtml;
+  if (typeof buildThumbs !== "function") {
+    throw new Error("generateProductBody.js must be loaded before generateCategoryBody.");
+  }
+  const thumbsHtml = buildThumbs(productThumbTemplate, target.products);
   const rowHtml = applyTemplate(productThumbRowTemplate, {
     PRODUCT_THUMBS: thumbsHtml || EMPTY_CATEGORY_THUMB_ROW,
   });

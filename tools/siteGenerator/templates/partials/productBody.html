@@ -57,17 +57,15 @@
       }
 
       function formatPriceDisplay(amount) {
-        var cur = String(boot.currencyCode || "AUD").trim().toUpperCase();
+        var dc = window.siteDisplayCurrency;
+        if (dc && typeof dc.format === "function") {
+          return dc.format(amount);
+        }
         var n = Number(amount);
         if (!Number.isFinite(n) || n < 0) {
           n = 0;
         }
-        if (/^[A-Z]{3}$/.test(cur)) {
-          try {
-            return new Intl.NumberFormat(undefined, { style: "currency", currency: cur }).format(n);
-          } catch (e) {}
-        }
-        return cur + " " + n.toFixed(2);
+        return "AUD$" + n.toFixed(2);
       }
 
       function updatePriceDisplay() {
@@ -116,6 +114,8 @@
 
       if (btn && cart && boot && boot.sku) {
         syncPricingFromCatalogThenBind();
+        window.addEventListener("displaycurrencychange", updatePriceDisplay);
+        window.addEventListener("displaycurrencyready", updatePriceDisplay);
 
         btn.addEventListener("click", function () {
           var sku = String(boot.sku || "").trim();

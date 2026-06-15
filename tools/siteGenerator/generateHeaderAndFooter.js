@@ -160,6 +160,10 @@ function buildProductInstructionVideosScriptPath() {
   return "shared-assets/script/productInstructionVideos.js";
 }
 
+function buildDisplayCurrencyScriptPath() {
+  return "shared-assets/script/displayCurrency.js";
+}
+
 async function generateHeaderAndFooter(shopData, navigationConfig, options = {}) {
   const [headerTemplate, footerTemplate] = await Promise.all([
     fetchTemplate("./templates/partials/header.html"),
@@ -176,6 +180,7 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
   const productDataScriptPath = escapeHtml(buildProductDataScriptPath());
   const shoppingCartScriptPath = escapeHtml(buildShoppingCartScriptPath());
   const productInstructionVideosScriptPath = escapeHtml(buildProductInstructionVideosScriptPath());
+  const displayCurrencyScriptPath = escapeHtml(buildDisplayCurrencyScriptPath());
 
   const googleSiteHost = escapeHtml(buildGoogleSiteSearchHostname(shopData));
 
@@ -202,6 +207,7 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
     productDataScriptPath,
     shoppingCartScriptPath,
     productInstructionVideosScriptPath,
+    displayCurrencyScriptPath,
   };
 }
 
@@ -214,5 +220,6 @@ window.generateHeaderAndFooter = {
   buildProductDataScriptPath,
   buildShoppingCartScriptPath,
   buildProductInstructionVideosScriptPath,
+  buildDisplayCurrencyScriptPath,
   generateHeaderAndFooter,
 };

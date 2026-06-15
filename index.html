@@ -60,6 +60,7 @@
     -->
     <script src="tools/editData/productData.js"></script>
     <script src="shared-assets/script/shoppingCart.js"></script>
+    <script src="shared-assets/script/displayCurrency.js"></script>
     <script>
 window.siteCart = new ShoppingCart("Contraption Cart");
 </script>
@@ -83,13 +84,34 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <img class="brand-logo" src="shared-assets/images/branding/favicon.jpg" alt="Contraption Cart logo" />
         <span class="brand-name">Contraption Cart</span>
       </div>
-      <a class="header-cart-link" href="cart" aria-label="Shopping cart">
-        <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="9" cy="21" r="1" />
-          <circle cx="20" cy="21" r="1" />
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-        </svg>
-      </a>
+      <div class="header-actions">
+        <label class="visually-hidden" for="site-display-currency">Display currency</label>
+        <select
+          id="site-display-currency"
+          class="header-display-currency"
+          aria-label="Display currency"
+        >
+          <option value="AUD">AUD</option>
+          <option value="NZD">NZD</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="CAD">CAD</option>
+          <option value="JPY">JPY</option>
+          <option value="SGD">SGD</option>
+          <option value="HKD">HKD</option>
+          <option value="CHF">CHF</option>
+          <option value="SEK">SEK</option>
+          <option value="NOK">NOK</option>
+        </select>
+        <a class="header-cart-link" href="cart" aria-label="Shopping cart">
+          <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
+        </a>
+      </div>
     </div>
     <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
       <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
@@ -228,6 +250,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/hummingbird-and-flower-automaton">Hummingbird and Flower Automaton</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="50">AUD$50.00</p>
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/dog-and-cat-running-automata-kit">
@@ -236,6 +259,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/dog-and-cat-running-automata-kit">Dog and Cat Running Automata kit</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="49">AUD$49.00</p>
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/lankydoodler">
@@ -244,6 +268,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/lankydoodler">Lankydoodler</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="49">AUD$49.00</p>
 </article>
 
 </div>
@@ -267,6 +292,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/instant-coke">Instant Coke</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="50">AUD$50.00</p>
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/zig-zag-pencil">
@@ -275,6 +301,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/zig-zag-pencil">Zig Zag Pencil</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="40">AUD$40.00</p>
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/sword-through-finger">
@@ -283,6 +310,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/sword-through-finger">Sword Through Finger</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="40">AUD$40.00</p>
 </article>
 
 </div>
@@ -306,6 +334,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/mini-cryptex">Mini Cryptex</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="40">AUD$40.00</p>
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/mouse-maze-puzzle-box">
@@ -314,6 +343,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/mouse-maze-puzzle-box">Mouse Maze Puzzle Box</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="40">AUD$40.00</p>
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/illusionist-pendant-puzzle-box">
@@ -322,6 +352,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/illusionist-pendant-puzzle-box">Illusionist Pendant Puzzle Box</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="30">AUD$30.00</p>
 </article>
 
 </div>
@@ -345,6 +376,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/mechanical-calculator">Mechanical Calculator</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="50">AUD$50.00</p>
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/tiny-drive">
@@ -353,6 +385,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/tiny-drive">Tiny Drive</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="80">AUD$80.00</p>
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/wooden-ride-on-car-street-sweeper-wheely-dog-for-toddlers-pug-toy-for-babies">
@@ -361,6 +394,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/wooden-ride-on-car-street-sweeper-wheely-dog-for-toddlers-pug-toy-for-babies">Wooden Ride On Car Street Sweeper, Wheely Dog for Toddlers, Pug Toy for Babies</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="140">AUD$140.00</p>
 </article>
 
 </div>
@@ -384,6 +418,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/woodchopper-whirligig">Woodchopper Whirligig</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="75">AUD$75.00</p>
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/dog-whirligig">
@@ -392,6 +427,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/dog-whirligig">Dog Whirligig</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="75">AUD$75.00</p>
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/fisherman-whirligig">
@@ -400,6 +436,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/fisherman-whirligig">Fisherman Whirligig</a>
   </h3>
+  <p class="product-thumb-price" data-price-aud="75">AUD$75.00</p>
 </article>
 
 </div>
