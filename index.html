@@ -85,25 +85,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <span class="brand-name">Contraption Cart</span>
       </div>
       <div class="header-actions">
-        <label class="visually-hidden" for="site-display-currency">Display currency</label>
-        <select
-          id="site-display-currency"
-          class="header-display-currency"
-          aria-label="Display currency"
-        >
-          <option value="AUD">AUD</option>
-          <option value="NZD">NZD</option>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          <option value="CAD">CAD</option>
-          <option value="JPY">JPY</option>
-          <option value="SGD">SGD</option>
-          <option value="HKD">HKD</option>
-          <option value="CHF">CHF</option>
-          <option value="SEK">SEK</option>
-          <option value="NOK">NOK</option>
-        </select>
+        <div class="header-display-currency-wrap header-display-currency-wrap--desktop">
+          <label class="visually-hidden" for="site-display-currency">Display currency</label>
+          <select
+            id="site-display-currency"
+            class="header-display-currency"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <a class="header-cart-link" href="cart" aria-label="Shopping cart">
           <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="9" cy="21" r="1" />
@@ -116,6 +118,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
       <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
       <div class="nav-flyout-panel">
+        <div class="nav-flyout-currency">
+          <label class="nav-flyout-currency-label" for="site-display-currency-flyout">Display currency</label>
+          <select
+            id="site-display-currency-flyout"
+            class="header-display-currency header-display-currency--flyout"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <form
           class="site-search-form"
           id="site-search-form"
@@ -245,7 +268,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <div class="product-thumb-row">
   <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/hummingbird-and-flower-automaton">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/7b783d/7499575608/il_fullxfull.7499575608_1yih.jpg" alt="Hummingbird and Flower Automaton" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/7b783d/7499575608/il_570xN.7499575608_1yih.jpg" alt="Hummingbird and Flower Automaton" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/hummingbird-and-flower-automaton">Hummingbird and Flower Automaton</a>
@@ -254,7 +277,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/dog-and-cat-running">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/1291ff/5741377892/il_fullxfull.5741377892_mo3z.jpg" alt="Dog and Cat Running" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/1291ff/5741377892/il_570xN.5741377892_mo3z.jpg" alt="Dog and Cat Running" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/dog-and-cat-running">Dog and Cat Running</a>
@@ -263,7 +286,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/lankydoodler">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/a0833b/7065669237/il_fullxfull.7065669237_72fe.jpg" alt="Lankydoodler" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/a0833b/7065669237/il_570xN.7065669237_72fe.jpg" alt="Lankydoodler" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/lankydoodler">Lankydoodler</a>
@@ -287,7 +310,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <div class="product-thumb-row">
   <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/instant-coke">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/02f463/7151575797/il_fullxfull.7151575797_cs3t.jpg" alt="Instant Coke" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/02f463/7151575797/il_570xN.7151575797_cs3t.jpg" alt="Instant Coke" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/instant-coke">Instant Coke</a>
@@ -296,7 +319,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/zig-zag-pencil">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/eebcd7/6002252572/il_fullxfull.6002252572_jwj9.jpg" alt="Zig Zag Pencil" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/eebcd7/6002252572/il_570xN.6002252572_jwj9.jpg" alt="Zig Zag Pencil" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/zig-zag-pencil">Zig Zag Pencil</a>
@@ -305,7 +328,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/sword-through-finger">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/6131c9/7304342262/il_fullxfull.7304342262_3pqw.jpg" alt="Sword Through Finger" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/6131c9/7304342262/il_570xN.7304342262_3pqw.jpg" alt="Sword Through Finger" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/sword-through-finger">Sword Through Finger</a>
@@ -329,7 +352,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <div class="product-thumb-row">
   <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/mini-cryptex">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/4d4af1/7431628092/il_fullxfull.7431628092_pq2y.jpg" alt="Mini Cryptex" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/4d4af1/7431628092/il_570xN.7431628092_pq2y.jpg" alt="Mini Cryptex" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/mini-cryptex">Mini Cryptex</a>
@@ -338,7 +361,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/mouse-maze-puzzle-box">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/85639c/4250092607/il_fullxfull.4250092607_ktow.jpg" alt="Mouse Maze Puzzle Box" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/85639c/4250092607/il_570xN.4250092607_ktow.jpg" alt="Mouse Maze Puzzle Box" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/mouse-maze-puzzle-box">Mouse Maze Puzzle Box</a>
@@ -347,7 +370,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/illusionist-pendant-puzzle-box">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/e0dae1/7808588727/il_fullxfull.7808588727_2dg6.jpg" alt="Illusionist Pendant Puzzle Box" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/e0dae1/7808588727/il_570xN.7808588727_2dg6.jpg" alt="Illusionist Pendant Puzzle Box" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/illusionist-pendant-puzzle-box">Illusionist Pendant Puzzle Box</a>
@@ -371,7 +394,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <div class="product-thumb-row">
   <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/mechanical-calculator">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/49b9ec/7764225703/il_fullxfull.7764225703_iat4.jpg" alt="Mechanical Calculator" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/49b9ec/7764225703/il_570xN.7764225703_iat4.jpg" alt="Mechanical Calculator" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/mechanical-calculator">Mechanical Calculator</a>
@@ -380,7 +403,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/tiny-drive">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/0551df/6652167125/il_fullxfull.6652167125_7sp9.jpg" alt="Tiny Drive" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/0551df/6652167125/il_570xN.6652167125_7sp9.jpg" alt="Tiny Drive" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/tiny-drive">Tiny Drive</a>
@@ -389,7 +412,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/wooden-ride-on-car-street-sweeper-wheely-dog-for-toddlers-pug-toy-for-babies">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/78abf8/4998764623/il_fullxfull.4998764623_mqoe.jpg" alt="Wooden Ride On Car Street Sweeper, Wheely Dog for Toddlers, Pug Toy for Babies" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/78abf8/4998764623/il_570xN.4998764623_mqoe.jpg" alt="Wooden Ride On Car Street Sweeper, Wheely Dog for Toddlers, Pug Toy for Babies" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/wooden-ride-on-car-street-sweeper-wheely-dog-for-toddlers-pug-toy-for-babies">Wooden Ride On Car Street Sweeper, Wheely Dog for Toddlers, Pug Toy for Babies</a>
@@ -413,7 +436,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <div class="product-thumb-row">
   <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/woodchopper-whirligig">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/5f3d80/4182614388/il_fullxfull.4182614388_pzqy.jpg" alt="Woodchopper Whirligig" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/5f3d80/4182614388/il_570xN.4182614388_pzqy.jpg" alt="Woodchopper Whirligig" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/woodchopper-whirligig">Woodchopper Whirligig</a>
@@ -422,7 +445,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/dog-whirligig">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/705fde/4218904869/il_fullxfull.4218904869_62e3.jpg" alt="Dog Whirligig" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/705fde/4218904869/il_570xN.4218904869_62e3.jpg" alt="Dog Whirligig" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/dog-whirligig">Dog Whirligig</a>
@@ -431,7 +454,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/fisherman-whirligig">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/c0af1b/4227293783/il_fullxfull.4227293783_o4l3.jpg" alt="Fisherman Whirligig" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/c0af1b/4227293783/il_570xN.4227293783_o4l3.jpg" alt="Fisherman Whirligig" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/fisherman-whirligig">Fisherman Whirligig</a>

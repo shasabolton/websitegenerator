@@ -85,25 +85,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <span class="brand-name">Contraption Cart</span>
       </div>
       <div class="header-actions">
-        <label class="visually-hidden" for="site-display-currency">Display currency</label>
-        <select
-          id="site-display-currency"
-          class="header-display-currency"
-          aria-label="Display currency"
-        >
-          <option value="AUD">AUD</option>
-          <option value="NZD">NZD</option>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          <option value="CAD">CAD</option>
-          <option value="JPY">JPY</option>
-          <option value="SGD">SGD</option>
-          <option value="HKD">HKD</option>
-          <option value="CHF">CHF</option>
-          <option value="SEK">SEK</option>
-          <option value="NOK">NOK</option>
-        </select>
+        <div class="header-display-currency-wrap header-display-currency-wrap--desktop">
+          <label class="visually-hidden" for="site-display-currency">Display currency</label>
+          <select
+            id="site-display-currency"
+            class="header-display-currency"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <a class="header-cart-link" href="cart" aria-label="Shopping cart">
           <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="9" cy="21" r="1" />
@@ -116,6 +118,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
       <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
       <div class="nav-flyout-panel">
+        <div class="nav-flyout-currency">
+          <label class="nav-flyout-currency-label" for="site-display-currency-flyout">Display currency</label>
+          <select
+            id="site-display-currency-flyout"
+            class="header-display-currency header-display-currency--flyout"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <form
           class="site-search-form"
           id="site-search-form"
@@ -239,7 +262,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <div class="product-thumb-row">
   <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/woodchopper-whirligig">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/5f3d80/4182614388/il_fullxfull.4182614388_pzqy.jpg" alt="Woodchopper Whirligig" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/5f3d80/4182614388/il_570xN.4182614388_pzqy.jpg" alt="Woodchopper Whirligig" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/woodchopper-whirligig">Woodchopper Whirligig</a>
@@ -248,7 +271,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/dog-whirligig">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/705fde/4218904869/il_fullxfull.4218904869_62e3.jpg" alt="Dog Whirligig" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/705fde/4218904869/il_570xN.4218904869_62e3.jpg" alt="Dog Whirligig" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/dog-whirligig">Dog Whirligig</a>
@@ -257,7 +280,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/fisherman-whirligig">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/c0af1b/4227293783/il_fullxfull.4227293783_o4l3.jpg" alt="Fisherman Whirligig" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/c0af1b/4227293783/il_570xN.4227293783_o4l3.jpg" alt="Fisherman Whirligig" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/fisherman-whirligig">Fisherman Whirligig</a>
@@ -266,7 +289,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/surfer-whirligig">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/ff60a4/4199153987/il_fullxfull.4199153987_28b6.jpg" alt="Surfer Whirligig" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/ff60a4/4199153987/il_570xN.4199153987_28b6.jpg" alt="Surfer Whirligig" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/surfer-whirligig">Surfer Whirligig</a>
@@ -275,7 +298,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/whirligig-hardware">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/2d3dc8/5025710985/il_fullxfull.5025710985_st50.jpg" alt="Whirligig Hardware" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/2d3dc8/5025710985/il_570xN.5025710985_st50.jpg" alt="Whirligig Hardware" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/whirligig-hardware">Whirligig Hardware</a>
@@ -284,7 +307,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/fantail-whirligig">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/0ebaf9/5142894636/il_fullxfull.5142894636_j9vj.jpg" alt="Fantail Whirligig" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/0ebaf9/5142894636/il_570xN.5142894636_j9vj.jpg" alt="Fantail Whirligig" loading="lazy" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/fantail-whirligig">Fantail Whirligig</a>

@@ -85,25 +85,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <span class="brand-name">Contraption Cart</span>
       </div>
       <div class="header-actions">
-        <label class="visually-hidden" for="site-display-currency">Display currency</label>
-        <select
-          id="site-display-currency"
-          class="header-display-currency"
-          aria-label="Display currency"
-        >
-          <option value="AUD">AUD</option>
-          <option value="NZD">NZD</option>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          <option value="CAD">CAD</option>
-          <option value="JPY">JPY</option>
-          <option value="SGD">SGD</option>
-          <option value="HKD">HKD</option>
-          <option value="CHF">CHF</option>
-          <option value="SEK">SEK</option>
-          <option value="NOK">NOK</option>
-        </select>
+        <div class="header-display-currency-wrap header-display-currency-wrap--desktop">
+          <label class="visually-hidden" for="site-display-currency">Display currency</label>
+          <select
+            id="site-display-currency"
+            class="header-display-currency"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <a class="header-cart-link" href="cart" aria-label="Shopping cart">
           <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="9" cy="21" r="1" />
@@ -116,6 +118,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
       <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
       <div class="nav-flyout-panel">
+        <div class="nav-flyout-currency">
+          <label class="nav-flyout-currency-label" for="site-display-currency-flyout">Display currency</label>
+          <select
+            id="site-display-currency-flyout"
+            class="header-display-currency header-display-currency--flyout"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <form
           class="site-search-form"
           id="site-search-form"
@@ -249,7 +272,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       aria-atomic="true"
     ></span>
   </p>
-  <div class="image-carousel" id="carousel-s4oorcoq-hbm77uid" data-image-carousel>
+  <div class="image-carousel" id="carousel-3vrt40a1-m9nmcjfd" data-image-carousel>
   <div class="image-carousel-stage" aria-live="polite">
     <figure class="image-carousel-slide is-active" data-carousel-index="0" data-carousel-slide-kind="image" aria-hidden="false">
   <img class="image-carousel-slide-img" src="https://i.etsystatic.com/25031074/r/il/355899/4526666951/il_fullxfull.4526666951_igt0.jpg" alt="Fluttering Heart — image 1 of 7" loading="eager" fetchpriority="high" />
@@ -278,7 +301,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <ul class="image-carousel-thumbs" role="list">
     <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb is-active" data-carousel-index="0" aria-label="Show Fluttering Heart image 1 of 7" aria-current="true">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/355899/4526666951/il_fullxfull.4526666951_igt0.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/355899/4526666951/il_75xN.4526666951_igt0.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
@@ -288,27 +311,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="2" aria-label="Show Fluttering Heart image 3 of 7" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/506b93/4479297714/il_fullxfull.4479297714_cb0m.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/506b93/4479297714/il_75xN.4479297714_cb0m.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="3" aria-label="Show Fluttering Heart image 4 of 7" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/dd5ceb/4526667027/il_fullxfull.4526667027_lkf3.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/dd5ceb/4526667027/il_75xN.4526667027_lkf3.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="4" aria-label="Show Fluttering Heart image 5 of 7" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/5db36f/4526666743/il_fullxfull.4526666743_q1sj.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/5db36f/4526666743/il_75xN.4526666743_q1sj.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="5" aria-label="Show Fluttering Heart image 6 of 7" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/8b9fbf/4526666871/il_fullxfull.4526666871_dbd2.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/8b9fbf/4526666871/il_75xN.4526666871_dbd2.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="6" aria-label="Show Fluttering Heart image 7 of 7" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/b9e66d/4479297878/il_fullxfull.4479297878_jsi5.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/b9e66d/4479297878/il_75xN.4479297878_jsi5.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
   </ul>

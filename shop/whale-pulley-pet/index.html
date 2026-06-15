@@ -85,25 +85,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <span class="brand-name">Contraption Cart</span>
       </div>
       <div class="header-actions">
-        <label class="visually-hidden" for="site-display-currency">Display currency</label>
-        <select
-          id="site-display-currency"
-          class="header-display-currency"
-          aria-label="Display currency"
-        >
-          <option value="AUD">AUD</option>
-          <option value="NZD">NZD</option>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          <option value="CAD">CAD</option>
-          <option value="JPY">JPY</option>
-          <option value="SGD">SGD</option>
-          <option value="HKD">HKD</option>
-          <option value="CHF">CHF</option>
-          <option value="SEK">SEK</option>
-          <option value="NOK">NOK</option>
-        </select>
+        <div class="header-display-currency-wrap header-display-currency-wrap--desktop">
+          <label class="visually-hidden" for="site-display-currency">Display currency</label>
+          <select
+            id="site-display-currency"
+            class="header-display-currency"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <a class="header-cart-link" href="cart" aria-label="Shopping cart">
           <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="9" cy="21" r="1" />
@@ -116,6 +118,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
       <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
       <div class="nav-flyout-panel">
+        <div class="nav-flyout-currency">
+          <label class="nav-flyout-currency-label" for="site-display-currency-flyout">Display currency</label>
+          <select
+            id="site-display-currency-flyout"
+            class="header-display-currency header-display-currency--flyout"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <form
           class="site-search-form"
           id="site-search-form"
@@ -249,7 +272,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       aria-atomic="true"
     ></span>
   </p>
-  <div class="image-carousel" id="carousel-wj2oomq3-olxdfmir" data-image-carousel>
+  <div class="image-carousel" id="carousel-r8blxbwn-gxw5wb4e" data-image-carousel>
   <div class="image-carousel-stage" aria-live="polite">
     <figure class="image-carousel-slide is-active" data-carousel-index="0" data-carousel-slide-kind="image" aria-hidden="false">
   <img class="image-carousel-slide-img" src="https://i.etsystatic.com/25031074/r/il/d73939/2578454161/il_fullxfull.2578454161_t55f.jpg" alt="Whale Pulley Pet — image 1 of 6" loading="eager" fetchpriority="high" />
@@ -275,7 +298,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <ul class="image-carousel-thumbs" role="list">
     <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb is-active" data-carousel-index="0" aria-label="Show Whale Pulley Pet image 1 of 6" aria-current="true">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/d73939/2578454161/il_fullxfull.2578454161_t55f.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/d73939/2578454161/il_75xN.2578454161_t55f.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
@@ -285,22 +308,22 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="2" aria-label="Show Whale Pulley Pet image 3 of 6" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/074aca/2578454567/il_fullxfull.2578454567_d083.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/074aca/2578454567/il_75xN.2578454567_d083.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="3" aria-label="Show Whale Pulley Pet image 4 of 6" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/696de0/2578455005/il_fullxfull.2578455005_kq5r.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/696de0/2578455005/il_75xN.2578455005_kq5r.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="4" aria-label="Show Whale Pulley Pet image 5 of 6" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/8be0b4/2530799714/il_fullxfull.2530799714_peaq.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/8be0b4/2530799714/il_75xN.2530799714_peaq.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="5" aria-label="Show Whale Pulley Pet image 6 of 6" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/7171c3/2530800862/il_fullxfull.2530800862_aj7o.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/7171c3/2530800862/il_75xN.2530800862_aj7o.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
   </ul>

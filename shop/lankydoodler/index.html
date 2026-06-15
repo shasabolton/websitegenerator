@@ -85,25 +85,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <span class="brand-name">Contraption Cart</span>
       </div>
       <div class="header-actions">
-        <label class="visually-hidden" for="site-display-currency">Display currency</label>
-        <select
-          id="site-display-currency"
-          class="header-display-currency"
-          aria-label="Display currency"
-        >
-          <option value="AUD">AUD</option>
-          <option value="NZD">NZD</option>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          <option value="CAD">CAD</option>
-          <option value="JPY">JPY</option>
-          <option value="SGD">SGD</option>
-          <option value="HKD">HKD</option>
-          <option value="CHF">CHF</option>
-          <option value="SEK">SEK</option>
-          <option value="NOK">NOK</option>
-        </select>
+        <div class="header-display-currency-wrap header-display-currency-wrap--desktop">
+          <label class="visually-hidden" for="site-display-currency">Display currency</label>
+          <select
+            id="site-display-currency"
+            class="header-display-currency"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <a class="header-cart-link" href="cart" aria-label="Shopping cart">
           <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="9" cy="21" r="1" />
@@ -116,6 +118,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
       <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
       <div class="nav-flyout-panel">
+        <div class="nav-flyout-currency">
+          <label class="nav-flyout-currency-label" for="site-display-currency-flyout">Display currency</label>
+          <select
+            id="site-display-currency-flyout"
+            class="header-display-currency header-display-currency--flyout"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <form
           class="site-search-form"
           id="site-search-form"
@@ -260,7 +283,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       aria-atomic="true"
     ></span>
   </p>
-  <div class="image-carousel" id="carousel-sysbfuum-3zol7e0e" data-image-carousel>
+  <div class="image-carousel" id="carousel-m14tyhsb-78gnwsni" data-image-carousel>
   <div class="image-carousel-stage" aria-live="polite">
     <figure class="image-carousel-slide is-active" data-carousel-index="0" data-carousel-slide-kind="image" aria-hidden="false">
   <img class="image-carousel-slide-img" src="https://i.etsystatic.com/25031074/r/il/a0833b/7065669237/il_fullxfull.7065669237_72fe.jpg" alt="Lankydoodler — image 1 of 11" loading="eager" fetchpriority="high" />
@@ -301,7 +324,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <ul class="image-carousel-thumbs" role="list">
     <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb is-active" data-carousel-index="0" aria-label="Show Lankydoodler image 1 of 11" aria-current="true">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/a0833b/7065669237/il_fullxfull.7065669237_72fe.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/a0833b/7065669237/il_75xN.7065669237_72fe.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
@@ -311,47 +334,47 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="2" aria-label="Show Lankydoodler image 3 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/399c2a/7428826811/il_fullxfull.7428826811_61kf.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/399c2a/7428826811/il_75xN.7428826811_61kf.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="3" aria-label="Show Lankydoodler image 4 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/021b51/7380904322/il_fullxfull.7380904322_swif.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/021b51/7380904322/il_75xN.7380904322_swif.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="4" aria-label="Show Lankydoodler image 5 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/3bb6fe/7065669245/il_fullxfull.7065669245_xic2.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/3bb6fe/7065669245/il_75xN.7065669245_xic2.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="5" aria-label="Show Lankydoodler image 6 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/67264e/7017689444/il_fullxfull.7017689444_p6s9.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/67264e/7017689444/il_75xN.7017689444_p6s9.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="6" aria-label="Show Lankydoodler image 7 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/59fa61/7065669239/il_fullxfull.7065669239_cohu.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/59fa61/7065669239/il_75xN.7065669239_cohu.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="7" aria-label="Show Lankydoodler image 8 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/bd04f7/3919284207/il_fullxfull.3919284207_i7qq.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/bd04f7/3919284207/il_75xN.3919284207_i7qq.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="8" aria-label="Show Lankydoodler image 9 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/c31249/3877318796/il_fullxfull.3877318796_a0do.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/c31249/3877318796/il_75xN.3877318796_a0do.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="9" aria-label="Show Lankydoodler image 10 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/d6ee88/3919284137/il_fullxfull.3919284137_k1jt.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/d6ee88/3919284137/il_75xN.3919284137_k1jt.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="10" aria-label="Show Lankydoodler image 11 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/c09d9d/7028050159/il_fullxfull.7028050159_cao0.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/c09d9d/7028050159/il_75xN.7028050159_cao0.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
   </ul>

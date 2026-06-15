@@ -85,25 +85,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <span class="brand-name">Contraption Cart</span>
       </div>
       <div class="header-actions">
-        <label class="visually-hidden" for="site-display-currency">Display currency</label>
-        <select
-          id="site-display-currency"
-          class="header-display-currency"
-          aria-label="Display currency"
-        >
-          <option value="AUD">AUD</option>
-          <option value="NZD">NZD</option>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          <option value="CAD">CAD</option>
-          <option value="JPY">JPY</option>
-          <option value="SGD">SGD</option>
-          <option value="HKD">HKD</option>
-          <option value="CHF">CHF</option>
-          <option value="SEK">SEK</option>
-          <option value="NOK">NOK</option>
-        </select>
+        <div class="header-display-currency-wrap header-display-currency-wrap--desktop">
+          <label class="visually-hidden" for="site-display-currency">Display currency</label>
+          <select
+            id="site-display-currency"
+            class="header-display-currency"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <a class="header-cart-link" href="cart" aria-label="Shopping cart">
           <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="9" cy="21" r="1" />
@@ -116,6 +118,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
       <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
       <div class="nav-flyout-panel">
+        <div class="nav-flyout-currency">
+          <label class="nav-flyout-currency-label" for="site-display-currency-flyout">Display currency</label>
+          <select
+            id="site-display-currency-flyout"
+            class="header-display-currency header-display-currency--flyout"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <form
           class="site-search-form"
           id="site-search-form"
@@ -254,7 +277,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       aria-atomic="true"
     ></span>
   </p>
-  <div class="image-carousel" id="carousel-0ltjtke3-tp7deouu" data-image-carousel>
+  <div class="image-carousel" id="carousel-scqhwvt5-6vgh8b6a" data-image-carousel>
   <div class="image-carousel-stage" aria-live="polite">
     <figure class="image-carousel-slide is-active" data-carousel-index="0" data-carousel-slide-kind="image" aria-hidden="false">
   <img class="image-carousel-slide-img" src="https://i.etsystatic.com/25031074/r/il/02f463/7151575797/il_fullxfull.7151575797_cs3t.jpg" alt="Instant Coke — image 1 of 11" loading="eager" fetchpriority="high" />
@@ -295,7 +318,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <ul class="image-carousel-thumbs" role="list">
     <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb is-active" data-carousel-index="0" aria-label="Show Instant Coke image 1 of 11" aria-current="true">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/02f463/7151575797/il_fullxfull.7151575797_cs3t.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/02f463/7151575797/il_75xN.7151575797_cs3t.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
@@ -305,47 +328,47 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="2" aria-label="Show Instant Coke image 3 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/2f7ecd/7050406362/il_fullxfull.7050406362_rnw3.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/2f7ecd/7050406362/il_75xN.7050406362_rnw3.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="3" aria-label="Show Instant Coke image 4 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/a1d95c/7050292090/il_fullxfull.7050292090_8sky.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/a1d95c/7050292090/il_75xN.7050292090_8sky.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="4" aria-label="Show Instant Coke image 5 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/c3f28c/7098370331/il_fullxfull.7098370331_hfsv.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/c3f28c/7098370331/il_75xN.7098370331_hfsv.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="5" aria-label="Show Instant Coke image 6 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/eb215a/7151648875/il_fullxfull.7151648875_2txh.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/eb215a/7151648875/il_75xN.7151648875_2txh.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="6" aria-label="Show Instant Coke image 7 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/3f603c/7118182922/il_fullxfull.7118182922_2qd5.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/3f603c/7118182922/il_75xN.7118182922_2qd5.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="7" aria-label="Show Instant Coke image 8 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/01d8fb/7118182928/il_fullxfull.7118182928_lbwk.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/01d8fb/7118182928/il_75xN.7118182928_lbwk.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="8" aria-label="Show Instant Coke image 9 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/2ca5db/7166153393/il_fullxfull.7166153393_r78e.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/2ca5db/7166153393/il_75xN.7166153393_r78e.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="9" aria-label="Show Instant Coke image 10 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/c8cb6e/7151570627/il_fullxfull.7151570627_pw5b.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/c8cb6e/7151570627/il_75xN.7151570627_pw5b.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="10" aria-label="Show Instant Coke image 11 of 11" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/90a560/7151574227/il_fullxfull.7151574227_de6i.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/90a560/7151574227/il_75xN.7151574227_de6i.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
   </ul>
