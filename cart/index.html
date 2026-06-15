@@ -60,6 +60,7 @@
     -->
     <script src="tools/editData/productData.js"></script>
     <script src="shared-assets/script/shoppingCart.js"></script>
+    <script src="shared-assets/script/displayCurrency.js"></script>
     <script>
 window.siteCart = new ShoppingCart("Contraption Cart");
 </script>
@@ -83,13 +84,34 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <img class="brand-logo" src="shared-assets/images/branding/favicon.jpg" alt="Contraption Cart logo" />
         <span class="brand-name">Contraption Cart</span>
       </div>
-      <a class="header-cart-link" href="cart" aria-label="Shopping cart">
-        <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="9" cy="21" r="1" />
-          <circle cx="20" cy="21" r="1" />
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-        </svg>
-      </a>
+      <div class="header-actions">
+        <label class="visually-hidden" for="site-display-currency">Display currency</label>
+        <select
+          id="site-display-currency"
+          class="header-display-currency"
+          aria-label="Display currency"
+        >
+          <option value="AUD">AUD</option>
+          <option value="NZD">NZD</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="CAD">CAD</option>
+          <option value="JPY">JPY</option>
+          <option value="SGD">SGD</option>
+          <option value="HKD">HKD</option>
+          <option value="CHF">CHF</option>
+          <option value="SEK">SEK</option>
+          <option value="NOK">NOK</option>
+        </select>
+        <a class="header-cart-link" href="cart" aria-label="Shopping cart">
+          <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
+        </a>
+      </div>
     </div>
     <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
       <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
@@ -209,6 +231,10 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <p id="cart-page-empty" class="cart-page-empty">Your cart is empty.</p>
   <div id="cart-lines-container" class="cart-lines-container" hidden></div>
   <div id="cart-page-summary" class="cart-page-summary" hidden>
+    <p class="cart-display-currency-note" id="cart-display-currency-note" hidden>
+      Prices shown in <strong id="cart-display-currency-code"></strong> are approximate. You will be
+      charged in AUD at checkout.
+    </p>
     <p class="cart-subtotal-row">
       Subtotal (<span id="cart-currency-label"></span>):
       <strong id="cart-subtotal-amount"></strong>
@@ -256,6 +282,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       var summaryEl = document.getElementById("cart-page-summary");
       var subtotalEl = document.getElementById("cart-subtotal-amount");
       var currencyLabelEl = document.getElementById("cart-currency-label");
+      var displayCurrencyNoteEl = document.getElementById("cart-display-currency-note");
+      var displayCurrencyCodeEl = document.getElementById("cart-display-currency-code");
       var totalWeightEl = document.getElementById("cart-total-weight-amount");
       var shipCountryEl = document.getElementById("cart-ship-to-country");
       var shippingEstimateEl = document.getElementById("cart-shipping-estimate-amount");
@@ -310,11 +338,39 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       }
 
       function formatMoney(amount, currency) {
+        var dc = window.siteDisplayCurrency;
+        if (dc && typeof dc.format === "function") {
+          return dc.format(amount);
+        }
         var n = Number(amount);
         if (!Number.isFinite(n)) {
           n = 0;
         }
         return (currency ? currency + " " : "") + n.toFixed(2);
+      }
+
+      function displayCurrencyLabel() {
+        var dc = window.siteDisplayCurrency;
+        if (dc && typeof dc.getDisplayCurrency === "function") {
+          return dc.getDisplayCurrency();
+        }
+        return (cart.data.currencyCode || "AUD").trim() || "AUD";
+      }
+
+      function syncDisplayCurrencyNote() {
+        var dc = window.siteDisplayCurrency;
+        var converted =
+          dc &&
+          typeof dc.isConvertedDisplay === "function" &&
+          dc.isConvertedDisplay() &&
+          typeof dc.hasRateForDisplayCurrency === "function" &&
+          dc.hasRateForDisplayCurrency();
+        if (displayCurrencyNoteEl) {
+          displayCurrencyNoteEl.hidden = !converted;
+        }
+        if (displayCurrencyCodeEl && converted) {
+          displayCurrencyCodeEl.textContent = displayCurrencyLabel();
+        }
       }
 
       function lineSubtotal(line) {
@@ -705,7 +761,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 
       function renderCartPageInner() {
         var items = cart.data.items || [];
-        var currency = cart.data.currencyCode || "";
+        var currency = displayCurrencyLabel();
+        syncDisplayCurrencyNote();
         if (currencyLabelEl) {
           currencyLabelEl.textContent = currency || "—";
         }
@@ -924,6 +981,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       });
 
       renderCartPage();
+      window.addEventListener("displaycurrencychange", renderCartPage);
+      window.addEventListener("displaycurrencyready", renderCartPage);
     })();
   </script>
 </section>
