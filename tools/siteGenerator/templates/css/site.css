@@ -197,6 +197,23 @@ a:hover {
   outline-offset: 2px;
 }
 
+.nav-flyout-currency {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-flyout-currency-label {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.header-display-currency--flyout {
+  width: 100%;
+}
+
 .header-cart-link:hover {
   color: #bfdbfe;
   background: rgba(30, 41, 59, 0.65);
@@ -306,6 +323,14 @@ body.nav-scroll-lock {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .header-display-currency-wrap--desktop {
+    display: none;
+  }
+
+  .nav-flyout-currency {
+    display: flex;
   }
 
   .nav-flyout {
@@ -421,6 +446,10 @@ body.nav-scroll-lock {
     grid-column: 3;
     grid-row: 1;
     justify-self: end;
+  }
+
+  .nav-flyout-currency {
+    display: none;
   }
 
   .header-cart-link {

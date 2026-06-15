@@ -286,11 +286,19 @@
     return formatWithCode(displayCurrency, convert(amountAud));
   }
 
+  function currencySelectEls() {
+    return [
+      document.getElementById("site-display-currency"),
+      document.getElementById("site-display-currency-flyout"),
+    ].filter(Boolean);
+  }
+
   function syncSelector() {
-    const sel = document.getElementById("site-display-currency");
-    if (sel && sel.value !== displayCurrency) {
-      sel.value = displayCurrency;
-    }
+    currencySelectEls().forEach(function (sel) {
+      if (sel.value !== displayCurrency) {
+        sel.value = displayCurrency;
+      }
+    });
   }
 
   function syncAudPriceElements() {
@@ -310,14 +318,15 @@
   }
 
   function bindSelector() {
-    const sel = document.getElementById("site-display-currency");
-    if (!sel || sel.dataset.bound === "1") {
-      return;
-    }
-    sel.dataset.bound = "1";
-    sel.value = displayCurrency;
-    sel.addEventListener("change", function () {
-      setDisplayCurrency(sel.value);
+    currencySelectEls().forEach(function (sel) {
+      if (sel.dataset.bound === "1") {
+        return;
+      }
+      sel.dataset.bound = "1";
+      sel.value = displayCurrency;
+      sel.addEventListener("change", function () {
+        setDisplayCurrency(sel.value);
+      });
     });
   }
 
