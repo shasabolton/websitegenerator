@@ -900,6 +900,18 @@
     return `https://raw.githubusercontent.com/${owner}/${repo}/${b}/${path}`;
   }
 
+  /** Raw URL using explicit ref (matches GitHub “Copy URL” for branch files). */
+  function buildRawRefsContentUrl(owner, repo, filePath, branch) {
+    const b = String(branch || DEFAULT_BRANCH).trim();
+    const path = String(filePath || "")
+      .trim()
+      .replace(/^\/+/, "")
+      .split("/")
+      .map((s) => encodeURIComponent(s))
+      .join("/");
+    return `https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/${encodeURIComponent(b)}/${path}`;
+  }
+
   function buildMediaContentUrl(owner, repo, filePath, branch) {
     const b = String(branch || DEFAULT_BRANCH).trim();
     const path = String(filePath || "")
@@ -2670,6 +2682,7 @@ ${publishBtn}
     fetchWritableRepos,
     listRepoDirectory,
     buildRawContentUrl,
+    buildRawRefsContentUrl,
     buildMediaContentUrl,
     getFileMeta,
     parseRepoFullName,

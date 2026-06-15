@@ -6,18 +6,55 @@
   let reloadTreeCallback = null;
   let previewState = null;
 
-  function buildImageMediaUrl(entry, ctx) {
-    if (!window.githubAuth?.buildMediaContentUrl) {
+  function isWebpPath(pathOrName) {
+    const base = String(pathOrName || "")
+      .trim()
+      .split("/")
+      .pop();
+    return Boolean(base && /\.webp$/i.test(base));
+  }
+
+  function buildImagePublicUrl(entry, ctx) {
+    const filePath = entry?.path || "";
+    if (!filePath || !ctx?.owner || !ctx?.repo) {
       return "";
     }
-    return window.githubAuth.buildMediaContentUrl(ctx.owner, ctx.repo, entry.path, ctx.branch);
+    if (isWebpPath(filePath) || isWebpPath(entry?.name)) {
+      if (window.githubAuth?.buildRawRefsContentUrl) {
+        return window.githubAuth.buildRawRefsContentUrl(ctx.owner, ctx.repo, filePath, ctx.branch);
+      }
+    }
+    if (window.githubAuth?.buildMediaContentUrl) {
+      return window.githubAuth.buildMediaContentUrl(ctx.owner, ctx.repo, filePath, ctx.branch);
+    }
+    return "";
+  }
+
+  function mimeTypeFromPath(filePath) {
+    const name = String(filePath || "").toLowerCase();
+    if (name.endsWith(".webp")) {
+      return "image/webp";
+    }
+    if (name.endsWith(".png")) {
+      return "image/png";
+    }
+    if (name.endsWith(".gif")) {
+      return "image/gif";
+    }
+    if (name.endsWith(".avif")) {
+      return "image/avif";
+    }
+    if (name.endsWith(".svg")) {
+      return "image/svg+xml";
+    }
+    return "image/jpeg";
   }
 
   async function fetchImageBlob(entry, ctx) {
-    const mediaUrl = buildImageMediaUrl(entry, ctx);
-    if (mediaUrl) {
+    const publicUrl = buildImagePublicUrl(entry, ctx);
+    if (publicUrl) {
       try {
-        const response = await fetch(mediaUrl, { mode: "cors", cache: "no-store" });
+        const response = await fetch(publicUrl, { mode: "cors", cache: "no-store" });
         if (response.ok) {
           const blob = await response.blob();
           if (blob.size > 0) {
@@ -57,24 +94,97 @@
         for (let i = 0; i < binary.length; i += 1) {
           bytes[i] = binary.charCodeAt(i);
         }
-        return new Blob([bytes], { type: "image/jpeg" });
+        return new Blob([bytes], { type: mimeTypeFromPath(entry.path) });
       }
     }
 
     throw new Error("Could not download image for processing.");
   }
 
+  function entryBaseName(entry) {
+    const name = String(entry?.name || "").trim();
+    if (name) {
+      return name.split("/").pop() || name;
+    }
+    const path = String(entry?.path || "").trim();
+    return path.split("/").pop() || path;
+  }
+
+  function hasExtension(nameOrPath, pattern) {
+    const base = String(nameOrPath || "")
+      .trim()
+      .split("/")
+      .pop();
+    return Boolean(base && pattern.test(base));
+  }
+
+  function isImageFile(entryOrName) {
+    if (entryOrName && typeof entryOrName === "object") {
+      return (
+        hasExtension(entryOrName.name, IMAGE_EXT) ||
+        hasExtension(entryOrName.path, IMAGE_EXT)
+      );
+    }
+    return hasExtension(entryOrName, IMAGE_EXT);
+  }
+
+  function isRasterImageFile(entryOrName) {
+    if (entryOrName && typeof entryOrName === "object") {
+      return (
+        hasExtension(entryOrName.name, RASTER_IMAGE_EXT) ||
+        hasExtension(entryOrName.path, RASTER_IMAGE_EXT)
+      );
+    }
+    return hasExtension(entryOrName, RASTER_IMAGE_EXT);
+  }
+
+  function ensureTypedImageBlob(blob, entry) {
+    const mime = mimeTypeFromPath(entry?.path || entry?.name || "");
+    if (blob.type === mime || (blob.type && blob.type.startsWith("image/"))) {
+      return blob;
+    }
+    if (typeof blob.slice === "function") {
+      return blob.slice(0, blob.size, mime);
+    }
+    return new Blob([blob], { type: mime });
+  }
+
   async function fetchImageObjectUrl(entry, ctx) {
     try {
-      const blob = await fetchImageBlob(entry, ctx);
+      const blob = ensureTypedImageBlob(await fetchImageBlob(entry, ctx), entry);
       return URL.createObjectURL(blob);
     } catch {
       return null;
     }
   }
 
+  function waitForImageElement(img, src) {
+    return new Promise((resolve, reject) => {
+      if (!src) {
+        reject(new Error("Missing image URL."));
+        return;
+      }
+      img.removeAttribute("crossorigin");
+      const onLoad = () => {
+        cleanup();
+        resolve();
+      };
+      const onError = () => {
+        cleanup();
+        reject(new Error("Image failed to load."));
+      };
+      const cleanup = () => {
+        img.removeEventListener("load", onLoad);
+        img.removeEventListener("error", onError);
+      };
+      img.addEventListener("load", onLoad);
+      img.addEventListener("error", onError);
+      img.src = src;
+    });
+  }
+
   async function loadImageForCanvas(entry, ctx) {
-    const blob = await fetchImageBlob(entry, ctx);
+    const blob = ensureTypedImageBlob(await fetchImageBlob(entry, ctx), entry);
     if (typeof createImageBitmap === "function") {
       try {
         return await createImageBitmap(blob, { imageOrientation: "from-image" });
@@ -102,43 +212,43 @@
     }
   }
 
-  function loadThumbnail(thumb, entry, ctx) {
-    const mediaUrl = buildImageMediaUrl(entry, ctx);
-    if (!mediaUrl) {
-      thumb.classList.add("images-browser-thumb--failed");
-      return;
+  async function loadThumbnail(thumb, entry, ctx) {
+    const publicUrl = buildImagePublicUrl(entry, ctx);
+    if (publicUrl) {
+      thumb.dataset.publicUrl = publicUrl;
     }
-    thumb.dataset.mediaUrl = mediaUrl;
     thumb.classList.add("images-browser-thumb--loading");
-    thumb.addEventListener(
-      "load",
-      () => {
-        thumb.classList.remove("images-browser-thumb--loading", "images-browser-thumb--failed");
-      },
-      { once: true },
-    );
-    thumb.addEventListener(
-      "error",
-      () => {
-        fetchImageObjectUrl(entry, ctx)
-          .then((objectUrl) => {
-            if (!objectUrl) {
-              thumb.classList.add("images-browser-thumb--failed");
-              thumb.classList.remove("images-browser-thumb--loading");
-              return;
-            }
-            thumb.src = objectUrl;
-            thumb.classList.remove("images-browser-thumb--loading");
-          })
-          .catch(() => {
-            thumb.classList.add("images-browser-thumb--failed");
-            thumb.classList.remove("images-browser-thumb--loading");
-          });
-      },
-      { once: true },
-    );
-    thumb.crossOrigin = "anonymous";
-    thumb.src = mediaUrl;
+
+    const markFailed = () => {
+      thumb.classList.add("images-browser-thumb--failed");
+      thumb.classList.remove("images-browser-thumb--loading");
+    };
+    const markLoaded = () => {
+      thumb.classList.remove("images-browser-thumb--loading", "images-browser-thumb--failed");
+    };
+
+    try {
+      const objectUrl = await fetchImageObjectUrl(entry, ctx);
+      if (objectUrl) {
+        await waitForImageElement(thumb, objectUrl);
+        markLoaded();
+        return;
+      }
+    } catch {
+      /* try direct media URL */
+    }
+
+    try {
+      if (publicUrl) {
+        await waitForImageElement(thumb, publicUrl);
+        markLoaded();
+        return;
+      }
+    } catch {
+      /* failed */
+    }
+
+    markFailed();
   }
 
   let previewOverlay = null;
@@ -208,8 +318,8 @@
   }
 
   function openImagePreview({ src, title, url, entry, ctx }) {
-    const imageSrc = String(src || "").trim();
-    if (!imageSrc) {
+    const fallbackSrc = String(src || "").trim();
+    if (!fallbackSrc && !entry) {
       return;
     }
     const overlay = ensurePreviewOverlay();
@@ -221,25 +331,12 @@
     }
     previewState = entry && ctx ? { entry, ctx } : null;
     img.removeAttribute("src");
-    img.crossOrigin = "anonymous";
-    img.onerror = () => {
-      if (!entry || !ctx) {
-        return;
-      }
-      fetchImageObjectUrl(entry, ctx).then((objectUrl) => {
-        if (!objectUrl) {
-          return;
-        }
-        img.removeAttribute("crossorigin");
-        img.src = objectUrl;
-      });
-    };
-    img.src = imageSrc;
+    img.removeAttribute("crossorigin");
     img.alt = String(title || "").trim() || "Image preview";
     caption.textContent = String(url || title || "").trim();
     setGenerateStatus(overlay, "", null);
     if (genBtn) {
-      const canGenerate = Boolean(previewState && isRasterImageFile(entry?.name) && supportsWebpEncoding());
+      const canGenerate = Boolean(previewState && isRasterImageFile(entry) && supportsWebpEncoding());
       genBtn.hidden = !canGenerate;
       genBtn.title = canGenerate
         ? "Create 75px, 570px, and full WebP files in a webp/ folder (one commit)"
@@ -248,18 +345,33 @@
     overlay.hidden = false;
     document.body.classList.add("images-browser-preview-open");
     overlay.querySelector(".images-browser-preview-close")?.focus();
+
+    const loadPreview = async () => {
+      if (entry && ctx && isRasterImageFile(entry)) {
+        const objectUrl = await fetchImageObjectUrl(entry, ctx);
+        if (objectUrl) {
+          img.src = objectUrl;
+          return;
+        }
+      }
+      if (fallbackSrc) {
+        img.src = fallbackSrc;
+      }
+    };
+    loadPreview().catch(() => {
+      if (fallbackSrc) {
+        img.src = fallbackSrc;
+      }
+    });
   }
 
-  function bindImagePreviewOpeners({ thumb, name, entry, mediaUrl, ctx }) {
+  function bindImagePreviewOpeners({ thumb, name, entry, publicUrl, ctx }) {
     const open = () => {
-      if (thumb?.classList.contains("images-browser-thumb--failed")) {
+      const src = String(thumb?.src || thumb?.dataset.publicUrl || publicUrl || "").trim();
+      if (!src && !entry) {
         return;
       }
-      const src = String(thumb?.src || thumb?.dataset.mediaUrl || mediaUrl || "").trim();
-      if (!src) {
-        return;
-      }
-      openImagePreview({ src, title: entry.name, url: mediaUrl, entry, ctx });
+      openImagePreview({ src, title: entry.name, url: publicUrl, entry, ctx });
     };
     thumb?.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -298,14 +410,6 @@
       return `${(n / 1024).toFixed(n < 10 * 1024 ? 1 : 0)} KB`;
     }
     return `${(n / (1024 * 1024)).toFixed(1)} MB`;
-  }
-
-  function isImageFile(name) {
-    return IMAGE_EXT.test(String(name || ""));
-  }
-
-  function isRasterImageFile(name) {
-    return RASTER_IMAGE_EXT.test(String(name || ""));
   }
 
   function supportsWebpEncoding() {
@@ -574,8 +678,8 @@
     spacer.setAttribute("aria-hidden", "true");
     row.appendChild(spacer);
 
-    const mediaUrl = buildImageMediaUrl(entry, ctx);
-    const isImage = isImageFile(entry.name);
+    const publicUrl = buildImagePublicUrl(entry, ctx);
+    const isImage = isImageFile(entry);
 
     if (isImage) {
       row.classList.add("images-browser-row--image");
@@ -599,7 +703,7 @@
     const name = document.createElement("span");
     name.className = "images-browser-name";
     name.textContent = entry.name;
-    name.title = mediaUrl || entry.path;
+    name.title = publicUrl || entry.path;
     if (isImage) {
       name.tabIndex = 0;
       name.setAttribute("role", "button");
@@ -607,11 +711,11 @@
     }
     nameWrap.appendChild(name);
 
-    if (mediaUrl) {
+    if (publicUrl) {
       const pathHint = document.createElement("span");
       pathHint.className = "images-browser-path";
-      pathHint.textContent = mediaUrl;
-      pathHint.title = mediaUrl;
+      pathHint.textContent = publicUrl;
+      pathHint.title = publicUrl;
       nameWrap.appendChild(pathHint);
     }
 
@@ -633,7 +737,7 @@
     copyBtn.textContent = "Copy URL";
     copyBtn.addEventListener("click", async (event) => {
       event.stopPropagation();
-      const url = mediaUrl || entry.path;
+      const url = publicUrl || entry.path;
       const ok = await copyText(url);
       if (ok) {
         copyBtn.textContent = "Copied";
@@ -651,7 +755,7 @@
         thumb: row.querySelector(".images-browser-thumb"),
         name,
         entry,
-        mediaUrl,
+        publicUrl,
         ctx,
       });
     }
@@ -783,12 +887,12 @@
   }
 
   function renderSignedOutBody(body) {
-    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository (for example an images or assets repo). Expand folders to explore and copy <code>media.githubusercontent.com</code> URLs for use in content or product editors.</p>
+    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository (for example an images or assets repo). Expand folders to explore and copy image URLs for use in content or product editors. JPEG and PNG use <code>media.githubusercontent.com</code>; WebP uses <code>raw.githubusercontent.com/…/refs/heads/…</code>.</p>
 <p class="images-browser-muted">Sign in to GitHub above, then open this section again.</p>`;
   }
 
   function mountSignedInBody(body, details) {
-    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. Click a thumbnail to preview at hero size, then <strong>Generate WebP sizes</strong> to add 75px, 570px, and full WebP files in a <code>webp/</code> folder (one commit). <strong>Copy URL</strong> copies a <code>media.githubusercontent.com</code> link.</p>
+    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. Click a thumbnail to preview at hero size, then <strong>Generate WebP sizes</strong> to add 75px, 570px, and full WebP files in a <code>webp/</code> folder (one commit). <strong>Copy URL</strong> copies a <code>media.githubusercontent.com</code> link for JPEG/PNG, or a <code>raw.githubusercontent.com/…/refs/heads/…</code> link for WebP.</p>
 <div class="images-browser-toolbar">
   <label for="images-repo-select">Images repository</label>
   <select id="images-repo-select" data-images-repo-select aria-label="GitHub images repository"></select>
