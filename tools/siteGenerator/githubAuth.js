@@ -923,6 +923,18 @@
     return `https://media.githubusercontent.com/media/${owner}/${repo}/${b}/${path}`;
   }
 
+  /** GitHub blob URL with raw query (matches “View raw” on github.com). */
+  function buildBlobRawContentUrl(owner, repo, filePath, branch) {
+    const b = String(branch || DEFAULT_BRANCH).trim();
+    const path = String(filePath || "")
+      .trim()
+      .replace(/^\/+/, "")
+      .split("/")
+      .map((s) => encodeURIComponent(s))
+      .join("/");
+    return `https://github.com/${owner}/${repo}/blob/${encodeURIComponent(b)}/${path}?raw=true`;
+  }
+
   async function putFileContent(owner, repo, filePath, message, jsonText, branch, existingSha) {
     const path = filePath
       .split("/")
@@ -1262,9 +1274,9 @@
   }
 
   /**
-   * @param {{ message: string, files: Array<{ path: string, bytes: Uint8Array }> }} options
+   * @param {{ message: string, files: Array<{ path: string, bytes: Uint8Array }>, deletes?: string[] }} options
    */
-  async function commitImagesRepoBinaryFiles({ message, files }) {
+  async function commitImagesRepoBinaryFiles({ message, files, deletes }) {
     const { owner, repo, branch } = requireSelectedImagesRepo();
     const list = Array.isArray(files) ? files : [];
     if (!list.length) {
@@ -1274,7 +1286,11 @@
       path: file.path,
       base64: bytesToBase64(file.bytes),
     }));
-    return commitGitTreeFiles({ owner, repo, branch, message, upserts, deletes: [] });
+    const deleteList = (Array.isArray(deletes) ? deletes : [])
+      .map((path) => String(path || "").trim())
+      .filter(Boolean)
+      .map((path) => ({ path }));
+    return commitGitTreeFiles({ owner, repo, branch, message, upserts, deletes: deleteList });
   }
 
   async function listAllRepoFilePathsRecursive(owner, repo, dirPath, branch) {
@@ -2684,6 +2700,7 @@ ${publishBtn}
     buildRawContentUrl,
     buildRawRefsContentUrl,
     buildMediaContentUrl,
+    buildBlobRawContentUrl,
     getFileMeta,
     parseRepoFullName,
     signOut,

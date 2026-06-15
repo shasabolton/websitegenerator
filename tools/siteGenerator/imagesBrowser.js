@@ -6,26 +6,13 @@
   let reloadTreeCallback = null;
   let previewState = null;
 
-  function isWebpPath(pathOrName) {
-    const base = String(pathOrName || "")
-      .trim()
-      .split("/")
-      .pop();
-    return Boolean(base && /\.webp$/i.test(base));
-  }
-
   function buildImagePublicUrl(entry, ctx) {
     const filePath = entry?.path || "";
     if (!filePath || !ctx?.owner || !ctx?.repo) {
       return "";
     }
-    if (isWebpPath(filePath) || isWebpPath(entry?.name)) {
-      if (window.githubAuth?.buildRawRefsContentUrl) {
-        return window.githubAuth.buildRawRefsContentUrl(ctx.owner, ctx.repo, filePath, ctx.branch);
-      }
-    }
-    if (window.githubAuth?.buildMediaContentUrl) {
-      return window.githubAuth.buildMediaContentUrl(ctx.owner, ctx.repo, filePath, ctx.branch);
+    if (window.githubAuth?.buildBlobRawContentUrl) {
+      return window.githubAuth.buildBlobRawContentUrl(ctx.owner, ctx.repo, filePath, ctx.branch);
     }
     return "";
   }
@@ -339,7 +326,7 @@
       const canGenerate = Boolean(previewState && isRasterImageFile(entry) && supportsWebpEncoding());
       genBtn.hidden = !canGenerate;
       genBtn.title = canGenerate
-        ? "Create 75px, 570px, and full WebP files in a webp/ folder (one commit)"
+        ? "Move original into a folder named after the image, then add il_75x75, il_570xN, and il_fullxfull WebP variants (one commit)"
         : "WebP generation is not available for this file";
     }
     overlay.hidden = false;
@@ -419,20 +406,31 @@
     return canvas.toDataURL("image/webp").startsWith("data:image/webp");
   }
 
-  function buildVariantOutputPaths(sourcePath) {
+  function buildImageSetPaths(sourcePath) {
     const normalized = String(sourcePath || "")
       .trim()
       .replace(/^\/+/, "");
-    const parts = normalized.split("/");
+    const parts = normalized.split("/").filter(Boolean);
     const fileName = parts.pop() || "image";
     const dir = parts.join("/");
     const baseName = fileName.replace(/\.[^.]+$/, "") || "image";
-    const webpDir = dir ? `${dir}/webp` : "webp";
-    return [
-      { path: `${webpDir}/${baseName}-75.webp`, maxWidth: 75 },
-      { path: `${webpDir}/${baseName}-570.webp`, maxWidth: 570 },
-      { path: `${webpDir}/${baseName}.webp`, maxWidth: null },
-    ];
+    const parentFolder = parts.length ? parts[parts.length - 1] : "";
+    const alreadyInSetFolder = parentFolder === baseName;
+
+    const imageDir = alreadyInSetFolder ? dir : dir ? `${dir}/${baseName}` : baseName;
+    const originalPath = `${imageDir}/${fileName}`;
+    const deleteSourcePath = alreadyInSetFolder ? null : normalized;
+
+    return {
+      imageDir,
+      originalPath,
+      deleteSourcePath,
+      variants: [
+        { path: `${imageDir}/il_75x75.${baseName}.webp`, maxWidth: 75 },
+        { path: `${imageDir}/il_570xN.${baseName}.webp`, maxWidth: 570 },
+        { path: `${imageDir}/il_fullxfull.${baseName}.webp`, maxWidth: null },
+      ],
+    };
   }
 
   async function loadBitmapFromImage(img) {
@@ -492,14 +490,27 @@
     }
   }
 
-  async function generateWebpVariantFiles(sourceImage, sourcePath) {
-    const outputs = buildVariantOutputPaths(sourcePath);
+  async function generateWebpVariantFiles(sourceImage, sourcePath, originalBytes) {
+    const layout = buildImageSetPaths(sourcePath);
     const files = [];
-    for (const output of outputs) {
+
+    if (layout.deleteSourcePath) {
+      if (!originalBytes?.length) {
+        throw new Error("Could not read original file for move.");
+      }
+      files.push({ path: layout.originalPath, bytes: originalBytes });
+    }
+
+    for (const output of layout.variants) {
       const bytes = await imageToWebpBytes(sourceImage, output.maxWidth);
       files.push({ path: output.path, bytes });
     }
-    return files;
+
+    return {
+      files,
+      deletes: layout.deleteSourcePath ? [layout.deleteSourcePath] : [],
+      imageDir: layout.imageDir,
+    };
   }
 
   function setGenerateStatus(overlay, message, kind) {
@@ -535,17 +546,20 @@
     try {
       setGenerateStatus(overlay, "Loading image…", null);
       source = await loadImageForCanvas(entry, ctx);
+      const originalBytes = new Uint8Array(await (await fetchImageBlob(entry, ctx)).arrayBuffer());
       setGenerateStatus(overlay, "Generating WebP variants…", null);
-      const files = await generateWebpVariantFiles(source, entry.path);
+      const result = await generateWebpVariantFiles(source, entry.path, originalBytes);
       setGenerateStatus(overlay, "Pushing to GitHub…", null);
       const baseName = entry.path.split("/").pop() || entry.name;
       const commit = await window.githubAuth.commitImagesRepoBinaryFiles({
-        message: `Add WebP variants for ${baseName}`,
-        files,
+        message: `Add WebP set for ${baseName} in ${result.imageDir}/`,
+        files: result.files,
+        deletes: result.deletes,
       });
       const sha = commit?.sha ? String(commit.sha).slice(0, 7) : "ok";
-      const paths = files.map((f) => f.path).join(", ");
-      setGenerateStatus(overlay, `Pushed ${files.length} files (${sha}): ${paths}`, "ok");
+      const paths = result.files.map((f) => f.path).join(", ");
+      const moveNote = result.deletes.length ? ` Moved original into ${result.imageDir}/.` : "";
+      setGenerateStatus(overlay, `Pushed ${result.files.length} files (${sha}): ${paths}.${moveNote}`, "ok");
       if (typeof reloadTreeCallback === "function") {
         reloadTreeCallback();
       }
@@ -563,6 +577,168 @@
         return a.type === "dir" ? -1 : 1;
       }
       return String(a.name).localeCompare(String(b.name), undefined, { sensitivity: "base" });
+    });
+  }
+
+  const FOLDER_PREVIEW_MAX_SUBDIRS = 10;
+
+  async function listDirectoryCached(dirPath, ctx, state) {
+    if (!state.dirCache) {
+      state.dirCache = new Map();
+    }
+    const key = String(dirPath || "");
+    if (state.dirCache.has(key)) {
+      return state.dirCache.get(key);
+    }
+    const entries = await window.githubAuth.listRepoDirectory(
+      ctx.owner,
+      ctx.repo,
+      dirPath,
+      ctx.branch,
+    );
+    state.dirCache.set(key, entries);
+    return entries;
+  }
+
+  function pickSmallerImage(a, b) {
+    if (!a) {
+      return b;
+    }
+    if (!b) {
+      return a;
+    }
+    const sizeA = Number(a.size);
+    const sizeB = Number(b.size);
+    const bytesA = Number.isFinite(sizeA) && sizeA > 0 ? sizeA : Infinity;
+    const bytesB = Number.isFinite(sizeB) && sizeB > 0 ? sizeB : Infinity;
+    return bytesB < bytesA ? b : a;
+  }
+
+  function pickSmallestImage(entries) {
+    let best = null;
+    for (const entry of entries) {
+      if (entry.type !== "file" || !isImageFile(entry)) {
+        continue;
+      }
+      const name = entryBaseName(entry);
+      if (/^il_75x75\./i.test(name) || /-75\.webp$/i.test(name)) {
+        return entry;
+      }
+      best = pickSmallerImage(best, entry);
+    }
+    return best;
+  }
+
+  async function findSmallestImageInFolder(dirPath, ctx, state, depth = 0) {
+    const MAX_DEPTH = 2;
+    const entries = await listDirectoryCached(dirPath, ctx, state);
+    let best = pickSmallestImage(entries);
+    if (best && (/^il_75x75\./i.test(entryBaseName(best)) || /-75\.webp$/i.test(entryBaseName(best)))) {
+      return best;
+    }
+    if (depth >= MAX_DEPTH) {
+      return best;
+    }
+
+    const subdirs = entries
+      .filter((entry) => entry.type === "dir")
+      .sort((a, b) => {
+        const aWebp = a.name.toLowerCase() === "webp" ? -1 : 0;
+        const bWebp = b.name.toLowerCase() === "webp" ? -1 : 0;
+        if (aWebp !== bWebp) {
+          return aWebp - bWebp;
+        }
+        return String(a.name).localeCompare(String(b.name), undefined, { sensitivity: "base" });
+      })
+      .slice(0, FOLDER_PREVIEW_MAX_SUBDIRS);
+
+    for (const dir of subdirs) {
+      try {
+        const nested = await findSmallestImageInFolder(dir.path, ctx, state, depth + 1);
+        if (nested && (/^il_75x75\./i.test(entryBaseName(nested)) || /-75\.webp$/i.test(entryBaseName(nested)))) {
+          return nested;
+        }
+        best = pickSmallerImage(best, nested);
+      } catch {
+        /* skip unreadable subfolder */
+      }
+    }
+
+    return best;
+  }
+
+  async function loadFolderPreviewThumb(thumb, wrap, folderEntry, ctx, state) {
+    if (wrap.dataset.previewLoaded === "1" || wrap.dataset.previewLoading === "1") {
+      return;
+    }
+    wrap.dataset.previewLoading = "1";
+    try {
+      const imageEntry = await findSmallestImageInFolder(folderEntry.path, ctx, state);
+      if (!imageEntry || !thumb.isConnected) {
+        return;
+      }
+      thumb.hidden = false;
+      await loadThumbnail(thumb, imageEntry, ctx);
+      if (!thumb.classList.contains("images-browser-thumb--failed")) {
+        wrap.classList.add("images-browser-folder-preview-wrap--loaded");
+        wrap.dataset.previewLoaded = "1";
+      } else {
+        thumb.hidden = true;
+      }
+    } catch {
+      thumb.hidden = true;
+    } finally {
+      delete wrap.dataset.previewLoading;
+    }
+  }
+
+  function scheduleFolderPreview(wrap, thumb, folderEntry, ctx, state, row) {
+    const run = () => loadFolderPreviewThumb(thumb, wrap, folderEntry, ctx, state);
+    const scrollRoot = state.scrollRoot || null;
+
+    if (typeof IntersectionObserver === "undefined") {
+      run();
+      return;
+    }
+
+    let started = false;
+    const startOnce = () => {
+      if (started) {
+        return;
+      }
+      started = true;
+      observer.disconnect();
+      run();
+    };
+
+    const observer = new IntersectionObserver(
+      (records) => {
+        if (records.some((record) => record.isIntersecting)) {
+          startOnce();
+        }
+      },
+      { root: scrollRoot, rootMargin: "64px", threshold: 0 },
+    );
+    observer.observe(row);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const rowRect = row.getBoundingClientRect();
+        if (!rowRect.height) {
+          return;
+        }
+        const rootRect = scrollRoot
+          ? scrollRoot.getBoundingClientRect()
+          : { top: 0, bottom: window.innerHeight, left: 0, right: window.innerWidth };
+        const visible =
+          rowRect.bottom > rootRect.top &&
+          rowRect.top < rootRect.bottom &&
+          rowRect.right > rootRect.left &&
+          rowRect.left < rootRect.right;
+        if (visible) {
+          startOnce();
+        }
+      });
     });
   }
 
@@ -780,11 +956,24 @@
     toggle.setAttribute("aria-expanded", "false");
     row.appendChild(toggle);
 
+    const previewWrap = document.createElement("span");
+    previewWrap.className = "images-browser-folder-preview-wrap";
+
     const icon = document.createElement("span");
     icon.className = "images-browser-icon";
     icon.textContent = "📁";
     icon.setAttribute("aria-hidden", "true");
-    row.appendChild(icon);
+    previewWrap.appendChild(icon);
+
+    const thumb = document.createElement("img");
+    thumb.className = "images-browser-thumb";
+    thumb.alt = "";
+    thumb.decoding = "async";
+    thumb.hidden = true;
+    previewWrap.appendChild(thumb);
+
+    row.appendChild(previewWrap);
+    scheduleFolderPreview(previewWrap, thumb, entry, ctx, state, row);
 
     const name = document.createElement("span");
     name.className = "images-browser-name images-browser-name--dir";
@@ -811,12 +1000,7 @@
       loading = true;
       childrenWrap.innerHTML = `<div class="images-browser-loading" style="padding:8px 12px">Loading…</div>`;
       try {
-        const entries = await window.githubAuth.listRepoDirectory(
-          ctx.owner,
-          ctx.repo,
-          entry.path,
-          ctx.branch,
-        );
+        const entries = await listDirectoryCached(entry.path, ctx, state);
         childrenWrap.innerHTML = "";
         renderEntries(childrenWrap, sortEntries(entries), depth + 1, ctx, state);
         loaded = true;
@@ -876,7 +1060,7 @@
       if (!entries.length) {
         treeRoot.innerHTML = `<div class="images-browser-tree--empty">This repository is empty.</div>`;
       } else {
-        const state = {};
+        const state = { scrollRoot: treeRoot };
         renderEntries(treeRoot, sortEntries(entries), 0, ctx, state);
       }
       setStatus(panelRoot, `${ctx.owner}/${ctx.repo}@${ctx.branch}`, null);
@@ -887,12 +1071,12 @@
   }
 
   function renderSignedOutBody(body) {
-    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository (for example an images or assets repo). Expand folders to explore and copy image URLs for use in content or product editors. JPEG and PNG use <code>media.githubusercontent.com</code>; WebP uses <code>raw.githubusercontent.com/…/refs/heads/…</code>.</p>
+    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository (for example an images or assets repo). Expand folders to explore and copy <code>github.com/…/blob/…?raw=true</code> image URLs for use in content or product editors.</p>
 <p class="images-browser-muted">Sign in to GitHub above, then open this section again.</p>`;
   }
 
   function mountSignedInBody(body, details) {
-    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. Click a thumbnail to preview at hero size, then <strong>Generate WebP sizes</strong> to add 75px, 570px, and full WebP files in a <code>webp/</code> folder (one commit). <strong>Copy URL</strong> copies a <code>media.githubusercontent.com</code> link for JPEG/PNG, or a <code>raw.githubusercontent.com/…/refs/heads/…</code> link for WebP.</p>
+    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. Click a thumbnail to preview at hero size, then <strong>Generate WebP sizes</strong> to move the original into a folder named after the image and add <code>il_75x75</code>, <code>il_570xN</code>, and <code>il_fullxfull</code> WebP variants (one commit). <strong>Copy URL</strong> copies a <code>github.com/…/blob/…?raw=true</code> link.</p>
 <div class="images-browser-toolbar">
   <label for="images-repo-select">Images repository</label>
   <select id="images-repo-select" data-images-repo-select aria-label="GitHub images repository"></select>
