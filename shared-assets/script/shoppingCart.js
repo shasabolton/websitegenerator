@@ -112,7 +112,8 @@ function skuToLineItem(sku, products) {
   };
   const img = String(row.IMAGE1 || "").trim();
   if (img) {
-    line.imageUrl = img;
+    const resize = window.productData?.productImageUrlForDisplay;
+    line.imageUrl = typeof resize === "function" ? resize(img, "thumb") : img;
   }
   return line;
 }

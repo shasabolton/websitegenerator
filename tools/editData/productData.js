@@ -558,6 +558,36 @@ function collectProductImageUrls(row) {
   return out;
 }
 
+/** Etsy/GitHub il_* size token in image filenames (e.g. …/il_fullxfull.12345_abc.jpg). */
+const PRODUCT_IMAGE_SIZE_TOKEN = /\/il_(?:full[xX]full|\d+x[A-Za-z0-9]+)(?=\.\d)/i;
+
+/** @type {Record<string, string>} */
+const PRODUCT_IMAGE_DISPLAY_SIZE = {
+  thumb: "75xN",
+  grid: "570xN",
+  hero: "fullxfull",
+  full: "fullxfull",
+};
+
+/**
+ * Resize an Etsy-style il_* image URL for display. Source URLs in productData.json stay full size.
+ * @param {string} url
+ * @param {'thumb' | 'grid' | 'hero' | 'full' | string} [size] - thumb (carousel thumbs), grid, hero/full
+ * @returns {string}
+ */
+function productImageUrlForDisplay(url, size = "full") {
+  const u = String(url || "").trim();
+  if (!u) {
+    return "";
+  }
+  const sizeKey = String(size || "full").trim();
+  const token = PRODUCT_IMAGE_DISPLAY_SIZE[sizeKey] || sizeKey;
+  if (!token || !PRODUCT_IMAGE_SIZE_TOKEN.test(u)) {
+    return u;
+  }
+  return u.replace(PRODUCT_IMAGE_SIZE_TOKEN, `/il_${token}`);
+}
+
 function splitCommaList(raw) {
   return String(raw ?? "")
     .split(",")
@@ -801,6 +831,8 @@ function getCategoriesForFileTree(products, digitalFilter) {
     redirectPathMatchesProductSlug,
     slugify,
     collectProductImageUrls,
+    productImageUrlForDisplay,
+    PRODUCT_IMAGE_DISPLAY_SIZE,
     variationAxesFromRow,
     choicePairsFromLineId,
     unitPriceFromRowAndChoices,

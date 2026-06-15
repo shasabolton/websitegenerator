@@ -55,6 +55,14 @@ function applyTemplate(template, values) {
   }, template);
 }
 
+function productDisplayImageUrl(url, size) {
+  const resize = window.productData?.productImageUrlForDisplay;
+  if (typeof resize === "function") {
+    return resize(url, size);
+  }
+  return String(url || "").trim();
+}
+
 function buildProductThumbsHtml(productThumbTemplate, products) {
   return products
     .map((product) => {
@@ -66,9 +74,13 @@ function buildProductThumbsHtml(productThumbTemplate, products) {
             ? escapeHtml(`AUD$${priceAud.toFixed(2)}`)
             : "";
       const priceAudAttr = priceAud != null ? escapeHtml(String(priceAud)) : "";
+      const imageUrl =
+        product.image && product.image !== "shared-assets/images/branding/favicon.jpg"
+          ? productDisplayImageUrl(product.image, "grid")
+          : product.image || "shared-assets/images/branding/favicon.jpg";
       return applyTemplate(productThumbTemplate, {
         PRODUCT_HREF: escapeHtml(product.href || "shop"),
-        PRODUCT_IMAGE_URL: escapeHtml(product.image || "shared-assets/images/branding/favicon.jpg"),
+        PRODUCT_IMAGE_URL: escapeHtml(imageUrl),
         PRODUCT_TITLE: escapeHtml(product.title),
         PRODUCT_PRICE: priceDisplay,
         PRODUCT_PRICE_AUD: priceAudAttr,
@@ -147,7 +159,7 @@ function buildCarouselSlidesHtml(items, productTitleRaw) {
       const hidden = index === 0 ? 'aria-hidden="false"' : 'aria-hidden="true"';
       const ix = index + 1;
       if (item.kind === "image") {
-        const safeUrl = escapeHtml(item.url);
+        const safeUrl = escapeHtml(productDisplayImageUrl(item.url, "hero"));
         const altRaw = String(item.alt || "").trim();
         const alt = escapeHtml(altRaw || `${altBase} — image ${ix} of ${n}`);
         const loading = index === 0 ? "eager" : "lazy";
@@ -239,7 +251,7 @@ function buildCarouselThumbsHtml(items, productTitleRaw) {
       const ariaCurrent = index === 0 ? ' aria-current="true"' : ' aria-current="false"';
       const ix = index + 1;
       if (item.kind === "image") {
-        const safeUrl = escapeHtml(item.url);
+        const safeUrl = escapeHtml(productDisplayImageUrl(item.url, "thumb"));
         const label = escapeHtml(`Show ${labelBase} image ${ix} of ${n}`);
         return `<li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb${active}" data-carousel-index="${index}" aria-label="${label}"${ariaCurrent}>
