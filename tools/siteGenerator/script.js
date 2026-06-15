@@ -200,4 +200,8 @@ window.addEventListener("load", () => {
   if (window.shopDataEditor?.initShopDataEditor) {
     window.shopDataEditor.initShopDataEditor({ rootId: "shop-data-editor-root" });
   }
+
+  if (window.imagesBrowser?.initImagesBrowser) {
+    window.imagesBrowser.initImagesBrowser({ rootId: "images-browser-root" });
+  }
 });

@@ -7,6 +7,7 @@
     pat: "siteGenerator.github.pat",
     login: "siteGenerator.github.login",
     repo: "siteGenerator.github.repo",
+    imagesRepo: "siteGenerator.github.imagesRepo",
     branch: "siteGenerator.github.branch",
     clientId: "siteGenerator.github.clientId",
     redirectUriOverride: "siteGenerator.github.redirectUriOverride",
@@ -199,6 +200,18 @@
       localStorage.setItem(STORAGE.repo, fullName);
     } else {
       localStorage.removeItem(STORAGE.repo);
+    }
+  }
+
+  function getSelectedImagesRepo() {
+    return localStorage.getItem(STORAGE.imagesRepo) || "";
+  }
+
+  function setSelectedImagesRepo(fullName) {
+    if (fullName) {
+      localStorage.setItem(STORAGE.imagesRepo, fullName);
+    } else {
+      localStorage.removeItem(STORAGE.imagesRepo);
     }
   }
 
@@ -834,6 +847,58 @@
       }
       throw err;
     }
+  }
+
+  /**
+   * @param {string} [dirPath] - empty string for repository root
+   * @returns {Promise<Array<{ name: string, path: string, type: "dir" | "file", size: number, sha: string, downloadUrl: string | null }>>}
+   */
+  async function listRepoDirectory(owner, repo, dirPath = "", branch) {
+    const ref = encodeURIComponent(branch || DEFAULT_BRANCH);
+    const segments = String(dirPath || "")
+      .trim()
+      .replace(/^\/+/, "")
+      .replace(/\/+$/, "")
+      .split("/")
+      .filter(Boolean)
+      .map((s) => encodeURIComponent(s));
+    const pathPart = segments.length ? `/${segments.join("/")}` : "";
+    const result = await githubApi(`/repos/${owner}/${repo}/contents${pathPart}?ref=${ref}`, {
+      method: "GET",
+    });
+    if (!Array.isArray(result)) {
+      return [];
+    }
+    return result.map((entry) => ({
+      name: entry.name,
+      path: entry.path,
+      type: entry.type === "dir" ? "dir" : "file",
+      size: entry.size ?? 0,
+      sha: entry.sha || "",
+      downloadUrl: entry.download_url || null,
+    }));
+  }
+
+  function buildRawContentUrl(owner, repo, filePath, branch) {
+    const b = encodeURIComponent(branch || DEFAULT_BRANCH);
+    const path = String(filePath || "")
+      .trim()
+      .replace(/^\/+/, "")
+      .split("/")
+      .map((s) => encodeURIComponent(s))
+      .join("/");
+    return `https://raw.githubusercontent.com/${owner}/${repo}/${b}/${path}`;
+  }
+
+  function buildMediaContentUrl(owner, repo, filePath, branch) {
+    const b = String(branch || DEFAULT_BRANCH).trim();
+    const path = String(filePath || "")
+      .trim()
+      .replace(/^\/+/, "")
+      .split("/")
+      .map((s) => encodeURIComponent(s))
+      .join("/");
+    return `https://media.githubusercontent.com/media/${owner}/${repo}/${b}/${path}`;
   }
 
   async function putFileContent(owner, repo, filePath, message, jsonText, branch, existingSha) {
@@ -2484,9 +2549,17 @@ ${publishBtn}
     getToken,
     getLogin,
     getSelectedRepo,
+    getSelectedImagesRepo,
     getBranch,
     setSelectedRepo,
+    setSelectedImagesRepo,
     setBranch,
+    fetchWritableRepos,
+    listRepoDirectory,
+    buildRawContentUrl,
+    buildMediaContentUrl,
+    getFileMeta,
+    parseRepoFullName,
     signOut,
     startSignIn,
     handleOAuthCallbackIfPresent,
