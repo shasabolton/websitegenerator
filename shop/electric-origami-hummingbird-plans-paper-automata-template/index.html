@@ -60,6 +60,7 @@
     -->
     <script src="tools/editData/productData.js"></script>
     <script src="shared-assets/script/shoppingCart.js"></script>
+    <script src="shared-assets/script/displayCurrency.js"></script>
     <script>
 window.siteCart = new ShoppingCart("Contraption Cart");
 </script>
@@ -83,13 +84,34 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <img class="brand-logo" src="shared-assets/images/branding/favicon.jpg" alt="Contraption Cart logo" />
         <span class="brand-name">Contraption Cart</span>
       </div>
-      <a class="header-cart-link" href="cart" aria-label="Shopping cart">
-        <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="9" cy="21" r="1" />
-          <circle cx="20" cy="21" r="1" />
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-        </svg>
-      </a>
+      <div class="header-actions">
+        <label class="visually-hidden" for="site-display-currency">Display currency</label>
+        <select
+          id="site-display-currency"
+          class="header-display-currency"
+          aria-label="Display currency"
+        >
+          <option value="AUD">AUD</option>
+          <option value="NZD">NZD</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="CAD">CAD</option>
+          <option value="JPY">JPY</option>
+          <option value="SGD">SGD</option>
+          <option value="HKD">HKD</option>
+          <option value="CHF">CHF</option>
+          <option value="SEK">SEK</option>
+          <option value="NOK">NOK</option>
+        </select>
+        <a class="header-cart-link" href="cart" aria-label="Shopping cart">
+          <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
+        </a>
+      </div>
     </div>
     <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
       <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
@@ -215,7 +237,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     </nav>
   
   <h1>Electric Origami Hummingbird Plans - Paper Automata template</h1>
-  <p class="product-body-price" id="product-body-price">A$4.00</p>
+  <p class="product-body-price" id="product-body-price">AUD$4.00</p>
   
   <p class="product-body-actions">
     <button type="button" class="product-add-to-cart-btn" id="product-add-to-cart-btn">Add to cart</button>
@@ -227,7 +249,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       aria-atomic="true"
     ></span>
   </p>
-  <div class="image-carousel" id="carousel-4j7oxjpn-f5b3f5ip" data-image-carousel>
+  <div class="image-carousel" id="carousel-uglx4r5u-4rkfyvkl" data-image-carousel>
   <div class="image-carousel-stage" aria-live="polite">
     <figure class="image-carousel-slide is-active" data-carousel-index="0" data-carousel-slide-kind="image" aria-hidden="false">
   <img class="image-carousel-slide-img" src="https://i.etsystatic.com/25031074/r/il/853949/3578171720/il_fullxfull.3578171720_mcen.jpg" alt="Electric Origami Hummingbird Plans - Paper Automata template — image 1 of 10" loading="eager" fetchpriority="high" />
@@ -263,52 +285,52 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <ul class="image-carousel-thumbs" role="list">
     <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb is-active" data-carousel-index="0" aria-label="Show Electric Origami Hummingbird Plans - Paper Automata template image 1 of 10" aria-current="true">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/853949/3578171720/il_75xN.3578171720_mcen.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/853949/3578171720/il_fullxfull.3578171720_mcen.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="1" aria-label="Show Electric Origami Hummingbird Plans - Paper Automata template image 2 of 10" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/1beffa/3578171782/il_75xN.3578171782_aiyf.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/1beffa/3578171782/il_fullxfull.3578171782_aiyf.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="2" aria-label="Show Electric Origami Hummingbird Plans - Paper Automata template image 3 of 10" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/f0d581/3578165494/il_75xN.3578165494_nitx.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/f0d581/3578165494/il_fullxfull.3578165494_nitx.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="3" aria-label="Show Electric Origami Hummingbird Plans - Paper Automata template image 4 of 10" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/d82f55/3625786029/il_75xN.3625786029_65hk.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/d82f55/3625786029/il_fullxfull.3625786029_65hk.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="4" aria-label="Show Electric Origami Hummingbird Plans - Paper Automata template image 5 of 10" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/dcd788/3625786077/il_75xN.3625786077_c6bc.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/dcd788/3625786077/il_fullxfull.3625786077_c6bc.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="5" aria-label="Show Electric Origami Hummingbird Plans - Paper Automata template image 6 of 10" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/49032b/3578165418/il_75xN.3578165418_5hnu.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/49032b/3578165418/il_fullxfull.3578165418_5hnu.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="6" aria-label="Show Electric Origami Hummingbird Plans - Paper Automata template image 7 of 10" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/a9e229/3625786167/il_75xN.3625786167_8h2b.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/a9e229/3625786167/il_fullxfull.3625786167_8h2b.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="7" aria-label="Show Electric Origami Hummingbird Plans - Paper Automata template image 8 of 10" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/6fb133/3578165274/il_75xN.3578165274_5rtp.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/6fb133/3578165274/il_fullxfull.3578165274_5rtp.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="8" aria-label="Show Electric Origami Hummingbird Plans - Paper Automata template image 9 of 10" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/919ed1/3578165360/il_75xN.3578165360_iawi.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/919ed1/3578165360/il_fullxfull.3578165360_iawi.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="9" aria-label="Show Electric Origami Hummingbird Plans - Paper Automata template image 10 of 10" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/b7ce54/3625802885/il_75xN.3625802885_4xdg.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/b7ce54/3625802885/il_fullxfull.3625802885_4xdg.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
   </ul>
@@ -387,17 +409,15 @@ The fly swat has high voltage but low current. It will not cause any harm but ca
       }
 
       function formatPriceDisplay(amount) {
-        var cur = String(boot.currencyCode || "AUD").trim().toUpperCase();
+        var dc = window.siteDisplayCurrency;
+        if (dc && typeof dc.format === "function") {
+          return dc.format(amount);
+        }
         var n = Number(amount);
         if (!Number.isFinite(n) || n < 0) {
           n = 0;
         }
-        if (/^[A-Z]{3}$/.test(cur)) {
-          try {
-            return new Intl.NumberFormat(undefined, { style: "currency", currency: cur }).format(n);
-          } catch (e) {}
-        }
-        return cur + " " + n.toFixed(2);
+        return "AUD$" + n.toFixed(2);
       }
 
       function updatePriceDisplay() {
@@ -446,6 +466,8 @@ The fly swat has high voltage but low current. It will not cause any harm but ca
 
       if (btn && cart && boot && boot.sku) {
         syncPricingFromCatalogThenBind();
+        window.addEventListener("displaycurrencychange", updatePriceDisplay);
+        window.addEventListener("displaycurrencyready", updatePriceDisplay);
 
         btn.addEventListener("click", function () {
           var sku = String(boot.sku || "").trim();

@@ -60,6 +60,7 @@
     -->
     <script src="tools/editData/productData.js"></script>
     <script src="shared-assets/script/shoppingCart.js"></script>
+    <script src="shared-assets/script/displayCurrency.js"></script>
     <script>
 window.siteCart = new ShoppingCart("Contraption Cart");
 </script>
@@ -83,13 +84,34 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <img class="brand-logo" src="shared-assets/images/branding/favicon.jpg" alt="Contraption Cart logo" />
         <span class="brand-name">Contraption Cart</span>
       </div>
-      <a class="header-cart-link" href="cart" aria-label="Shopping cart">
-        <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="9" cy="21" r="1" />
-          <circle cx="20" cy="21" r="1" />
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-        </svg>
-      </a>
+      <div class="header-actions">
+        <label class="visually-hidden" for="site-display-currency">Display currency</label>
+        <select
+          id="site-display-currency"
+          class="header-display-currency"
+          aria-label="Display currency"
+        >
+          <option value="AUD">AUD</option>
+          <option value="NZD">NZD</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="CAD">CAD</option>
+          <option value="JPY">JPY</option>
+          <option value="SGD">SGD</option>
+          <option value="HKD">HKD</option>
+          <option value="CHF">CHF</option>
+          <option value="SEK">SEK</option>
+          <option value="NOK">NOK</option>
+        </select>
+        <a class="header-cart-link" href="cart" aria-label="Shopping cart">
+          <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
+        </a>
+      </div>
     </div>
     <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
       <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
@@ -215,7 +237,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     </nav>
   
   <h1>Dice Tunnel</h1>
-  <p class="product-body-price" id="product-body-price">A$40.00</p>
+  <p class="product-body-price" id="product-body-price">AUD$40.00</p>
   <div class="product-variations" role="group" aria-label="Options"><div class="product-variation-field">
   <label class="product-variation-label" for="product-variation-1">Assembly</label>
   <select id="product-variation-1" class="product-variation-select" aria-label="Assembly">
@@ -232,7 +254,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       aria-atomic="true"
     ></span>
   </p>
-  <div class="image-carousel" id="carousel-mqrs4d8m-8dflv0hp" data-image-carousel>
+  <div class="image-carousel" id="carousel-xycv8us5-3qxtup6t" data-image-carousel>
   <div class="image-carousel-stage" aria-live="polite">
     <figure class="image-carousel-slide is-active" data-carousel-index="0" data-carousel-slide-kind="image" aria-hidden="false">
   <img class="image-carousel-slide-img" src="https://i.etsystatic.com/25031074/r/il/ce2a26/6799903374/il_fullxfull.6799903374_15kr.jpg" alt="Dice Tunnel — image 1 of 6" loading="eager" fetchpriority="high" />
@@ -258,7 +280,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <ul class="image-carousel-thumbs" role="list">
     <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb is-active" data-carousel-index="0" aria-label="Show Dice Tunnel image 1 of 6" aria-current="true">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/ce2a26/6799903374/il_75xN.6799903374_15kr.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/ce2a26/6799903374/il_fullxfull.6799903374_15kr.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
@@ -268,22 +290,22 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="2" aria-label="Show Dice Tunnel image 3 of 6" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/5f681e/6799903318/il_75xN.6799903318_iyoc.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/5f681e/6799903318/il_fullxfull.6799903318_iyoc.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="3" aria-label="Show Dice Tunnel image 4 of 6" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/35100c/6799903370/il_75xN.6799903370_92ht.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/35100c/6799903370/il_fullxfull.6799903370_92ht.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="4" aria-label="Show Dice Tunnel image 5 of 6" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/72a19a/6847906249/il_75xN.6847906249_mght.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/72a19a/6847906249/il_fullxfull.6847906249_mght.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="5" aria-label="Show Dice Tunnel image 6 of 6" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/5ef80a/6847906253/il_75xN.6847906253_mldz.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/5ef80a/6847906253/il_fullxfull.6847906253_mldz.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
   </ul>
@@ -332,17 +354,15 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       }
 
       function formatPriceDisplay(amount) {
-        var cur = String(boot.currencyCode || "AUD").trim().toUpperCase();
+        var dc = window.siteDisplayCurrency;
+        if (dc && typeof dc.format === "function") {
+          return dc.format(amount);
+        }
         var n = Number(amount);
         if (!Number.isFinite(n) || n < 0) {
           n = 0;
         }
-        if (/^[A-Z]{3}$/.test(cur)) {
-          try {
-            return new Intl.NumberFormat(undefined, { style: "currency", currency: cur }).format(n);
-          } catch (e) {}
-        }
-        return cur + " " + n.toFixed(2);
+        return "AUD$" + n.toFixed(2);
       }
 
       function updatePriceDisplay() {
@@ -391,6 +411,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 
       if (btn && cart && boot && boot.sku) {
         syncPricingFromCatalogThenBind();
+        window.addEventListener("displaycurrencychange", updatePriceDisplay);
+        window.addEventListener("displaycurrencyready", updatePriceDisplay);
 
         btn.addEventListener("click", function () {
           var sku = String(boot.sku || "").trim();
