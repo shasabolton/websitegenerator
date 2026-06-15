@@ -1,5 +1,10 @@
 (function () {
   const IMAGE_EXT = /\.(avif|bmp|gif|ico|jpe?g|png|svg|webp)$/i;
+  const RASTER_IMAGE_EXT = /\.(avif|bmp|gif|ico|jpe?g|png|webp)$/i;
+  const WEBP_QUALITY = 0.85;
+
+  let reloadTreeCallback = null;
+  let previewState = null;
 
   function buildImageMediaUrl(entry, ctx) {
     if (!window.githubAuth?.buildMediaContentUrl) {
@@ -8,7 +13,22 @@
     return window.githubAuth.buildMediaContentUrl(ctx.owner, ctx.repo, entry.path, ctx.branch);
   }
 
-  async function fetchImageObjectUrl(entry, ctx) {
+  async function fetchImageBlob(entry, ctx) {
+    const mediaUrl = buildImageMediaUrl(entry, ctx);
+    if (mediaUrl) {
+      try {
+        const response = await fetch(mediaUrl, { mode: "cors", cache: "no-store" });
+        if (response.ok) {
+          const blob = await response.blob();
+          if (blob.size > 0) {
+            return blob;
+          }
+        }
+      } catch {
+        /* try authenticated GitHub download */
+      }
+    }
+
     let downloadUrl = entry.downloadUrl;
     if (!downloadUrl && window.githubAuth?.getFileMeta) {
       const meta = await window.githubAuth.getFileMeta(ctx.owner, ctx.repo, entry.path, ctx.branch);
@@ -21,7 +41,9 @@
       const response = await fetch(downloadUrl, { headers: authHeaders });
       if (response.ok) {
         const blob = await response.blob();
-        return URL.createObjectURL(blob);
+        if (blob.size > 0) {
+          return blob;
+        }
       }
     }
 
@@ -35,12 +57,49 @@
         for (let i = 0; i < binary.length; i += 1) {
           bytes[i] = binary.charCodeAt(i);
         }
-        const blob = new Blob([bytes], { type: "image/jpeg" });
-        return URL.createObjectURL(blob);
+        return new Blob([bytes], { type: "image/jpeg" });
       }
     }
 
-    return null;
+    throw new Error("Could not download image for processing.");
+  }
+
+  async function fetchImageObjectUrl(entry, ctx) {
+    try {
+      const blob = await fetchImageBlob(entry, ctx);
+      return URL.createObjectURL(blob);
+    } catch {
+      return null;
+    }
+  }
+
+  async function loadImageForCanvas(entry, ctx) {
+    const blob = await fetchImageBlob(entry, ctx);
+    if (typeof createImageBitmap === "function") {
+      try {
+        return await createImageBitmap(blob, { imageOrientation: "from-image" });
+      } catch {
+        /* fall through to Image element */
+      }
+    }
+    const objectUrl = URL.createObjectURL(blob);
+    try {
+      const img = new Image();
+      await new Promise((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("Failed to decode image."));
+        img.src = objectUrl;
+      });
+      return img;
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  }
+
+  function releaseCanvasSource(source) {
+    if (source && typeof source.close === "function") {
+      source.close();
+    }
   }
 
   function loadThumbnail(thumb, entry, ctx) {
@@ -78,6 +137,7 @@
       },
       { once: true },
     );
+    thumb.crossOrigin = "anonymous";
     thumb.src = mediaUrl;
   }
 
@@ -88,9 +148,15 @@
       return;
     }
     previewOverlay.hidden = true;
+    previewState = null;
     const img = previewOverlay.querySelector("[data-images-preview-image]");
     if (img) {
       img.removeAttribute("src");
+    }
+    setGenerateStatus(previewOverlay, "", null);
+    const genBtn = previewOverlay.querySelector("[data-images-generate-webp]");
+    if (genBtn) {
+      genBtn.hidden = true;
     }
     document.body.classList.remove("images-browser-preview-open");
   }
@@ -107,10 +173,21 @@
     previewOverlay.setAttribute("aria-label", "Image preview");
     previewOverlay.innerHTML = `<button type="button" class="images-browser-preview-backdrop" data-images-preview-close aria-label="Close preview"></button>
 <figure class="images-browser-preview-frame">
-  <button type="button" class="images-browser-preview-close" data-images-preview-close>Close</button>
+  <div class="images-browser-preview-toolbar">
+    <button type="button" class="images-browser-preview-generate" data-images-generate-webp hidden>Generate WebP sizes</button>
+    <button type="button" class="images-browser-preview-close" data-images-preview-close>Close</button>
+  </div>
   <img class="images-browser-preview-image" data-images-preview-image alt="" />
   <figcaption class="images-browser-preview-caption" data-images-preview-caption></figcaption>
+  <p class="images-browser-preview-status" data-images-generate-status aria-live="polite"></p>
 </figure>`;
+
+    previewOverlay.querySelector("[data-images-generate-webp]")?.addEventListener("click", (event) => {
+      event.stopPropagation();
+      generateAndPushWebpVariants(previewOverlay).catch((err) => {
+        setGenerateStatus(previewOverlay, err?.message || String(err), "error");
+      });
+    });
 
     previewOverlay.querySelectorAll("[data-images-preview-close]").forEach((btn) => {
       btn.addEventListener("click", closeImagePreview);
@@ -130,7 +207,7 @@
     return previewOverlay;
   }
 
-  function openImagePreview({ src, title, url }) {
+  function openImagePreview({ src, title, url, entry, ctx }) {
     const imageSrc = String(src || "").trim();
     if (!imageSrc) {
       return;
@@ -138,18 +215,42 @@
     const overlay = ensurePreviewOverlay();
     const img = overlay.querySelector("[data-images-preview-image]");
     const caption = overlay.querySelector("[data-images-preview-caption]");
+    const genBtn = overlay.querySelector("[data-images-generate-webp]");
     if (!img || !caption) {
       return;
     }
+    previewState = entry && ctx ? { entry, ctx } : null;
+    img.removeAttribute("src");
+    img.crossOrigin = "anonymous";
+    img.onerror = () => {
+      if (!entry || !ctx) {
+        return;
+      }
+      fetchImageObjectUrl(entry, ctx).then((objectUrl) => {
+        if (!objectUrl) {
+          return;
+        }
+        img.removeAttribute("crossorigin");
+        img.src = objectUrl;
+      });
+    };
     img.src = imageSrc;
     img.alt = String(title || "").trim() || "Image preview";
     caption.textContent = String(url || title || "").trim();
+    setGenerateStatus(overlay, "", null);
+    if (genBtn) {
+      const canGenerate = Boolean(previewState && isRasterImageFile(entry?.name) && supportsWebpEncoding());
+      genBtn.hidden = !canGenerate;
+      genBtn.title = canGenerate
+        ? "Create 75px, 570px, and full WebP files in a webp/ folder (one commit)"
+        : "WebP generation is not available for this file";
+    }
     overlay.hidden = false;
     document.body.classList.add("images-browser-preview-open");
     overlay.querySelector(".images-browser-preview-close")?.focus();
   }
 
-  function bindImagePreviewOpeners({ thumb, name, entry, mediaUrl }) {
+  function bindImagePreviewOpeners({ thumb, name, entry, mediaUrl, ctx }) {
     const open = () => {
       if (thumb?.classList.contains("images-browser-thumb--failed")) {
         return;
@@ -158,7 +259,7 @@
       if (!src) {
         return;
       }
-      openImagePreview({ src, title: entry.name, url: mediaUrl });
+      openImagePreview({ src, title: entry.name, url: mediaUrl, entry, ctx });
     };
     thumb?.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -201,6 +302,155 @@
 
   function isImageFile(name) {
     return IMAGE_EXT.test(String(name || ""));
+  }
+
+  function isRasterImageFile(name) {
+    return RASTER_IMAGE_EXT.test(String(name || ""));
+  }
+
+  function supportsWebpEncoding() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1;
+    canvas.height = 1;
+    return canvas.toDataURL("image/webp").startsWith("data:image/webp");
+  }
+
+  function buildVariantOutputPaths(sourcePath) {
+    const normalized = String(sourcePath || "")
+      .trim()
+      .replace(/^\/+/, "");
+    const parts = normalized.split("/");
+    const fileName = parts.pop() || "image";
+    const dir = parts.join("/");
+    const baseName = fileName.replace(/\.[^.]+$/, "") || "image";
+    const webpDir = dir ? `${dir}/webp` : "webp";
+    return [
+      { path: `${webpDir}/${baseName}-75.webp`, maxWidth: 75 },
+      { path: `${webpDir}/${baseName}-570.webp`, maxWidth: 570 },
+      { path: `${webpDir}/${baseName}.webp`, maxWidth: null },
+    ];
+  }
+
+  async function loadBitmapFromImage(img) {
+    if (typeof createImageBitmap === "function") {
+      try {
+        return await createImageBitmap(img, { imageOrientation: "from-image" });
+      } catch {
+        /* fall through */
+      }
+    }
+    return img;
+  }
+
+  async function imageToWebpBytes(source, maxWidth) {
+    const isBitmap = typeof ImageBitmap !== "undefined" && source instanceof ImageBitmap;
+    let bitmap = source;
+    let closeBitmap = false;
+    if (!isBitmap) {
+      bitmap = await loadBitmapFromImage(source);
+      closeBitmap = bitmap !== source && typeof bitmap.close === "function";
+    }
+    try {
+      const naturalWidth = bitmap.width ?? source.naturalWidth;
+      const naturalHeight = bitmap.height ?? source.naturalHeight;
+      if (!naturalWidth || !naturalHeight) {
+        throw new Error("Image has no dimensions.");
+      }
+      const targetWidth = maxWidth ? Math.min(maxWidth, naturalWidth) : naturalWidth;
+      const targetHeight = Math.max(1, Math.round(naturalHeight * (targetWidth / naturalWidth)));
+      const canvas = document.createElement("canvas");
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        throw new Error("Canvas is not available.");
+      }
+      ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
+      const blob = await new Promise((resolve, reject) => {
+        canvas.toBlob(
+          (result) => {
+            if (result) {
+              resolve(result);
+            } else {
+              reject(new Error("WebP encoding failed. Try a different browser."));
+            }
+          },
+          "image/webp",
+          WEBP_QUALITY,
+        );
+      });
+      const buffer = await blob.arrayBuffer();
+      return new Uint8Array(buffer);
+    } finally {
+      if (closeBitmap) {
+        bitmap.close();
+      }
+    }
+  }
+
+  async function generateWebpVariantFiles(sourceImage, sourcePath) {
+    const outputs = buildVariantOutputPaths(sourcePath);
+    const files = [];
+    for (const output of outputs) {
+      const bytes = await imageToWebpBytes(sourceImage, output.maxWidth);
+      files.push({ path: output.path, bytes });
+    }
+    return files;
+  }
+
+  function setGenerateStatus(overlay, message, kind) {
+    const el = overlay?.querySelector("[data-images-generate-status]");
+    if (!el) {
+      return;
+    }
+    el.textContent = message || "";
+    el.classList.remove("images-browser-preview-status--error", "images-browser-preview-status--ok");
+    if (kind === "error") {
+      el.classList.add("images-browser-preview-status--error");
+    } else if (kind === "ok") {
+      el.classList.add("images-browser-preview-status--ok");
+    }
+  }
+
+  async function generateAndPushWebpVariants(overlay) {
+    if (!previewState?.entry || !previewState?.ctx) {
+      throw new Error("No image selected.");
+    }
+    if (!window.githubAuth?.commitImagesRepoBinaryFiles) {
+      throw new Error("GitHub image commit is not available.");
+    }
+    if (!supportsWebpEncoding()) {
+      throw new Error("This browser cannot encode WebP.");
+    }
+    const { entry, ctx } = previewState;
+    const btn = overlay.querySelector("[data-images-generate-webp]");
+    if (btn) {
+      btn.disabled = true;
+    }
+    let source = null;
+    try {
+      setGenerateStatus(overlay, "Loading image…", null);
+      source = await loadImageForCanvas(entry, ctx);
+      setGenerateStatus(overlay, "Generating WebP variants…", null);
+      const files = await generateWebpVariantFiles(source, entry.path);
+      setGenerateStatus(overlay, "Pushing to GitHub…", null);
+      const baseName = entry.path.split("/").pop() || entry.name;
+      const commit = await window.githubAuth.commitImagesRepoBinaryFiles({
+        message: `Add WebP variants for ${baseName}`,
+        files,
+      });
+      const sha = commit?.sha ? String(commit.sha).slice(0, 7) : "ok";
+      const paths = files.map((f) => f.path).join(", ");
+      setGenerateStatus(overlay, `Pushed ${files.length} files (${sha}): ${paths}`, "ok");
+      if (typeof reloadTreeCallback === "function") {
+        reloadTreeCallback();
+      }
+    } finally {
+      releaseCanvasSource(source);
+      if (btn) {
+        btn.disabled = false;
+      }
+    }
   }
 
   function sortEntries(entries) {
@@ -274,6 +524,44 @@
       window.prompt("Copy URL:", text);
       return false;
     }
+  }
+
+  function createDeleteButton(entry) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "images-browser-delete";
+    btn.textContent = "Delete";
+    const isDir = entry.type === "dir";
+    const label = String(entry.path || entry.name || "item").trim();
+    btn.setAttribute("aria-label", isDir ? `Delete folder ${label}` : `Delete ${label}`);
+    btn.addEventListener("click", async (event) => {
+      event.stopPropagation();
+      const confirmMessage = isDir
+        ? `Delete folder "${label}" and all files inside it from the images repository?`
+        : `Delete "${label}" from the images repository?`;
+      if (!window.confirm(confirmMessage)) {
+        return;
+      }
+      if (!window.githubAuth?.deleteImagesRepoEntry) {
+        window.alert("Delete is not available.");
+        return;
+      }
+      btn.disabled = true;
+      const previousText = btn.textContent;
+      btn.textContent = "Deleting…";
+      try {
+        await window.githubAuth.deleteImagesRepoEntry(entry);
+        if (typeof reloadTreeCallback === "function") {
+          reloadTreeCallback();
+        }
+      } catch (err) {
+        window.alert(err?.message || String(err));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = previousText;
+      }
+    });
+    return btn;
   }
 
   function createFileRow(entry, depth, ctx) {
@@ -355,6 +643,7 @@
       }
     });
     actions.appendChild(copyBtn);
+    actions.appendChild(createDeleteButton(entry));
     row.appendChild(actions);
 
     if (isImage) {
@@ -363,6 +652,7 @@
         name,
         entry,
         mediaUrl,
+        ctx,
       });
     }
 
@@ -397,6 +687,11 @@
     name.textContent = entry.name;
     name.title = entry.path;
     row.appendChild(name);
+
+    const actions = document.createElement("div");
+    actions.className = "images-browser-actions";
+    actions.appendChild(createDeleteButton(entry));
+    row.appendChild(actions);
 
     const childrenWrap = document.createElement("div");
     childrenWrap.className = "images-browser-children";
@@ -493,7 +788,7 @@
   }
 
   function mountSignedInBody(body, details) {
-    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. Click a thumbnail to preview at hero size. <strong>Copy URL</strong> copies a <code>media.githubusercontent.com</code> link.</p>
+    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. Click a thumbnail to preview at hero size, then <strong>Generate WebP sizes</strong> to add 75px, 570px, and full WebP files in a <code>webp/</code> folder (one commit). <strong>Copy URL</strong> copies a <code>media.githubusercontent.com</code> link.</p>
 <div class="images-browser-toolbar">
   <label for="images-repo-select">Images repository</label>
   <select id="images-repo-select" data-images-repo-select aria-label="GitHub images repository"></select>
@@ -549,6 +844,11 @@
         maybeLoadRoot();
       }
     });
+
+    reloadTreeCallback = () => {
+      rootLoaded = false;
+      maybeLoadRoot();
+    };
 
     return { maybeLoadRoot, resetLoaded: () => {
       rootLoaded = false;

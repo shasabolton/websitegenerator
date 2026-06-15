@@ -453,6 +453,16 @@
     return btoa(binary);
   }
 
+  function bytesToBase64(bytes) {
+    const arr = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    let binary = "";
+    const chunkSize = 0x8000;
+    for (let i = 0; i < arr.length; i += chunkSize) {
+      binary += String.fromCharCode.apply(null, arr.subarray(i, i + chunkSize));
+    }
+    return btoa(binary);
+  }
+
   function parseRepoFullName(fullName) {
     const s = String(fullName || "").trim();
     const slash = s.indexOf("/");
@@ -1116,6 +1126,200 @@
     return { fullName, ...parsed, branch: getBranch() };
   }
 
+  function requireSelectedImagesRepo() {
+    const fullName = getSelectedImagesRepo();
+    const parsed = parseRepoFullName(fullName);
+    if (!parsed) {
+      throw new Error("Select an images repository in the Images section.");
+    }
+    return { fullName, ...parsed, branch: getBranch() };
+  }
+
+  /**
+   * @param {{
+   *   owner: string,
+   *   repo: string,
+   *   branch?: string,
+   *   message: string,
+   *   upserts?: Array<{ path: string, base64: string }>,
+   *   deletes?: Array<{ path: string }>,
+   * }} options
+   */
+  async function commitGitTreeFiles({ owner, repo, branch, message, upserts, deletes }) {
+    const upsertList = Array.isArray(upserts) ? upserts : [];
+    const deleteList = Array.isArray(deletes) ? deletes : [];
+    if (!upsertList.length && !deleteList.length) {
+      throw new Error("No file changes to commit.");
+    }
+
+    async function commitOnce() {
+      const refName = `heads/${branch || DEFAULT_BRANCH}`;
+      const ref = await githubApi(`/repos/${owner}/${repo}/git/ref/${encodeURIComponent(refName)}`, {
+        method: "GET",
+      });
+      const parentSha = ref?.object?.sha;
+      if (!parentSha) {
+        throw new Error(`Branch ref not found: ${branch}`);
+      }
+      const parentCommit = await githubApi(`/repos/${owner}/${repo}/git/commits/${parentSha}`, {
+        method: "GET",
+      });
+      const baseTreeSha = parentCommit?.tree?.sha;
+      if (!baseTreeSha) {
+        throw new Error("Could not read base tree for commit.");
+      }
+
+      const blobShas = await mapWithConcurrency(upsertList, BLOB_CONCURRENCY, async (change) => {
+        const blob = await githubApi(`/repos/${owner}/${repo}/git/blobs`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: change.base64,
+            encoding: "base64",
+          }),
+        });
+        if (!blob?.sha) {
+          throw new Error(`Blob creation failed for ${change.path}`);
+        }
+        return { path: change.path, sha: blob.sha };
+      });
+
+      const treeEntries = [
+        ...blobShas.map(({ path, sha }) => ({
+          path,
+          mode: "100644",
+          type: "blob",
+          sha,
+        })),
+        ...deleteList.map((change) => ({
+          path: change.path,
+          mode: "100644",
+          type: "blob",
+          sha: null,
+        })),
+      ];
+
+      const tree = await githubApi(`/repos/${owner}/${repo}/git/trees`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          base_tree: baseTreeSha,
+          tree: treeEntries,
+        }),
+      });
+      if (!tree?.sha) {
+        throw new Error("Git tree creation failed.");
+      }
+
+      const commit = await githubApi(`/repos/${owner}/${repo}/git/commits`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          tree: tree.sha,
+          parents: [parentSha],
+        }),
+      });
+      if (!commit?.sha) {
+        throw new Error("Git commit creation failed.");
+      }
+
+      try {
+        await githubApi(`/repos/${owner}/${repo}/git/refs/${encodeURIComponent(refName)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sha: commit.sha, force: false }),
+        });
+      } catch (err) {
+        if (err?.status === 422) {
+          throw Object.assign(new Error("Branch moved during commit; retrying."), { retryable: true });
+        }
+        throw err;
+      }
+      return commit;
+    }
+
+    try {
+      return await commitOnce();
+    } catch (err) {
+      if (err?.retryable) {
+        return commitOnce();
+      }
+      throw err;
+    }
+  }
+
+  /**
+   * @param {{ message: string, files: Array<{ path: string, bytes: Uint8Array }> }} options
+   */
+  async function commitImagesRepoBinaryFiles({ message, files }) {
+    const { owner, repo, branch } = requireSelectedImagesRepo();
+    const list = Array.isArray(files) ? files : [];
+    if (!list.length) {
+      throw new Error("No files to commit.");
+    }
+    const upserts = list.map((file) => ({
+      path: file.path,
+      base64: bytesToBase64(file.bytes),
+    }));
+    return commitGitTreeFiles({ owner, repo, branch, message, upserts, deletes: [] });
+  }
+
+  async function listAllRepoFilePathsRecursive(owner, repo, dirPath, branch) {
+    const paths = [];
+    async function walk(currentPath) {
+      const entries = await listRepoDirectory(owner, repo, currentPath, branch);
+      for (const entry of entries) {
+        if (entry.type === "dir") {
+          await walk(entry.path);
+        } else {
+          paths.push(entry.path);
+        }
+      }
+    }
+    const root = String(dirPath || "")
+      .trim()
+      .replace(/^\/+/, "")
+      .replace(/\/+$/, "");
+    await walk(root);
+    return paths;
+  }
+
+  /**
+   * @param {{ message: string, paths: string[] }} options
+   */
+  async function deleteImagesRepoPaths({ message, paths }) {
+    const { owner, repo, branch } = requireSelectedImagesRepo();
+    const unique = Array.from(
+      new Set((Array.isArray(paths) ? paths : []).map((p) => String(p || "").trim()).filter(Boolean)),
+    );
+    if (!unique.length) {
+      throw new Error("Nothing to delete.");
+    }
+    const deletes = unique.map((path) => ({ path }));
+    return commitGitTreeFiles({ owner, repo, branch, message, upserts: [], deletes });
+  }
+
+  /**
+   * @param {{ path: string, name?: string, type: "dir" | "file" }} entry
+   */
+  async function deleteImagesRepoEntry(entry) {
+    const { owner, repo, branch } = requireSelectedImagesRepo();
+    const path = String(entry?.path || "").trim();
+    if (!path) {
+      throw new Error("Missing path to delete.");
+    }
+    const isDir = entry?.type === "dir";
+    const paths = isDir
+      ? await listAllRepoFilePathsRecursive(owner, repo, path, branch)
+      : [path];
+    if (!paths.length) {
+      throw new Error(isDir ? "Folder is empty." : "Nothing to delete.");
+    }
+    const message = isDir ? `Delete folder ${path}` : `Delete ${path}`;
+    return deleteImagesRepoPaths({ message, paths });
+  }
+
   async function readRemoteManifest(owner, repo, branch) {
     const meta = await getFileMeta(owner, repo, MANIFEST_PATH, branch);
     if (!meta?.content) {
@@ -1288,105 +1492,14 @@
     if (!changes.length) {
       throw new Error("No file changes to publish.");
     }
-
-    async function commitOnce() {
-      const refName = `heads/${branch || DEFAULT_BRANCH}`;
-      const ref = await githubApi(`/repos/${owner}/${repo}/git/ref/${encodeURIComponent(refName)}`, {
-        method: "GET",
-      });
-      const parentSha = ref?.object?.sha;
-      if (!parentSha) {
-        throw new Error(`Branch ref not found: ${branch}`);
-      }
-      const parentCommit = await githubApi(`/repos/${owner}/${repo}/git/commits/${parentSha}`, {
-        method: "GET",
-      });
-      const baseTreeSha = parentCommit?.tree?.sha;
-      if (!baseTreeSha) {
-        throw new Error("Could not read base tree for publish commit.");
-      }
-
-      const upserts = changes.filter((c) => c && !c.delete);
-      const deletes = changes.filter((c) => c && c.delete);
-
-      const blobShas = await mapWithConcurrency(upserts, BLOB_CONCURRENCY, async (change) => {
-        const blob = await githubApi(`/repos/${owner}/${repo}/git/blobs`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            content: utf8ToBase64(String(change.content ?? "")),
-            encoding: "base64",
-          }),
-        });
-        if (!blob?.sha) {
-          throw new Error(`Blob creation failed for ${change.path}`);
-        }
-        return { path: change.path, sha: blob.sha };
-      });
-
-      const treeEntries = [
-        ...blobShas.map(({ path, sha }) => ({
-          path,
-          mode: "100644",
-          type: "blob",
-          sha,
-        })),
-        ...deletes.map((change) => ({
-          path: change.path,
-          mode: "100644",
-          type: "blob",
-          sha: null,
-        })),
-      ];
-
-      const tree = await githubApi(`/repos/${owner}/${repo}/git/trees`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          base_tree: baseTreeSha,
-          tree: treeEntries,
-        }),
-      });
-      if (!tree?.sha) {
-        throw new Error("Git tree creation failed.");
-      }
-
-      const commit = await githubApi(`/repos/${owner}/${repo}/git/commits`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message,
-          tree: tree.sha,
-          parents: [parentSha],
-        }),
-      });
-      if (!commit?.sha) {
-        throw new Error("Git commit creation failed.");
-      }
-
-      try {
-        await githubApi(`/repos/${owner}/${repo}/git/refs/${encodeURIComponent(refName)}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sha: commit.sha, force: false }),
-        });
-      } catch (err) {
-        if (err?.status === 422) {
-          throw Object.assign(new Error("Branch moved during publish; retrying."), { retryable: true });
-        }
-        throw err;
-      }
-      return commit;
-    }
-
-    try {
-      return await commitOnce();
-    } catch (err) {
-      if (err?.retryable) {
-        return commitOnce();
-      }
-      throw err;
-    }
+    const upserts = changes
+      .filter((c) => c && !c.delete)
+      .map((change) => ({
+        path: change.path,
+        base64: utf8ToBase64(String(change.content ?? "")),
+      }));
+    const deletes = changes.filter((c) => c && c.delete).map((change) => ({ path: change.path }));
+    return commitGitTreeFiles({ owner, repo, branch, message, upserts, deletes });
   }
 
   async function loadNavigationBase(owner, repo, branch) {
@@ -2569,6 +2682,9 @@ ${publishBtn}
     initEditPushUi,
     initPublishSiteUi,
     publishSiteCommit,
+    commitImagesRepoBinaryFiles,
+    deleteImagesRepoEntry,
+    deleteImagesRepoPaths,
     publishContentPageLive,
     publishProductPageLive,
     publishFullSite,

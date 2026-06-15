@@ -286,8 +286,35 @@ body.images-browser-preview-open {
   gap: 12px;
 }
 
+.images-browser-preview-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.images-browser-preview-generate {
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid #2563eb;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.images-browser-preview-generate:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.images-browser-preview-generate:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .images-browser-preview-close {
-  align-self: flex-end;
   font-size: 13px;
   padding: 6px 12px;
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -301,10 +328,26 @@ body.images-browser-preview-open {
   background: rgba(15, 23, 42, 0.8);
 }
 
+.images-browser-preview-status {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #d1d5db;
+  word-break: break-word;
+}
+
+.images-browser-preview-status--error {
+  color: #fecaca;
+}
+
+.images-browser-preview-status--ok {
+  color: #a7f3d0;
+}
+
 .images-browser-preview-image {
   display: block;
   width: 100%;
-  max-height: calc(90vh - 96px);
+  max-height: calc(90vh - 140px);
   object-fit: contain;
   border-radius: 8px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
@@ -358,6 +401,25 @@ body.images-browser-preview-open {
 
 .images-browser-copy:hover {
   background: #f9fafb;
+}
+
+.images-browser-delete {
+  font-size: 11px;
+  padding: 2px 8px;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  background: #fff;
+  color: #b91c1c;
+  cursor: pointer;
+}
+
+.images-browser-delete:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+.images-browser-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .images-browser-children {
