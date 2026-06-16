@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "slug": "projects",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "projects",
+    "description": ""
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Projects"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/a8Ni1n4XPVs?si=B8LLfS_SnimmbGgK",
+      "title": "",
+      "caption": ""
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/wdoG9nrktMo?si=vBSsSZuPS_-oyfTT",
+      "title": "",
+      "caption": ""
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/azQYT5qdV2Q?si=TIqybc4ViSbujORZ",
+      "title": "",
+      "caption": ""
+    }
+  ]
+}
