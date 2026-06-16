@@ -36,20 +36,17 @@
 })();
 
 </script>
-    <title>Contraption Cart - About</title>
-    <meta name="description" content="Mechanical wooden kits, automata, magic tricks and puzzle boxes by Shasa Bolton." />
-    <link rel="canonical" href="https://www.contraptioncart.com/about" />
-    <meta property="og:title" content="Contraption Cart - About" />
-    <meta name="twitter:title" content="Contraption Cart - About" />
-    <meta property="og:description" content="Mechanical wooden kits, automata, magic tricks and puzzle boxes by Shasa Bolton." />
-    <meta name="twitter:description" content="Mechanical wooden kits, automata, magic tricks and puzzle boxes by Shasa Bolton." />
-    <meta property="og:url" content="https://www.contraptioncart.com/about" />
+    <title>Contraption Cart - projects</title>
+    <link rel="canonical" href="https://www.contraptioncart.com/projects" />
+    <meta property="og:title" content="Contraption Cart - projects" />
+    <meta name="twitter:title" content="Contraption Cart - projects" />
+    <meta property="og:url" content="https://www.contraptioncart.com/projects" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" />
     <meta name="twitter:image" content="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta property="og:site_name" content="Contraption Cart" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.contraptioncart.com/#organization","name":"Contraption Cart","url":"https://www.contraptioncart.com/","logo":"https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg","email":"shasabolton@gmail.com","sameAs":["https://www.instagram.com/contraptioncart","https://www.facebook.com/contraptioncart/","https://contraptioncart.etsy.com"]},{"@type":"WebSite","@id":"https://www.contraptioncart.com/#website","name":"Contraption Cart","url":"https://www.contraptioncart.com/","publisher":{"@id":"https://www.contraptioncart.com/#organization"},"potentialAction":{"@type":"SearchAction","target":"https://www.google.com/search?q={search_term_string}+site:www.contraptioncart.com","query-input":"required name=search_term_string"}},{"@type":"AboutPage","@id":"https://www.contraptioncart.com/about#webpage","url":"https://www.contraptioncart.com/about","name":"About","description":"Mechanical wooden kits, automata, magic tricks and puzzle boxes by Shasa Bolton.","isPartOf":{"@id":"https://www.contraptioncart.com/#website"},"publisher":{"@id":"https://www.contraptioncart.com/#organization"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Contraption Cart","item":"https://www.contraptioncart.com/"},{"@type":"ListItem","position":2,"name":"About","item":"https://www.contraptioncart.com/about"}]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.contraptioncart.com/#organization","name":"Contraption Cart","url":"https://www.contraptioncart.com/","logo":"https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg","email":"shasabolton@gmail.com","sameAs":["https://www.instagram.com/contraptioncart","https://www.facebook.com/contraptioncart/","https://contraptioncart.etsy.com"]},{"@type":"WebSite","@id":"https://www.contraptioncart.com/#website","name":"Contraption Cart","url":"https://www.contraptioncart.com/","publisher":{"@id":"https://www.contraptioncart.com/#organization"},"potentialAction":{"@type":"SearchAction","target":"https://www.google.com/search?q={search_term_string}+site:www.contraptioncart.com","query-input":"required name=search_term_string"}},{"@type":"WebPage","@id":"https://www.contraptioncart.com/projects#webpage","url":"https://www.contraptioncart.com/projects","name":"projects","isPartOf":{"@id":"https://www.contraptioncart.com/#website"},"publisher":{"@id":"https://www.contraptioncart.com/#organization"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Contraption Cart","item":"https://www.contraptioncart.com/"},{"@type":"ListItem","position":2,"name":"projects","item":"https://www.contraptioncart.com/projects"}]}]}</script>
     <link rel="icon" type="image/jpeg" href="shared-assets/images/branding/favicon.jpg" />
     <link rel="stylesheet" href="tools/siteGenerator/templates/css/site.css" />
   </head>
@@ -61,7 +58,6 @@
     <script src="tools/editData/productData.js"></script>
     <script src="shared-assets/script/shoppingCart.js"></script>
     <script src="shared-assets/script/displayCurrency.js"></script>
-    <script src="shared-assets/script/siteSearch.js" defer></script>
     <script>
 window.siteCart = new ShoppingCart("Contraption Cart");
 </script>
@@ -140,25 +136,26 @@ window.siteCart = new ShoppingCart("Contraption Cart");
             <option value="NOK">NOK</option>
           </select>
         </div>
-        <div class="site-search-wrap">
-          <form class="site-search-form" id="site-search-form" role="search">
-            <label class="visually-hidden" for="site-search-query">Search products</label>
-            <input
-              id="site-search-query"
-              class="site-search-input"
-              type="search"
-              autocomplete="off"
-              placeholder="Search products…"
-              data-site-search-input
-              role="combobox"
-              aria-expanded="false"
-              aria-controls="site-search-results"
-              aria-autocomplete="list"
-            />
-            <button class="site-search-submit" type="submit">Search</button>
-          </form>
-          <div id="site-search-results" class="site-search-results" role="listbox" hidden></div>
-        </div>
+        <form
+          class="site-search-form"
+          id="site-search-form"
+          action="https://www.google.com/search"
+          method="get"
+          target="_blank"
+          data-search-site="www.contraptioncart.com"
+        >
+          <input type="hidden" name="q" value="" />
+          <label class="visually-hidden" for="site-search-query">Search this site with Google</label>
+          <input
+            id="site-search-query"
+            class="site-search-input"
+            type="search"
+            autocomplete="off"
+            placeholder="Search…"
+            data-site-search-input
+          />
+          <button class="site-search-submit" type="submit">Search</button>
+        </form>
         <nav class="site-nav" aria-label="Main navigation">
           <ul class="nav-list">
             
@@ -175,6 +172,18 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </header>
 <script>
   (function () {
+    var form = document.getElementById("site-search-form");
+    if (form) {
+      form.addEventListener("submit", function () {
+        var host = (form.getAttribute("data-search-site") || "").trim();
+        var input = form.querySelector("[data-site-search-input]");
+        var terms = (input && input.value ? input.value : "").trim();
+        var q = host ? "site:" + host + (terms ? " " + terms : "") : terms;
+        var hidden = form.querySelector('input[name="q"]');
+        if (hidden) hidden.value = q;
+      });
+    }
+
     var header = document.querySelector(".site-header");
     var toggle = document.querySelector(".nav-toggle");
     var flyout = document.getElementById("site-nav-flyout");
@@ -239,18 +248,97 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     <main class="site-main">
       <section class="page-content content-page">
   
-  <h1 class="content-title">About Contraption Cart</h1>
-<p class="content-subtitle">Mechanical wooden kits, automata, magic tricks and puzzle boxes</p>
-<div class="content-text"><p>Contraption Cart is the home of original designs by <strong>Shasa Bolton</strong> — mechanical wooden automata, puzzle boxes, and DIY kits designed to be built, explored, and enjoyed.</p>
-<p>Each contraption combines engineering, creativity, and hands-on play. Available as laser-cut file downloads or fully assembled pieces, these creations suit adults, hobbyists, and kids working with guidance.</p></div>
-<figure class="content-figure">
-  <img class="content-figure-img" src="shared-assets/images/branding/favicon.jpg" alt="Contraption Cart branding" loading="lazy" />
-  <figcaption class="content-figure-caption">Turning simple parts into fascinating moving machines.</figcaption>
-</figure>
-<aside class="content-callout content-callout--note">
+  <h1 class="content-title">Projects</h1>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/a8Ni1n4XPVs?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
   
-  <p class="content-callout-text">Browse the shop for magic tricks, puzzle boxes, automata, and more.</p>
-</aside>
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/wdoG9nrktMo?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/azQYT5qdV2Q?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/FP5BOtKnLYQ?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/wwREV3hU6AY?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/_mMFQIjWMuI?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/SOHiPA1NHQ8?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/iSIM-P3omUU?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/p0cGridgSFc?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/JT7j3C6wFqs?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/KrwaDn_1Pmg?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/UmHlhPCg_A0?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/7FbQnJsCV80?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/K0k8kjpTtLM?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/JjzBkVo_rNE?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
 </section>
 
     </main>

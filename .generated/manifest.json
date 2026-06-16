@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-15T23:40:53.723Z",
+  "generatedAt": "2026-06-16T06:41:31.691Z",
   "outputs": [
     "about/index.html",
     "blog/how-does-a-mechanical-calculator-work/index.html",
@@ -8,6 +8,7 @@
     "blog/index.html",
     "cart/index.html",
     "index.html",
+    "projects/index.html",
     "shop/automata/index.html",
     "shop/bird-bank/index.html",
     "shop/bird-zoetrope/index.html",

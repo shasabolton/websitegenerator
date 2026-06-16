@@ -86,25 +86,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <span class="brand-name">Contraption Cart</span>
       </div>
       <div class="header-actions">
-        <label class="visually-hidden" for="site-display-currency">Display currency</label>
-        <select
-          id="site-display-currency"
-          class="header-display-currency"
-          aria-label="Display currency"
-        >
-          <option value="AUD">AUD</option>
-          <option value="NZD">NZD</option>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          <option value="CAD">CAD</option>
-          <option value="JPY">JPY</option>
-          <option value="SGD">SGD</option>
-          <option value="HKD">HKD</option>
-          <option value="CHF">CHF</option>
-          <option value="SEK">SEK</option>
-          <option value="NOK">NOK</option>
-        </select>
+        <div class="header-display-currency-wrap header-display-currency-wrap--desktop">
+          <label class="visually-hidden" for="site-display-currency">Display currency</label>
+          <select
+            id="site-display-currency"
+            class="header-display-currency"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <a class="header-cart-link" href="cart" aria-label="Shopping cart">
           <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="9" cy="21" r="1" />
@@ -117,6 +119,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
       <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
       <div class="nav-flyout-panel">
+        <div class="nav-flyout-currency">
+          <label class="nav-flyout-currency-label" for="site-display-currency-flyout">Display currency</label>
+          <select
+            id="site-display-currency-flyout"
+            class="header-display-currency header-display-currency--flyout"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
         <div class="site-search-wrap">
           <form class="site-search-form" id="site-search-form" role="search">
             <label class="visually-hidden" for="site-search-query">Search products</label>
@@ -143,7 +166,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           <a href=".">Shop</a>
           <ul class="submenu"><li><a href="shop/automata">automata</a></li><li><a href="shop/magic-tricks">magic tricks</a></li><li><a href="shop/puzzle-boxes">puzzle boxes</a></li><li><a href="shop/toys-and-games">toys and games</a></li><li><a href="shop/whirligigs">whirligigs</a></li></ul>
         </li>
-      <li class="nav-item"><a href="blog">Blog</a></li><li class="nav-item"><a href="about">About</a></li>
+      <li class="nav-item"><a href="blog">Blog</a></li><li class="nav-item"><a href="about">About</a></li><li class="nav-item"><a href="projects">projects</a></li>
           </ul>
         </nav>
       </div>
@@ -242,7 +265,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       aria-atomic="true"
     ></span>
   </p>
-  <div class="image-carousel" id="carousel-fv0au4lq-af4foigt" data-image-carousel>
+  <div class="image-carousel" id="carousel-amsyi7uf-jmyt790d" data-image-carousel>
   <div class="image-carousel-stage" aria-live="polite">
     <figure class="image-carousel-slide is-active" data-carousel-index="0" data-carousel-slide-kind="image" aria-hidden="false">
   <img class="image-carousel-slide-img" src="https://i.etsystatic.com/25031074/r/il/2f7cf2/3979887369/il_fullxfull.3979887369_p0lp.jpg" alt="Hummingbird Pole Pet — image 1 of 7" loading="eager" fetchpriority="high" />
@@ -271,7 +294,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   <ul class="image-carousel-thumbs" role="list">
     <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb is-active" data-carousel-index="0" aria-label="Show Hummingbird Pole Pet image 1 of 7" aria-current="true">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/2f7cf2/3979887369/il_fullxfull.3979887369_p0lp.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/2f7cf2/3979887369/il_75xN.3979887369_p0lp.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
@@ -281,27 +304,27 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="2" aria-label="Show Hummingbird Pole Pet image 3 of 7" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/00b375/3979887447/il_fullxfull.3979887447_rudc.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/00b375/3979887447/il_75xN.3979887447_rudc.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="3" aria-label="Show Hummingbird Pole Pet image 4 of 7" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/1594f7/3932431940/il_fullxfull.3932431940_qg9d.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/1594f7/3932431940/il_75xN.3932431940_qg9d.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="4" aria-label="Show Hummingbird Pole Pet image 5 of 7" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/1db187/3932431896/il_fullxfull.3932431896_qvth.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/1db187/3932431896/il_75xN.3932431896_qvth.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="5" aria-label="Show Hummingbird Pole Pet image 6 of 7" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/593018/3932431826/il_fullxfull.3932431826_9yuo.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/593018/3932431826/il_75xN.3932431826_9yuo.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
 <li class="image-carousel-thumb-item">
   <button type="button" class="image-carousel-thumb" data-carousel-index="6" aria-label="Show Hummingbird Pole Pet image 7 of 7" aria-current="false">
-    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/983413/3979887537/il_fullxfull.3979887537_khtb.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
+    <img class="image-carousel-thumb-img" src="https://i.etsystatic.com/25031074/r/il/983413/3979887537/il_75xN.3979887537_khtb.jpg" alt="" width="72" height="72" loading="eager" decoding="sync" />
   </button>
 </li>
   </ul>

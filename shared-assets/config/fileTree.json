@@ -33,6 +33,10 @@
       "label": "About",
       "href": "about",
       "hide": false
+    },
+    {
+      "label": "projects",
+      "href": "projects"
     }
   ]
 }

@@ -11,6 +11,10 @@
     {
       "label": "About",
       "href": "about"
+    },
+    {
+      "label": "projects",
+      "href": "projects"
     }
   ]
 }
