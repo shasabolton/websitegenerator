@@ -189,10 +189,6 @@ function buildWebSite(shopData, siteOrigin) {
   if (!name || !siteOrigin) {
     return null;
   }
-  const host =
-    typeof window.generateHeaderAndFooter?.buildGoogleSiteSearchHostname === "function"
-      ? window.generateHeaderAndFooter.buildGoogleSiteSearchHostname(shopData)
-      : "";
   const site = compactObject({
     "@type": "WebSite",
     "@id": `${siteOrigin}/#website`,
@@ -200,13 +196,6 @@ function buildWebSite(shopData, siteOrigin) {
     url: `${siteOrigin}/`,
     publisher: { "@id": `${siteOrigin}/#organization` },
   });
-  if (host) {
-    site.potentialAction = {
-      "@type": "SearchAction",
-      target: `https://www.google.com/search?q={search_term_string}+site:${host}`,
-      "query-input": "required name=search_term_string",
-    };
-  }
   return site;
 }
 

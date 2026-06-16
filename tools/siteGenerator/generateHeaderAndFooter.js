@@ -164,6 +164,10 @@ function buildDisplayCurrencyScriptPath() {
   return "shared-assets/script/displayCurrency.js";
 }
 
+function buildSiteSearchScriptPath() {
+  return "shared-assets/script/siteSearch.js";
+}
+
 async function generateHeaderAndFooter(shopData, navigationConfig, options = {}) {
   const [headerTemplate, footerTemplate] = await Promise.all([
     fetchTemplate("./templates/partials/header.html"),
@@ -181,14 +185,12 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
   const shoppingCartScriptPath = escapeHtml(buildShoppingCartScriptPath());
   const productInstructionVideosScriptPath = escapeHtml(buildProductInstructionVideosScriptPath());
   const displayCurrencyScriptPath = escapeHtml(buildDisplayCurrencyScriptPath());
-
-  const googleSiteHost = escapeHtml(buildGoogleSiteSearchHostname(shopData));
+  const siteSearchScriptPath = escapeHtml(buildSiteSearchScriptPath());
 
   const headerHtml = applyTemplate(headerTemplate, {
     SHOP_NAME: shopName,
     FAVICON_PATH: faviconPath,
     NAV_ITEMS: navHtml,
-    GOOGLE_SITE_HOST: googleSiteHost,
   });
 
   const footerHtml = applyTemplate(footerTemplate, {
@@ -208,6 +210,7 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
     shoppingCartScriptPath,
     productInstructionVideosScriptPath,
     displayCurrencyScriptPath,
+    siteSearchScriptPath,
   };
 }
 
@@ -221,5 +224,6 @@ window.generateHeaderAndFooter = {
   buildShoppingCartScriptPath,
   buildProductInstructionVideosScriptPath,
   buildDisplayCurrencyScriptPath,
+  buildSiteSearchScriptPath,
   generateHeaderAndFooter,
 };

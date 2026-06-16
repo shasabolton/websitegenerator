@@ -105,13 +105,21 @@ a:hover {
   letter-spacing: 0.01em;
 }
 
+.site-search-wrap {
+  position: relative;
+  display: flex;
+  flex: 1 1 220px;
+  min-width: 180px;
+  max-width: 360px;
+}
+
 .site-search-form {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 1 1 220px;
-  min-width: 180px;
-  max-width: 360px;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
 }
 
 .site-search-input {
@@ -152,6 +160,89 @@ a:hover {
 .site-search-submit:hover {
   background: rgba(37, 99, 235, 0.95);
   color: #fff;
+}
+
+.site-search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 120;
+  max-height: min(70vh, 420px);
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+}
+
+.site-search-empty {
+  margin: 0;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.site-search-result-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+}
+
+.site-search-result-item {
+  margin: 0;
+}
+
+.site-search-result-item.is-active .site-search-result-link {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.site-search-result-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #111827;
+}
+
+.site-search-result-link:hover,
+.site-search-result-link:focus-visible {
+  background: rgba(59, 130, 246, 0.08);
+  outline: none;
+}
+
+.site-search-result-image {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  display: block;
+  background: #f3f4f6;
+}
+
+.site-search-result-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.site-search-result-title {
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: #111827;
+}
+
+.site-search-result-price {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.site-search-result-price:empty {
+  display: none;
 }
 
 .header-cart-link {
@@ -384,11 +475,15 @@ body.nav-scroll-lock {
     transform: translateX(0);
   }
 
-  .site-search-form {
+  .site-search-wrap {
     flex: 0 0 auto;
     width: 100%;
     max-width: none;
     min-width: 0;
+  }
+
+  .site-search-form {
+    width: 100%;
   }
 
   .nav-list {
@@ -465,7 +560,7 @@ body.nav-scroll-lock {
     display: contents;
   }
 
-  .site-search-form {
+  .site-search-wrap {
     grid-column: 2;
     grid-row: 1;
     justify-self: end;
