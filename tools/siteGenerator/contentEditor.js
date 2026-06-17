@@ -1707,18 +1707,32 @@ async function bootEditPage(treePath) {
   }
 
   const previewParams = window.previewTarget.parsePreviewTarget(window.location.search);
-  const isNew = previewParams?.isNew === true;
+  let isNew = previewParams?.isNew === true;
   let pageData;
   if (isNew) {
-    const pendingHint =
-      typeof window.displayFileTree?.getPendingNewPage === "function"
-        ? window.displayFileTree.getPendingNewPage(treePath)
-        : null;
-    pageData = window.generateContentBody.createDefaultPageData(treePath, {
-      title: pendingHint?.title || "",
-      slug: pendingHint?.slug || "",
-      pageType: pendingHint?.pageType || undefined,
-    });
+    let existingPageData = null;
+    try {
+      existingPageData = await window.generateContentBody.loadContentPageJson(treePath);
+    } catch {
+      /* no JSON yet — stay in new-page mode */
+    }
+    if (existingPageData) {
+      if (typeof window.displayFileTree?.removePendingPageByHref === "function") {
+        window.displayFileTree.removePendingPageByHref(treePath);
+      }
+      isNew = false;
+      pageData = existingPageData;
+    } else {
+      const pendingHint =
+        typeof window.displayFileTree?.getPendingNewPage === "function"
+          ? window.displayFileTree.getPendingNewPage(treePath)
+          : null;
+      pageData = window.generateContentBody.createDefaultPageData(treePath, {
+        title: pendingHint?.title || "",
+        slug: pendingHint?.slug || "",
+        pageType: pendingHint?.pageType || undefined,
+      });
+    }
   } else {
     pageData = await window.generateContentBody.loadContentPageJson(treePath);
   }

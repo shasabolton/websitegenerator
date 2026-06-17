@@ -1383,6 +1383,7 @@ window.displayFileTree = {
   buildPopulatedFileTree,
   renderPreviewPicker,
   getPendingNewPage,
+  removePendingPageByHref,
   getExportableFileTree,
   applyFileTreeOverlay,
   isTreeNodeHidden,

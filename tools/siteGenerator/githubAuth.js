@@ -506,6 +506,19 @@
     return !path.startsWith("shop/");
   }
 
+  function clearPendingNewPagesForPaths(treePaths) {
+    const remove = window.displayFileTree?.removePendingPageByHref;
+    if (typeof remove !== "function") {
+      return;
+    }
+    const list = Array.isArray(treePaths) ? treePaths : [];
+    for (const treePath of list) {
+      if (isContentPagePath(treePath)) {
+        remove(treePath);
+      }
+    }
+  }
+
   function isTreeNodeHidden(node) {
     return node?.hide === true;
   }
@@ -1035,6 +1048,8 @@
     );
 
     await pushNavigationFromFileTree(parsed.owner, parsed.repo, branch, nextFileTree);
+
+    clearPendingNewPagesForPaths([targetPagePath]);
 
     return {
       ...pageWriteResult,
@@ -1761,6 +1776,7 @@
     const manifest = appendPublishIndexFiles(fileChanges, nextOutputs, shopData);
 
     const commit = await publishSiteCommit({ message, fileChanges });
+    clearPendingNewPagesForPaths(publishablePaths);
     return { commit, manifest, outputPaths: nextOutputs };
   }
 
@@ -1915,6 +1931,7 @@
       message: "Publish full site",
       fileChanges,
     });
+    clearPendingNewPagesForPaths(treePaths);
     return { commit, manifest, outputPaths: nextOutputs };
   }
 
