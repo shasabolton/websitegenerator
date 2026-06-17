@@ -85,7 +85,8 @@
     if (!hideInstructionsEnabled(row)) {
       return true;
     }
-    return locationSearchParams().get("instr") === "show";
+    const instr = locationSearchParams().get("instr");
+    return instr === "show" || instr === "true";
   }
 
   function buildInstructionVideosInnerHtml(productTitleRaw, urls) {

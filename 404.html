@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="/" data-site-base="true" />
+    <script>
+(function () {
+  const GITHUB_PAGES_REPO = "websitegenerator";
+  const hostname = window.location.hostname;
+  const onGithubPages = hostname === "github.io" || hostname.endsWith(".github.io");
+
+  let baseHref = "/";
+  if (onGithubPages) {
+    const segments = window.location.pathname.split("/").filter(Boolean);
+    if (segments.length > 0) {
+      const first = segments[0];
+      baseHref =
+        first === GITHUB_PAGES_REPO ? `/${GITHUB_PAGES_REPO}/` : `/${first}/`;
+    }
+  }
+
+  let baseEl = document.querySelector("base[data-site-base]");
+  if (!baseEl) {
+    baseEl = document.createElement("base");
+    baseEl.setAttribute("data-site-base", "true");
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport && viewport.parentNode) {
+      viewport.insertAdjacentElement("afterend", baseEl);
+    } else {
+      document.head.insertBefore(baseEl, document.head.firstChild);
+    }
+  }
+  baseEl.href = baseHref;
+})();
+    </script>
+    <title>Page not found — Contraption Cart</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/jpeg" href="shared-assets/images/branding/favicon.jpg" />
+    <link rel="stylesheet" href="tools/siteGenerator/templates/css/site.css" />
+  </head>
+  <body>
+    <script src="tools/editData/productData.js"></script>
+    <script src="shared-assets/script/displayCurrency.js"></script>
+    <header class="site-header not-found-page">
+      <div class="site-header-inner">
+        <div class="header-top">
+          <a class="brand" href=".">
+            <img class="brand-logo" src="shared-assets/images/branding/favicon.jpg" alt="Contraption Cart logo" />
+            <span class="brand-name">Contraption Cart</span>
+          </a>
+          <div class="header-actions">
+            <a class="header-cart-link" href="cart" aria-label="Shopping cart">
+              <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="site-main">
+      <section class="page-content content-page not-found-page">
+        <h1 class="content-title">Page not found</h1>
+        <p class="content-subtitle">Sorry, that link does not match a page on this site.</p>
+        <div id="not-found-product-suggestions" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-content">
+        <p class="footer-contact">Contact: <a href="mailto:shasabolton@gmail.com">shasabolton@gmail.com</a></p>
+        <p class="footer-contact"><a href=".">Back to shop</a></p>
+      </div>
+    </footer>
+
+    <script src="shared-assets/script/notFoundProductMatch.js"></script>
+  </body>
+</html>
