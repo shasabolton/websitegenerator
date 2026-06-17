@@ -1338,7 +1338,9 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "sword-through-finger",
-      "REDIRECTS": []
+      "REDIRECTS": [
+        "fingerswordhelp"
+      ]
     },
     {
       "TITLE": "Magic Drawer Illusion Box – Vanish or Appear Objects Trick",
@@ -1470,7 +1472,9 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "dice-tunnel",
-      "REDIRECTS": []
+      "REDIRECTS": [
+        "dicetunnelhelp"
+      ]
     },
     {
       "TITLE": "Magic Frame-lasercut Files-Appearing Image and words-customizable-svg dxf pdf",
@@ -1783,7 +1787,9 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "chicken-and-egg",
-      "REDIRECTS": []
+      "REDIRECTS": [
+        "chickenboxtutorial"
+      ]
     },
     {
       "TITLE": "Moving Head Illusion Robot Laser cut files svg dxf pdf",
@@ -1872,7 +1878,9 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "newcomb-s-paradox",
-      "REDIRECTS": []
+      "REDIRECTS": [
+        "newcombtutorial"
+      ]
     },
     {
       "TITLE": "Key Through Coin Magic Trick",
