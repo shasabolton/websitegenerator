@@ -601,11 +601,6 @@ body.nav-scroll-lock {
   margin-bottom: 8px;
 }
 
-.not-found-page a.brand {
-  text-decoration: none;
-  color: inherit;
-}
-
 .not-found-suggestions {
   margin-top: 20px;
 }

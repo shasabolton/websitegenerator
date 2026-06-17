@@ -398,13 +398,26 @@ function buildBlogIndexNode(posts, shopData, siteOrigin, homePageHref) {
   return blog;
 }
 
-function buildHeadSeoTags({ pageTitle, metaDescription, treePath, shopData, homePageHref, ogType, ogImage }) {
+function buildHeadSeoTags({
+  pageTitle,
+  metaDescription,
+  treePath,
+  shopData,
+  homePageHref,
+  ogType,
+  ogImage,
+  robotsNoindex = false,
+}) {
   const siteOrigin = getSiteOrigin(shopData);
-  const canonicalUrl = resolveAbsoluteUrl(siteOrigin, treePath, homePageHref);
+  const canonicalUrl = treePath ? resolveAbsoluteUrl(siteOrigin, treePath, homePageHref) : "";
   const description = truncateText(metaDescription || "", 160);
   const title = String(pageTitle || "").trim();
   const image = ogImage ? toAbsoluteAssetUrl(siteOrigin, ogImage) : toAbsoluteAssetUrl(siteOrigin, shopData?.branding?.faviconPath);
   const bits = [];
+
+  if (robotsNoindex) {
+    bits.push('<meta name="robots" content="noindex" />');
+  }
 
   if (description) {
     bits.push(`<meta name="description" content="${escapeAttr(description)}" />`);
@@ -453,6 +466,22 @@ function buildForPage(input) {
   const path = normalizeTreeHref(treePath);
   const metaDescription = String(seoContext.metaDescription || "").trim();
   const graph = [];
+
+  if (seoContext.isNotFoundPage) {
+    return {
+      headSeoHtml: buildHeadSeoTags({
+        pageTitle,
+        metaDescription: metaDescription || "The requested page could not be found.",
+        treePath: null,
+        shopData,
+        homePageHref,
+        ogType: "website",
+        ogImage: "",
+        robotsNoindex: true,
+      }),
+      structuredDataHtml: "",
+    };
+  }
 
   graph.push(buildOrganization(shopData, siteOrigin));
   graph.push(buildWebSite(shopData, siteOrigin));

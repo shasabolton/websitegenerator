@@ -1870,6 +1870,14 @@
     return window.generateAnyPage.generateAnyPage(treePath, options);
   }
 
+  async function generateNotFoundPageHtml(publishContext) {
+    await ensurePreviewGeneratorsLoaded();
+    if (typeof window.generateNotFoundBody?.generateNotFoundPage !== "function") {
+      throw new Error("generateNotFoundBody.js must be loaded before publishing 404.html.");
+    }
+    return window.generateNotFoundBody.generateNotFoundPage(publishContext);
+  }
+
   function uniqueOutputPaths(treePaths, homePageHref) {
     const seen = new Set();
     const outputs = [];
@@ -2118,6 +2126,9 @@
     for (const [path, content] of generatedByPath) {
       fileChanges.push({ path, content });
     }
+    onProgress("Generating 404 page…");
+    const notFoundHtml = await generateNotFoundPageHtml(publishContext);
+    fileChanges.push({ path: "404.html", content: notFoundHtml });
     const outputPaths = Array.from(generatedByPath.keys()).sort();
     const oldManifest = await readRemoteManifest(owner, repo, branch);
     const nextOutputs = Array.from(new Set(outputPaths)).sort();

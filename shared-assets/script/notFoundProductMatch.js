@@ -264,7 +264,7 @@
     const imageRaw = String(row.IMAGE1 || "").trim();
     const imageUrl =
       typeof pd.productImageUrlForDisplay === "function"
-        ? pd.productImageUrlForDisplay(imageRaw, "thumb")
+        ? pd.productImageUrlForDisplay(imageRaw, "grid")
         : imageRaw;
     const href = productHref(row, products, wantsInstructions);
     const priceNum = parseFloat(String(row.PRICE ?? "").trim());

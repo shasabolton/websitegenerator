@@ -83,7 +83,7 @@ async function mergeBodyIntoFullHtml(
   homePageHref = null,
   treePath = ""
 ) {
-  const { bodyHtml, categoryNames, pageTitle, seoContext } = bodyPayload;
+  const { bodyHtml, categoryNames, pageTitle, seoContext, extraDeferScripts } = bodyPayload;
   const {
     headerHtml,
     footerHtml,
@@ -132,6 +132,7 @@ async function mergeBodyIntoFullHtml(
     HEADER: headerHtml,
     BODY_CONTENT: bodyHtml,
     FOOTER: footerHtml,
+    EXTRA_DEFER_SCRIPTS: extraDeferScripts || "",
   });
 }
 

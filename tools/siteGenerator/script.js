@@ -46,6 +46,7 @@ function loadPreviewGenerators() {
       await loadScript("./generateCategoryBody.js");
       await loadScript("./contentBlocks.js");
       await loadScript("./generateContentBody.js");
+      await loadScript("./generateNotFoundBody.js");
     })();
   }
   return previewGeneratorsLoadPromise;
