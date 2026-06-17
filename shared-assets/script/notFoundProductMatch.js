@@ -152,24 +152,20 @@
   function buildPageLinkHtml(entry) {
     const href = escapeAttr(String(entry?.to || "").trim());
     const title = escapeHtml(String(entry?.title || entry?.to || "Page").trim() || "Page");
-    const description = String(entry?.description || "").trim();
-    const descriptionHtml = description
-      ? `<p class="not-found-page-description">${escapeHtml(description)}</p>`
-      : "";
-    return `<article class="not-found-page-card">
-  <h3 class="not-found-page-title"><a href="${href}">${title}</a></h3>
-  ${descriptionHtml}
-</article>`;
+    return `<p class="not-found-page-link"><a href="${href}">${title}</a></p>`;
+  }
+
+  function notFoundMessage(pathLabel, question) {
+    return `<p class="not-found-message">We could not find <code>${pathLabel}</code>, ${question}</p>`;
   }
 
   function renderPageSuggestions(entries, attemptedPath) {
-    const cards = entries.map((entry) => buildPageLinkHtml(entry)).join("\n");
-    const heading =
-      entries.length === 1 ? "Were you looking for this page?" : "Were you looking for one of these pages?";
     const pathLabel = attemptedPath ? escapeHtml(attemptedPath) : "this page";
-    return `<section class="not-found-suggestions" aria-labelledby="not-found-page-suggestions-heading">
-  <h2 id="not-found-page-suggestions-heading" class="not-found-suggestions-heading">${heading}</h2>
-  <p class="not-found-suggestions-path">We could not find <code>${pathLabel}</code>, but it may have moved.</p>
+    const question =
+      entries.length === 1 ? "Were you looking for this page?" : "Were you looking for one of these pages?";
+    const cards = entries.map((entry) => buildPageLinkHtml(entry)).join("\n");
+    return `<section class="not-found-suggestions">
+  ${notFoundMessage(pathLabel, question)}
   <div class="not-found-page-list">
     ${cards}
   </div>
@@ -293,18 +289,15 @@
           const cards = products
             .map((row) => buildProductThumbHtml(row, products, wantsInstructions))
             .join("\n");
-          const heading =
+          const pathLabel = attemptedPath ? escapeHtml(attemptedPath) : "this page";
+          const question =
             products.length === 1
               ? "Were you looking for this product?"
               : "Were you looking for one of these products?";
-          const pathLabel = attemptedPath ? escapeHtml(attemptedPath) : "this page";
-          const intro =
-            contentEntries.length > 0
-              ? ""
-              : `<p class="not-found-suggestions-path">We could not find <code>${pathLabel}</code>, but it may have moved.</p>`;
-          return `<section class="not-found-suggestions" aria-labelledby="not-found-product-suggestions-heading">
-  <h2 id="not-found-product-suggestions-heading" class="not-found-suggestions-heading">${heading}</h2>
-  ${intro}
+          const message =
+            contentEntries.length > 0 ? "" : notFoundMessage(pathLabel, question);
+          return `<section class="not-found-suggestions">
+  ${message}
   <div class="product-thumb-row not-found-product-thumb-row">
     ${cards}
   </div>

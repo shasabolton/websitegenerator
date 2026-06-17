@@ -601,8 +601,27 @@ body.nav-scroll-lock {
   margin-bottom: 8px;
 }
 
+.not-found-message {
+  margin: 0 0 12px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.not-found-message code {
+  font-size: 0.92em;
+}
+
+.not-found-page-link {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.not-found-page-link a {
+  font-weight: 600;
+}
+
 .not-found-suggestions {
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 .not-found-suggestions-heading {
