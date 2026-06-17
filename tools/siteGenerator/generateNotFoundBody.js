@@ -10,7 +10,7 @@ function escapeHtml(value) {
 /**
  * @param {{ shopData: object, navigationConfig: object, products: object[], homePageHref?: string | null }} ctx
  */
-async function generateNotFoundBody(ctx) {
+async function buildNotFoundBody(ctx) {
   const fetchText = window.generateAnyPage.fetchText;
   const applyTemplate = window.generateAnyPage.applyTemplate;
   const { shopData, products } = ctx;
@@ -61,7 +61,7 @@ async function generateNotFoundPage(publishContext) {
     ? window.homePage.getHomePageHref(fileTree)
     : null;
   const productsForShop = window.productData.filterVisibleProducts(products);
-  const bodyPayload = await generateNotFoundBody({
+  const bodyPayload = await buildNotFoundBody({
     shopData,
     navigationConfig,
     products: productsForShop,
@@ -80,6 +80,6 @@ async function generateNotFoundPage(publishContext) {
 }
 
 window.generateNotFoundBody = {
-  generateNotFoundBody,
+  generateNotFoundBody: buildNotFoundBody,
   generateNotFoundPage,
 };
