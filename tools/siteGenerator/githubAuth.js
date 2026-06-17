@@ -15,6 +15,7 @@
     token: "siteGenerator.github.token",
     oauthState: "siteGenerator.github.oauthState",
     pkceVerifier: "siteGenerator.github.pkceVerifier",
+    expectedDeployVersion: "siteGenerator.expectedDeployVersion",
   };
 
   /** @type {string | null} */
@@ -32,6 +33,101 @@
   const OAUTH_SCOPE = "repo";
   const DEFAULT_BRANCH = "main";
   const BLOB_CONCURRENCY = 5;
+
+  function getDeployVersion(shopData) {
+    if (typeof window.shopDataEditor?.getDeployVersion === "function") {
+      return window.shopDataEditor.getDeployVersion(shopData);
+    }
+    const v = Number(shopData?.deployVersion);
+    return Number.isFinite(v) && v > 0 ? Math.floor(v) : 0;
+  }
+
+  function bumpDeployVersion(shopData) {
+    if (typeof window.shopDataEditor?.bumpDeployVersion === "function") {
+      return window.shopDataEditor.bumpDeployVersion(shopData);
+    }
+    const base = shopData && typeof shopData === "object" ? shopData : {};
+    return { ...base, deployVersion: getDeployVersion(base) + 1 };
+  }
+
+  function formatShopDataJsonText(shopData) {
+    return `${JSON.stringify(shopData, null, 2)}\n`;
+  }
+
+  function getExpectedDeployVersion() {
+    const v = Number(localStorage.getItem(STORAGE.expectedDeployVersion));
+    return Number.isFinite(v) && v > 0 ? Math.floor(v) : null;
+  }
+
+  function setExpectedDeployVersion(version) {
+    const v = Number(version);
+    if (!Number.isFinite(v) || v <= 0) {
+      return;
+    }
+    localStorage.setItem(STORAGE.expectedDeployVersion, String(Math.floor(v)));
+    window.dispatchEvent(
+      new CustomEvent("siteGenerator:deployVersionBumped", { detail: { version: Math.floor(v) } }),
+    );
+  }
+
+  async function fetchPagesDeployVersion() {
+    const url = new URL("../../shared-assets/config/shopData.json", window.location.href);
+    url.searchParams.set("t", String(Date.now()));
+    const response = await fetch(url.href, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Failed to load deploy version (${response.status})`);
+    }
+    const json = await response.json();
+    return getDeployVersion(json);
+  }
+
+  async function fetchRepoDeployVersion(owner, repo, branch) {
+    try {
+      const { json } = await readRepoJson(owner, repo, SHOP_DATA_PATH, branch);
+      return getDeployVersion(json);
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Bump deployVersion in shopData.json on the remote repo (separate commit).
+   * @returns {Promise<number>} new deploy version
+   */
+  async function bumpDeployVersionOnRepo(owner, repo, branch) {
+    const fileData = await readRepoJson(owner, repo, SHOP_DATA_PATH, branch);
+    const base = fileData.json && typeof fileData.json === "object" ? fileData.json : {};
+    const bumped = bumpDeployVersion(base);
+    await putFileContent(
+      owner,
+      repo,
+      SHOP_DATA_PATH,
+      `Bump deploy version to ${bumped.deployVersion}`,
+      formatShopDataJsonText(bumped),
+      branch,
+      fileData.meta?.sha || null,
+    );
+    setExpectedDeployVersion(bumped.deployVersion);
+    return bumped.deployVersion;
+  }
+
+  /**
+   * @param {Array<{ path: string, content?: string, delete?: boolean }>} fileChanges
+   * @param {object} shopData
+   * @returns {object} bumped shop data
+   */
+  function appendBumpedShopDataToFileChanges(fileChanges, shopData) {
+    const bumped = bumpDeployVersion(shopData && typeof shopData === "object" ? shopData : {});
+    setExpectedDeployVersion(bumped.deployVersion);
+    const entry = { path: SHOP_DATA_PATH, content: formatShopDataJsonText(bumped) };
+    const index = fileChanges.findIndex((change) => change?.path === SHOP_DATA_PATH);
+    if (index >= 0) {
+      fileChanges[index] = entry;
+    } else {
+      fileChanges.push(entry);
+    }
+    return bumped;
+  }
 
   function getConfig() {
     return window.githubAuthConfig && typeof window.githubAuthConfig === "object"
@@ -750,6 +846,7 @@
       fileTree.meta?.sha || null,
     );
     await pushNavigationFromFileTree(parsed.owner, parsed.repo, branch, nextTree);
+    await bumpDeployVersionOnRepo(parsed.owner, parsed.repo, branch);
     return fileTreeResult;
   }
 
@@ -767,15 +864,24 @@
           ? window.shopDataEditor.normalizeShopData({})
           : {};
     const fileData = await readRepoJson(parsed.owner, parsed.repo, SHOP_DATA_PATH, branch);
+    const remoteBase = fileData.json && typeof fileData.json === "object" ? fileData.json : {};
+    const merged =
+      payload && typeof payload === "object"
+        ? typeof window.shopDataEditor?.normalizeShopData === "function"
+          ? { ...remoteBase, ...window.shopDataEditor.normalizeShopData(payload) }
+          : { ...remoteBase, ...payload }
+        : remoteBase;
+    const bumped = bumpDeployVersion(merged);
     const fileTreeResult = await putFileContent(
       parsed.owner,
       parsed.repo,
       SHOP_DATA_PATH,
-      "Update shop data",
-      `${JSON.stringify(payload, null, 2)}\n`,
+      `Update shop data (deploy v${bumped.deployVersion})`,
+      formatShopDataJsonText(bumped),
       branch,
       fileData.meta?.sha || null,
     );
+    setExpectedDeployVersion(bumped.deployVersion);
     if (typeof window.shopDataEditor?.clearShopDataOverlay === "function") {
       window.shopDataEditor.clearShopDataOverlay();
     }
@@ -1773,7 +1879,8 @@
       }
     }
     const shopData = await readShopDataFromRepo();
-    const manifest = appendPublishIndexFiles(fileChanges, nextOutputs, shopData);
+    const bumpedShopData = appendBumpedShopDataToFileChanges(fileChanges, shopData);
+    const manifest = appendPublishIndexFiles(fileChanges, nextOutputs, bumpedShopData);
 
     const commit = await publishSiteCommit({ message, fileChanges });
     clearPendingNewPagesForPaths(publishablePaths);
@@ -1925,7 +2032,8 @@
       fileChanges.push({ path, delete: true });
     }
     const shopData = await readShopDataFromRepo();
-    const manifest = appendPublishIndexFiles(fileChanges, nextOutputs, shopData);
+    const bumpedShopData = appendBumpedShopDataToFileChanges(fileChanges, shopData);
+    const manifest = appendPublishIndexFiles(fileChanges, nextOutputs, bumpedShopData);
     onProgress("Uploading…");
     const commit = await publishSiteCommit({
       message: "Publish full site",
@@ -2030,6 +2138,7 @@
         window.productData.clearProductHideOverlayForSku(sku);
       }
     }
+    await bumpDeployVersionOnRepo(parsed.owner, parsed.repo, branch);
     return result;
   }
 
@@ -2124,6 +2233,7 @@
       window.productData.clearProductCategoryOverlay();
     }
 
+    await bumpDeployVersionOnRepo(parsed.owner, parsed.repo, branch);
     return result;
   }
 
@@ -2585,6 +2695,8 @@ ${publishBtn}
       const data = getPageData();
       const pushFn = typeof pushHandler === "function" ? pushHandler : pushContentPage;
       const result = await pushFn(pagePath, data);
+      const { owner, repo, branch } = requireSelectedRepo();
+      await bumpDeployVersionOnRepo(owner, repo, branch);
       const sha = result?.commit?.sha || result?.sha;
       const short = sha ? String(sha).slice(0, 7) : "ok";
       setPushStatus(root, `Pushed (${short})`, "ok");
@@ -2692,6 +2804,83 @@ ${publishBtn}
     render();
   }
 
+  /**
+   * @param {string} [rootId]
+   */
+  function initDeployVersionUi(rootId = "deploy-version-root") {
+    const root = document.getElementById(rootId);
+    if (!root) {
+      return;
+    }
+
+    root.classList.add("deploy-version-panel");
+    root.innerHTML = `<div class="deploy-version-row">
+  <span class="deploy-version-label">Deploy version</span>
+  <span class="deploy-version-pages" data-deploy-pages aria-live="polite">Checking…</span>
+  <span class="deploy-version-github" data-deploy-github hidden></span>
+  <button type="button" class="github-auth-btn deploy-version-refresh" data-deploy-refresh>Check again</button>
+</div>
+<p class="deploy-version-hint github-auth-muted">Bump <code>deployVersion</code> in <code>shopData.json</code> before each VS Code push. Browser pushes bump it automatically.</p>`;
+
+    const pagesEl = root.querySelector("[data-deploy-pages]");
+    const githubEl = root.querySelector("[data-deploy-github]");
+    const refreshBtn = root.querySelector("[data-deploy-refresh]");
+
+    const renderStatus = async () => {
+      if (!pagesEl) {
+        return;
+      }
+      refreshBtn.disabled = true;
+      pagesEl.textContent = "Checking…";
+      pagesEl.classList.remove("deploy-version-pages--live", "deploy-version-pages--pending", "deploy-version-pages--error");
+      if (githubEl) {
+        githubEl.hidden = true;
+        githubEl.textContent = "";
+      }
+      try {
+        const pagesV = await fetchPagesDeployVersion();
+        const expected = getExpectedDeployVersion();
+        let detail = "";
+        if (expected != null && pagesV < expected) {
+          pagesEl.classList.add("deploy-version-pages--pending");
+          detail = ` — waiting for GitHub Pages (expected v${expected})`;
+        } else if (expected != null && pagesV >= expected) {
+          pagesEl.classList.add("deploy-version-pages--live");
+          detail = " — live";
+        }
+        pagesEl.textContent = `Pages: v${pagesV}${detail}`;
+
+        if (githubEl && isSignedIn() && getSelectedRepo()) {
+          const parsed = parseRepoFullName(getSelectedRepo());
+          if (parsed) {
+            const repoV = await fetchRepoDeployVersion(parsed.owner, parsed.repo, getBranch());
+            if (repoV != null) {
+              githubEl.hidden = false;
+              if (repoV > pagesV) {
+                githubEl.textContent = ` · GitHub: v${repoV} (not on Pages yet)`;
+              } else {
+                githubEl.textContent = ` · GitHub: v${repoV}`;
+              }
+            }
+          }
+        }
+      } catch (err) {
+        pagesEl.classList.add("deploy-version-pages--error");
+        pagesEl.textContent = err?.message || String(err);
+      } finally {
+        refreshBtn.disabled = false;
+      }
+    };
+
+    refreshBtn?.addEventListener("click", () => {
+      renderStatus().catch(() => {});
+    });
+    window.addEventListener("siteGenerator:deployVersionBumped", () => {
+      renderStatus().catch(() => {});
+    });
+    renderStatus().catch(() => {});
+  }
+
   window.githubAuth = {
     isSignedIn,
     getPat,
@@ -2726,6 +2915,7 @@ ${publishBtn}
     stripOAuthQueryFromUrl,
     clearOAuthPending,
     initHubUi,
+    initDeployVersionUi,
     initEditPushUi,
     initPublishSiteUi,
     publishSiteCommit,

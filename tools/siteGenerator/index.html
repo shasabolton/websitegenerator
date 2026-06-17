@@ -468,6 +468,55 @@
       .preview-picker-publish-site .github-auth-push-status--ok {
         color: #047857;
       }
+
+      .deploy-version-panel {
+        margin-bottom: 16px;
+        padding: 12px 16px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+
+      .deploy-version-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+      }
+
+      .deploy-version-label {
+        font-weight: 600;
+        color: #111827;
+      }
+
+      .deploy-version-pages--live {
+        color: #047857;
+        font-weight: 600;
+      }
+
+      .deploy-version-pages--pending {
+        color: #b45309;
+        font-weight: 600;
+      }
+
+      .deploy-version-pages--error {
+        color: #b91c1c;
+      }
+
+      .deploy-version-github {
+        color: #6b7280;
+        font-size: 13px;
+      }
+
+      .deploy-version-hint {
+        margin: 8px 0 0;
+        font-size: 13px;
+      }
+
+      .deploy-version-refresh {
+        margin-left: auto;
+      }
     </style>
     <link rel="stylesheet" href="./githubAuth.css" />
     <link rel="stylesheet" href="./productDataMerge.css" />
@@ -476,6 +525,7 @@
   </head>
   <body>
     <main>
+      <div id="deploy-version-root" aria-live="polite"></div>
       <div id="github-auth-root" class="github-auth-panel" aria-live="polite"></div>
       <section id="shop-data-editor-root" class="preview-panel"></section>
       <section id="images-browser-root" class="preview-panel"></section>

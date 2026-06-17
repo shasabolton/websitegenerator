@@ -22,8 +22,19 @@
     return JSON.parse(JSON.stringify(value));
   }
 
+  function getDeployVersion(shopData) {
+    const v = Number(shopData?.deployVersion);
+    return Number.isFinite(v) && v > 0 ? Math.floor(v) : 0;
+  }
+
+  function bumpDeployVersion(shopData) {
+    const base = shopData && typeof shopData === "object" ? shopData : {};
+    return { ...base, deployVersion: getDeployVersion(base) + 1 };
+  }
+
   function defaultShopData() {
     return {
+      deployVersion: 1,
       shopName: "",
       owner: "",
       about: "",
@@ -48,6 +59,12 @@
     const base = defaultShopData();
     const input = raw && typeof raw === "object" ? raw : {};
     const next = cloneJson(base);
+    const deployVersion = Number(input.deployVersion);
+    if (Number.isFinite(deployVersion) && deployVersion > 0) {
+      next.deployVersion = Math.floor(deployVersion);
+    } else {
+      delete next.deployVersion;
+    }
     next.shopName = String(input.shopName ?? "").trim();
     next.owner = String(input.owner ?? "").trim();
     next.about = aboutToPlainText(input.about);
@@ -337,6 +354,7 @@
     const summary = document.createElement("summary");
     summary.className = "shop-data-summary";
     summary.textContent = "Shop data";
+    summary.dataset.deploySummary = "true";
 
     const body = document.createElement("div");
     body.className = "shop-data-body";
@@ -353,6 +371,9 @@
       body.innerHTML = `<p class="shop-data-error">${escapeHtml(err?.message || String(err))}</p>`;
       return;
     }
+
+    const deployV = getDeployVersion(baseData);
+    summary.textContent = deployV > 0 ? `Shop data · deploy v${deployV}` : "Shop data";
 
     body.innerHTML = "";
 
@@ -504,7 +525,10 @@
         }
         await window.githubAuth.pushShopData(payload);
         clearShopDataOverlay();
-        fillForm(form, payload);
+        const refreshed = await fetchShopDataJson();
+        fillForm(form, refreshed);
+        const newV = getDeployVersion(refreshed);
+        summary.textContent = newV > 0 ? `Shop data · deploy v${newV}` : "Shop data";
         setStatus("Saved to GitHub. Publish the site to update live HTML.", "ok");
       } catch (err) {
         setStatus(err?.message || String(err), "error");
@@ -517,6 +541,8 @@
   window.shopDataEditor = {
     fetchShopDataJson,
     normalizeShopData,
+    getDeployVersion,
+    bumpDeployVersion,
     aboutToPlainText,
     hasShopDataOverlay,
     clearShopDataOverlay,

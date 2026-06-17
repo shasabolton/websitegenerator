@@ -182,6 +182,10 @@ window.addEventListener("load", () => {
     }
   });
 
+  if (window.githubAuth?.initDeployVersionUi) {
+    window.githubAuth.initDeployVersionUi();
+  }
+
   initHubPublishSiteUi(hubRoot);
 
   if (window.displayFileTree?.initPreviewPicker) {
