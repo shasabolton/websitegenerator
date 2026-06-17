@@ -1247,7 +1247,10 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "instant-coke",
-      "REDIRECTS": []
+      "REDIRECTS": [
+        "shop/tiltbox",
+        "tiltboxhelp"
+      ]
     },
     {
       "TITLE": "Magic Trick Pencil Box Kit: Wooden 3D Puzzle, STEM Toy",
