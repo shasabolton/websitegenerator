@@ -5,7 +5,10 @@
   "draft": false,
   "meta": {
     "title": "projects",
-    "description": ""
+    "description": "",
+    "redirects": [
+      "project-gallery"
+    ]
   },
   "blocks": [
     {
