@@ -1,5 +1,11 @@
 {
   "version": 1,
-  "generatedAt": null,
-  "entries": []
+  "generatedAt": "2026-06-17T06:08:32.154Z",
+  "entries": [
+    {
+      "from": "project-gallery",
+      "to": "projects",
+      "title": "projects"
+    }
+  ]
 }

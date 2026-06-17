@@ -46,7 +46,7 @@
     <meta name="twitter:image" content="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta property="og:site_name" content="Contraption Cart" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.contraptioncart.com/#organization","name":"Contraption Cart","url":"https://www.contraptioncart.com/","logo":"https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg","email":"shasabolton@gmail.com","sameAs":["https://www.instagram.com/contraptioncart","https://www.facebook.com/contraptioncart/","https://contraptioncart.etsy.com"]},{"@type":"WebSite","@id":"https://www.contraptioncart.com/#website","name":"Contraption Cart","url":"https://www.contraptioncart.com/","publisher":{"@id":"https://www.contraptioncart.com/#organization"},"potentialAction":{"@type":"SearchAction","target":"https://www.google.com/search?q={search_term_string}+site:www.contraptioncart.com","query-input":"required name=search_term_string"}},{"@type":"WebPage","@id":"https://www.contraptioncart.com/projects#webpage","url":"https://www.contraptioncart.com/projects","name":"projects","isPartOf":{"@id":"https://www.contraptioncart.com/#website"},"publisher":{"@id":"https://www.contraptioncart.com/#organization"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Contraption Cart","item":"https://www.contraptioncart.com/"},{"@type":"ListItem","position":2,"name":"projects","item":"https://www.contraptioncart.com/projects"}]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.contraptioncart.com/#organization","name":"Contraption Cart","url":"https://www.contraptioncart.com/","logo":"https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg","email":"shasabolton@gmail.com","sameAs":["https://www.instagram.com/contraptioncart","https://www.facebook.com/contraptioncart/","https://contraptioncart.etsy.com"]},{"@type":"WebSite","@id":"https://www.contraptioncart.com/#website","name":"Contraption Cart","url":"https://www.contraptioncart.com/","publisher":{"@id":"https://www.contraptioncart.com/#organization"}},{"@type":"WebPage","@id":"https://www.contraptioncart.com/projects#webpage","url":"https://www.contraptioncart.com/projects","name":"projects","isPartOf":{"@id":"https://www.contraptioncart.com/#website"},"publisher":{"@id":"https://www.contraptioncart.com/#organization"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Contraption Cart","item":"https://www.contraptioncart.com/"},{"@type":"ListItem","position":2,"name":"projects","item":"https://www.contraptioncart.com/projects"}]}]}</script>
     <link rel="icon" type="image/jpeg" href="shared-assets/images/branding/favicon.jpg" />
     <link rel="stylesheet" href="tools/siteGenerator/templates/css/site.css" />
   </head>
@@ -58,6 +58,7 @@
     <script src="tools/editData/productData.js"></script>
     <script src="shared-assets/script/shoppingCart.js"></script>
     <script src="shared-assets/script/displayCurrency.js"></script>
+    <script src="shared-assets/script/siteSearch.js" defer></script>
     <script>
 window.siteCart = new ShoppingCart("Contraption Cart");
 </script>
@@ -136,26 +137,25 @@ window.siteCart = new ShoppingCart("Contraption Cart");
             <option value="NOK">NOK</option>
           </select>
         </div>
-        <form
-          class="site-search-form"
-          id="site-search-form"
-          action="https://www.google.com/search"
-          method="get"
-          target="_blank"
-          data-search-site="www.contraptioncart.com"
-        >
-          <input type="hidden" name="q" value="" />
-          <label class="visually-hidden" for="site-search-query">Search this site with Google</label>
-          <input
-            id="site-search-query"
-            class="site-search-input"
-            type="search"
-            autocomplete="off"
-            placeholder="Search…"
-            data-site-search-input
-          />
-          <button class="site-search-submit" type="submit">Search</button>
-        </form>
+        <div class="site-search-wrap">
+          <form class="site-search-form" id="site-search-form" role="search">
+            <label class="visually-hidden" for="site-search-query">Search products</label>
+            <input
+              id="site-search-query"
+              class="site-search-input"
+              type="search"
+              autocomplete="off"
+              placeholder="Search products…"
+              data-site-search-input
+              role="combobox"
+              aria-expanded="false"
+              aria-controls="site-search-results"
+              aria-autocomplete="list"
+            />
+            <button class="site-search-submit" type="submit">Search</button>
+          </form>
+          <div id="site-search-results" class="site-search-results" role="listbox" hidden></div>
+        </div>
         <nav class="site-nav" aria-label="Main navigation">
           <ul class="nav-list">
             
@@ -172,18 +172,6 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </header>
 <script>
   (function () {
-    var form = document.getElementById("site-search-form");
-    if (form) {
-      form.addEventListener("submit", function () {
-        var host = (form.getAttribute("data-search-site") || "").trim();
-        var input = form.querySelector("[data-site-search-input]");
-        var terms = (input && input.value ? input.value : "").trim();
-        var q = host ? "site:" + host + (terms ? " " + terms : "") : terms;
-        var hidden = form.querySelector('input[name="q"]');
-        if (hidden) hidden.value = q;
-      });
-    }
-
     var header = document.querySelector(".site-header");
     var toggle = document.querySelector(".nav-toggle");
     var flyout = document.getElementById("site-nav-flyout");
