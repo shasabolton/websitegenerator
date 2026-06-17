@@ -222,7 +222,7 @@
       "HIDE INSTRUCTIONS": false,
       "HIDE": false,
       "VIDEO3": "",
-      "SLUG": "hummingbird-and-flower-automaton",
+      "SLUG": "hummingbird-and-flower",
       "REDIRECTS": []
     },
     {
@@ -300,7 +300,7 @@
       "SKU": "56",
       "CATEGORY": "automata",
       "DIGITAL": false,
-      "LEGACY_SHOP_URL": "https://www.contraptioncart.com/Shop/scriblo",
+      "LEGACY_SHOP_URL": "https://www.contraptioncart.com/lankydoodler",
       "ETSY_LISTING_URL": "https://contraptioncart.etsy.com/au/listing/1218463674/writing-and-drawing-automaton-laser-cut",
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
@@ -311,7 +311,9 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "lankydoodler",
-      "REDIRECTS": []
+      "REDIRECTS": [
+        "shop/scriblo"
+      ]
     },
     {
       "TITLE": "Tortoise  Automata Kit - Wooden mechanical keepsake box",
@@ -623,7 +625,7 @@
       "HIDE INSTRUCTIONS": false,
       "HIDE": false,
       "VIDEO3": "",
-      "SLUG": "diy-swinging-monkey-automata-kit-fun-craft-project-for-kids-and-adults",
+      "SLUG": "swinging-monkey",
       "REDIRECTS": []
     },
     {
@@ -790,7 +792,7 @@
       "VARIATION 2 PRICE DELTA": "",
       "SKU": "54",
       "CATEGORY": "automata",
-      "DIGITAL": false,
+      "DIGITAL": true,
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "https://www.etsy.com/au/listing/1141433424/electric-origami-hummingbird-plans-paper",
       "ETSY_VIDEO1": "",
@@ -1877,7 +1879,7 @@
       "HIDE INSTRUCTIONS": true,
       "HIDE": false,
       "VIDEO3": "",
-      "SLUG": "newcomb-s-paradox",
+      "SLUG": "newcombs-paradox",
       "REDIRECTS": [
         "newcombtutorial"
       ]
@@ -1923,7 +1925,7 @@
       "HIDE INSTRUCTIONS": true,
       "HIDE": false,
       "VIDEO3": "",
-      "SLUG": "key-through-coin-magic-trick",
+      "SLUG": "key-through-coin",
       "REDIRECTS": []
     },
     {
@@ -2591,7 +2593,7 @@
       "HIDE INSTRUCTIONS": false,
       "HIDE": false,
       "VIDEO3": "",
-      "SLUG": "wooden-ride-on-car-street-sweeper-wheely-dog-for-toddlers-pug-toy-for-babies",
+      "SLUG": "street-sweeper",
       "REDIRECTS": []
     },
     {
