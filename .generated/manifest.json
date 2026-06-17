@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-17T06:08:32.155Z",
+  "generatedAt": "2026-06-17T06:19:36.233Z",
   "outputs": [
     "about/index.html",
     "blog/how-does-a-mechanical-calculator-work/index.html",
@@ -14,7 +14,6 @@
     "shop/bird-zoetrope/index.html",
     "shop/chicken-and-egg/index.html",
     "shop/dice-tunnel/index.html",
-    "shop/diy-swinging-monkey-automata-kit-fun-craft-project-for-kids-and-adults/index.html",
     "shop/dog-and-cat-running/index.html",
     "shop/dog-whirligig/index.html",
     "shop/electric-origami-hummingbird-plans-paper-automata-template/index.html",
@@ -23,11 +22,11 @@
     "shop/fluttering-heart/index.html",
     "shop/goldfish/index.html",
     "shop/gorilla-pulley-pet/index.html",
-    "shop/hummingbird-and-flower-automaton/index.html",
+    "shop/hummingbird-and-flower/index.html",
     "shop/hummingbird-pole-pet/index.html",
     "shop/illusionist-pendant-puzzle-box/index.html",
     "shop/instant-coke/index.html",
-    "shop/key-through-coin-magic-trick/index.html",
+    "shop/key-through-coin/index.html",
     "shop/lankydoodler/index.html",
     "shop/magic-drawer/index.html",
     "shop/magic-empty-box/index.html",
@@ -37,10 +36,12 @@
     "shop/mechanical-calculator/index.html",
     "shop/mini-cryptex/index.html",
     "shop/mouse-maze-puzzle-box/index.html",
-    "shop/newcomb-s-paradox/index.html",
+    "shop/newcombs-paradox/index.html",
     "shop/puzzle-boxes/index.html",
     "shop/slide-picture-puzzle-box/index.html",
+    "shop/street-sweeper/index.html",
     "shop/surfer-whirligig/index.html",
+    "shop/swinging-monkey/index.html",
     "shop/sword-through-finger/index.html",
     "shop/tiny-drive/index.html",
     "shop/tortoise-tally/index.html",
@@ -49,7 +50,6 @@
     "shop/whirligig-hardware/index.html",
     "shop/whirligigs/index.html",
     "shop/woodchopper-whirligig/index.html",
-    "shop/wooden-ride-on-car-street-sweeper-wheely-dog-for-toddlers-pug-toy-for-babies/index.html",
     "shop/zig-zag-pencil/index.html"
   ]
 }
