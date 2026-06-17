@@ -22,10 +22,19 @@
     if (!raw) {
       return "";
     }
+    const normalize =
+      typeof window.productData?.normalizeRedirectPath === "function"
+        ? window.productData.normalizeRedirectPath.bind(window.productData)
+        : (value) =>
+            String(value || "")
+              .trim()
+              .replace(/^\/+/, "")
+              .replace(/\/+$/, "")
+              .toLowerCase();
     try {
-      return window.productData.normalizeRedirectPath(new URL(raw).pathname);
+      return normalize(new URL(raw).pathname);
     } catch {
-      return window.productData.normalizeRedirectPath(raw);
+      return normalize(raw);
     }
   }
 
@@ -60,7 +69,15 @@
   }
 
   function pathsToTryForMatch(rawPath) {
-    const normalize = window.productData.normalizeRedirectPath;
+    const normalize =
+      typeof window.productData?.normalizeRedirectPath === "function"
+        ? window.productData.normalizeRedirectPath.bind(window.productData)
+        : (value) =>
+            String(value || "")
+              .trim()
+              .replace(/^\/+/, "")
+              .replace(/\/+$/, "")
+              .toLowerCase();
     const paths = [];
     const add = (value) => {
       const normalized = normalize(value);
@@ -89,6 +106,76 @@
     return paths;
   }
 
+  function redirectsJsonUrl() {
+    const baseEl = document.querySelector("base[data-site-base]");
+    if (baseEl?.href) {
+      return new URL("shared-assets/config/redirects.json", baseEl.href).href;
+    }
+    return new URL("shared-assets/config/redirects.json", window.location.href).href;
+  }
+
+  async function fetchRedirectsJson() {
+    const response = await fetch(redirectsJsonUrl(), { cache: "no-store" });
+    if (!response.ok) {
+      return { entries: [] };
+    }
+    const data = await response.json();
+    return {
+      entries: Array.isArray(data?.entries) ? data.entries : [],
+    };
+  }
+
+  /**
+   * @param {Array<{ from?: string, to?: string, title?: string, description?: string }>} entries
+   * @param {string} attemptedPath
+   */
+  function findContentRedirectsForAttemptedPath(entries, attemptedPath) {
+    const paths = pathsToTryForMatch(attemptedPath);
+    const matched = [];
+    const seenTo = new Set();
+    for (const path of paths) {
+      for (const entry of entries) {
+        const from = String(entry?.from || "")
+          .trim()
+          .toLowerCase();
+        const to = String(entry?.to || "").trim();
+        if (!from || !to || from !== path || seenTo.has(to)) {
+          continue;
+        }
+        seenTo.add(to);
+        matched.push(entry);
+      }
+    }
+    return matched;
+  }
+
+  function buildPageLinkHtml(entry) {
+    const href = escapeAttr(String(entry?.to || "").trim());
+    const title = escapeHtml(String(entry?.title || entry?.to || "Page").trim() || "Page");
+    const description = String(entry?.description || "").trim();
+    const descriptionHtml = description
+      ? `<p class="not-found-page-description">${escapeHtml(description)}</p>`
+      : "";
+    return `<article class="not-found-page-card">
+  <h3 class="not-found-page-title"><a href="${href}">${title}</a></h3>
+  ${descriptionHtml}
+</article>`;
+  }
+
+  function renderPageSuggestions(entries, attemptedPath) {
+    const cards = entries.map((entry) => buildPageLinkHtml(entry)).join("\n");
+    const heading =
+      entries.length === 1 ? "Were you looking for this page?" : "Were you looking for one of these pages?";
+    const pathLabel = attemptedPath ? escapeHtml(attemptedPath) : "this page";
+    return `<section class="not-found-suggestions" aria-labelledby="not-found-page-suggestions-heading">
+  <h2 id="not-found-page-suggestions-heading" class="not-found-suggestions-heading">${heading}</h2>
+  <p class="not-found-suggestions-path">We could not find <code>${pathLabel}</code>, but it may have moved.</p>
+  <div class="not-found-page-list">
+    ${cards}
+  </div>
+</section>`;
+  }
+
   function pathWantsInstructions(rawPath) {
     return /help/i.test(rawPath) || /tutorial/i.test(rawPath);
   }
@@ -114,6 +201,9 @@
    */
   function findProductsForAttemptedPath(products, attemptedPath) {
     const pd = window.productData;
+    if (!pd) {
+      return [];
+    }
     const list = Array.isArray(products) ? products : [];
     const paths = pathsToTryForMatch(attemptedPath);
     const matched = [];
@@ -192,24 +282,37 @@
 </article>`;
   }
 
-  function renderSuggestions(mount, products, attemptedPath) {
+  function renderSuggestions(mount, products, contentEntries, attemptedPath) {
     const wantsInstructions = pathWantsInstructions(attemptedPath);
-    const cards = products
-      .map((row) => buildProductThumbHtml(row, products, wantsInstructions))
-      .join("\n");
-    const heading =
-      products.length === 1
-        ? "Were you looking for this product?"
-        : "Were you looking for one of these products?";
-    const pathLabel = attemptedPath ? escapeHtml(attemptedPath) : "this page";
+    const pageSectionHtml = contentEntries.length
+      ? renderPageSuggestions(contentEntries, attemptedPath)
+      : "";
 
-    mount.innerHTML = `<section class="not-found-suggestions" aria-labelledby="not-found-suggestions-heading">
-  <h2 id="not-found-suggestions-heading" class="not-found-suggestions-heading">${heading}</h2>
-  <p class="not-found-suggestions-path">We could not find <code>${pathLabel}</code>, but it may have moved.</p>
+    const productSectionHtml = products.length
+      ? (() => {
+          const cards = products
+            .map((row) => buildProductThumbHtml(row, products, wantsInstructions))
+            .join("\n");
+          const heading =
+            products.length === 1
+              ? "Were you looking for this product?"
+              : "Were you looking for one of these products?";
+          const pathLabel = attemptedPath ? escapeHtml(attemptedPath) : "this page";
+          const intro =
+            contentEntries.length > 0
+              ? ""
+              : `<p class="not-found-suggestions-path">We could not find <code>${pathLabel}</code>, but it may have moved.</p>`;
+          return `<section class="not-found-suggestions" aria-labelledby="not-found-product-suggestions-heading">
+  <h2 id="not-found-product-suggestions-heading" class="not-found-suggestions-heading">${heading}</h2>
+  ${intro}
   <div class="product-thumb-row not-found-product-thumb-row">
     ${cards}
   </div>
 </section>`;
+        })()
+      : "";
+
+    mount.innerHTML = `${pageSectionHtml}${productSectionHtml}`;
 
     if (typeof window.siteDisplayCurrency?.format === "function") {
       const fx = window.siteDisplayCurrency;
@@ -246,10 +349,6 @@
     if (!mount) {
       return;
     }
-    const pd = window.productData;
-    if (!pd || typeof pd.fetchProductDataJson !== "function") {
-      return;
-    }
 
     const attemptedPath = attemptedSitePath();
     if (!attemptedPath || attemptedPath === "404.html") {
@@ -257,21 +356,27 @@
       return;
     }
 
-    let data;
-    try {
-      data = await pd.fetchProductDataJson();
-    } catch {
+    const [redirectsResult, productResult] = await Promise.allSettled([
+      fetchRedirectsJson(),
+      window.productData?.fetchProductDataJson?.() ?? Promise.resolve({ products: [] }),
+    ]);
+
+    const redirectEntries =
+      redirectsResult.status === "fulfilled" ? redirectsResult.value.entries : [];
+    const products =
+      productResult.status === "fulfilled" && Array.isArray(productResult.value?.products)
+        ? productResult.value.products
+        : [];
+
+    const contentEntries = findContentRedirectsForAttemptedPath(redirectEntries, attemptedPath);
+    const matchedProducts = findProductsForAttemptedPath(products, attemptedPath);
+
+    if (!contentEntries.length && !matchedProducts.length) {
       renderEmpty(mount, attemptedPath);
       return;
     }
 
-    const products = findProductsForAttemptedPath(data.products, attemptedPath);
-    if (!products.length) {
-      renderEmpty(mount, attemptedPath);
-      return;
-    }
-
-    renderSuggestions(mount, products, attemptedPath);
+    renderSuggestions(mount, matchedProducts, contentEntries, attemptedPath);
   }
 
   if (document.readyState === "loading") {

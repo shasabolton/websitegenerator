@@ -27,6 +27,7 @@
   const PRODUCT_DATA_PATH = "shared-assets/config/productData.json";
   const SHOP_DATA_PATH = "shared-assets/config/shopData.json";
   const MANIFEST_PATH = ".generated/manifest.json";
+  const REDIRECTS_PATH = "shared-assets/config/redirects.json";
   const SITEMAP_PATH = "sitemap.xml";
   const ROBOTS_PATH = "robots.txt";
   const SITEMAP_EXCLUDED_OUTPUTS = new Set(["cart/index.html"]);
@@ -1593,7 +1594,7 @@
     return remote.json && typeof remote.json === "object" ? remote.json : {};
   }
 
-  function appendPublishIndexFiles(fileChanges, nextOutputs, shopData) {
+  function appendPublishIndexFiles(fileChanges, nextOutputs, shopData, redirectsJson) {
     const manifest = buildManifestJson(nextOutputs);
     fileChanges.push({
       path: MANIFEST_PATH,
@@ -1607,6 +1608,12 @@
       path: ROBOTS_PATH,
       content: buildRobotsTxt(shopData),
     });
+    if (redirectsJson && typeof redirectsJson === "object") {
+      fileChanges.push({
+        path: REDIRECTS_PATH,
+        content: `${JSON.stringify(redirectsJson, null, 2)}\n`,
+      });
+    }
     return manifest;
   }
 
@@ -1704,6 +1711,89 @@
       .filter(Boolean);
   }
 
+  function collectContentPagePathsFromFileTree(fileTree) {
+    const paths = new Set();
+    function walk(items) {
+      for (const item of items || []) {
+        if (isTreeNodeHidden(item) || isTreeNodeDraft(item)) {
+          continue;
+        }
+        const href = normalizePagePath(item?.href || "");
+        if (href && isContentPagePath(href)) {
+          paths.add(href);
+        }
+        if (Array.isArray(item?.children)) {
+          walk(item.children);
+        }
+      }
+    }
+    walk(fileTree?.items || []);
+    return Array.from(paths);
+  }
+
+  function parseContentRedirectsList(value) {
+    const parse = window.productData?.parseRedirectsList;
+    if (typeof parse === "function") {
+      return parse(value);
+    }
+    if (Array.isArray(value)) {
+      return value.map((entry) => normalizePagePath(entry)).filter(Boolean);
+    }
+    return String(value ?? "")
+      .split(/[,\n]+/)
+      .map((entry) => normalizePagePath(entry))
+      .filter(Boolean);
+  }
+
+  /**
+   * @param {Map<string, object> | Record<string, object>} contentPages
+   * @param {string} [generatedAt]
+   */
+  function buildRedirectsJson(contentPages, generatedAt) {
+    const entries = [];
+    const seenFrom = new Set();
+    const iterate =
+      contentPages instanceof Map
+        ? contentPages.entries()
+        : Object.entries(contentPages && typeof contentPages === "object" ? contentPages : {});
+
+    for (const [pagePath, pageData] of iterate) {
+      const targetPath = normalizePagePath(pagePath);
+      if (!targetPath || !isContentPagePath(targetPath)) {
+        continue;
+      }
+      const redirects = parseContentRedirectsList(pageData?.meta?.redirects);
+      if (!redirects.length) {
+        continue;
+      }
+      const title = String(pageData?.meta?.title || pageData?.slug || targetPath).trim() || targetPath;
+      const description = String(pageData?.meta?.description || "").trim();
+      for (const from of redirects) {
+        if (!from || from === targetPath || seenFrom.has(from)) {
+          continue;
+        }
+        seenFrom.add(from);
+        const entry = { from, to: targetPath, title };
+        if (description) {
+          entry.description = description;
+        }
+        entries.push(entry);
+      }
+    }
+
+    entries.sort((a, b) => a.from.localeCompare(b.from));
+    return {
+      version: 1,
+      generatedAt: generatedAt || new Date().toISOString(),
+      entries,
+    };
+  }
+
+  async function buildRedirectsJsonForPublish(fileTree, seedPages, generatedAt) {
+    const contentPages = await buildContentPagesMap(fileTree, seedPages);
+    return buildRedirectsJson(contentPages, generatedAt);
+  }
+
   async function buildContentPagesMap(fileTree, seedPages) {
     const map = new Map();
     if (seedPages && typeof seedPages.forEach === "function") {
@@ -1715,10 +1805,9 @@
         map.set(normalizePagePath(key), value);
       }
     }
-    const slugs = getBlogSlugsFromFileTree(fileTree);
+    const pagePaths = collectContentPagePathsFromFileTree(fileTree);
     await Promise.all(
-      slugs.map(async (slug) => {
-        const pagePath = `blog/${slug}`;
+      pagePaths.map(async (pagePath) => {
         if (map.has(pagePath)) {
           return;
         }
@@ -1726,7 +1815,7 @@
           const pageData = await loadContentPageData(pagePath);
           map.set(pagePath, pageData);
         } catch {
-          /* skip missing posts */
+          /* skip missing pages */
         }
       }),
     );
@@ -1880,7 +1969,12 @@
     }
     const shopData = await readShopDataFromRepo();
     const bumpedShopData = appendBumpedShopDataToFileChanges(fileChanges, shopData);
-    const manifest = appendPublishIndexFiles(fileChanges, nextOutputs, bumpedShopData);
+    const redirectsJson = await buildRedirectsJsonForPublish(
+      draftTree,
+      publishContext?.contentPages,
+      new Date().toISOString(),
+    );
+    const manifest = appendPublishIndexFiles(fileChanges, nextOutputs, bumpedShopData, redirectsJson);
 
     const commit = await publishSiteCommit({ message, fileChanges });
     clearPendingNewPagesForPaths(publishablePaths);
@@ -2033,7 +2127,12 @@
     }
     const shopData = await readShopDataFromRepo();
     const bumpedShopData = appendBumpedShopDataToFileChanges(fileChanges, shopData);
-    const manifest = appendPublishIndexFiles(fileChanges, nextOutputs, bumpedShopData);
+    const redirectsJson = await buildRedirectsJsonForPublish(
+      exportableTree,
+      publishContext?.contentPages,
+      new Date().toISOString(),
+    );
+    const manifest = appendPublishIndexFiles(fileChanges, nextOutputs, bumpedShopData, redirectsJson);
     onProgress("Uploading…");
     const commit = await publishSiteCommit({
       message: "Publish full site",
