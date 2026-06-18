@@ -185,6 +185,14 @@ function showTreeDropZones(node) {
   return isProductTreeNode(node) || isCategoryTreeNode(node);
 }
 
+function findFileTreeOverlayNode(href) {
+  const overlay = readFileTreeOverlay();
+  if (!overlay?.items) {
+    return null;
+  }
+  return findTreeNodeByHref(overlay.items, href);
+}
+
 function isTreeNodeHidden(node, products = []) {
   if (isProductTreeNode(node)) {
     const path = normalizeTreeHref(node?.href || "");
@@ -194,10 +202,25 @@ function isTreeNodeHidden(node, products = []) {
     const slug = path.slice("shop/".length);
     const find = window.productData?.findProductBySlug;
     const isHidden = window.productData?.isProductRowHidden;
+    const getOverlay = window.productData?.getProductHideOverlayValue;
     if (typeof find !== "function" || typeof isHidden !== "function") {
       return false;
     }
-    return isHidden(find(products, slug));
+    const row = find(products, slug);
+    if (typeof getOverlay === "function" && row) {
+      const overlayValue = getOverlay(row.SKU);
+      if (overlayValue !== undefined) {
+        return overlayValue;
+      }
+    }
+    return isHidden(row);
+  }
+  const href = normalizeTreeHref(node?.href || "");
+  if (href) {
+    const overlayNode = findFileTreeOverlayNode(href);
+    if (overlayNode) {
+      return overlayNode.hide === true;
+    }
   }
   return node?.hide === true;
 }
@@ -211,10 +234,25 @@ function isTreeNodeDraft(node, products = []) {
     const slug = path.slice("shop/".length);
     const find = window.productData?.findProductBySlug;
     const isDraft = window.productData?.isProductRowDraft;
+    const getOverlay = window.productData?.getProductDraftOverlayValue;
     if (typeof find !== "function" || typeof isDraft !== "function") {
       return false;
     }
-    return isDraft(find(products, slug));
+    const row = find(products, slug);
+    if (typeof getOverlay === "function" && row) {
+      const overlayValue = getOverlay(row.SKU);
+      if (overlayValue !== undefined) {
+        return overlayValue;
+      }
+    }
+    return isDraft(row);
+  }
+  const href = normalizeTreeHref(node?.href || "");
+  if (href) {
+    const overlayNode = findFileTreeOverlayNode(href);
+    if (overlayNode) {
+      return overlayNode.draft === true;
+    }
   }
   return node?.draft === true;
 }

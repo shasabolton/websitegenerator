@@ -164,6 +164,22 @@ function setProductHideBySku(sku, hide) {
   writeProductHideOverlay(overlay);
 }
 
+/**
+ * @param {string} sku
+ * @returns {boolean | undefined} overlay value, or undefined if this SKU has no pending hide change
+ */
+function getProductHideOverlayValue(sku) {
+  const key = String(sku ?? "").trim();
+  if (!key) {
+    return undefined;
+  }
+  const overlay = readProductHideOverlay();
+  if (!Object.prototype.hasOwnProperty.call(overlay, key)) {
+    return undefined;
+  }
+  return overlay[key] === true;
+}
+
 function clearProductHideOverlayForSku(sku) {
   const key = String(sku ?? "").trim();
   if (!key) {
@@ -232,6 +248,22 @@ function setProductDraftBySku(sku, draft) {
   const overlay = readProductDraftOverlay();
   overlay[key] = draft === true;
   writeProductDraftOverlay(overlay);
+}
+
+/**
+ * @param {string} sku
+ * @returns {boolean | undefined} overlay value, or undefined if this SKU has no pending draft change
+ */
+function getProductDraftOverlayValue(sku) {
+  const key = String(sku ?? "").trim();
+  if (!key) {
+    return undefined;
+  }
+  const overlay = readProductDraftOverlay();
+  if (!Object.prototype.hasOwnProperty.call(overlay, key)) {
+    return undefined;
+  }
+  return overlay[key] === true;
 }
 
 function clearProductDraftOverlayForSku(sku) {
@@ -937,7 +969,9 @@ function clearProductLayoutOverlays() {
     isProductRowHidden,
     isProductRowDraft,
     setProductHideBySku,
+    getProductHideOverlayValue,
     setProductDraftBySku,
+    getProductDraftOverlayValue,
     clearProductHideOverlayForSku,
     clearProductHideOverlay,
     clearProductDraftOverlayForSku,
