@@ -19,8 +19,7 @@
       "children": [
         {
           "label": "How Does A Mechanical Calculator Work",
-          "href": "blog/how-does-a-mechanical-calculator-work",
-          "hide": false
+          "href": "blog/how-does-a-mechanical-calculator-work"
         },
         {
           "label": "How Does A Writing Automaton Work",
