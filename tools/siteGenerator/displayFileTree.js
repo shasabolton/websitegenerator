@@ -746,7 +746,7 @@ function appendTreeToolbar(container, callbacks) {
   const saveBtn = document.createElement("button");
   saveBtn.type = "button";
   saveBtn.className = "preview-picker-save-tree";
-  saveBtn.textContent = "Save file tree to GitHub";
+  saveBtn.textContent = "Save layout to GitHub";
   saveBtn.addEventListener("click", async () => {
     saveBtn.disabled = true;
     try {
@@ -759,8 +759,11 @@ function appendTreeToolbar(container, callbacks) {
       }
       await window.githubAuth.pushFileTree(getExportableFileTree(tree));
       saveBtn.textContent = "Saved";
+      if (typeof callbacks.onTreeChanged === "function") {
+        callbacks.onTreeChanged();
+      }
       window.setTimeout(() => {
-        saveBtn.textContent = "Save file tree to GitHub";
+        saveBtn.textContent = "Save layout to GitHub";
       }, 2000);
     } catch (err) {
       window.alert(err?.message || String(err));
@@ -770,46 +773,10 @@ function appendTreeToolbar(container, callbacks) {
   });
   wrap.appendChild(saveBtn);
 
-  const saveOrderBtn = document.createElement("button");
-  saveOrderBtn.type = "button";
-  saveOrderBtn.className = "preview-picker-save-product-order";
-  saveOrderBtn.textContent = "Save product order to GitHub";
-  saveOrderBtn.addEventListener("click", async () => {
-    saveOrderBtn.disabled = true;
-    try {
-      if (!window.githubAuth?.pushProductOrder) {
-        throw new Error("GitHub product order push is not available.");
-      }
-      await window.githubAuth.pushProductOrder();
-      saveOrderBtn.textContent = "Saved";
-      window.setTimeout(() => {
-        saveOrderBtn.textContent = "Save product order to GitHub";
-        updateSaveOrderButtonState();
-      }, 2000);
-    } catch (err) {
-      window.alert(err?.message || String(err));
-    } finally {
-      saveOrderBtn.disabled = false;
-    }
-  });
-  wrap.appendChild(saveOrderBtn);
-
-  function updateSaveOrderButtonState() {
-    const hasOverlay =
-      typeof window.productData?.hasProductOrderOverlay === "function" &&
-      window.productData.hasProductOrderOverlay();
-    saveOrderBtn.disabled = !hasOverlay;
-    saveOrderBtn.title = hasOverlay
-      ? "Write reordered products array to productData.json on GitHub"
-      : "Drag products under Shop to change order (use All categories and All products filters first)";
-  }
-  updateSaveOrderButtonState();
-  callbacks.onProductOrderOverlayChanged = updateSaveOrderButtonState;
-
   const hint = document.createElement("p");
   hint.className = "preview-picker-tree-toolbar-hint";
   hint.textContent =
-    "Drag ⋮⋮ to reorder (drop between rows). Drop onto a page row to nest it as a child. Drag shop products to reorder them in productData.json (use All categories / All products filters). Hidden pages stay in the tree but are omitted from navigation, the blog index, or shop listings. Draft pages are not published as HTML. Push product edits to save product hide/draft to GitHub.";
+    "Drag ⋮⋮ to reorder (drop between rows). Drop onto a page row to nest it as a child. Drag shop products to reorder them in productData.json (use All categories / All products filters). Save layout writes fileTree.json, navigation.json, and any pending product order, hide, or draft changes to productData.json. Hidden pages stay in the tree but are omitted from navigation, the blog index, or shop listings. Draft pages are not published as HTML.";
   wrap.appendChild(hint);
   container.appendChild(wrap);
 }
@@ -1119,7 +1086,7 @@ function renderTreeNode(parent, node, indexPath, depth, callbacks) {
     const hideLabel = document.createElement("label");
     hideLabel.className = "preview-picker-tree-hide";
     hideLabel.title = isProductTreeNode(node)
-      ? "Hide from shop listings and navigation (saved in productData.json on push)"
+      ? "Hide from shop listings and navigation (saved in productData.json when you save layout)"
       : "Hide from site navigation and blog index";
     const hideInput = document.createElement("input");
     hideInput.type = "checkbox";
@@ -1162,8 +1129,8 @@ function renderTreeNode(parent, node, indexPath, depth, callbacks) {
     const draftLabel = document.createElement("label");
     draftLabel.className = "preview-picker-tree-draft";
     draftLabel.title = isProductTreeNode(node)
-      ? "Skip HTML publish (saved in productData.json on push)"
-      : "Skip HTML publish (saved in fileTree.json on push)";
+      ? "Skip HTML publish (saved in productData.json when you save layout)"
+      : "Skip HTML publish (saved in fileTree.json when you save layout)";
     const draftInput = document.createElement("input");
     draftInput.type = "checkbox";
     draftInput.checked = isTreeNodeDraft(node, products);

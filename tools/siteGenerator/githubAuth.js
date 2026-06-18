@@ -835,20 +835,59 @@
       throw new Error("Select a GitHub repository on the site generator picker page.");
     }
     const branch = getBranch();
-    const fileTree = await readRepoJson(parsed.owner, parsed.repo, FILE_TREE_PATH, branch);
-    const nextTree = fileTreeJson && typeof fileTreeJson === "object" ? fileTreeJson : fileTree.json;
-    const fileTreeResult = await putFileContent(
-      parsed.owner,
-      parsed.repo,
-      FILE_TREE_PATH,
-      "Update file tree layout",
-      `${JSON.stringify(nextTree, null, 2)}\n`,
-      branch,
-      fileTree.meta?.sha || null,
-    );
-    await pushNavigationFromFileTree(parsed.owner, parsed.repo, branch, nextTree);
-    await bumpDeployVersionOnRepo(parsed.owner, parsed.repo, branch);
-    return fileTreeResult;
+    const { owner, repo } = parsed;
+
+    const [fileTreeData, navigationData, productDataFile, shopDataFile] = await Promise.all([
+      readRepoJson(owner, repo, FILE_TREE_PATH, branch),
+      readRepoJson(owner, repo, NAVIGATION_PATH, branch),
+      readRepoJson(owner, repo, PRODUCT_DATA_PATH, branch),
+      readRepoJson(owner, repo, SHOP_DATA_PATH, branch),
+    ]);
+
+    const nextTree = fileTreeJson && typeof fileTreeJson === "object" ? fileTreeJson : fileTreeData.json;
+    const navigationBase =
+      navigationData.json && typeof navigationData.json === "object" ? navigationData.json : { items: [] };
+    const nextNavigation = syncNavigationFromFileTree(nextTree, navigationBase);
+
+    const hasProductLayoutChanges =
+      typeof window.productData?.hasProductLayoutOverlays === "function" &&
+      window.productData.hasProductLayoutOverlays();
+
+    const fileChanges = [
+      { path: FILE_TREE_PATH, content: `${JSON.stringify(nextTree, null, 2)}\n` },
+      { path: NAVIGATION_PATH, content: `${JSON.stringify(nextNavigation, null, 2)}\n` },
+    ];
+
+    if (hasProductLayoutChanges) {
+      if (typeof window.productData?.mergeRemoteProductDataWithOverlays !== "function") {
+        throw new Error("Product layout merge is not available.");
+      }
+      const remoteRoot =
+        productDataFile.json && typeof productDataFile.json === "object" ? productDataFile.json : {};
+      const nextProductData = window.productData.mergeRemoteProductDataWithOverlays(remoteRoot);
+      fileChanges.push({
+        path: PRODUCT_DATA_PATH,
+        content: `${JSON.stringify(nextProductData, null, 2)}\n`,
+      });
+    }
+
+    const shopBase = shopDataFile.json && typeof shopDataFile.json === "object" ? shopDataFile.json : {};
+    appendBumpedShopDataToFileChanges(fileChanges, shopBase);
+
+    const messageParts = ["Update file tree layout"];
+    if (hasProductLayoutChanges) {
+      messageParts.push("product order, hide, and draft");
+    }
+    const result = await publishSiteCommit({
+      message: messageParts.join(" and "),
+      fileChanges,
+    });
+
+    if (hasProductLayoutChanges && typeof window.productData?.clearProductLayoutOverlays === "function") {
+      window.productData.clearProductLayoutOverlays();
+    }
+
+    return result;
   }
 
   async function pushShopData(shopDataJson) {
@@ -2254,97 +2293,27 @@
 
   /**
    * Write the locally reordered products array (and category moves) to productData.json.
+   * @deprecated Use pushFileTree — product order is saved with the file tree.
    */
   async function pushProductOrder() {
-    if (typeof window.productData?.hasProductOrderOverlay !== "function") {
-      throw new Error("Product order overlay is not available.");
-    }
-    if (!window.productData.hasProductOrderOverlay()) {
-      throw new Error("No product order changes to save.");
-    }
-
-    const fullName = getSelectedRepo();
-    const parsed = parseRepoFullName(fullName);
-    if (!parsed) {
-      throw new Error("Select a GitHub repository on the site generator picker page.");
-    }
-    const branch = getBranch();
-
-    const localData = await window.productData.fetchProductDataJson();
-    const localProducts = Array.isArray(localData?.products) ? localData.products : [];
-    const orderSkus = localProducts
-      .map((row) => String(row?.SKU ?? "").trim())
-      .filter(Boolean);
-    if (!orderSkus.length) {
-      throw new Error("No products in local order to save.");
-    }
-
-    const categoryOverlay =
-      typeof window.productData?.readProductCategoryOverlay === "function"
-        ? window.productData.readProductCategoryOverlay()
-        : {};
-
-    const fileData = await readRepoJson(parsed.owner, parsed.repo, PRODUCT_DATA_PATH, branch);
-    const root = fileData.json && typeof fileData.json === "object" ? fileData.json : {};
-    const remoteProducts = Array.isArray(root.products) ? root.products : [];
-    const bySku = new Map();
-    for (const row of remoteProducts) {
-      const sku = String(row?.SKU ?? "").trim();
-      if (sku) {
-        bySku.set(sku, row);
+    if (typeof window.productData?.hasProductLayoutOverlays === "function") {
+      if (!window.productData.hasProductLayoutOverlays()) {
+        throw new Error("No product layout changes to save.");
+      }
+    } else if (typeof window.productData?.hasProductOrderOverlay === "function") {
+      if (!window.productData.hasProductOrderOverlay()) {
+        throw new Error("No product order changes to save.");
       }
     }
-
-    const used = new Set();
-    const reordered = [];
-    for (const sku of orderSkus) {
-      if (!sku || used.has(sku)) {
-        continue;
-      }
-      const remote = bySku.get(sku);
-      if (!remote) {
-        continue;
-      }
-      const next = { ...remote };
-      if (Object.prototype.hasOwnProperty.call(categoryOverlay, sku)) {
-        next.CATEGORY = categoryOverlay[sku];
-      }
-      reordered.push(next);
-      used.add(sku);
+    if (typeof window.displayFileTree?.buildPopulatedFileTree !== "function") {
+      throw new Error("displayFileTree.buildPopulatedFileTree is required.");
     }
-    for (const row of remoteProducts) {
-      const sku = String(row?.SKU ?? "").trim();
-      if (!sku || used.has(sku)) {
-        continue;
-      }
-      reordered.push(row);
-      used.add(sku);
-    }
-
-    const nextRoot = { ...root, products: reordered };
-    if (nextRoot.version == null) {
-      nextRoot.version = 1;
-    }
-
-    const result = await putFileContent(
-      parsed.owner,
-      parsed.repo,
-      PRODUCT_DATA_PATH,
-      "Reorder products in productData.json",
-      `${JSON.stringify(nextRoot, null, 2)}\n`,
-      branch,
-      fileData.meta?.sha || null,
-    );
-
-    if (typeof window.productData?.clearProductOrderOverlay === "function") {
-      window.productData.clearProductOrderOverlay();
-    }
-    if (typeof window.productData?.clearProductCategoryOverlay === "function") {
-      window.productData.clearProductCategoryOverlay();
-    }
-
-    await bumpDeployVersionOnRepo(parsed.owner, parsed.repo, branch);
-    return result;
+    const populatedTree = await window.displayFileTree.buildPopulatedFileTree(null, null);
+    const exportableTree =
+      typeof window.displayFileTree?.getExportableFileTree === "function"
+        ? window.displayFileTree.getExportableFileTree(populatedTree)
+        : populatedTree;
+    return pushFileTree(exportableTree);
   }
 
   function assertRedirectUriAllowed(callback) {

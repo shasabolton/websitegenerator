@@ -160,11 +160,7 @@ function setProductHideBySku(sku, hide) {
     return;
   }
   const overlay = readProductHideOverlay();
-  if (hide) {
-    overlay[key] = true;
-  } else {
-    delete overlay[key];
-  }
+  overlay[key] = hide === true;
   writeProductHideOverlay(overlay);
 }
 
@@ -179,6 +175,10 @@ function clearProductHideOverlayForSku(sku) {
   }
   delete overlay[key];
   writeProductHideOverlay(overlay);
+}
+
+function clearProductHideOverlay() {
+  sessionStorage.removeItem(PRODUCT_HIDE_OVERLAY_KEY);
 }
 
 function readProductDraftOverlay() {
@@ -230,11 +230,7 @@ function setProductDraftBySku(sku, draft) {
     return;
   }
   const overlay = readProductDraftOverlay();
-  if (draft) {
-    overlay[key] = true;
-  } else {
-    delete overlay[key];
-  }
+  overlay[key] = draft === true;
   writeProductDraftOverlay(overlay);
 }
 
@@ -249,6 +245,10 @@ function clearProductDraftOverlayForSku(sku) {
   }
   delete overlay[key];
   writeProductDraftOverlay(overlay);
+}
+
+function clearProductDraftOverlay() {
+  sessionStorage.removeItem(PRODUCT_DRAFT_OVERLAY_KEY);
 }
 
 function filterVisibleProducts(products) {
@@ -806,6 +806,129 @@ function getCategoriesForFileTree(products, digitalFilter) {
   return sortCategoriesWithOtherLast(Array.from(categories.values()), "label");
 }
 
+function applySkuBooleanOverlay(row, overlay, fieldName) {
+  const sku = String(row?.SKU ?? "").trim();
+  if (!sku || !Object.prototype.hasOwnProperty.call(overlay, sku)) {
+    return row;
+  }
+  const next = { ...row };
+  if (overlay[sku]) {
+    next[fieldName] = true;
+  } else {
+    delete next[fieldName];
+  }
+  return next;
+}
+
+function reorderRemoteProducts(products, orderSkus, categoryOverlay = {}) {
+  const remoteProducts = Array.isArray(products) ? products : [];
+  const bySku = new Map();
+  for (const row of remoteProducts) {
+    const sku = String(row?.SKU ?? "").trim();
+    if (sku) {
+      bySku.set(sku, row);
+    }
+  }
+
+  const used = new Set();
+  const reordered = [];
+  for (const sku of orderSkus) {
+    const key = String(sku ?? "").trim();
+    if (!key || used.has(key)) {
+      continue;
+    }
+    const remote = bySku.get(key);
+    if (!remote) {
+      continue;
+    }
+    const next = { ...remote };
+    if (Object.prototype.hasOwnProperty.call(categoryOverlay, key)) {
+      next.CATEGORY = categoryOverlay[key];
+    }
+    reordered.push(next);
+    used.add(key);
+  }
+  for (const row of remoteProducts) {
+    const sku = String(row?.SKU ?? "").trim();
+    if (!sku || used.has(sku)) {
+      continue;
+    }
+    reordered.push(row);
+    used.add(sku);
+  }
+  return reordered;
+}
+
+function hasProductLayoutOverlays() {
+  if (hasProductOrderOverlay()) {
+    return true;
+  }
+  if (Object.keys(readProductHideOverlay()).length) {
+    return true;
+  }
+  if (Object.keys(readProductDraftOverlay()).length) {
+    return true;
+  }
+  if (Object.keys(readProductCategoryOverlay()).length) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Apply session overlays (order, category, hide, draft) onto remote productData.json root.
+ * @param {object} remoteRoot
+ */
+function mergeRemoteProductDataWithOverlays(remoteRoot) {
+  const root = remoteRoot && typeof remoteRoot === "object" ? remoteRoot : {};
+  let products = Array.isArray(root.products) ? root.products.map((row) => ({ ...row })) : [];
+  const categoryOverlay = readProductCategoryOverlay();
+  const orderSkus = readProductOrderOverlay();
+
+  if (orderSkus && orderSkus.length) {
+    products = reorderRemoteProducts(products, orderSkus, categoryOverlay);
+  } else if (Object.keys(categoryOverlay).length) {
+    products = products.map((row) => {
+      const sku = String(row?.SKU ?? "").trim();
+      if (sku && Object.prototype.hasOwnProperty.call(categoryOverlay, sku)) {
+        return { ...row, CATEGORY: categoryOverlay[sku] };
+      }
+      return row;
+    });
+  }
+
+  const hideOverlay = readProductHideOverlay();
+  const draftOverlay = readProductDraftOverlay();
+  products = products.map((row) => {
+    let next = row;
+    next = applySkuBooleanOverlay(next, hideOverlay, "HIDE");
+    next = applySkuBooleanOverlay(next, draftOverlay, "DRAFT");
+    return next;
+  });
+
+  const columns = Array.isArray(root.columns) ? root.columns.slice() : [];
+  const columnSet = new Set(columns);
+  for (const key of ["HIDE", "DRAFT"]) {
+    if (!columnSet.has(key)) {
+      columns.push(key);
+      columnSet.add(key);
+    }
+  }
+
+  const nextRoot = { ...root, products, columns };
+  if (nextRoot.version == null) {
+    nextRoot.version = 1;
+  }
+  return nextRoot;
+}
+
+function clearProductLayoutOverlays() {
+  clearProductOrderOverlay();
+  clearProductCategoryOverlay();
+  clearProductHideOverlay();
+  clearProductDraftOverlay();
+}
+
   window.productData = {
     fetchProductDataJson,
     getProductsByCategory,
@@ -816,8 +939,13 @@ function getCategoriesForFileTree(products, digitalFilter) {
     setProductHideBySku,
     setProductDraftBySku,
     clearProductHideOverlayForSku,
+    clearProductHideOverlay,
     clearProductDraftOverlayForSku,
+    clearProductDraftOverlay,
     hasProductOrderOverlay,
+    hasProductLayoutOverlays,
+    mergeRemoteProductDataWithOverlays,
+    clearProductLayoutOverlays,
     clearProductOrderOverlay,
     clearProductCategoryOverlay,
     readProductCategoryOverlay,
