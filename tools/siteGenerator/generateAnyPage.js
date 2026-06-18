@@ -13,6 +13,9 @@ function resolveFetchUrl(url) {
 }
 
 async function fetchJson(url) {
+  if (typeof window.githubAuth?.loadJson === "function") {
+    return window.githubAuth.loadJson(url);
+  }
   const resolved = resolveFetchUrl(url);
   const response = await fetch(resolved, { cache: "no-store" });
   if (!response.ok) {

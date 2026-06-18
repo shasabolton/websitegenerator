@@ -1,6 +1,8 @@
 (function () {
   const SHOP_DATA_URL = "../../shared-assets/config/shopData.json";
-  const SHOP_DATA_OVERLAY_KEY = "siteGenerator.shopDataOverlay";
+
+  /** In-memory unsaved shop data edits (session-only). */
+  let shopDataOverlay = null;
 
   function escapeHtml(value) {
     return String(value)
@@ -108,24 +110,15 @@
   }
 
   function readShopDataOverlay() {
-    try {
-      const raw = sessionStorage.getItem(SHOP_DATA_OVERLAY_KEY);
-      if (!raw) {
-        return null;
-      }
-      const parsed = JSON.parse(raw);
-      return parsed && typeof parsed === "object" ? parsed : null;
-    } catch {
-      return null;
-    }
+    return shopDataOverlay && typeof shopDataOverlay === "object" ? shopDataOverlay : null;
   }
 
   function writeShopDataOverlay(data) {
-    sessionStorage.setItem(SHOP_DATA_OVERLAY_KEY, JSON.stringify(normalizeShopData(data)));
+    shopDataOverlay = normalizeShopData(data);
   }
 
   function clearShopDataOverlay() {
-    sessionStorage.removeItem(SHOP_DATA_OVERLAY_KEY);
+    shopDataOverlay = null;
   }
 
   function hasShopDataOverlay() {
@@ -141,12 +134,17 @@
   }
 
   async function fetchShopDataJson() {
-    const resolved = new URL(SHOP_DATA_URL, window.location.href).href;
-    const response = await fetch(resolved, { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error(`Failed to load shop data: ${SHOP_DATA_URL} (${response.status})`);
-    }
-    const data = await response.json();
+    const data =
+      typeof window.githubAuth?.loadJson === "function"
+        ? await window.githubAuth.loadJson(SHOP_DATA_URL)
+        : await (async () => {
+            const resolved = new URL(SHOP_DATA_URL, window.location.href).href;
+            const response = await fetch(resolved, { cache: "no-store" });
+            if (!response.ok) {
+              throw new Error(`Failed to load shop data: ${SHOP_DATA_URL} (${response.status})`);
+            }
+            return response.json();
+          })();
     return applyShopDataOverlay(data);
   }
 

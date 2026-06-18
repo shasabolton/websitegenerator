@@ -1,4 +1,7 @@
 async function fetchJson(url) {
+  if (typeof window.githubAuth?.loadJson === "function") {
+    return window.githubAuth.loadJson(url);
+  }
   const raw = String(url || "").trim();
   const resolved =
     !raw || /^https?:\/\//i.test(raw) ? raw : new URL(raw, window.location.href).href;
@@ -119,8 +122,9 @@ function syncCategoryFilterOptions(categorySelect, categoryData, preserveValue) 
 let cachedHomePageHref = null;
 let baseFileTreeConfig = null;
 
-const PENDING_NEW_PAGES_KEY = "siteGenerator.pendingNewPages";
-const FILE_TREE_OVERLAY_KEY = "siteGenerator.fileTreeOverlay";
+/** In-memory draft state (session-only; not persisted across refresh or devices). */
+let fileTreeOverlay = null;
+let pendingNewPages = [];
 
 function slugifyPageTitle(raw) {
   return String(raw || "")
@@ -357,20 +361,11 @@ function shouldShowEditLink(treeHref, { isNew = false, pageType = "", productEdi
 }
 
 function readPendingNewPages() {
-  try {
-    const raw = sessionStorage.getItem(PENDING_NEW_PAGES_KEY);
-    if (!raw) {
-      return [];
-    }
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+  return Array.isArray(pendingNewPages) ? pendingNewPages.slice() : [];
 }
 
 function writePendingNewPages(pages) {
-  sessionStorage.setItem(PENDING_NEW_PAGES_KEY, JSON.stringify(pages));
+  pendingNewPages = Array.isArray(pages) ? pages.slice() : [];
 }
 
 function getPendingNewPage(treePath) {
@@ -379,16 +374,7 @@ function getPendingNewPage(treePath) {
 }
 
 function readFileTreeOverlay() {
-  try {
-    const raw = sessionStorage.getItem(FILE_TREE_OVERLAY_KEY);
-    if (!raw) {
-      return null;
-    }
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : null;
-  } catch {
-    return null;
-  }
+  return fileTreeOverlay && typeof fileTreeOverlay === "object" ? fileTreeOverlay : null;
 }
 
 function applyFileTreeOverlay(baseConfig) {
@@ -414,13 +400,23 @@ function stripGeneratedShopChildren(tree) {
 
 function saveFileTreeOverlay(tree) {
   const snapshot = stripGeneratedShopChildren(tree);
-  sessionStorage.setItem(
-    FILE_TREE_OVERLAY_KEY,
-    JSON.stringify({
-      items: snapshot.items || [],
-      homePage: snapshot.homePage || null,
-    }),
-  );
+  fileTreeOverlay = {
+    items: cloneTree(snapshot.items || []),
+    homePage: snapshot.homePage || null,
+  };
+}
+
+function clearFileTreeOverlay() {
+  fileTreeOverlay = null;
+}
+
+function clearPendingNewPages() {
+  pendingNewPages = [];
+}
+
+function clearEditorDrafts() {
+  clearFileTreeOverlay();
+  clearPendingNewPages();
 }
 
 function walkTreeItems(items, visitor, indexPath = []) {
@@ -915,7 +911,10 @@ function appendNewPageToolbar(container, fileTree, onCreated) {
       overlay.items = [];
     }
     overlay.items.push({ label: title, href: path, draft: true });
-    sessionStorage.setItem(FILE_TREE_OVERLAY_KEY, JSON.stringify(overlay));
+    fileTreeOverlay = {
+      items: cloneTree(overlay.items),
+      homePage: overlay.homePage || fileTree.homePage || null,
+    };
 
     const pending = readPendingNewPages();
     pending.push({
@@ -1391,6 +1390,8 @@ window.displayFileTree = {
   removePendingPageByHref,
   getExportableFileTree,
   applyFileTreeOverlay,
+  clearFileTreeOverlay,
+  clearEditorDrafts,
   isTreeNodeHidden,
   isTreeNodeDraft,
   isTreePathDraft,

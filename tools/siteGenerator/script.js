@@ -114,6 +114,7 @@ function initHubPublishSiteUi(hubRoot) {
 
 async function runPreviewBootFromUrl() {
   await loadPreviewGenerators();
+  await loadGithubAuthScripts();
   const target = window.previewTarget.parsePreviewTarget(window.location.search);
   if (!target?.path) {
     throw new Error("Preview boot: missing path in URL.");

@@ -106,26 +106,19 @@ function sortCategoriesWithOtherLast(entries, nameKey) {
   });
 }
 
-const PRODUCT_HIDE_OVERLAY_KEY = "siteGenerator.productHideOverlay";
-const PRODUCT_DRAFT_OVERLAY_KEY = "siteGenerator.productDraftOverlay";
-const PRODUCT_ORDER_OVERLAY_KEY = "siteGenerator.productOrderOverlay";
-const PRODUCT_CATEGORY_OVERLAY_KEY = "siteGenerator.productCategoryOverlay";
+/** In-memory product layout drafts (session-only; not persisted across refresh or devices). */
+let productHideOverlay = {};
+let productDraftOverlay = {};
+/** @type {{ skus: string[] } | null} */
+let productOrderOverlay = null;
+let productCategoryOverlay = {};
 
 function readProductHideOverlay() {
-  try {
-    const raw = sessionStorage.getItem(PRODUCT_HIDE_OVERLAY_KEY);
-    if (!raw) {
-      return {};
-    }
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch {
-    return {};
-  }
+  return productHideOverlay && typeof productHideOverlay === "object" ? { ...productHideOverlay } : {};
 }
 
 function writeProductHideOverlay(overlay) {
-  sessionStorage.setItem(PRODUCT_HIDE_OVERLAY_KEY, JSON.stringify(overlay));
+  productHideOverlay = overlay && typeof overlay === "object" ? { ...overlay } : {};
 }
 
 function isProductRowHidden(row) {
@@ -194,24 +187,15 @@ function clearProductHideOverlayForSku(sku) {
 }
 
 function clearProductHideOverlay() {
-  sessionStorage.removeItem(PRODUCT_HIDE_OVERLAY_KEY);
+  productHideOverlay = {};
 }
 
 function readProductDraftOverlay() {
-  try {
-    const raw = sessionStorage.getItem(PRODUCT_DRAFT_OVERLAY_KEY);
-    if (!raw) {
-      return {};
-    }
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch {
-    return {};
-  }
+  return productDraftOverlay && typeof productDraftOverlay === "object" ? { ...productDraftOverlay } : {};
 }
 
 function writeProductDraftOverlay(overlay) {
-  sessionStorage.setItem(PRODUCT_DRAFT_OVERLAY_KEY, JSON.stringify(overlay));
+  productDraftOverlay = overlay && typeof overlay === "object" ? { ...overlay } : {};
 }
 
 function isProductRowDraft(row) {
@@ -280,7 +264,7 @@ function clearProductDraftOverlayForSku(sku) {
 }
 
 function clearProductDraftOverlay() {
-  sessionStorage.removeItem(PRODUCT_DRAFT_OVERLAY_KEY);
+  productDraftOverlay = {};
 }
 
 function filterVisibleProducts(products) {
@@ -288,25 +272,17 @@ function filterVisibleProducts(products) {
 }
 
 function readProductOrderOverlay() {
-  try {
-    const raw = sessionStorage.getItem(PRODUCT_ORDER_OVERLAY_KEY);
-    if (!raw) {
-      return null;
-    }
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed?.skus) ? parsed.skus : null;
-  } catch {
-    return null;
-  }
+  const skus = productOrderOverlay?.skus;
+  return Array.isArray(skus) ? skus.slice() : null;
 }
 
 function writeProductOrderOverlay(skus) {
   const list = Array.isArray(skus) ? skus.map((sku) => String(sku ?? "").trim()).filter(Boolean) : [];
-  sessionStorage.setItem(PRODUCT_ORDER_OVERLAY_KEY, JSON.stringify({ skus: list }));
+  productOrderOverlay = list.length ? { skus: list } : null;
 }
 
 function clearProductOrderOverlay() {
-  sessionStorage.removeItem(PRODUCT_ORDER_OVERLAY_KEY);
+  productOrderOverlay = null;
 }
 
 function hasProductOrderOverlay() {
@@ -315,24 +291,17 @@ function hasProductOrderOverlay() {
 }
 
 function readProductCategoryOverlay() {
-  try {
-    const raw = sessionStorage.getItem(PRODUCT_CATEGORY_OVERLAY_KEY);
-    if (!raw) {
-      return {};
-    }
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch {
-    return {};
-  }
+  return productCategoryOverlay && typeof productCategoryOverlay === "object"
+    ? { ...productCategoryOverlay }
+    : {};
 }
 
 function writeProductCategoryOverlay(overlay) {
-  sessionStorage.setItem(PRODUCT_CATEGORY_OVERLAY_KEY, JSON.stringify(overlay));
+  productCategoryOverlay = overlay && typeof overlay === "object" ? { ...overlay } : {};
 }
 
 function clearProductCategoryOverlay() {
-  sessionStorage.removeItem(PRODUCT_CATEGORY_OVERLAY_KEY);
+  productCategoryOverlay = {};
 }
 
 function applyProductCategoryOverlay(products) {
@@ -441,11 +410,16 @@ function syncProductOrderFromShopTree(shopChildren, products) {
 
 async function fetchProductDataJson() {
   const url = productDataJsonUrl();
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Failed to load product data: ${url} (${response.status})`);
-  }
-  const data = await response.json();
+  const data =
+    typeof window.githubAuth?.loadJson === "function"
+      ? await window.githubAuth.loadJson(url)
+      : await (async () => {
+          const response = await fetch(url, { cache: "no-store" });
+          if (!response.ok) {
+            throw new Error(`Failed to load product data: ${url} (${response.status})`);
+          }
+          return response.json();
+        })();
   let products = applyProductHideOverlay(Array.isArray(data?.products) ? data.products : []);
   products = applyProductDraftOverlay(products);
   products = applyProductCategoryOverlay(products);

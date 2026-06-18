@@ -287,16 +287,37 @@
     return localStorage.getItem(STORAGE.branch) || DEFAULT_BRANCH;
   }
 
+  function clearAllEditorDrafts() {
+    if (typeof window.shopDataEditor?.clearShopDataOverlay === "function") {
+      window.shopDataEditor.clearShopDataOverlay();
+    }
+    if (typeof window.displayFileTree?.clearEditorDrafts === "function") {
+      window.displayFileTree.clearEditorDrafts();
+    }
+    if (typeof window.productData?.clearProductLayoutOverlays === "function") {
+      window.productData.clearProductLayoutOverlays();
+    }
+  }
+
   function setBranch(branch) {
     const b = String(branch || "").trim() || DEFAULT_BRANCH;
+    const prev = getBranch();
     localStorage.setItem(STORAGE.branch, b);
+    if (isSignedIn() && prev !== b) {
+      clearAllEditorDrafts();
+    }
   }
 
   function setSelectedRepo(fullName) {
-    if (fullName) {
-      localStorage.setItem(STORAGE.repo, fullName);
+    const prev = getSelectedRepo();
+    const next = fullName ? String(fullName).trim() : "";
+    if (next) {
+      localStorage.setItem(STORAGE.repo, next);
     } else {
       localStorage.removeItem(STORAGE.repo);
+    }
+    if (isSignedIn() && prev !== next) {
+      clearAllEditorDrafts();
     }
   }
 
@@ -738,6 +759,54 @@
     return { meta, json };
   }
 
+  function resolveStaticFetchUrl(url) {
+    const raw = String(url || "").trim();
+    if (!raw || /^https?:\/\//i.test(raw) || raw.startsWith("data:")) {
+      return raw;
+    }
+    return new URL(raw, window.location.href).href;
+  }
+
+  /** Map a generator static URL to a repo-root-relative path, or null. */
+  function staticUrlToRepoPath(url) {
+    let pathname;
+    try {
+      pathname = new URL(resolveStaticFetchUrl(url)).pathname;
+    } catch {
+      return null;
+    }
+    for (const marker of ["/shared-assets/", "/.generated/"]) {
+      const idx = pathname.indexOf(marker);
+      if (idx >= 0) {
+        return pathname.slice(idx + 1);
+      }
+    }
+    return null;
+  }
+
+  async function fetchStaticJson(url) {
+    const resolved = resolveStaticFetchUrl(url);
+    const response = await fetch(resolved, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Failed to load JSON: ${url} (${response.status})`);
+    }
+    return response.json();
+  }
+
+  /**
+   * Load JSON from the selected GitHub branch when signed in, otherwise from the deployed static file.
+   * @param {string} url - generator-relative URL (e.g. ../../shared-assets/config/shopData.json)
+   */
+  async function loadJson(url) {
+    const repoPath = staticUrlToRepoPath(url);
+    if (repoPath && isSignedIn() && getSelectedRepo()) {
+      const { owner, repo, branch } = requireSelectedRepo();
+      const { json } = await readRepoJson(owner, repo, repoPath, branch);
+      return json;
+    }
+    return fetchStaticJson(url);
+  }
+
   async function deleteFileContent(owner, repo, filePath, message, branch, sha) {
     if (!sha) {
       return null;
@@ -885,6 +954,9 @@
 
     if (hasProductLayoutChanges && typeof window.productData?.clearProductLayoutOverlays === "function") {
       window.productData.clearProductLayoutOverlays();
+    }
+    if (typeof window.displayFileTree?.clearFileTreeOverlay === "function") {
+      window.displayFileTree.clearFileTreeOverlay();
     }
 
     return result;
@@ -1711,20 +1783,18 @@
 
   async function loadContentPageData(pagePath) {
     const normalized = normalizePagePath(pagePath);
-    if (typeof window.generateContentBody?.loadContentPageJson === "function") {
-      try {
-        return await window.generateContentBody.loadContentPageJson(normalized);
-      } catch {
-        /* fall through to GitHub */
+    if (isSignedIn() && getSelectedRepo()) {
+      const { owner, repo, branch } = requireSelectedRepo();
+      const repoPath = pagePathToContentRepoPath(normalized);
+      const meta = await getFileMeta(owner, repo, repoPath, branch);
+      if (meta?.content) {
+        return JSON.parse(base64ToUtf8(meta.content));
       }
     }
-    const { owner, repo, branch } = requireSelectedRepo();
-    const repoPath = pagePathToContentRepoPath(normalized);
-    const meta = await getFileMeta(owner, repo, repoPath, branch);
-    if (!meta?.content) {
-      throw new Error(`Content page not found: ${normalized}`);
+    if (typeof window.generateContentBody?.loadContentPageJson === "function") {
+      return window.generateContentBody.loadContentPageJson(normalized);
     }
-    return JSON.parse(base64ToUtf8(meta.content));
+    throw new Error(`Content page not found: ${normalized}`);
   }
 
   function isTreeNodeDraft(node) {
@@ -2451,6 +2521,7 @@
   }
 
   function signOut() {
+    clearAllEditorDrafts();
     clearSession();
   }
 
@@ -2611,7 +2682,7 @@ ${loginLine}
   <button type="button" class="github-auth-btn" data-github-change-pat>Change token</button>
   <button type="button" class="github-auth-btn" data-github-sign-out>Sign out</button>
 </div>
-<p class="github-auth-muted">Token and repo choice are remembered on this device until you sign out. Use <strong>Push to GitHub</strong> in the content editor.</p>
+<p class="github-auth-muted">Token and repo choice are remembered on this device until you sign out. When signed in, JSON config loads from your selected GitHub branch (not deployed Pages files). Unsaved edits stay in memory until you push.</p>
 <div class="github-auth-error" data-github-hub-error hidden></div>`;
 
       const select = root.querySelector("[data-github-repo-select]");
@@ -3012,6 +3083,9 @@ ${publishBtn}
     pushProductRow,
     pushProductOrder,
     pushProductDataPatches,
+    loadJson,
+    staticUrlToRepoPath,
+    clearAllEditorDrafts,
     pagePathToContentRepoPath,
     redirectUri,
     resolveHubIndexUrl,
