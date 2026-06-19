@@ -121,18 +121,30 @@ function createDefaultPageData(pagePath, hints = {}) {
   };
 }
 
-async function buildBlockRenderContext() {
+async function buildBlockRenderContext(products) {
   const fetchText = window.generateAnyPage.fetchText;
   const parseYoutubeVideoId = window.generateProductBody?.parseYoutubeVideoId;
   const buildImageCarouselHtml = window.generateProductBody?.buildImageCarouselHtml;
+  const buildProductThumbsHtml = window.generateProductBody?.buildProductThumbsHtml;
   if (typeof parseYoutubeVideoId !== "function" || typeof buildImageCarouselHtml !== "function") {
     throw new Error("generateProductBody carousel helpers must be loaded before content pages.");
   }
-  const carouselPartial = await fetchText("./templates/partials/imageCarousel.html");
+  if (typeof buildProductThumbsHtml !== "function") {
+    throw new Error("generateProductBody.buildProductThumbsHtml must be loaded before content pages.");
+  }
+  const [carouselPartial, productThumbTemplate, productThumbRowTemplate] = await Promise.all([
+    fetchText("./templates/partials/imageCarousel.html"),
+    fetchText("./templates/partials/productThumb.html"),
+    fetchText("./templates/partials/productThumbRow.html"),
+  ]);
   return {
     carouselPartial,
+    productThumbTemplate,
+    productThumbRowTemplate,
     parseYoutubeVideoId,
     buildImageCarouselHtml,
+    buildProductThumbsHtml,
+    products: Array.isArray(products) ? products : [],
   };
 }
 
@@ -149,7 +161,7 @@ async function generateContentPageBodyFromData(ctx) {
 
   const [contentPageTemplate, blockCtx] = await Promise.all([
     window.generateAnyPage.fetchText("./templates/partials/contentPage.html"),
-    buildBlockRenderContext(),
+    buildBlockRenderContext(products),
   ]);
 
   const blocksHtml = await window.contentBlocks.renderBlocks(blocks, blockCtx);

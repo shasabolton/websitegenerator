@@ -812,6 +812,10 @@ body.nav-scroll-lock {
   margin-top: 14px;
 }
 
+.content-page .product-thumb-row {
+  margin-top: 1rem;
+}
+
 .product-thumb-empty {
   grid-column: 1 / -1;
   margin: 0;

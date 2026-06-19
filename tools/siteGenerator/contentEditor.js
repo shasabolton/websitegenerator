@@ -77,6 +77,10 @@ const BLOCK_SCHEMAS = {
       { key: "text", label: "Text", type: "textarea" },
     ],
   },
+  product_thumbs: {
+    label: "Product thumbs",
+    fields: [{ key: "slugs", label: "Products", type: "product_slugs" }],
+  },
 };
 
 const BLOCK_TYPE_OPTIONS = Object.entries(BLOCK_SCHEMAS).map(([value, schema]) => ({
@@ -133,6 +137,8 @@ function defaultBlockForType(type) {
       return { type: "divider" };
     case "callout":
       return { type: "callout", variant: "note", text: "" };
+    case "product_thumbs":
+      return { type: "product_thumbs", slugs: [] };
     default:
       return { type: "text", format: "plain", content: "" };
   }
@@ -336,6 +342,9 @@ function bindPageSettingsControls() {
 
 async function buildEditBodyPayload(pageData, ctx) {
   const { shopData, products, blockCtx, pagePath } = ctx;
+  if (blockCtx && Array.isArray(products)) {
+    blockCtx.products = products;
+  }
   const page = ensurePageDataShape(pageData);
   const blocks = Array.isArray(page.blocks) ? page.blocks : [];
   const meta = page.meta;
@@ -749,6 +758,10 @@ function collectFormBlockData(form, type) {
   for (const field of schema.fields) {
     if (field.type === "carousel_items") {
       block.items = sanitizeCarouselItemsForSave(getCarouselItemsFromEditor(form));
+      continue;
+    }
+    if (field.type === "product_slugs") {
+      block.slugs = normalizeProductSlugList(getProductSlugsFromEditor(form));
       continue;
     }
     const input = form.querySelector(`[name="${field.key}"]`);
@@ -1254,9 +1267,238 @@ function appendProductMediaFieldInput(container, field, block, form) {
   bindProductMediaPicker({ wrap, field, form, modeSelect, urlInput, picker, products, mediaKind });
 }
 
+function normalizeProductSlugList(slugs) {
+  const seen = new Set();
+  const out = [];
+  for (const raw of Array.isArray(slugs) ? slugs : []) {
+    const s = String(raw || "")
+      .trim()
+      .toLowerCase()
+      .replace(/^\/+/, "")
+      .replace(/^shop\//, "");
+    if (!s || seen.has(s)) {
+      continue;
+    }
+    seen.add(s);
+    out.push(s);
+  }
+  return out;
+}
+
+function getProductSlugsFromEditor(form) {
+  const editor = form?.querySelector("[data-product-slugs-editor]");
+  if (!editor) {
+    return [];
+  }
+  return Array.isArray(editor._productSlugs) ? editor._productSlugs.map((slug) => String(slug)) : [];
+}
+
+function syncProductSlugsEditor(editor, slugs) {
+  const list = normalizeProductSlugList(slugs);
+  editor._productSlugs = list;
+  const hidden = editor.querySelector('[name="slugs"]');
+  if (hidden) {
+    hidden.value = JSON.stringify(list);
+  }
+}
+
+function renderProductSlugsEditor(editor, products) {
+  const listEl = editor.querySelector("[data-product-slug-list]");
+  if (!listEl) {
+    return;
+  }
+  const slugs = editor._productSlugs || [];
+  listEl.textContent = "";
+  if (!slugs.length) {
+    const empty = document.createElement("p");
+    empty.className = "content-edit-product-empty";
+    empty.textContent = "No products selected. Search below to add.";
+    listEl.appendChild(empty);
+    return;
+  }
+
+  const find = window.productData?.findProductBySlug;
+  const resolveTitle = window.productData?.resolveProductDisplayTitle;
+  const ul = document.createElement("ul");
+  ul.className = "content-edit-product-slug-items";
+  for (let i = 0; i < slugs.length; i += 1) {
+    const slug = slugs[i];
+    const row = typeof find === "function" ? find(products, slug) : null;
+    const title =
+      row && typeof resolveTitle === "function"
+        ? resolveTitle(row, slug)
+        : slug;
+    const missing = !row;
+
+    const li = document.createElement("li");
+    li.className = "content-edit-product-slug-item";
+    if (missing) {
+      li.classList.add("content-edit-product-slug-item--missing");
+    }
+
+    const meta = document.createElement("div");
+    meta.className = "content-edit-product-slug-meta";
+
+    const titleEl = document.createElement("span");
+    titleEl.className = "content-edit-product-slug-title";
+    titleEl.textContent = title;
+
+    const slugEl = document.createElement("span");
+    slugEl.className = "content-edit-product-slug-code";
+    slugEl.textContent = slug;
+
+    const actions = document.createElement("span");
+    actions.className = "content-edit-product-slug-actions";
+
+    const upBtn = document.createElement("button");
+    upBtn.type = "button";
+    upBtn.className = "content-edit-product-slug-action";
+    upBtn.textContent = "↑";
+    upBtn.setAttribute("aria-label", "Move up");
+    upBtn.disabled = i === 0;
+    upBtn.addEventListener("click", () => {
+      const current = [...(editor._productSlugs || [])];
+      [current[i - 1], current[i]] = [current[i], current[i - 1]];
+      syncProductSlugsEditor(editor, current);
+      renderProductSlugsEditor(editor, products);
+    });
+
+    const downBtn = document.createElement("button");
+    downBtn.type = "button";
+    downBtn.className = "content-edit-product-slug-action";
+    downBtn.textContent = "↓";
+    downBtn.setAttribute("aria-label", "Move down");
+    downBtn.disabled = i >= slugs.length - 1;
+    downBtn.addEventListener("click", () => {
+      const current = [...(editor._productSlugs || [])];
+      [current[i], current[i + 1]] = [current[i + 1], current[i]];
+      syncProductSlugsEditor(editor, current);
+      renderProductSlugsEditor(editor, products);
+    });
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "content-edit-product-slug-action content-edit-product-slug-action--danger";
+    removeBtn.textContent = "×";
+    removeBtn.setAttribute("aria-label", "Remove");
+    removeBtn.addEventListener("click", () => {
+      const current = (editor._productSlugs || []).filter((_, idx) => idx !== i);
+      syncProductSlugsEditor(editor, current);
+      renderProductSlugsEditor(editor, products);
+    });
+
+    actions.appendChild(upBtn);
+    actions.appendChild(downBtn);
+    actions.appendChild(removeBtn);
+    meta.appendChild(titleEl);
+    meta.appendChild(slugEl);
+    li.appendChild(meta);
+    li.appendChild(actions);
+    ul.appendChild(li);
+  }
+  listEl.appendChild(ul);
+}
+
+function bindProductSlugsEditor(editor, products) {
+  const searchInput = editor.querySelector("[data-product-slug-search]");
+  const resultsEl = editor.querySelector("[data-product-slug-results]");
+  if (!searchInput || !resultsEl) {
+    return;
+  }
+
+  function renderResults(rows) {
+    resultsEl.textContent = "";
+    if (!rows.length) {
+      const empty = document.createElement("p");
+      empty.className = "content-edit-product-empty";
+      empty.textContent = searchInput.value.trim()
+        ? "No products match that title."
+        : "Type in the search box to find shop listings.";
+      resultsEl.appendChild(empty);
+      return;
+    }
+    const getSlug = window.productData?.getProductSlugForRow;
+    const resolveTitle = window.productData?.resolveProductDisplayTitle;
+    const list = document.createElement("ul");
+    list.className = "content-edit-product-list";
+    for (const row of rows) {
+      const slug =
+        typeof getSlug === "function" ? getSlug(row, products) : "";
+      if (!slug) {
+        continue;
+      }
+      const selected = (editor._productSlugs || []).includes(slug);
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "content-edit-product-list-btn";
+      const title =
+        typeof resolveTitle === "function"
+          ? resolveTitle(row, "Untitled")
+          : String(row.TITLE || "Untitled").trim() || "Untitled";
+      btn.textContent = selected ? `${title} (added)` : title;
+      btn.disabled = selected;
+      btn.addEventListener("click", () => {
+        const current = [...(editor._productSlugs || [])];
+        if (!current.includes(slug)) {
+          current.push(slug);
+          syncProductSlugsEditor(editor, current);
+          renderProductSlugsEditor(editor, products);
+        }
+        searchInput.value = "";
+        resultsEl.textContent = "";
+      });
+      li.appendChild(btn);
+      list.appendChild(li);
+    }
+    resultsEl.appendChild(list);
+  }
+
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim();
+    if (!q) {
+      resultsEl.textContent = "";
+      return;
+    }
+    renderResults(searchProductsByTitle(q, products));
+  });
+}
+
+function appendProductSlugsFieldInput(container, field, block, form) {
+  const state = getState();
+  const products = Array.isArray(state?.products) ? state.products : [];
+  const slugs = normalizeProductSlugList(block.slugs);
+
+  const wrap = document.createElement("div");
+  wrap.className = "content-edit-field content-edit-field--wide";
+
+  const label = document.createElement("label");
+  label.textContent = field.label;
+  wrap.appendChild(label);
+
+  const editor = document.createElement("div");
+  editor.className = "content-edit-product-slugs-editor";
+  editor.setAttribute("data-product-slugs-editor", "");
+  editor.innerHTML = `<input type="hidden" name="slugs" value="[]" />
+<div data-product-slug-list class="content-edit-product-slug-list"></div>
+<input type="search" class="content-edit-product-search" data-product-slug-search placeholder="Search by product title to add…" autocomplete="off" />
+<div data-product-slug-results class="content-edit-product-results"></div>
+<p class="content-edit-field-hint">Selected products appear in order. Use the arrows to reorder.</p>`;
+  wrap.appendChild(editor);
+  container.appendChild(wrap);
+
+  syncProductSlugsEditor(editor, slugs);
+  renderProductSlugsEditor(editor, products);
+  bindProductSlugsEditor(editor, products);
+}
+
 function appendFieldInput(container, field, block, form) {
   if (field.type === "carousel_items") {
     appendCarouselItemsFieldInput(container, field, block, form);
+    return;
+  }
+  if (field.type === "product_slugs") {
+    appendProductSlugsFieldInput(container, field, block, form);
     return;
   }
   if (field.type === "product_media") {
@@ -1695,8 +1937,10 @@ async function initEditorUi() {
     throw new Error("Editor state missing.");
   }
   if (!state.blockCtx) {
-    state.blockCtx = await window.generateContentBody.buildBlockRenderContext();
+    state.blockCtx = await window.generateContentBody.buildBlockRenderContext(state.products || []);
     state.blockCtx.lenient = true;
+  } else if (Array.isArray(state.products)) {
+    state.blockCtx.products = state.products;
   }
   bindEditorEvents();
 }
@@ -1762,6 +2006,7 @@ async function bootEditPage(treePath) {
   const digitalFilter = previewParams?.digital ?? null;
   const productsForShop = window.productData.filterProductsByDigital(products, digitalFilter);
   window.__contentEditorState.products = productsForShop;
+  blockCtx.products = productsForShop;
 
   const bodyPayload = await buildEditBodyPayload(window.__contentEditorState.pageData, {
     shopData,

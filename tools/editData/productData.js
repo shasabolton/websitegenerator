@@ -428,6 +428,51 @@ async function fetchProductDataJson() {
   return { version: data?.version, columns, products };
 }
 
+/**
+ * @param {object} row
+ * @param {object[]} products
+ * @returns {{ title: string, image: string, href: string, priceAud: number | null, priceRow: { PRICE: unknown, CURRENCY_CODE: unknown } }}
+ */
+function rowToThumbProduct(row, products) {
+  const list = Array.isArray(products) ? products : [];
+  const title = resolveProductDisplayTitle(row);
+  const image = String(row.IMAGE1 || "").trim();
+  const slug = getProductSlugForRow(row, list);
+  const priceNum = parseFloat(String(row.PRICE ?? "").trim());
+  return {
+    title,
+    image,
+    href: `shop/${slug}`,
+    priceAud: Number.isFinite(priceNum) && priceNum >= 0 ? priceNum : null,
+    priceRow: { PRICE: row.PRICE, CURRENCY_CODE: row.CURRENCY_CODE },
+  };
+}
+
+/**
+ * Visible catalog rows for curated product-thumb blocks, in slug order.
+ * @param {object[]} products
+ * @param {string[]} slugs
+ */
+function resolveThumbProductsBySlugs(products, slugs) {
+  const list = filterVisibleProducts(products);
+  const slugList = Array.isArray(slugs) ? slugs : [];
+  const out = [];
+  const seen = new Set();
+  for (const raw of slugList) {
+    const key = normalizeRedirectPath(String(raw || "").trim());
+    if (!key || seen.has(key)) {
+      continue;
+    }
+    const row = findProductBySlug(list, key);
+    if (!row) {
+      continue;
+    }
+    seen.add(key);
+    out.push(rowToThumbProduct(row, list));
+  }
+  return out;
+}
+
 function getProductsByCategory(products) {
   const list = filterVisibleProducts(products);
   const categories = new Map();
@@ -442,17 +487,7 @@ function getProductsByCategory(products) {
         products: [],
       });
     }
-    const title = resolveProductDisplayTitle(row);
-    const image = String(row.IMAGE1 || "").trim();
-    const slug = getProductSlugForRow(row, list);
-    const priceNum = parseFloat(String(row.PRICE ?? "").trim());
-    categories.get(key).products.push({
-      title,
-      image,
-      href: `shop/${slug}`,
-      priceAud: Number.isFinite(priceNum) && priceNum >= 0 ? priceNum : null,
-      priceRow: { PRICE: row.PRICE, CURRENCY_CODE: row.CURRENCY_CODE },
-    });
+    categories.get(key).products.push(rowToThumbProduct(row, list));
   }
 
   return sortCategoriesWithOtherLast(Array.from(categories.values()), "name");
@@ -978,5 +1013,7 @@ function clearProductLayoutOverlays() {
     resolveProductCategory,
     resolveProductDisplayTitle,
     rowMatchesCategory,
+    rowToThumbProduct,
+    resolveThumbProductsBySlugs,
   };
 })();
