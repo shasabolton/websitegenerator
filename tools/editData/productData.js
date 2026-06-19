@@ -1,7 +1,6 @@
 (function initProductData() {
-  if (window.productData && typeof window.productData.fetchProductDataJson === "function") {
-    return;
-  }
+  const hadExisting =
+    window.productData && typeof window.productData.fetchProductDataJson === "function";
 
 function productDataJsonUrl() {
   if (/\/tools\/siteGenerator\//i.test(window.location.pathname)) {
@@ -970,7 +969,7 @@ function clearProductLayoutOverlays() {
   clearProductDraftOverlay();
 }
 
-  window.productData = {
+  const api = {
     fetchProductDataJson,
     getProductsByCategory,
     filterProductsByDigital,
@@ -1016,4 +1015,9 @@ function clearProductLayoutOverlays() {
     rowToThumbProduct,
     resolveThumbProductsBySlugs,
   };
+  if (hadExisting) {
+    Object.assign(window.productData, api);
+    return;
+  }
+  window.productData = api;
 })();

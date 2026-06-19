@@ -89,6 +89,84 @@ function buildProductThumbsHtml(productThumbTemplate, products) {
     .join("");
 }
 
+function normalizeProductSlugKey(raw) {
+  const pd = window.productData;
+  const segment = String(raw || "")
+    .trim()
+    .replace(/^\/+/, "")
+    .replace(/^shop\//, "");
+  if (pd && typeof pd.normalizeRedirectPath === "function") {
+    return pd.normalizeRedirectPath(segment);
+  }
+  return segment.toLowerCase().replace(/\/+$/, "");
+}
+
+function thumbProductFromRow(row, products) {
+  const pd = window.productData;
+  const resolveTitle = pd?.resolveProductDisplayTitle;
+  const getSlug = pd?.getProductSlugForRow;
+  const title =
+    typeof resolveTitle === "function" ? resolveTitle(row) : String(row.TITLE || "").trim() || "Product";
+  const image = String(row.IMAGE1 || "").trim();
+  const slug =
+    typeof getSlug === "function" ? getSlug(row, products) : slugify(title) || "product";
+  const priceNum = parseFloat(String(row.PRICE ?? "").trim());
+  return {
+    title,
+    image,
+    href: `shop/${slug}`,
+    priceAud: Number.isFinite(priceNum) && priceNum >= 0 ? priceNum : null,
+    priceRow: { PRICE: row.PRICE, CURRENCY_CODE: row.CURRENCY_CODE },
+  };
+}
+
+/**
+ * @param {object[]} products
+ * @param {string[]} slugs
+ */
+function resolveThumbProductsBySlugs(products, slugs) {
+  const pd = window.productData;
+  if (pd && typeof pd.resolveThumbProductsBySlugs === "function") {
+    return pd.resolveThumbProductsBySlugs(products, slugs);
+  }
+  const filter = pd?.filterVisibleProducts;
+  const find = pd?.findProductBySlug;
+  const list = typeof filter === "function" ? filter(products) : Array.isArray(products) ? products : [];
+  const slugList = Array.isArray(slugs) ? slugs : [];
+  const out = [];
+  const seen = new Set();
+  for (const raw of slugList) {
+    const key = normalizeProductSlugKey(raw);
+    if (!key || seen.has(key)) {
+      continue;
+    }
+    const row = typeof find === "function" ? find(list, key) : null;
+    if (!row) {
+      continue;
+    }
+    seen.add(key);
+    out.push(thumbProductFromRow(row, list));
+  }
+  return out;
+}
+
+/**
+ * @param {object[]} products
+ * @param {string[]} slugs
+ * @param {string} productThumbTemplate
+ * @param {string} productThumbRowTemplate
+ */
+function buildProductThumbRowHtml(products, slugs, productThumbTemplate, productThumbRowTemplate) {
+  const thumbProducts = resolveThumbProductsBySlugs(products, slugs);
+  if (!thumbProducts.length || !productThumbTemplate || !productThumbRowTemplate) {
+    return "";
+  }
+  const thumbsHtml = buildProductThumbsHtml(productThumbTemplate, thumbProducts);
+  return applyTemplate(productThumbRowTemplate, {
+    PRODUCT_THUMBS: thumbsHtml,
+  });
+}
+
 function slugify(value) {
   return String(value)
     .trim()
@@ -430,6 +508,8 @@ window.generateProductBody = {
   generateProductBody,
   formatProductPriceDisplay,
   buildProductThumbsHtml,
+  buildProductThumbRowHtml,
+  resolveThumbProductsBySlugs,
   parseYoutubeVideoId,
   buildImageCarouselHtml,
   buildCarouselSlidesHtml,

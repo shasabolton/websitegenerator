@@ -125,12 +125,12 @@ async function buildBlockRenderContext(products) {
   const fetchText = window.generateAnyPage.fetchText;
   const parseYoutubeVideoId = window.generateProductBody?.parseYoutubeVideoId;
   const buildImageCarouselHtml = window.generateProductBody?.buildImageCarouselHtml;
-  const buildProductThumbsHtml = window.generateProductBody?.buildProductThumbsHtml;
+  const buildProductThumbRowHtml = window.generateProductBody?.buildProductThumbRowHtml;
   if (typeof parseYoutubeVideoId !== "function" || typeof buildImageCarouselHtml !== "function") {
     throw new Error("generateProductBody carousel helpers must be loaded before content pages.");
   }
-  if (typeof buildProductThumbsHtml !== "function") {
-    throw new Error("generateProductBody.buildProductThumbsHtml must be loaded before content pages.");
+  if (typeof buildProductThumbRowHtml !== "function") {
+    throw new Error("generateProductBody.buildProductThumbRowHtml must be loaded before content pages.");
   }
   const [carouselPartial, productThumbTemplate, productThumbRowTemplate] = await Promise.all([
     fetchText("./templates/partials/imageCarousel.html"),
@@ -139,11 +139,10 @@ async function buildBlockRenderContext(products) {
   ]);
   return {
     carouselPartial,
-    productThumbTemplate,
-    productThumbRowTemplate,
     parseYoutubeVideoId,
     buildImageCarouselHtml,
-    buildProductThumbsHtml,
+    buildProductThumbRowHtml: (catalogProducts, slugs) =>
+      buildProductThumbRowHtml(catalogProducts, slugs, productThumbTemplate, productThumbRowTemplate),
     products: Array.isArray(products) ? products : [],
   };
 }

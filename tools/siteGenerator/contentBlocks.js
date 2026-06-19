@@ -255,31 +255,22 @@ async function renderBlock(block, ctx) {
       }
       return "";
     }
-    const resolve = window.productData?.resolveThumbProductsBySlugs;
-    const buildThumbs = ctx.buildProductThumbsHtml;
-    const thumbTpl = ctx.productThumbTemplate;
-    const rowTpl = ctx.productThumbRowTemplate;
+    const buildRow = ctx.buildProductThumbRowHtml;
     const products = Array.isArray(ctx.products) ? ctx.products : [];
-    if (
-      typeof resolve !== "function" ||
-      typeof buildThumbs !== "function" ||
-      !thumbTpl ||
-      !rowTpl
-    ) {
+    if (typeof buildRow !== "function") {
       if (lenient) {
         return editPlaceholder("Product thumbs block (catalog helpers unavailable).");
       }
       throw new Error("Product thumbs block requires catalog and thumb templates.");
     }
-    const thumbProducts = resolve(products, slugs);
-    if (!thumbProducts.length) {
+    const rowHtml = buildRow(products, slugs);
+    if (!rowHtml) {
       if (lenient) {
         return editPlaceholder("Product thumbs block (no matching visible products).");
       }
       return "";
     }
-    const thumbsHtml = buildThumbs(thumbTpl, thumbProducts);
-    return applyTemplate(rowTpl, { PRODUCT_THUMBS: thumbsHtml });
+    return rowHtml;
   }
 
   if (lenient) {
