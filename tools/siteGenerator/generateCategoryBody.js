@@ -54,34 +54,46 @@ async function generateCategoryBody(ctx) {
       ? window.homePage.resolvePublicHref(homePageHref || "shop", homePageHref)
       : "shop"
   );
+  const resolveCopy = window.shopDataEditor?.resolveCategoryPageCopy;
+  const categoryCopy =
+    typeof resolveCopy === "function"
+      ? resolveCopy(shopData, target.slug, target.name)
+      : { displayName: target.name, description: "" };
+  const displayName = categoryCopy.displayName || target.name;
+  const categoryDescription = String(categoryCopy.description || "").trim();
+  const introText = categoryDescription || "All products in this category.";
+
   const breadcrumbsHtml = `
     <nav class="breadcrumbs" aria-label="Breadcrumb">
       <a href="${shopLandingHref}">Shop</a>
       <span class="breadcrumbs-sep" aria-hidden="true">&rsaquo;</span>
-      <span>${escapeHtml(target.name)}</span>
+      <span>${escapeHtml(displayName)}</span>
     </nav>
   `;
 
   const bodyHtml = applyTemplate(categoryPageTemplate, {
     BREADCRUMBS: breadcrumbsHtml,
-    CATEGORY_TITLE: escapeHtml(target.name),
-    CATEGORY_INTRO: escapeHtml("All products in this category."),
+    CATEGORY_TITLE: escapeHtml(displayName),
+    CATEGORY_INTRO: escapeHtml(introText),
     PRODUCT_THUMB_ROW: rowHtml,
   });
 
   const shopNameEsc = escapeHtml(shopData?.shopName || "Shop");
   const truncateText = window.structuredData?.truncateText;
-  const metaDescription =
-    typeof truncateText === "function"
-      ? truncateText(`Shop ${target.name} products at ${shopData?.shopName || "our store"}.`, 160)
-      : `Shop ${target.name} products.`;
+  const metaDescription = categoryDescription
+    ? typeof truncateText === "function"
+      ? truncateText(categoryDescription, 160)
+      : categoryDescription
+    : typeof truncateText === "function"
+      ? truncateText(`Shop ${displayName} products at ${shopData?.shopName || "our store"}.`, 160)
+      : `Shop ${displayName} products.`;
   return {
     bodyHtml,
     categoryNames: categories.map((category) => category.name),
-    pageTitle: `${shopNameEsc} - ${escapeHtml(target.name)}`,
+    pageTitle: `${shopNameEsc} - ${escapeHtml(displayName)}`,
     seoContext: {
       metaDescription,
-      categoryName: target.name,
+      categoryName: displayName,
       categoryProductRows: products.filter((row) => window.productData.rowMatchesCategory(row, target.name)),
       catalogProducts: products,
     },

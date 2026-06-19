@@ -185,6 +185,16 @@
   color: #047857;
 }
 
-.shop-data-status--error {
-  color: #b91c1c;
+.shop-data-category-block {
+  margin-top: 12px;
+  padding: 10px 12px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.shop-data-category-block legend {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
 }

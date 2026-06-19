@@ -45,6 +45,7 @@
       paypal: { clientId: "", environment: "sandbox", buyerCountry: "" },
       branding: { faviconPath: "" },
       blog: { title: "Blog", description: "" },
+      categories: {},
       contact: {
         email: "",
         phone: "",
@@ -54,6 +55,47 @@
         instagram: { handle: "", url: "", verified: false, notes: "" },
         facebook: { handle: "", url: "", verified: false, notes: "" },
       },
+    };
+  }
+
+  function normalizeCategories(raw) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+      return {};
+    }
+    const out = {};
+    for (const [slug, entry] of Object.entries(raw)) {
+      const key = String(slug || "").trim();
+      if (!key) {
+        continue;
+      }
+      const obj = entry && typeof entry === "object" ? entry : {};
+      const name = String(obj.name ?? "").trim();
+      const description = String(obj.description ?? "").trim();
+      if (!name && !description) {
+        continue;
+      }
+      out[key] = { name, description };
+    }
+    return out;
+  }
+
+  /**
+   * Display name and SEO intro for a shop category page.
+   * @param {object | null | undefined} shopData
+   * @param {string} categorySlug
+   * @param {string} fallbackName - from product CATEGORY field
+   * @returns {{ displayName: string, description: string }}
+   */
+  function resolveCategoryPageCopy(shopData, categorySlug, fallbackName) {
+    const slug = String(categorySlug || "").trim();
+    const fallback = String(fallbackName || "").trim();
+    const entry =
+      shopData?.categories && typeof shopData.categories === "object" ? shopData.categories[slug] : null;
+    const configuredName = String(entry?.name ?? "").trim();
+    const description = String(entry?.description ?? "").trim();
+    return {
+      displayName: configuredName || fallback,
+      description,
     };
   }
 
@@ -80,6 +122,7 @@
       ...(input.branding && typeof input.branding === "object" ? input.branding : {}),
     };
     next.blog = { ...next.blog, ...(input.blog && typeof input.blog === "object" ? input.blog : {}) };
+    next.categories = normalizeCategories(input.categories);
     next.contact = {
       ...next.contact,
       ...(input.contact && typeof input.contact === "object" ? input.contact : {}),
@@ -162,6 +205,27 @@
       .join("\n");
   }
 
+  function categoriesFromForm(form) {
+    const out = {};
+    if (!form) {
+      return out;
+    }
+    for (const block of form.querySelectorAll("[data-shop-category-slug]")) {
+      const slug = String(block.getAttribute("data-shop-category-slug") || "").trim();
+      if (!slug) {
+        continue;
+      }
+      const nameEl = block.querySelector("[data-shop-category-name]");
+      const descEl = block.querySelector("[data-shop-category-description]");
+      const name = String(nameEl?.value ?? "").trim();
+      const description = String(descEl?.value ?? "").trim();
+      if (name || description) {
+        out[slug] = { name, description };
+      }
+    }
+    return out;
+  }
+
   function shopDataFromForm(form) {
     const get = (name) => {
       const el = form.elements.namedItem(name);
@@ -221,7 +285,27 @@
           notes: get("facebookNotes"),
         },
       },
+      categories: categoriesFromForm(form),
     });
+  }
+
+  function fillCategoryFields(form, categoriesConfig) {
+    if (!form) {
+      return;
+    }
+    const config = categoriesConfig && typeof categoriesConfig === "object" ? categoriesConfig : {};
+    for (const block of form.querySelectorAll("[data-shop-category-slug]")) {
+      const slug = String(block.getAttribute("data-shop-category-slug") || "").trim();
+      const entry = config[slug] || {};
+      const nameEl = block.querySelector("[data-shop-category-name]");
+      const descEl = block.querySelector("[data-shop-category-description]");
+      if (nameEl) {
+        nameEl.value = String(entry.name ?? "").trim();
+      }
+      if (descEl) {
+        descEl.value = String(entry.description ?? "").trim();
+      }
+    }
   }
 
   function fillForm(form, data) {
@@ -266,6 +350,73 @@
     set("facebookUrl", shop.social?.facebook?.url);
     set("facebookVerified", shop.social?.facebook?.verified);
     set("facebookNotes", shop.social?.facebook?.notes);
+    fillCategoryFields(form, shop.categories);
+  }
+
+  function buildCategoryPagesSection(catalogCategories) {
+    const catSection = section("Category pages");
+    const hint = document.createElement("p");
+    hint.className = "shop-data-hint";
+    hint.textContent =
+      "Display name and intro paragraph for each shop category (from product data). Shown on category pages and used for SEO meta descriptions.";
+    catSection.appendChild(hint);
+
+    const list = Array.isArray(catalogCategories) ? catalogCategories : [];
+    if (list.length === 0) {
+      const empty = document.createElement("p");
+      empty.className = "shop-data-hint";
+      empty.textContent = "No categories found in product data.";
+      catSection.appendChild(empty);
+      return catSection;
+    }
+
+    for (const category of list) {
+      const slug = String(category.slug || "").trim();
+      if (!slug) {
+        continue;
+      }
+      const block = document.createElement("fieldset");
+      block.className = "shop-data-category-block";
+      block.setAttribute("data-shop-category-slug", slug);
+
+      const legend = document.createElement("legend");
+      const productName = String(category.name || "").trim();
+      legend.textContent = productName ? `${productName} · ${slug}` : slug;
+      block.appendChild(legend);
+
+      const nameWrap = document.createElement("div");
+      nameWrap.className = "shop-data-field";
+      const nameLabel = document.createElement("label");
+      nameLabel.className = "shop-data-label";
+      nameLabel.textContent = "Display name";
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.setAttribute("data-shop-category-name", "");
+      nameInput.placeholder = productName || slug;
+      nameLabel.setAttribute("for", `shop-category-name-${slug}`);
+      nameInput.id = `shop-category-name-${slug}`;
+      nameWrap.appendChild(nameLabel);
+      nameWrap.appendChild(nameInput);
+      block.appendChild(nameWrap);
+
+      const descWrap = document.createElement("div");
+      descWrap.className = "shop-data-field";
+      const descLabel = document.createElement("label");
+      descLabel.className = "shop-data-label";
+      descLabel.textContent = "Intro paragraph (SEO)";
+      const descInput = document.createElement("textarea");
+      descInput.rows = 3;
+      descInput.setAttribute("data-shop-category-description", "");
+      descLabel.setAttribute("for", `shop-category-desc-${slug}`);
+      descInput.id = `shop-category-desc-${slug}`;
+      descWrap.appendChild(descLabel);
+      descWrap.appendChild(descInput);
+      block.appendChild(descWrap);
+
+      catSection.appendChild(block);
+    }
+
+    return catSection;
   }
 
   function field(labelText, name, options = {}) {
@@ -363,8 +514,22 @@
     root.appendChild(details);
 
     let baseData;
+    let catalogCategories = [];
     try {
-      baseData = await fetchShopDataJson();
+      const productDataPromise =
+        typeof window.productData?.fetchProductDataJson === "function"
+          ? window.productData.fetchProductDataJson()
+          : Promise.resolve({ products: [] });
+      const [shopData, productData] = await Promise.all([fetchShopDataJson(), productDataPromise]);
+      baseData = shopData;
+      const products = Array.isArray(productData?.products) ? productData.products : [];
+      const visible =
+        typeof window.productData?.filterVisibleProducts === "function"
+          ? window.productData.filterVisibleProducts(products)
+          : products;
+      if (typeof window.productData?.getProductsByCategory === "function") {
+        catalogCategories = window.productData.getProductsByCategory(visible);
+      }
     } catch (err) {
       body.innerHTML = `<p class="shop-data-error">${escapeHtml(err?.message || String(err))}</p>`;
       return;
@@ -402,6 +567,8 @@
       }),
     );
     form.appendChild(shopSection);
+
+    form.appendChild(buildCategoryPagesSection(catalogCategories));
 
     const webSection = section("Websites");
     webSection.appendChild(field("Primary site URL", "websitesPrimary", { inputType: "url" }));
@@ -539,6 +706,8 @@
   window.shopDataEditor = {
     fetchShopDataJson,
     normalizeShopData,
+    normalizeCategories,
+    resolveCategoryPageCopy,
     getDeployVersion,
     bumpDeployVersion,
     aboutToPlainText,
