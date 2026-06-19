@@ -18,6 +18,25 @@ const EMPTY_CATEGORY_THUMB_ROW =
   "<p class=\"product-thumb-empty\">No products in this category yet.</p>";
 
 /**
+ * @param {object | null | undefined} shopData
+ * @param {string} categorySlug
+ * @param {string} fallbackName
+ * @returns {{ displayName: string, description: string }}
+ */
+function resolveCategoryPageCopy(shopData, categorySlug, fallbackName) {
+  const slug = String(categorySlug || "").trim();
+  const fallback = String(fallbackName || "").trim();
+  const entry =
+    shopData?.categories && typeof shopData.categories === "object" ? shopData.categories[slug] : null;
+  const configuredName = String(entry?.name ?? "").trim();
+  const description = String(entry?.description ?? "").trim();
+  return {
+    displayName: configuredName || fallback,
+    description,
+  };
+}
+
+/**
  * Single category page main column + full category list for nav.
  * @param {{ shopData: object, navigationConfig: object, products: object[], categoryName: string }} ctx
  * @returns {Promise<{ bodyHtml: string, categoryNames: string[], pageTitle: string }>}
@@ -54,11 +73,7 @@ async function generateCategoryBody(ctx) {
       ? window.homePage.resolvePublicHref(homePageHref || "shop", homePageHref)
       : "shop"
   );
-  const resolveCopy = window.shopDataEditor?.resolveCategoryPageCopy;
-  const categoryCopy =
-    typeof resolveCopy === "function"
-      ? resolveCopy(shopData, target.slug, target.name)
-      : { displayName: target.name, description: "" };
+  const categoryCopy = resolveCategoryPageCopy(shopData, target.slug, target.name);
   const displayName = categoryCopy.displayName || target.name;
   const categoryDescription = String(categoryCopy.description || "").trim();
   const introText = categoryDescription || "All products in this category.";
