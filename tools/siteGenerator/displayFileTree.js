@@ -1,3 +1,5 @@
+const FILE_TREE_CONFIG_URL = "../../shared-assets/config/fileTree.json";
+
 async function fetchJson(url) {
   if (typeof window.githubAuth?.loadJson === "function") {
     return window.githubAuth.loadJson(url);
@@ -121,6 +123,14 @@ function syncCategoryFilterOptions(categorySelect, categoryData, preserveValue) 
 
 let cachedHomePageHref = null;
 let baseFileTreeConfig = null;
+
+/** Re-load fileTree.json (GitHub when signed in) and update the picker base snapshot. */
+async function refreshBaseFileTreeConfig() {
+  const fileTreeConfig = await fetchJson(FILE_TREE_CONFIG_URL);
+  baseFileTreeConfig = fileTreeConfig;
+  rememberHomePageHref(fileTreeConfig);
+  return fileTreeConfig;
+}
 
 /** In-memory draft state (session-only; not persisted across refresh or devices). */
 let fileTreeOverlay = null;
@@ -792,6 +802,7 @@ function appendTreeToolbar(container, callbacks) {
         throw new Error("File tree is not loaded.");
       }
       await window.githubAuth.pushFileTree(getExportableFileTree(tree));
+      await refreshBaseFileTreeConfig();
       saveBtn.textContent = "Saved";
       if (typeof callbacks.onTreeChanged === "function") {
         callbacks.onTreeChanged();
@@ -1296,7 +1307,7 @@ function rememberHomePageHref(fileTreeConfig) {
 
 async function buildPopulatedFileTree(digitalFilter, categoryFilter = null) {
   const [fileTreeConfig, { products }] = await Promise.all([
-    fetchJson("../../shared-assets/config/fileTree.json"),
+    fetchJson(FILE_TREE_CONFIG_URL),
     window.productData.fetchProductDataJson(),
   ]);
   rememberHomePageHref(fileTreeConfig);
@@ -1341,7 +1352,7 @@ async function initPreviewPicker(options = {}) {
   }
 
   const [fileTreeConfig, { products }] = await Promise.all([
-    fetchJson("../../shared-assets/config/fileTree.json"),
+    fetchJson(FILE_TREE_CONFIG_URL),
     window.productData.fetchProductDataJson(),
   ]);
   baseFileTreeConfig = fileTreeConfig;
@@ -1384,6 +1395,7 @@ async function initPreviewPicker(options = {}) {
 
 window.displayFileTree = {
   initPreviewPicker,
+  refreshBaseFileTreeConfig,
   buildPopulatedFileTree,
   renderPreviewPicker,
   getPendingNewPage,
