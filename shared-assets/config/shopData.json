@@ -1,5 +1,5 @@
 {
-  "deployVersion": 42,
+  "deployVersion": 43,
   "shopName": "Contraption Cart",
   "owner": "Shasa Bolton",
   "about": "A shop of mechanical curiosities designed by Tasmanian maker Shasa Bolton, featuring automata, puzzle boxes, magic tricks, robots, and other buildable contraptions.",
@@ -13,7 +13,7 @@
   "categories": {
     "automata": {
       "name": "Automata",
-      "description": "Crank-driven wooden automata and laser-cut plans from Contraption Cart — hummingbirds, whirligigs, and other kinetic figures designed to be built and enjoyed."
+      "description": "Wooden automata kits — hand-cranked mechanical animals and birds, machines that write, draw, and animate. Inspired by classical clockwork automata. Learn about mechanisms, gears, cams, and levers as you assemble precision laser-cut parts and bring elegant motion to life."
     },
     "magic-tricks": {
       "name": "Magic Tricks",
