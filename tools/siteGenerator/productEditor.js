@@ -389,6 +389,7 @@ async function mountProductEditPage(pagePath, row, headerFooter, shopData) {
   const { headerHtml, footerHtml, siteCssPath, siteJsPath } = headerFooter;
   ensureStylesheet(siteCssPath);
   ensureStylesheet(`${EDITOR_ROOT}/contentEditor.css`, { cacheBust: true });
+  ensureStylesheet(`${EDITOR_ROOT}/imagesBrowser.css`, { cacheBust: true });
 
   const resolveTitle = window.productData?.resolveProductDisplayTitle;
   const title =

@@ -433,6 +433,30 @@ body.images-browser-preview-open {
   cursor: not-allowed;
 }
 
+.images-browser-select {
+  font-size: 11px;
+  padding: 2px 8px;
+  border: 1px solid #93c5fd;
+  border-radius: 4px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.images-browser-select:hover {
+  background: #dbeafe;
+}
+
+.images-browser-picker .images-browser-row--selectable .images-browser-thumb,
+.images-browser-picker .images-browser-row--selectable .images-browser-name {
+  cursor: pointer;
+}
+
+.images-browser-picker .images-browser-path {
+  display: none;
+}
+
 .images-browser-children {
   /* nested rows inherit depth via --tree-depth on each row */
 }

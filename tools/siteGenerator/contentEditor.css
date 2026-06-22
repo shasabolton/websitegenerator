@@ -345,7 +345,8 @@
   box-sizing: border-box;
 }
 
-.content-edit-field--product-mode .content-edit-media-url-input {
+.content-edit-field--product-mode .content-edit-media-url-input,
+.content-edit-field--repo-mode .content-edit-media-url-input {
   display: none;
 }
 
@@ -457,6 +458,55 @@
 
 .content-edit-product-back:hover {
   text-decoration: underline;
+}
+
+.content-edit-repo-picker {
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+.content-edit-repo-picker-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.content-edit-repo-picker-repo {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  word-break: break-all;
+}
+
+.content-edit-repo-picker-reload {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  color: #374151;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.content-edit-repo-picker-reload:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.content-edit-repo-picker-tree {
+  max-height: 16rem;
+}
+
+.content-edit-repo-picker-status {
+  margin: 8px 0 0;
+  font-size: 12px;
 }
 
 .content-edit-product-slugs-editor {

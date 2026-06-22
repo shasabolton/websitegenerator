@@ -513,6 +513,7 @@ async function mountEditPageInPlace(pagePath, bodyPayload, headerFooter) {
   const { headerHtml, footerHtml, siteCssPath, siteJsPath } = headerFooter;
   ensureStylesheet(siteCssPath);
   ensureStylesheet(`${EDITOR_ROOT}/contentEditor.css`, { cacheBust: true });
+  ensureStylesheet(`${EDITOR_ROOT}/imagesBrowser.css`, { cacheBust: true });
 
   document.title = bodyPayload.pageTitle;
   document.body.className = "content-edit-mode";
@@ -865,19 +866,59 @@ function buildProductMediaThumbnails(row, mediaKind) {
   return urls.map((url) => ({ url, thumbUrl: url, isVideo: false }));
 }
 
-function bindProductMediaPicker({ wrap, field, form, modeSelect, urlInput, picker, products, mediaKind }) {
+function bindProductMediaPicker({ wrap, field, form, modeSelect, urlInput, picker, repoPicker, products, mediaKind }) {
   const searchInput = picker.querySelector("[data-product-search]");
   const resultsEl = picker.querySelector("[data-product-results]");
   const thumbsEl = picker.querySelector("[data-product-thumbs]");
+  let repoPickerApi = null;
+
+  function destroyRepoPicker() {
+    if (repoPickerApi) {
+      repoPickerApi.destroy();
+      repoPickerApi = null;
+    }
+  }
+
+  function ensureRepoPicker() {
+    if (repoPickerApi || !repoPicker) {
+      return repoPickerApi;
+    }
+    if (!window.imagesBrowser?.mountImagesRepoPicker) {
+      repoPicker.innerHTML =
+        '<p class="content-edit-product-empty">Image repo browser is not available. Reload the page and try again.</p>';
+      return null;
+    }
+    repoPickerApi = window.imagesBrowser.mountImagesRepoPicker(repoPicker, {
+      onSelect: (url) => {
+        applyMediaUrlToForm(form, field, url, mediaKind);
+        modeSelect.value = "url";
+        setMode("url");
+      },
+    });
+    return repoPickerApi;
+  }
+
   function setMode(mode) {
     const useProduct = mode === "product";
+    const useRepo = mode === "repo";
+    const useUrl = mode === "url";
     picker.hidden = !useProduct;
-    urlInput.hidden = useProduct;
+    if (repoPicker) {
+      repoPicker.hidden = !useRepo;
+    }
+    urlInput.hidden = !useUrl;
     wrap.classList.toggle("content-edit-field--product-mode", useProduct);
-    wrap.classList.toggle("content-edit-field--url-mode", !useProduct);
+    wrap.classList.toggle("content-edit-field--repo-mode", useRepo);
+    wrap.classList.toggle("content-edit-field--url-mode", useUrl);
     if (!useProduct) {
       thumbsEl.hidden = true;
       resultsEl.hidden = false;
+    }
+    if (useRepo) {
+      const api = ensureRepoPicker();
+      api?.reload?.();
+    } else {
+      destroyRepoPicker();
     }
   }
 
@@ -991,6 +1032,7 @@ function bindProductMediaPicker({ wrap, field, form, modeSelect, urlInput, picke
   });
 
   setMode("url");
+  wrap._destroyRepoPicker = destroyRepoPicker;
 }
 
 function appendSchemaFields(container, fields, block, form) {
@@ -1239,7 +1281,9 @@ function appendProductMediaFieldInput(container, field, block, form) {
   modeSelect.setAttribute("data-media-mode-select", "");
   modeSelect.setAttribute("aria-label", `${field.label} — how to choose`);
   modeSelect.innerHTML =
-    '<option value="url">Enter URL</option><option value="product">Search product catalog</option>';
+    mediaKind === "image"
+      ? '<option value="url">Enter URL</option><option value="product">Search product catalog</option><option value="repo">Browse images repo</option>'
+      : '<option value="url">Enter URL</option><option value="product">Search product catalog</option>';
 
   header.appendChild(label);
   header.appendChild(modeSelect);
@@ -1263,8 +1307,16 @@ function appendProductMediaFieldInput(container, field, block, form) {
 <div data-product-thumbs class="content-edit-product-thumbs" hidden></div>`;
   wrap.appendChild(picker);
 
+  let repoPicker = null;
+  if (mediaKind === "image") {
+    repoPicker = document.createElement("div");
+    repoPicker.className = "content-edit-repo-picker";
+    repoPicker.hidden = true;
+    wrap.appendChild(repoPicker);
+  }
+
   container.appendChild(wrap);
-  bindProductMediaPicker({ wrap, field, form, modeSelect, urlInput, picker, products, mediaKind });
+  bindProductMediaPicker({ wrap, field, form, modeSelect, urlInput, picker, repoPicker, products, mediaKind });
 }
 
 function normalizeProductSlugList(slugs) {

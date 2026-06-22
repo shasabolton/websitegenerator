@@ -132,6 +132,7 @@ async function runEditBootFromUrl() {
   await loadGithubAuthScripts();
   await loadScript("./productCarouselMap.js", { cacheBust: true });
   await loadScript("./imageRepoSave.js", { cacheBust: true });
+  await loadScript("./imagesBrowser.js", { cacheBust: true });
   await loadScript("./contentEditor.js", { cacheBust: true });
   const target = window.previewTarget.parsePreviewTarget(window.location.search);
   if (!target?.path) {

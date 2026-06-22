@@ -844,7 +844,7 @@
     return btn;
   }
 
-  function createFileRow(entry, depth, ctx) {
+  function createFileRow(entry, depth, ctx, picker) {
     const row = document.createElement("div");
     row.className = "images-browser-row";
     row.style.setProperty("--tree-depth", String(depth));
@@ -883,7 +883,10 @@
     if (isImage) {
       name.tabIndex = 0;
       name.setAttribute("role", "button");
-      name.setAttribute("aria-label", `Preview ${entry.name}`);
+      name.setAttribute(
+        "aria-label",
+        picker?.onSelect ? `Use ${entry.name}` : `Preview ${entry.name}`,
+      );
     }
     nameWrap.appendChild(name);
 
@@ -907,39 +910,56 @@
 
     const actions = document.createElement("div");
     actions.className = "images-browser-actions";
-    const copyBtn = document.createElement("button");
-    copyBtn.type = "button";
-    copyBtn.className = "images-browser-copy";
-    copyBtn.textContent = "Copy URL";
-    copyBtn.addEventListener("click", async (event) => {
-      event.stopPropagation();
-      const url = publicUrl || entry.path;
-      const ok = await copyText(url);
-      if (ok) {
-        copyBtn.textContent = "Copied";
-        window.setTimeout(() => {
-          copyBtn.textContent = "Copy URL";
-        }, 1500);
-      }
-    });
-    actions.appendChild(copyBtn);
-    actions.appendChild(createDeleteButton(entry));
-    row.appendChild(actions);
-
-    if (isImage) {
-      bindImagePreviewOpeners({
-        thumb: row.querySelector(".images-browser-thumb"),
-        name,
-        entry,
-        publicUrl,
-        ctx,
+    if (picker?.onSelect && isImage && publicUrl) {
+      row.classList.add("images-browser-row--selectable");
+      const selectBtn = document.createElement("button");
+      selectBtn.type = "button";
+      selectBtn.className = "images-browser-select";
+      selectBtn.textContent = "Use";
+      selectBtn.setAttribute("aria-label", `Use ${entry.name}`);
+      const selectImage = (event) => {
+        event.stopPropagation();
+        picker.onSelect(publicUrl);
+      };
+      selectBtn.addEventListener("click", selectImage);
+      actions.appendChild(selectBtn);
+      const thumbEl = row.querySelector(".images-browser-thumb");
+      thumbEl?.addEventListener("click", selectImage);
+      name.addEventListener("click", selectImage);
+    } else {
+      const copyBtn = document.createElement("button");
+      copyBtn.type = "button";
+      copyBtn.className = "images-browser-copy";
+      copyBtn.textContent = "Copy URL";
+      copyBtn.addEventListener("click", async (event) => {
+        event.stopPropagation();
+        const url = publicUrl || entry.path;
+        const ok = await copyText(url);
+        if (ok) {
+          copyBtn.textContent = "Copied";
+          window.setTimeout(() => {
+            copyBtn.textContent = "Copy URL";
+          }, 1500);
+        }
       });
+      actions.appendChild(copyBtn);
+      actions.appendChild(createDeleteButton(entry));
+      if (isImage) {
+        bindImagePreviewOpeners({
+          thumb: row.querySelector(".images-browser-thumb"),
+          name,
+          entry,
+          publicUrl,
+          ctx,
+        });
+      }
     }
+    row.appendChild(actions);
 
     return row;
   }
 
-  function createFolderNode(entry, depth, ctx, state) {
+  function createFolderNode(entry, depth, ctx, state, picker) {
     const block = document.createElement("div");
     block.className = "images-browser-node";
     block.dataset.dirPath = entry.path;
@@ -983,7 +1003,9 @@
 
     const actions = document.createElement("div");
     actions.className = "images-browser-actions";
-    actions.appendChild(createDeleteButton(entry));
+    if (!picker?.onSelect) {
+      actions.appendChild(createDeleteButton(entry));
+    }
     row.appendChild(actions);
 
     const childrenWrap = document.createElement("div");
@@ -1002,7 +1024,7 @@
       try {
         const entries = await listDirectoryCached(entry.path, ctx, state);
         childrenWrap.innerHTML = "";
-        renderEntries(childrenWrap, sortEntries(entries), depth + 1, ctx, state);
+        renderEntries(childrenWrap, sortEntries(entries), depth + 1, ctx, state, picker);
         loaded = true;
       } catch (err) {
         childrenWrap.innerHTML = `<div class="images-browser-error" style="padding:8px 12px">${escapeHtml(err?.message || String(err))}</div>`;
@@ -1034,17 +1056,17 @@
     return block;
   }
 
-  function renderEntries(container, entries, depth, ctx, state) {
+  function renderEntries(container, entries, depth, ctx, state, picker) {
     for (const entry of entries) {
       if (entry.type === "dir") {
-        container.appendChild(createFolderNode(entry, depth, ctx, state));
+        container.appendChild(createFolderNode(entry, depth, ctx, state, picker));
       } else {
-        container.appendChild(createFileRow(entry, depth, ctx));
+        container.appendChild(createFileRow(entry, depth, ctx, picker));
       }
     }
   }
 
-  async function loadRootTree(treeRoot, panelRoot) {
+  async function loadRootTree(treeRoot, panelRoot, picker) {
     const ctx = getRepoContext();
     if (!ctx) {
       treeRoot.innerHTML = `<div class="images-browser-tree--empty">Select an images repository above.</div>`;
@@ -1061,7 +1083,7 @@
         treeRoot.innerHTML = `<div class="images-browser-tree--empty">This repository is empty.</div>`;
       } else {
         const state = { scrollRoot: treeRoot };
-        renderEntries(treeRoot, sortEntries(entries), 0, ctx, state);
+        renderEntries(treeRoot, sortEntries(entries), 0, ctx, state, picker);
       }
       setStatus(panelRoot, `${ctx.owner}/${ctx.repo}@${ctx.branch}`, null);
     } catch (err) {
@@ -1206,7 +1228,98 @@
     }
   }
 
+  /**
+   * @param {HTMLElement} container
+   * @param {{ onSelect?: (url: string) => void }} [options]
+   * @returns {{ reload: () => Promise<void>, destroy: () => void }}
+   */
+  function mountImagesRepoPicker(container, options = {}) {
+    const onSelect = typeof options.onSelect === "function" ? options.onSelect : null;
+    const picker = onSelect ? { onSelect } : null;
+
+    container.classList.add("images-browser-picker");
+    container.replaceChildren();
+
+    const setPickerStatus = (message, kind) => {
+      const el = container.querySelector("[data-images-browser-status]");
+      if (!el) {
+        return;
+      }
+      el.textContent = message || "";
+      el.classList.remove("images-browser-status--error", "images-browser-status--ok");
+      if (kind === "error") {
+        el.classList.add("images-browser-status--error");
+      } else if (kind === "ok") {
+        el.classList.add("images-browser-status--ok");
+      }
+    };
+
+    if (!window.githubAuth?.isSignedIn?.()) {
+      container.innerHTML =
+        '<p class="content-edit-product-empty">Sign in to GitHub to browse the images repository.</p>';
+      return {
+        reload: async () => {},
+        destroy: () => {
+          container.replaceChildren();
+        },
+      };
+    }
+
+    const ctx = getRepoContext();
+    if (!ctx) {
+      container.innerHTML =
+        '<p class="content-edit-product-empty">Select an images repository in the site generator <strong>Images</strong> section first (the same GitHub settings apply here).</p>';
+      return {
+        reload: async () => {},
+        destroy: () => {
+          container.replaceChildren();
+        },
+      };
+    }
+
+    container.innerHTML = `<div class="content-edit-repo-picker-toolbar">
+  <span class="content-edit-repo-picker-repo">${escapeHtml(`${ctx.owner}/${ctx.repo}@${ctx.branch}`)}</span>
+  <button type="button" class="content-edit-repo-picker-reload" data-images-picker-reload>Reload</button>
+</div>
+<div class="images-browser-tree content-edit-repo-picker-tree" data-images-picker-tree></div>
+<p class="images-browser-status content-edit-repo-picker-status" data-images-browser-status aria-live="polite"></p>`;
+
+    const tree = container.querySelector("[data-images-picker-tree]");
+    const reloadBtn = container.querySelector("[data-images-picker-reload]");
+
+    const reload = async () => {
+      if (!tree) {
+        return;
+      }
+      reloadBtn.disabled = true;
+      try {
+        await loadRootTree(tree, container, picker);
+      } finally {
+        reloadBtn.disabled = false;
+      }
+    };
+
+    reloadBtn?.addEventListener("click", () => {
+      reload().catch((err) => {
+        setPickerStatus(err?.message || String(err), "error");
+      });
+    });
+
+    reload().catch((err) => {
+      setPickerStatus(err?.message || String(err), "error");
+    });
+
+    return {
+      reload,
+      destroy: () => {
+        container.replaceChildren();
+        container.classList.remove("images-browser-picker");
+      },
+    };
+  }
+
   window.imagesBrowser = {
     initImagesBrowser,
+    mountImagesRepoPicker,
   };
 })();
