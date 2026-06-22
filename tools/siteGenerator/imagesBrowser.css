@@ -868,6 +868,40 @@ body.images-browser-editor-open {
   line-height: 1.45;
 }
 
+.images-browser-editor-adjustments {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.images-browser-editor-adjustment {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.images-browser-editor-adjustment label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.images-browser-editor-adjustment input[type="range"] {
+  width: 100%;
+  margin: 0;
+  accent-color: #2563eb;
+}
+
+.images-browser-editor-adjustment output {
+  min-width: 2.5rem;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: #6b7280;
+  text-align: right;
+}
+
 .images-browser-editor-future {
   margin: 6px 0 0;
   font-size: 12px;

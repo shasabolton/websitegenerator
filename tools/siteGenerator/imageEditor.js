@@ -190,7 +190,7 @@
     ctx.restore();
   }
 
-  function renderPreviewCanvas(previewCanvas, source, crop) {
+  function renderPreviewCanvas(previewCanvas, source, crop, adjustments = {}) {
     const ctx = previewCanvas.getContext("2d");
     if (!ctx) {
       return;
@@ -200,6 +200,71 @@
     previewCanvas.height = size;
     ctx.clearRect(0, 0, size, size);
     ctx.drawImage(source, crop.x, crop.y, size, size, 0, 0, size, size);
+    applyWhitesToCanvas(previewCanvas, adjustments.whites ?? 0);
+  }
+
+  function applyWhitesToCanvas(canvas, whites) {
+    const amount = Number(whites);
+    if (!Number.isFinite(amount) || amount === 0) {
+      return;
+    }
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      return;
+    }
+    const width = canvas.width;
+    const height = canvas.height;
+    if (!width || !height) {
+      return;
+    }
+    const imageData = ctx.getImageData(0, 0, width, height);
+    applyWhitesToImageData(imageData, amount);
+    ctx.putImageData(imageData, 0, 0);
+  }
+
+  function applyWhitesToImageData(imageData, whites) {
+    const amount = clamp(Number(whites) / 100, -1, 1);
+    if (amount === 0) {
+      return imageData;
+    }
+    const data = imageData.data;
+    const strength = 0.8;
+    for (let i = 0; i < data.length; i += 4) {
+      let r = data[i] / 255;
+      let g = data[i + 1] / 255;
+      let b = data[i + 2] / 255;
+      const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      const mask = (Math.max(0, (luminance - 0.18) / 0.82)) ** 2;
+      if (amount > 0) {
+        const boost = amount * mask * strength;
+        r += (1 - r) * boost;
+        g += (1 - g) * boost;
+        b += (1 - b) * boost;
+      } else {
+        const cut = -amount * mask * strength;
+        r *= 1 - cut;
+        g *= 1 - cut;
+        b *= 1 - cut;
+      }
+      data[i] = Math.round(clamp(r, 0, 1) * 255);
+      data[i + 1] = Math.round(clamp(g, 0, 1) * 255);
+      data[i + 2] = Math.round(clamp(b, 0, 1) * 255);
+    }
+    return imageData;
+  }
+
+  function buildExportCanvas(source, crop, adjustments = {}) {
+    const size = Math.max(1, Math.round(crop.size));
+    const exportCanvas = document.createElement("canvas");
+    exportCanvas.width = size;
+    exportCanvas.height = size;
+    const exportCtx = exportCanvas.getContext("2d");
+    if (!exportCtx) {
+      throw new Error("Canvas is not available.");
+    }
+    exportCtx.drawImage(source, crop.x, crop.y, size, size, 0, 0, size, size);
+    applyWhitesToCanvas(exportCanvas, adjustments.whites ?? 0);
+    return exportCanvas;
   }
 
   function resizeCropFromHandle(handle, anchor, pointer, naturalWidth, naturalHeight) {
@@ -263,7 +328,14 @@
   </div>
   <div class="images-browser-editor-tools">
     <p class="images-browser-editor-hint">Drag the square to reposition the crop. Drag a corner handle to resize.</p>
-    <p class="images-browser-editor-future" aria-hidden="true">Brightness, contrast, whites, and tint controls coming soon.</p>
+    <div class="images-browser-editor-adjustments">
+      <div class="images-browser-editor-adjustment">
+        <label for="image-editor-whites">Whites</label>
+        <input type="range" id="image-editor-whites" data-image-editor-whites min="-100" max="100" value="0" step="1" />
+        <output data-image-editor-whites-value for="image-editor-whites">0</output>
+      </div>
+    </div>
+    <p class="images-browser-editor-future" aria-hidden="true">Brightness, contrast, and tint controls coming soon.</p>
   </div>
   <div class="images-browser-editor-actions">
     <button type="button" class="images-browser-editor-save" data-image-editor-save>Save to images repo</button>
@@ -310,6 +382,8 @@
     const cancelBtn = overlay.querySelector("[data-image-editor-cancel]");
     const closeBtn = overlay.querySelector("[data-image-editor-close]");
     const sourceWrap = overlay.querySelector(".images-browser-editor-source");
+    const whitesInput = overlay.querySelector("[data-image-editor-whites]");
+    const whitesValue = overlay.querySelector("[data-image-editor-whites-value]");
 
     if (!sourceCanvas || !previewCanvas || !sourceWrap) {
       return;
@@ -321,8 +395,18 @@
 
     let crop = createCropState(naturalWidth, naturalHeight);
     let layout = computeDisplayLayout(naturalWidth, naturalHeight, 520, 520);
+    let adjustments = { whites: 0 };
     let dragState = null;
     let closed = false;
+
+    const syncWhitesUi = () => {
+      if (whitesInput) {
+        whitesInput.value = String(adjustments.whites);
+      }
+      if (whitesValue) {
+        whitesValue.textContent = String(adjustments.whites);
+      }
+    };
 
     const closeEditor = () => {
       if (closed) {
@@ -360,7 +444,13 @@
       ctx.drawImage(source, 0, 0, layout.displayWidth, layout.displayHeight);
       const displayCrop = naturalToDisplay(crop, layout);
       drawCropOverlay(ctx, layout, displayCrop);
-      renderPreviewCanvas(previewCanvas, source, crop);
+      renderPreviewCanvas(previewCanvas, source, crop, adjustments);
+    };
+
+    const onWhitesInput = () => {
+      adjustments = { whites: Number(whitesInput?.value || 0) };
+      syncWhitesUi();
+      redraw();
     };
 
     const pointerToCanvas = (event) => {
@@ -459,15 +549,7 @@
       saveBtn.disabled = true;
       setEditorStatus(overlay, "Encoding edited image…", null);
       try {
-        const exportCanvas = document.createElement("canvas");
-        const size = Math.max(1, Math.round(crop.size));
-        exportCanvas.width = size;
-        exportCanvas.height = size;
-        const exportCtx = exportCanvas.getContext("2d");
-        if (!exportCtx) {
-          throw new Error("Canvas is not available.");
-        }
-        exportCtx.drawImage(source, crop.x, crop.y, size, size, 0, 0, size, size);
+        const exportCanvas = buildExportCanvas(source, crop, adjustments);
         const bytes = await canvasToBytes(exportCanvas, outputMime);
         setEditorStatus(overlay, "Saving to GitHub…", null);
         const result = await window.imageRepoSave.saveImageBytesToRepo(bytes, outputFileName);
@@ -487,6 +569,7 @@
     };
 
     sourceCanvas.onpointerdown = onPointerDown;
+    whitesInput?.addEventListener("input", onWhitesInput);
     saveBtn.onclick = () => {
       onSave().catch((err) => {
         setEditorStatus(overlay, err?.message || String(err), "error");
@@ -506,6 +589,8 @@
 
     setEditorStatus(overlay, "", null);
     saveBtn.disabled = false;
+    adjustments = { whites: 0 };
+    syncWhitesUi();
     overlay.hidden = false;
     document.body.classList.add("images-browser-editor-open");
 
@@ -524,6 +609,7 @@
     overlay._editorCleanup = () => {
       resizeObserver?.disconnect();
       sourceCanvas.onpointerdown = null;
+      whitesInput?.removeEventListener("input", onWhitesInput);
     };
   }
 
