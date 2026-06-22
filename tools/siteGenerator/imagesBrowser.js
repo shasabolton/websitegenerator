@@ -1097,13 +1097,45 @@
 <p class="images-browser-muted">Sign in to GitHub above, then open this section again.</p>`;
   }
 
+  async function handleImageUpload(file, panelRoot) {
+    if (!file) {
+      return;
+    }
+    if (!window.imageRepoSave?.uploadLocalImageToRepo) {
+      throw new Error("Image upload is not available.");
+    }
+    const ctx = getRepoContext();
+    if (!ctx) {
+      throw new Error("Select an images repository first.");
+    }
+
+    setStatus(panelRoot, `Uploading ${file.name}…`, null);
+    const result = await window.imageRepoSave.uploadLocalImageToRepo(file);
+    if (!result) {
+      setStatus(panelRoot, "Upload cancelled.", null);
+      return;
+    }
+
+    await copyText(result.publicUrl);
+    setStatus(
+      panelRoot,
+      `Uploaded ${result.repoPath}. URL copied to clipboard.`,
+      "ok",
+    );
+    if (typeof reloadTreeCallback === "function") {
+      reloadTreeCallback();
+    }
+  }
+
   function mountSignedInBody(body, details) {
-    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. Click a thumbnail to preview at hero size, then <strong>Generate WebP sizes</strong> to move the original into a folder named after the image and add <code>il_75x75</code>, <code>il_570xN</code>, and <code>il_fullxfull</code> WebP variants (one commit). <strong>Copy URL</strong> copies a <code>github.com/…/blob/…?raw=true</code> link.</p>
+    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. <strong>Upload image</strong> adds a local file (choose the destination folder in the dialog). Click a thumbnail to preview at hero size, then <strong>Generate WebP sizes</strong> to move the original into a folder named after the image and add <code>il_75x75</code>, <code>il_570xN</code>, and <code>il_fullxfull</code> WebP variants (one commit). <strong>Copy URL</strong> copies a <code>github.com/…/blob/…?raw=true</code> link.</p>
 <div class="images-browser-toolbar">
   <label for="images-repo-select">Images repository</label>
   <select id="images-repo-select" data-images-repo-select aria-label="GitHub images repository"></select>
   <button type="button" data-images-refresh-repos>Refresh repos</button>
   <button type="button" data-images-reload-tree>Reload tree</button>
+  <button type="button" data-images-upload>Upload image…</button>
+  <input type="file" data-images-upload-input accept="image/*,.svg" hidden />
 </div>
 <div class="images-browser-tree" data-images-browser-tree><div class="images-browser-tree--empty">Select an images repository to browse files.</div></div>
 <p class="images-browser-status" data-images-browser-status></p>`;
@@ -1112,6 +1144,8 @@
     const select = toolbar.querySelector("[data-images-repo-select]");
     const reloadBtn = toolbar.querySelector("[data-images-reload-tree]");
     const refreshReposBtn = toolbar.querySelector("[data-images-refresh-repos]");
+    const uploadBtn = toolbar.querySelector("[data-images-upload]");
+    const uploadInput = toolbar.querySelector("[data-images-upload-input]");
     const tree = body.querySelector("[data-images-browser-tree]");
 
     let rootLoaded = false;
@@ -1147,6 +1181,31 @@
       loadReposIntoSelect(select, select.value).catch((err) => {
         setStatus(body, err?.message || String(err), "error");
       });
+    });
+
+    uploadBtn.addEventListener("click", () => {
+      if (!getRepoContext()) {
+        setStatus(body, "Select an images repository first.", "error");
+        return;
+      }
+      uploadInput.value = "";
+      uploadInput.click();
+    });
+
+    uploadInput.addEventListener("change", () => {
+      const file = uploadInput.files?.[0];
+      if (!file) {
+        return;
+      }
+      uploadBtn.disabled = true;
+      handleImageUpload(file, body)
+        .catch((err) => {
+          setStatus(body, err?.message || String(err), "error");
+        })
+        .finally(() => {
+          uploadBtn.disabled = false;
+          uploadInput.value = "";
+        });
     });
 
     loadReposIntoSelect(select).then(() => {

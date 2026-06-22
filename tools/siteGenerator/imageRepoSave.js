@@ -525,6 +525,80 @@
     }
   }
 
+  const LOCAL_IMAGE_EXT = /\.(avif|bmp|gif|ico|jpe?g|png|svg|webp)$/i;
+
+  function sanitizeUploadFileName(raw) {
+    const base =
+      String(raw || "")
+        .trim()
+        .replace(/\\/g, "/")
+        .split("/")
+        .pop() || "";
+    return base.replace(/[^\w.\-()+ ]+/g, "_");
+  }
+
+  function isLocalImageFile(file) {
+    if (!file) {
+      return false;
+    }
+    if (file.type && file.type.startsWith("image/")) {
+      return true;
+    }
+    return LOCAL_IMAGE_EXT.test(String(file.name || ""));
+  }
+
+  /**
+   * @param {File} file
+   * @returns {Promise<{ repoPath: string, publicUrl: string } | null>}
+   */
+  async function uploadLocalImageToRepo(file) {
+    if (!window.githubAuth?.isSignedIn?.()) {
+      throw new Error("Sign in to GitHub on the site generator page first.");
+    }
+    if (!window.githubAuth?.commitImagesRepoBinaryFiles) {
+      throw new Error("GitHub image commit is not available.");
+    }
+    const ctx = getImagesRepoContext();
+    if (!ctx) {
+      throw new Error("Select an images repository in the site generator Images section.");
+    }
+    if (!isLocalImageFile(file)) {
+      throw new Error("Choose an image file (JPEG, PNG, WebP, GIF, SVG, etc.).");
+    }
+
+    const fileName = sanitizeUploadFileName(file.name);
+    if (!fileName) {
+      throw new Error("Invalid file name.");
+    }
+
+    const buffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    if (!bytes.length) {
+      throw new Error("File is empty.");
+    }
+
+    const folderResult = await openFolderPickerModal({ fileName, ctx });
+    if (!folderResult) {
+      return null;
+    }
+
+    const repoPath = joinRepoPath(folderResult.folderPath, fileName);
+    if (await pathExistsInRepo(ctx, repoPath)) {
+      const ok = window.confirm(`"${repoPath}" already exists in the images repo. Overwrite?`);
+      if (!ok) {
+        return null;
+      }
+    }
+
+    await window.githubAuth.commitImagesRepoBinaryFiles({
+      message: `Upload ${repoPath}`,
+      files: [{ path: repoPath, bytes }],
+    });
+
+    const publicUrl = window.githubAuth.buildBlobRawContentUrl(ctx.owner, ctx.repo, repoPath, ctx.branch);
+    return { repoPath, publicUrl };
+  }
+
   /**
    * @param {string} imageUrl
    * @returns {Promise<{ repoPath: string, publicUrl: string } | null>}
@@ -593,5 +667,6 @@
     resolveFullxfullUrl,
     saveImageUrlToRepo,
     saveSlideImageToRepo,
+    uploadLocalImageToRepo,
   };
 })();
