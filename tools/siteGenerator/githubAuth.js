@@ -581,6 +581,19 @@
     return btoa(binary);
   }
 
+  function base64ToBytes(base64) {
+    const normalized = String(base64 || "").replace(/\s+/g, "");
+    if (!normalized) {
+      return new Uint8Array(0);
+    }
+    const binary = atob(normalized);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+  }
+
   function parseRepoFullName(fullName) {
     const s = String(fullName || "").trim();
     const slash = s.indexOf("/");
@@ -1088,6 +1101,44 @@
       }
       throw err;
     }
+  }
+
+  /**
+   * Download a repository file as bytes via the GitHub API (avoids CORS on raw URLs).
+   * @returns {Promise<Uint8Array | null>}
+   */
+  async function fetchRepoBinaryFile(owner, repo, filePath, branch) {
+    const meta = await getFileMeta(owner, repo, filePath, branch);
+    if (!meta) {
+      return null;
+    }
+    if (meta.content) {
+      return base64ToBytes(meta.content);
+    }
+    if (meta.sha) {
+      const blobMeta = await githubApi(`/repos/${owner}/${repo}/git/blobs/${meta.sha}`, { method: "GET" });
+      if (blobMeta?.content) {
+        return base64ToBytes(blobMeta.content);
+      }
+    }
+    const downloadUrl = meta.download_url || null;
+    if (downloadUrl) {
+      const token = getToken();
+      try {
+        const response = await fetch(downloadUrl, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (response.ok) {
+          const buffer = await response.arrayBuffer();
+          if (buffer.byteLength > 0) {
+            return new Uint8Array(buffer);
+          }
+        }
+      } catch {
+        /* fall through */
+      }
+    }
+    return null;
   }
 
   /**
@@ -3058,6 +3109,7 @@ ${publishBtn}
     buildMediaContentUrl,
     buildBlobRawContentUrl,
     getFileMeta,
+    fetchRepoBinaryFile,
     parseRepoFullName,
     signOut,
     startSignIn,

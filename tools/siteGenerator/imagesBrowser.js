@@ -38,6 +38,22 @@
   }
 
   async function fetchImageBlob(entry, ctx) {
+    if (window.githubAuth?.fetchRepoBinaryFile && window.githubAuth?.getToken?.()) {
+      try {
+        const bytes = await window.githubAuth.fetchRepoBinaryFile(
+          ctx.owner,
+          ctx.repo,
+          entry.path,
+          ctx.branch,
+        );
+        if (bytes?.length) {
+          return new Blob([bytes], { type: mimeTypeFromPath(entry.path) });
+        }
+      } catch {
+        /* try public / download URLs below */
+      }
+    }
+
     const publicUrl = buildImagePublicUrl(entry, ctx);
     if (publicUrl) {
       try {
@@ -55,33 +71,56 @@
 
     let downloadUrl = entry.downloadUrl;
     if (!downloadUrl && window.githubAuth?.getFileMeta) {
-      const meta = await window.githubAuth.getFileMeta(ctx.owner, ctx.repo, entry.path, ctx.branch);
-      downloadUrl = meta?.download_url || null;
+      try {
+        const meta = await window.githubAuth.getFileMeta(ctx.owner, ctx.repo, entry.path, ctx.branch);
+        downloadUrl = meta?.download_url || null;
+      } catch {
+        /* fall through */
+      }
     }
     const token = window.githubAuth?.getToken?.();
     const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
     if (downloadUrl) {
-      const response = await fetch(downloadUrl, { headers: authHeaders });
-      if (response.ok) {
-        const blob = await response.blob();
-        if (blob.size > 0) {
-          return blob;
+      try {
+        const response = await fetch(downloadUrl, { headers: authHeaders });
+        if (response.ok) {
+          const blob = await response.blob();
+          if (blob.size > 0) {
+            return blob;
+          }
         }
+      } catch {
+        /* fall through */
       }
     }
 
     if (window.githubAuth?.getFileMeta) {
-      const meta = await window.githubAuth.getFileMeta(ctx.owner, ctx.repo, entry.path, ctx.branch);
-      const encoded = meta?.content;
-      if (encoded) {
-        const normalized = String(encoded).replace(/\s+/g, "");
-        const binary = atob(normalized);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i += 1) {
-          bytes[i] = binary.charCodeAt(i);
+      try {
+        const meta = await window.githubAuth.getFileMeta(ctx.owner, ctx.repo, entry.path, ctx.branch);
+        const encoded = meta?.content;
+        if (encoded) {
+          const normalized = String(encoded).replace(/\s+/g, "");
+          const binary = atob(normalized);
+          const bytes = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i += 1) {
+            bytes[i] = binary.charCodeAt(i);
+          }
+          return new Blob([bytes], { type: mimeTypeFromPath(entry.path) });
         }
-        return new Blob([bytes], { type: mimeTypeFromPath(entry.path) });
+        if (meta?.sha && window.githubAuth.fetchRepoBinaryFile) {
+          const bytes = await window.githubAuth.fetchRepoBinaryFile(
+            ctx.owner,
+            ctx.repo,
+            entry.path,
+            ctx.branch,
+          );
+          if (bytes?.length) {
+            return new Blob([bytes], { type: mimeTypeFromPath(entry.path) });
+          }
+        }
+      } catch {
+        /* fall through */
       }
     }
 
@@ -343,6 +382,12 @@
       });
     } catch (err) {
       releaseCanvasSource(source);
+      const msg = err?.message || String(err);
+      if (msg === "Failed to fetch" || /networkerror/i.test(msg)) {
+        throw new Error(
+          "Could not download the image for editing. Check your GitHub sign-in and network connection, then try again.",
+        );
+      }
       throw err;
     }
   }
