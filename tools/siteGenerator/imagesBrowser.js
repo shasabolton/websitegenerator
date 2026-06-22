@@ -255,6 +255,10 @@
     if (genBtn) {
       genBtn.hidden = true;
     }
+    const editBtn = previewOverlay.querySelector("[data-images-edit-image]");
+    if (editBtn) {
+      editBtn.hidden = true;
+    }
     document.body.classList.remove("images-browser-preview-open");
   }
 
@@ -271,6 +275,7 @@
     previewOverlay.innerHTML = `<button type="button" class="images-browser-preview-backdrop" data-images-preview-close aria-label="Close preview"></button>
 <figure class="images-browser-preview-frame">
   <div class="images-browser-preview-toolbar">
+    <button type="button" class="images-browser-preview-edit" data-images-edit-image hidden>Edit</button>
     <button type="button" class="images-browser-preview-generate" data-images-generate-webp hidden>Generate WebP sizes</button>
     <button type="button" class="images-browser-preview-close" data-images-preview-close>Close</button>
   </div>
@@ -278,6 +283,13 @@
   <figcaption class="images-browser-preview-caption" data-images-preview-caption></figcaption>
   <p class="images-browser-preview-status" data-images-generate-status aria-live="polite"></p>
 </figure>`;
+
+    previewOverlay.querySelector("[data-images-edit-image]")?.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openImageEditorForPreviewState().catch((err) => {
+        setGenerateStatus(previewOverlay, err?.message || String(err), "error");
+      });
+    });
 
     previewOverlay.querySelector("[data-images-generate-webp]")?.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -304,6 +316,57 @@
     return previewOverlay;
   }
 
+  async function openImageEditorForEntry(entry, ctx) {
+    if (!window.imageEditor?.openImageEditor) {
+      throw new Error("Image editor is not available.");
+    }
+    if (!entry || !ctx || !isRasterImageFile(entry)) {
+      throw new Error("This file cannot be edited.");
+    }
+    let source = null;
+    try {
+      source = await loadImageForCanvas(entry, ctx);
+      const fileName = window.imageEditor.deriveEditedFileName(entry.path || entry.name);
+      closeImagePreview();
+      window.imageEditor.openImageEditor({
+        source,
+        sourcePath: entry.path,
+        fileName,
+        onSaved: () => {
+          if (typeof reloadTreeCallback === "function") {
+            reloadTreeCallback();
+          }
+        },
+        onClose: () => {
+          releaseCanvasSource(source);
+        },
+      });
+    } catch (err) {
+      releaseCanvasSource(source);
+      throw err;
+    }
+  }
+
+  async function openImageEditorForPreviewState() {
+    if (!previewState?.entry || !previewState?.ctx) {
+      throw new Error("No image selected.");
+    }
+    const overlay = previewOverlay || ensurePreviewOverlay();
+    const editBtn = overlay.querySelector("[data-images-edit-image]");
+    if (editBtn) {
+      editBtn.disabled = true;
+    }
+    setGenerateStatus(overlay, "Loading image for editor…", null);
+    try {
+      await openImageEditorForEntry(previewState.entry, previewState.ctx);
+      setGenerateStatus(overlay, "", null);
+    } finally {
+      if (editBtn) {
+        editBtn.disabled = false;
+      }
+    }
+  }
+
   function openImagePreview({ src, title, url, entry, ctx }) {
     const fallbackSrc = String(src || "").trim();
     if (!fallbackSrc && !entry) {
@@ -313,6 +376,7 @@
     const img = overlay.querySelector("[data-images-preview-image]");
     const caption = overlay.querySelector("[data-images-preview-caption]");
     const genBtn = overlay.querySelector("[data-images-generate-webp]");
+    const editBtn = overlay.querySelector("[data-images-edit-image]");
     if (!img || !caption) {
       return;
     }
@@ -328,6 +392,11 @@
       genBtn.title = canGenerate
         ? "Move original into a folder named after the image, then add il_75x75, il_570xN, and il_fullxfull WebP variants (one commit)"
         : "WebP generation is not available for this file";
+    }
+    if (editBtn) {
+      const canEdit = Boolean(previewState && isRasterImageFile(entry) && window.imageEditor?.openImageEditor);
+      editBtn.hidden = !canEdit;
+      editBtn.title = canEdit ? "Crop and save a new version to the images repo" : "Editing is not available for this file";
     }
     overlay.hidden = false;
     document.body.classList.add("images-browser-preview-open");
@@ -943,6 +1012,25 @@
         }
       });
       actions.appendChild(copyBtn);
+      if (isRasterImageFile(entry) && window.imageEditor?.openImageEditor) {
+        const editBtn = document.createElement("button");
+        editBtn.type = "button";
+        editBtn.className = "images-browser-edit";
+        editBtn.textContent = "Edit";
+        editBtn.setAttribute("aria-label", `Edit ${entry.name}`);
+        editBtn.addEventListener("click", (event) => {
+          event.stopPropagation();
+          editBtn.disabled = true;
+          openImageEditorForEntry(entry, ctx)
+            .catch((err) => {
+              window.alert(err?.message || String(err));
+            })
+            .finally(() => {
+              editBtn.disabled = false;
+            });
+        });
+        actions.appendChild(editBtn);
+      }
       actions.appendChild(createDeleteButton(entry));
       if (isImage) {
         bindImagePreviewOpeners({
@@ -1128,7 +1216,7 @@
   }
 
   function mountSignedInBody(body, details) {
-    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. <strong>Upload image</strong> adds a local file (choose the destination folder in the dialog). Click a thumbnail to preview at hero size, then <strong>Generate WebP sizes</strong> to move the original into a folder named after the image and add <code>il_75x75</code>, <code>il_570xN</code>, and <code>il_fullxfull</code> WebP variants (one commit). <strong>Copy URL</strong> copies a <code>github.com/…/blob/…?raw=true</code> link.</p>
+    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. <strong>Upload image</strong> adds a local file (choose the destination folder in the dialog). Click a thumbnail to preview at hero size, then <strong>Edit</strong> to crop and save a new version, or <strong>Generate WebP sizes</strong> to move the original into a folder named after the image and add <code>il_75x75</code>, <code>il_570xN</code>, and <code>il_fullxfull</code> WebP variants (one commit). <strong>Copy URL</strong> copies a <code>github.com/…/blob/…?raw=true</code> link.</p>
 <div class="images-browser-toolbar">
   <label for="images-repo-select">Images repository</label>
   <select id="images-repo-select" data-images-repo-select aria-label="GitHub images repository"></select>

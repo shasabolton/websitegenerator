@@ -663,10 +663,58 @@
     return result;
   }
 
+  /**
+   * @param {Uint8Array} bytes
+   * @param {string} fileName
+   * @returns {Promise<{ repoPath: string, publicUrl: string } | null>}
+   */
+  async function saveImageBytesToRepo(bytes, fileName) {
+    if (!window.githubAuth?.isSignedIn?.()) {
+      throw new Error("Sign in to GitHub on the site generator page first.");
+    }
+    if (!window.githubAuth?.commitImagesRepoBinaryFiles) {
+      throw new Error("GitHub image commit is not available.");
+    }
+    const ctx = getImagesRepoContext();
+    if (!ctx) {
+      throw new Error("Select an images repository in the site generator Images section.");
+    }
+    const safeName = sanitizeUploadFileName(fileName);
+    if (!safeName) {
+      throw new Error("Invalid file name.");
+    }
+    if (!bytes?.length) {
+      throw new Error("Image data is empty.");
+    }
+
+    const folderResult = await openFolderPickerModal({ fileName: safeName, ctx });
+    if (!folderResult) {
+      return null;
+    }
+
+    const repoPath = joinRepoPath(folderResult.folderPath, safeName);
+    if (await pathExistsInRepo(ctx, repoPath)) {
+      const ok = window.confirm(`"${repoPath}" already exists in the images repo. Overwrite?`);
+      if (!ok) {
+        return null;
+      }
+    }
+
+    await window.githubAuth.commitImagesRepoBinaryFiles({
+      message: `Add edited image ${repoPath}`,
+      files: [{ path: repoPath, bytes }],
+    });
+
+    const publicUrl = window.githubAuth.buildBlobRawContentUrl(ctx.owner, ctx.repo, repoPath, ctx.branch);
+    await copyText(publicUrl);
+    return { repoPath, publicUrl };
+  }
+
   window.imageRepoSave = {
     resolveFullxfullUrl,
     saveImageUrlToRepo,
     saveSlideImageToRepo,
     uploadLocalImageToRepo,
+    saveImageBytesToRepo,
   };
 })();
