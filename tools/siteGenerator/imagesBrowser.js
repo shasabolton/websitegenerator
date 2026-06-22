@@ -1132,10 +1132,12 @@
 <div class="images-browser-toolbar">
   <label for="images-repo-select">Images repository</label>
   <select id="images-repo-select" data-images-repo-select aria-label="GitHub images repository"></select>
+  <label class="images-browser-upload" data-images-upload>
+    Upload image
+    <input type="file" data-images-upload-input accept="image/*,.svg" hidden />
+  </label>
   <button type="button" data-images-refresh-repos>Refresh repos</button>
   <button type="button" data-images-reload-tree>Reload tree</button>
-  <button type="button" data-images-upload>Upload image…</button>
-  <input type="file" data-images-upload-input accept="image/*,.svg" hidden />
 </div>
 <div class="images-browser-tree" data-images-browser-tree><div class="images-browser-tree--empty">Select an images repository to browse files.</div></div>
 <p class="images-browser-status" data-images-browser-status></p>`;
@@ -1144,7 +1146,7 @@
     const select = toolbar.querySelector("[data-images-repo-select]");
     const reloadBtn = toolbar.querySelector("[data-images-reload-tree]");
     const refreshReposBtn = toolbar.querySelector("[data-images-refresh-repos]");
-    const uploadBtn = toolbar.querySelector("[data-images-upload]");
+    const uploadLabel = toolbar.querySelector("[data-images-upload]");
     const uploadInput = toolbar.querySelector("[data-images-upload-input]");
     const tree = body.querySelector("[data-images-browser-tree]");
 
@@ -1183,13 +1185,11 @@
       });
     });
 
-    uploadBtn.addEventListener("click", () => {
+    uploadInput.addEventListener("click", (event) => {
       if (!getRepoContext()) {
+        event.preventDefault();
         setStatus(body, "Select an images repository first.", "error");
-        return;
       }
-      uploadInput.value = "";
-      uploadInput.click();
     });
 
     uploadInput.addEventListener("change", () => {
@@ -1197,13 +1197,13 @@
       if (!file) {
         return;
       }
-      uploadBtn.disabled = true;
+      uploadLabel.classList.add("images-browser-upload--disabled");
       handleImageUpload(file, body)
         .catch((err) => {
           setStatus(body, err?.message || String(err), "error");
         })
         .finally(() => {
-          uploadBtn.disabled = false;
+          uploadLabel.classList.remove("images-browser-upload--disabled");
           uploadInput.value = "";
         });
     });
@@ -1252,7 +1252,8 @@
         renderSignedOutBody(body);
         return;
       }
-      if (!signedInController) {
+      const needsSignedInUi = !body.querySelector("[data-images-upload]");
+      if (!signedInController || needsSignedInUi) {
         signedInController = mountSignedInBody(body, details);
       }
       if (details.open) {
@@ -1279,7 +1280,11 @@
     const hubRoot = document.getElementById("github-auth-root");
     if (hubRoot) {
       const observer = new MutationObserver(() => {
-        if (window.githubAuth?.isSignedIn?.() && !signedInController) {
+        if (!window.githubAuth?.isSignedIn?.()) {
+          return;
+        }
+        const needsSignedInUi = !body.querySelector("[data-images-upload]");
+        if (!signedInController || needsSignedInUi) {
           refreshAuthState();
         }
       });
