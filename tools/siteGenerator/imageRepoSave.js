@@ -83,8 +83,83 @@
       .join("/");
   }
 
-  async function fetchUrlAsBlob(url) {
-    const response = await fetch(url, { mode: "cors", cache: "no-store" });
+  function mimeTypeFromPath(filePath) {
+    const name = String(filePath || "").toLowerCase();
+    if (name.endsWith(".webp")) {
+      return "image/webp";
+    }
+    if (name.endsWith(".png")) {
+      return "image/png";
+    }
+    if (name.endsWith(".gif")) {
+      return "image/gif";
+    }
+    return "image/jpeg";
+  }
+
+  /**
+   * @param {string} url
+   * @returns {{ owner: string, repo: string, branch: string, path: string } | null}
+   */
+  function parseGithubContentUrl(url) {
+    try {
+      const u = new URL(String(url || "").trim());
+      const host = u.hostname.toLowerCase();
+      const parts = u.pathname.split("/").filter(Boolean);
+      if (host === "raw.githubusercontent.com" && parts.length >= 3) {
+        return {
+          owner: parts[0],
+          repo: parts[1],
+          branch: parts[2],
+          path: parts.slice(3).join("/"),
+        };
+      }
+      if (host === "media.githubusercontent.com" && parts[0] === "media" && parts.length >= 4) {
+        return {
+          owner: parts[1],
+          repo: parts[2],
+          branch: parts[3],
+          path: parts.slice(4).join("/"),
+        };
+      }
+      if (host === "github.com" && parts.length >= 4 && parts[2] === "blob") {
+        return {
+          owner: parts[0],
+          repo: parts[1],
+          branch: parts[3],
+          path: parts.slice(4).join("/"),
+        };
+      }
+    } catch {
+      /* not a GitHub content URL */
+    }
+    return null;
+  }
+
+  function isLikelyExternalCatalogUrl(url) {
+    try {
+      const host = new URL(String(url || "").trim()).hostname.toLowerCase();
+      if (host === window.location.hostname.toLowerCase()) {
+        return false;
+      }
+      return !parseGithubContentUrl(url);
+    } catch {
+      return true;
+    }
+  }
+
+  function buildCorsProxyUrl(url) {
+    const target = String(url || "").trim();
+    return `https://wsrv.nl/?url=${encodeURIComponent(target)}&output=jpg`;
+  }
+
+  async function fetchUrlAsBlob(url, options) {
+    const opts = options && typeof options === "object" ? options : {};
+    const response = await fetch(url, {
+      mode: "cors",
+      cache: "no-store",
+      referrerPolicy: opts.referrerPolicy || "no-referrer",
+    });
     if (!response.ok) {
       throw new Error(`Could not download image (${response.status}).`);
     }
@@ -93,6 +168,51 @@
       throw new Error("Downloaded image is empty.");
     }
     return blob;
+  }
+
+  async function fetchGithubRepoBlob(parsed) {
+    if (!window.githubAuth?.getFileMeta) {
+      throw new Error("GitHub file access is not available.");
+    }
+    const branch = parsed.branch || window.githubAuth.getBranch();
+    const publicUrl =
+      window.githubAuth.buildBlobRawContentUrl?.(parsed.owner, parsed.repo, parsed.path, branch) ||
+      window.githubAuth.buildRawContentUrl?.(parsed.owner, parsed.repo, parsed.path, branch);
+    if (publicUrl) {
+      try {
+        return await fetchUrlAsBlob(publicUrl);
+      } catch {
+        /* try authenticated download */
+      }
+    }
+
+    const meta = await window.githubAuth.getFileMeta(parsed.owner, parsed.repo, parsed.path, branch);
+    const downloadUrl = meta?.download_url || null;
+    const token = window.githubAuth.getToken?.();
+    const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+
+    if (downloadUrl) {
+      const response = await fetch(downloadUrl, { headers: authHeaders });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size > 0) {
+          return blob;
+        }
+      }
+    }
+
+    const encoded = meta?.content;
+    if (encoded) {
+      const normalized = String(encoded).replace(/\s+/g, "");
+      const binary = atob(normalized);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return new Blob([bytes], { type: mimeTypeFromPath(parsed.path) });
+    }
+
+    throw new Error("Could not download image from GitHub.");
   }
 
   async function imageElementToJpegBytes(img) {
@@ -143,15 +263,11 @@
     }
   }
 
-  async function loadImageWithCors(url) {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    await new Promise((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = () => reject(new Error("Image failed to load (CORS or blocked)."));
-      img.src = url;
-    });
-    return img;
+  async function blobToJpegBytesIfNeeded(blob, sourceUrl) {
+    if (blob.type === "image/jpeg" || /\.jpe?g($|\?)/i.test(String(sourceUrl || ""))) {
+      return new Uint8Array(await blob.arrayBuffer());
+    }
+    return blobToJpegBytes(blob);
   }
 
   async function fetchImageAsJpegBytes(imageUrl) {
@@ -160,16 +276,41 @@
       throw new Error("No image URL.");
     }
 
-    try {
-      const blob = await fetchUrlAsBlob(fullUrl);
-      if (blob.type === "image/jpeg" || /\.jpe?g($|\?)/i.test(fullUrl)) {
-        return new Uint8Array(await blob.arrayBuffer());
-      }
-      return blobToJpegBytes(blob);
-    } catch {
-      const img = await loadImageWithCors(fullUrl);
-      return imageElementToJpegBytes(img);
+    const attempts = [];
+
+    const githubRef = parseGithubContentUrl(fullUrl);
+    if (githubRef?.path) {
+      attempts.push(async () => {
+        const blob = await fetchGithubRepoBlob(githubRef);
+        return blobToJpegBytesIfNeeded(blob, fullUrl);
+      });
     }
+
+    attempts.push(async () => {
+      const blob = await fetchUrlAsBlob(fullUrl);
+      return blobToJpegBytesIfNeeded(blob, fullUrl);
+    });
+
+    if (isLikelyExternalCatalogUrl(fullUrl)) {
+      attempts.push(async () => {
+        const blob = await fetchUrlAsBlob(buildCorsProxyUrl(fullUrl));
+        return blobToJpegBytesIfNeeded(blob, fullUrl);
+      });
+    }
+
+    let lastError = null;
+    for (const attempt of attempts) {
+      try {
+        return await attempt();
+      } catch (err) {
+        lastError = err;
+      }
+    }
+
+    throw new Error(
+      lastError?.message ||
+        "Could not download image. The host may block browser downloads (CORS).",
+    );
   }
 
   async function pathExistsInRepo(ctx, repoPath) {
@@ -406,6 +547,8 @@
     }
 
     const fileName = deriveJpegFileName(fullUrl);
+    const bytes = await fetchImageAsJpegBytes(fullUrl);
+
     const folderResult = await openFolderPickerModal({ fileName, ctx });
     if (!folderResult) {
       return null;
@@ -418,8 +561,6 @@
         return null;
       }
     }
-
-    const bytes = await fetchImageAsJpegBytes(fullUrl);
     await window.githubAuth.commitImagesRepoBinaryFiles({
       message: `Add ${repoPath} from editor`,
       files: [{ path: repoPath, bytes }],
