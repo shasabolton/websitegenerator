@@ -3154,7 +3154,24 @@
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
       "SKU": "E-GOLDFISH-PLANS",
-      "CATEGORY": "Other"
+      "CATEGORY": "Other",
+      "SHORT_TITLE": "",
+      "SLUG": "",
+      "REDIRECTS": [],
+      "WEIGHT_KG": "",
+      "DIGITAL": true,
+      "HIDE": true,
+      "LEGACY_SHOP_URL": "",
+      "ETSY_LISTING_URL": "",
+      "VIDEO3": "",
+      "ETSY_VIDEO1": "",
+      "ETSY_VIDEO2": "",
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false,
+      "VARIATION 1 PRICE DELTA": "",
+      "VARIATION 2 PRICE DELTA": "",
+      "VIDEO1": ""
     }
   ]
 }
