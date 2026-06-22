@@ -1640,6 +1640,8 @@ function ensureCarouselItemModalDom() {
   <h2 id="content-edit-carousel-item-title">Edit slide</h2>
   <div data-carousel-item-modal-body></div>
   <div class="content-edit-modal-actions">
+    <button type="button" class="content-edit-modal-secondary" data-carousel-item-add-repo hidden>Add to images repo</button>
+    <span class="content-edit-modal-actions-spacer"></span>
     <button type="button" class="content-edit-modal-cancel" data-carousel-item-cancel>Cancel</button>
     <button type="button" class="content-edit-modal-ok" data-carousel-item-ok>OK</button>
   </div>
@@ -1710,6 +1712,48 @@ function openCarouselItemModal(parentForm, carouselEditor, itemIndex) {
   appendSchemaFields(fieldsWrap, fields, item, form);
   form.appendChild(fieldsWrap);
   body.appendChild(form);
+
+  const addRepoBtn = backdrop.querySelector("[data-carousel-item-add-repo]");
+  if (addRepoBtn) {
+    const showAddRepo = kind === "image";
+    addRepoBtn.hidden = !showAddRepo;
+    addRepoBtn.disabled = false;
+    addRepoBtn.textContent = "Add to images repo";
+    const newAddRepoBtn = addRepoBtn.cloneNode(true);
+    addRepoBtn.replaceWith(newAddRepoBtn);
+    if (showAddRepo) {
+      newAddRepoBtn.addEventListener("click", async (event) => {
+        event.preventDefault();
+        if (!window.imageRepoSave?.saveSlideImageToRepo) {
+          window.alert("Image repo save is not available. Reload the page and try again.");
+          return;
+        }
+        const urlInput = form.querySelector('[name="url"]');
+        const imageUrl = String(urlInput?.value || item.url || "").trim();
+        if (!imageUrl) {
+          window.alert("Enter an image URL first.");
+          return;
+        }
+        newAddRepoBtn.disabled = true;
+        const previousText = newAddRepoBtn.textContent;
+        newAddRepoBtn.textContent = "Saving…";
+        try {
+          await window.imageRepoSave.saveSlideImageToRepo(imageUrl, {
+            onUrlInput: (url) => {
+              if (urlInput) {
+                urlInput.value = url;
+              }
+            },
+          });
+        } catch (err) {
+          window.alert(err?.message || String(err));
+        } finally {
+          newAddRepoBtn.disabled = false;
+          newAddRepoBtn.textContent = previousText;
+        }
+      });
+    }
+  }
 
   showModalBackdrop(backdrop);
 }
