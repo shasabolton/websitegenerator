@@ -7,7 +7,10 @@
     "description": "Mechanical wooden kits, automata, magic tricks and puzzle boxes by Shasa Bolton."
   },
   "blocks": [
-    { "type": "title", "text": "About Contraption Cart" },
+    {
+      "type": "title",
+      "text": "About Contraption Cart"
+    },
     {
       "type": "subtitle",
       "text": "Mechanical wooden kits, automata, magic tricks and puzzle boxes"
@@ -19,9 +22,10 @@
     },
     {
       "type": "image",
-      "src": "shared-assets/images/branding/favicon.jpg",
+      "src": "https://github.com/shasabolton/images/blob/main/branding/bio-photo-shasa-edited/il_570xN.bio-photo-shasa-edited.webp?raw=true",
       "alt": "Contraption Cart branding",
-      "caption": "Turning simple parts into fascinating moving machines."
+      "caption": "Turning simple parts into fascinating moving machines.",
+      "width": ""
     },
     {
       "type": "callout",
