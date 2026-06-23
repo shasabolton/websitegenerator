@@ -4,6 +4,9 @@
   /** In-memory unsaved shop data edits (session-only). */
   let shopDataOverlay = null;
 
+  /** Last loaded shopData.json (before overlay); used for image public URL resolution. */
+  let resolvedShopDataCache = null;
+
   function escapeHtml(value) {
     return String(value)
       .replaceAll("&", "&amp;")
@@ -41,7 +44,7 @@
       owner: "",
       about: "",
       shopFocus: [],
-      websites: { primary: "", etsy: "", newsletterSignup: "" },
+      websites: { primary: "", images: "", imagesRepo: "", etsy: "", newsletterSignup: "" },
       paypal: { clientId: "", environment: "sandbox", buyerCountry: "" },
       branding: { faviconPath: "" },
       blog: { title: "Blog", description: "" },
@@ -116,6 +119,11 @@
       ? input.shopFocus.map((item) => String(item ?? "").trim()).filter(Boolean)
       : [];
     next.websites = { ...next.websites, ...(input.websites && typeof input.websites === "object" ? input.websites : {}) };
+    next.websites.primary = String(next.websites.primary ?? "").trim();
+    next.websites.images = normalizeImagesBaseUrl(next.websites.images);
+    next.websites.imagesRepo = normalizeImagesRepoFullName(next.websites.imagesRepo);
+    next.websites.etsy = String(next.websites.etsy ?? "").trim();
+    next.websites.newsletterSignup = String(next.websites.newsletterSignup ?? "").trim();
     next.paypal = { ...next.paypal, ...(input.paypal && typeof input.paypal === "object" ? input.paypal : {}) };
     next.branding = {
       ...next.branding,
@@ -150,6 +158,78 @@
       return stripHtml(raw);
     }
     return raw.replace(/\s+/g, " ").trim();
+  }
+
+  function normalizeImagesBaseUrl(url) {
+    return String(url ?? "").trim().replace(/\/+$/, "");
+  }
+
+  function normalizeImagesRepoFullName(fullName) {
+    const s = String(fullName ?? "").trim();
+    if (!s) {
+      return "";
+    }
+    const parsed = window.githubAuth?.parseRepoFullName?.(s);
+    if (!parsed) {
+      return s.replace(/^\/+|\/+$/g, "");
+    }
+    return `${parsed.owner}/${parsed.repo}`;
+  }
+
+  function reposMatchConfigured(owner, repo, configuredFullName) {
+    const configured = normalizeImagesRepoFullName(configuredFullName);
+    if (!configured) {
+      return false;
+    }
+    const parsed = window.githubAuth?.parseRepoFullName?.(configured);
+    if (!parsed || !owner || !repo) {
+      return false;
+    }
+    return (
+      String(owner).toLowerCase() === String(parsed.owner).toLowerCase() &&
+      String(repo) === String(parsed.repo)
+    );
+  }
+
+  function getEffectiveShopDataForUrls() {
+    const base = resolvedShopDataCache || defaultShopData();
+    return applyShopDataOverlay(base);
+  }
+
+  /**
+   * Public image URL for a file in a GitHub repo. Uses websites.images when the repo matches websites.imagesRepo.
+   * @param {string} owner
+   * @param {string} repo
+   * @param {string} filePath
+   * @param {string} [branch]
+   * @param {object} [shopData]
+   * @returns {string}
+   */
+  function buildImagePublicUrl(owner, repo, filePath, branch, shopData) {
+    const path = String(filePath || "").trim().replace(/^\/+/, "");
+    if (!path || !owner || !repo) {
+      return "";
+    }
+    const shop = shopData ? normalizeShopData(shopData) : getEffectiveShopDataForUrls();
+    const baseUrl = normalizeImagesBaseUrl(shop.websites?.images);
+    const imagesRepo = normalizeImagesRepoFullName(shop.websites?.imagesRepo);
+
+    if (baseUrl && reposMatchConfigured(owner, repo, imagesRepo)) {
+      const encodedPath = path.split("/").map((segment) => encodeURIComponent(segment)).join("/");
+      return `${baseUrl}/${encodedPath}`;
+    }
+
+    if (window.githubAuth?.buildBlobRawContentUrl) {
+      return window.githubAuth.buildBlobRawContentUrl(owner, repo, filePath, branch);
+    }
+    return "";
+  }
+
+  async function ensureShopDataCacheForUrls() {
+    if (!resolvedShopDataCache) {
+      await fetchShopDataJson();
+    }
+    return getEffectiveShopDataForUrls();
   }
 
   function readShopDataOverlay() {
@@ -188,7 +268,8 @@
             }
             return response.json();
           })();
-    return applyShopDataOverlay(data);
+    resolvedShopDataCache = normalizeShopData(data);
+    return applyShopDataOverlay(resolvedShopDataCache);
   }
 
   function shopFocusFromText(raw) {
@@ -245,6 +326,8 @@
       shopFocus: shopFocusFromText(get("shopFocus")),
       websites: {
         primary: get("websitesPrimary"),
+        images: get("websitesImages"),
+        imagesRepo: get("websitesImagesRepo"),
         etsy: get("websitesEtsy"),
         newsletterSignup: get("websitesNewsletter"),
       },
@@ -327,6 +410,8 @@
     set("about", shop.about);
     set("shopFocus", shopFocusToText(shop.shopFocus));
     set("websitesPrimary", shop.websites?.primary);
+    set("websitesImages", shop.websites?.images);
+    set("websitesImagesRepo", shop.websites?.imagesRepo);
     set("websitesEtsy", shop.websites?.etsy);
     set("websitesNewsletter", shop.websites?.newsletterSignup);
     set("paypalClientId", shop.paypal?.clientId);
@@ -572,6 +657,19 @@
 
     const webSection = section("Websites");
     webSection.appendChild(field("Primary site URL", "websitesPrimary", { inputType: "url" }));
+    webSection.appendChild(
+      field("Images CDN URL", "websitesImages", {
+        inputType: "url",
+        placeholder: "https://images.contraptioncart.com",
+        hint: "Custom domain for the GitHub Pages images repository (no trailing slash).",
+      }),
+    );
+    webSection.appendChild(
+      field("Images repository (owner/repo)", "websitesImagesRepo", {
+        placeholder: "shasabolton/my-images-repo",
+        hint: "When the selected images repo matches this, Copy URL and saves use the images CDN above; other repos keep GitHub blob URLs.",
+      }),
+    );
     webSection.appendChild(field("Etsy shop URL", "websitesEtsy", { inputType: "url" }));
     webSection.appendChild(field("Newsletter signup URL", "websitesNewsletter", { inputType: "url" }));
     form.appendChild(webSection);
@@ -713,6 +811,8 @@
     aboutToPlainText,
     hasShopDataOverlay,
     clearShopDataOverlay,
+    buildImagePublicUrl,
+    ensureShopDataCacheForUrls,
     initShopDataEditor,
   };
 })();

@@ -11,6 +11,9 @@
     if (!filePath || !ctx?.owner || !ctx?.repo) {
       return "";
     }
+    if (window.shopDataEditor?.buildImagePublicUrl) {
+      return window.shopDataEditor.buildImagePublicUrl(ctx.owner, ctx.repo, filePath, ctx.branch);
+    }
     if (window.githubAuth?.buildBlobRawContentUrl) {
       return window.githubAuth.buildBlobRawContentUrl(ctx.owner, ctx.repo, filePath, ctx.branch);
     }
@@ -1206,6 +1209,13 @@
       setStatus(panelRoot, "", null);
       return;
     }
+    if (window.shopDataEditor?.ensureShopDataCacheForUrls) {
+      try {
+        await window.shopDataEditor.ensureShopDataCacheForUrls();
+      } catch {
+        /* fall back to GitHub blob URLs */
+      }
+    }
     treeRoot.innerHTML = `<div class="images-browser-loading" style="padding:16px">Loading repository…</div>`;
     setStatus(panelRoot, `Loading ${ctx.owner}/${ctx.repo}@${ctx.branch}…`, null);
     try {
@@ -1226,7 +1236,7 @@
   }
 
   function renderSignedOutBody(body) {
-    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository (for example an images or assets repo). Expand folders to explore and copy <code>github.com/…/blob/…?raw=true</code> image URLs for use in content or product editors.</p>
+    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository (for example an images or assets repo). Expand folders to explore and copy image URLs for use in content or product editors. When the selected repo matches <strong>Images repository</strong> in shop data, URLs use your custom images domain; other repos use GitHub blob links.</p>
 <p class="images-browser-muted">Sign in to GitHub above, then open this section again.</p>`;
   }
 
@@ -1261,7 +1271,7 @@
   }
 
   function mountSignedInBody(body, details) {
-    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. <strong>Upload image</strong> adds a local file (choose the destination folder in the dialog). Click a thumbnail to preview at hero size, then <strong>Edit</strong> to crop and save a new version, or <strong>Generate WebP sizes</strong> to move the original into a folder named after the image and add <code>il_75x75</code>, <code>il_570xN</code>, and <code>il_fullxfull</code> WebP variants (one commit). <strong>Copy URL</strong> copies a <code>github.com/…/blob/…?raw=true</code> link.</p>
+    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. <strong>Upload image</strong> adds a local file (choose the destination folder in the dialog). Click a thumbnail to preview at hero size, then <strong>Edit</strong> to crop and save a new version, or <strong>Generate WebP sizes</strong> to move the original into a folder named after the image and add <code>il_75x75</code>, <code>il_570xN</code>, and <code>il_fullxfull</code> WebP variants (one commit). <strong>Copy URL</strong> copies a public image link (custom domain when the repo matches shop data).</p>
 <div class="images-browser-toolbar">
   <label for="images-repo-select">Images repository</label>
   <select id="images-repo-select" data-images-repo-select aria-label="GitHub images repository"></select>

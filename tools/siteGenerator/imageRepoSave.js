@@ -57,6 +57,19 @@
     };
   }
 
+  async function ensureShopDataForUrls() {
+    if (window.shopDataEditor?.ensureShopDataCacheForUrls) {
+      await window.shopDataEditor.ensureShopDataCacheForUrls();
+    }
+  }
+
+  function buildPublicUrlForRepoPath(ctx, repoPath) {
+    if (window.shopDataEditor?.buildImagePublicUrl) {
+      return window.shopDataEditor.buildImagePublicUrl(ctx.owner, ctx.repo, repoPath, ctx.branch);
+    }
+    return window.githubAuth.buildBlobRawContentUrl(ctx.owner, ctx.repo, repoPath, ctx.branch);
+  }
+
   function normalizeFolderPath(raw) {
     return String(raw || "")
       .trim()
@@ -595,7 +608,8 @@
       files: [{ path: repoPath, bytes }],
     });
 
-    const publicUrl = window.githubAuth.buildBlobRawContentUrl(ctx.owner, ctx.repo, repoPath, ctx.branch);
+    await ensureShopDataForUrls();
+    const publicUrl = buildPublicUrlForRepoPath(ctx, repoPath);
     return { repoPath, publicUrl };
   }
 
@@ -640,7 +654,8 @@
       files: [{ path: repoPath, bytes }],
     });
 
-    const publicUrl = window.githubAuth.buildBlobRawContentUrl(ctx.owner, ctx.repo, repoPath, ctx.branch);
+    await ensureShopDataForUrls();
+    const publicUrl = buildPublicUrlForRepoPath(ctx, repoPath);
     return { repoPath, publicUrl };
   }
 
@@ -705,7 +720,8 @@
       files: [{ path: repoPath, bytes }],
     });
 
-    const publicUrl = window.githubAuth.buildBlobRawContentUrl(ctx.owner, ctx.repo, repoPath, ctx.branch);
+    await ensureShopDataForUrls();
+    const publicUrl = buildPublicUrlForRepoPath(ctx, repoPath);
     await copyText(publicUrl);
     return { repoPath, publicUrl };
   }
