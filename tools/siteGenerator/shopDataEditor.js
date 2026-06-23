@@ -170,10 +170,24 @@
       return "";
     }
     const parsed = window.githubAuth?.parseRepoFullName?.(s);
-    if (!parsed) {
-      return s.replace(/^\/+|\/+$/g, "");
+    if (parsed) {
+      return `${parsed.owner}/${parsed.repo}`;
     }
-    return `${parsed.owner}/${parsed.repo}`;
+    try {
+      const u = new URL(s.includes("://") ? s : `https://${s}`);
+      const host = u.hostname.toLowerCase();
+      const parts = u.pathname.split("/").filter(Boolean);
+      if (host === "github.com" && parts.length >= 2) {
+        return `${parts[0]}/${parts[1]}`;
+      }
+      const projectPages = host.match(/^([^.]+)\.github\.io$/i);
+      if (projectPages && parts.length >= 1) {
+        return `${projectPages[1]}/${parts[0]}`;
+      }
+    } catch {
+      /* not a URL */
+    }
+    return s.replace(/^\/+|\/+$/g, "");
   }
 
   function reposMatchConfigured(owner, repo, configuredFullName) {
@@ -667,7 +681,7 @@
     webSection.appendChild(
       field("Images repository (owner/repo)", "websitesImagesRepo", {
         placeholder: "shasabolton/my-images-repo",
-        hint: "When the selected images repo matches this, Copy URL and saves use the images CDN above; other repos keep GitHub blob URLs.",
+        hint: "GitHub owner/repo (e.g. shasabolton/images). Also accepts github.com or username.github.io/repo URLs. When the selected images repo matches, Copy URL and saves use the images CDN above.",
       }),
     );
     webSection.appendChild(field("Etsy shop URL", "websitesEtsy", { inputType: "url" }));
