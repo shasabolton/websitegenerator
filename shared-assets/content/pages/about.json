@@ -4,7 +4,7 @@
   "pageType": "page",
   "meta": {
     "title": "About",
-    "description": "Mechanical wooden kits, automata, magic tricks and puzzle boxes by Shasa Bolton."
+    "description": "Mechanical wooden kits, automata, magic tricks, puzzle boxes, animatronics and kinetic sculpture by Shasa Bolton."
   },
   "blocks": [
     {
@@ -26,7 +26,7 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "Hello, I am Shasa Bolton, the designer behind Contraption Cart. I am a mechanical engineer with a passion for mechanisms and objects of curiosity. On my shop page you will find items such as automata, puzzle boxes, magic tricks amd mechanical toys. Many come either fully assembled, or as DIY kits \n\nI also work on commissioned mechanical sculpture, animatronics and product design, many of which can be seen on my projects page.",
+      "content": "Hello, I’m Shasa Bolton, the designer and maker behind Contraption Cart. I’m a mechanical engineer with a passion for mechanisms, craftsmanship, and objects that spark curiosity.\n\nIn my shop you’ll find a collection of mechanical creations including automata, puzzle boxes, magic tricks, and kinetic toys. Many designs are available either as fully assembled pieces or as DIY kits, allowing you to experience the joy of building the mechanism yourself.\n\nAlongside my own designs, I take on commissioned work in mechanical sculpture, animatronics, and product design. Whether it’s a unique display piece, an interactive installation, or a custom mechanism, I enjoy turning ideas into working creations. You can see examples of my past projects on my Projects page.",
       "clearFloat": ""
     },
     {
