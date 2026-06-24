@@ -288,6 +288,25 @@ function findTreeNodeByHref(items, href) {
   return null;
 }
 
+/** @param {string} treePath */
+async function getFileTreePageHints(treePath) {
+  let fileTreeConfig = baseFileTreeConfig;
+  if (!fileTreeConfig) {
+    fileTreeConfig = await fetchJson(FILE_TREE_CONFIG_URL);
+  }
+  const tree = applyFileTreeOverlay(fileTreeConfig);
+  const node = findTreeNodeByHref(tree?.items || [], treePath);
+  if (!node) {
+    return null;
+  }
+  const label = String(node.label || "").trim();
+  const pageType = String(node.pageType || "").trim().toLowerCase();
+  return {
+    label,
+    pageType: pageType || undefined,
+  };
+}
+
 function isTreePathDraft(tree, treePath, products = []) {
   const path = normalizeTreeHref(treePath);
   if (!path) {
@@ -1508,6 +1527,7 @@ window.displayFileTree = {
   buildPopulatedFileTree,
   renderPreviewPicker,
   getPendingNewPage,
+  getFileTreePageHints,
   removePendingPageByHref,
   getExportableFileTree,
   applyFileTreeOverlay,
