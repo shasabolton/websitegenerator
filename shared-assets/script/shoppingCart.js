@@ -176,6 +176,21 @@ class ShoppingCart {
   }
 
   /**
+   * @returns {number} Sum of line quantities (total units in cart).
+   */
+  getTotalItemCount() {
+    let total = 0;
+    for (const item of this.data.items) {
+      let q = Number(item.quantity);
+      if (!Number.isFinite(q) || q < 1) {
+        q = 1;
+      }
+      total += Math.floor(q);
+    }
+    return total;
+  }
+
+  /**
    * Adds a line or merges quantity into an existing line with the same `sku`, then {@link ShoppingCart#saveToLocalStorage}.
    * @param {unknown} cartLineItem
    * @returns {boolean} `false` when `sku` is missing or invalid.
@@ -314,6 +329,9 @@ class ShoppingCart {
   saveToLocalStorage() {
     this.data.updatedAt = new Date().toISOString();
     window.localStorage.setItem(this.getStorageKey(), JSON.stringify(this.data));
+    window.dispatchEvent(
+      new CustomEvent("cartchange", { detail: { count: this.getTotalItemCount() } }),
+    );
   }
 
   /**
@@ -344,4 +362,91 @@ class ShoppingCart {
 
   window.ShoppingCart = ShoppingCart;
   window.skuToLineItem = skuToLineItem;
+})();
+
+(function initCartBadge() {
+  function formatBadgeCount(count) {
+    const n = Number(count);
+    if (!Number.isFinite(n) || n < 1) {
+      return "";
+    }
+    return n > 99 ? "99+" : String(Math.floor(n));
+  }
+
+  function cartAriaLabel(count) {
+    const n = Number(count);
+    if (!Number.isFinite(n) || n < 1) {
+      return "Shopping cart";
+    }
+    const units = Math.floor(n);
+    return `Shopping cart, ${units} item${units === 1 ? "" : "s"}`;
+  }
+
+  function updateCartBadge(count, animate) {
+    const link = document.querySelector(".header-cart-link");
+    if (!link) {
+      return;
+    }
+
+    let badge = link.querySelector(".header-cart-count");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.className = "header-cart-count";
+      badge.setAttribute("aria-hidden", "true");
+      link.appendChild(badge);
+    }
+
+    const prev = Number(badge.dataset.count || "0");
+    const next = Number.isFinite(Number(count)) && Number(count) > 0 ? Math.floor(Number(count)) : 0;
+    badge.dataset.count = String(next);
+    badge.textContent = formatBadgeCount(next);
+    badge.hidden = next <= 0;
+    link.setAttribute("aria-label", cartAriaLabel(next));
+
+    if (animate && next > prev) {
+      badge.classList.remove("is-bump");
+      void badge.offsetWidth;
+      badge.classList.add("is-bump");
+    }
+  }
+
+  function syncCartBadgeFromSiteCart(animate) {
+    const cart = window.siteCart;
+    if (!cart || typeof cart.getTotalItemCount !== "function") {
+      updateCartBadge(0, false);
+      return;
+    }
+    updateCartBadge(cart.getTotalItemCount(), animate);
+  }
+
+  if (!window.__cartBadgeListenersBound) {
+    window.__cartBadgeListenersBound = true;
+
+    window.addEventListener("cartchange", function (event) {
+      const count = event?.detail?.count;
+      updateCartBadge(
+        Number.isFinite(Number(count)) ? Number(count) : 0,
+        true,
+      );
+    });
+
+    window.addEventListener("storage", function (event) {
+      const cart = window.siteCart;
+      if (!cart || typeof cart.getStorageKey !== "function" || event.key !== cart.getStorageKey()) {
+        return;
+      }
+      cart.loadFromLocalStorage();
+      syncCartBadgeFromSiteCart(false);
+    });
+  }
+
+  function onReady() {
+    syncCartBadgeFromSiteCart(false);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", onReady);
+  } else {
+    onReady();
+  }
 })();
