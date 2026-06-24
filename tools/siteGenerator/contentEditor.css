@@ -202,7 +202,7 @@
 
 .content-edit-modal {
   width: min(560px, 100%);
-  max-height: min(90vh, 720px);
+  max-height: min(90dvh, 720px);
   overflow: auto;
   padding: 18px 20px;
   border-radius: 10px;
@@ -244,6 +244,31 @@
 .content-edit-field textarea {
   min-height: 100px;
   resize: vertical;
+}
+
+.content-edit-field textarea[name="content"] {
+  min-height: 200px;
+}
+
+@supports not (height: 100dvh) {
+  .content-edit-modal {
+    max-height: min(90vh, 720px);
+  }
+}
+
+@media (max-width: 640px) {
+  .content-edit-modal-backdrop.content-edit-modal-backdrop--open {
+    align-items: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .content-edit-modal-backdrop.content-edit-modal-backdrop--open .content-edit-modal {
+    flex-shrink: 0;
+    margin: auto 0;
+    max-height: none;
+  }
 }
 
 .content-edit-modal-actions {

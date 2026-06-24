@@ -1708,12 +1708,62 @@ function updateBlockModalLayout(blockType) {
   modal.classList.toggle("content-edit-modal--carousel", String(blockType || "").trim().toLowerCase() === "carousel");
 }
 
+let modalViewportCleanup = null;
+
+function unbindModalMobileViewport() {
+  modalViewportCleanup?.();
+}
+
+function bindModalMobileViewport(backdrop) {
+  unbindModalMobileViewport();
+  const modal = backdrop.querySelector(".content-edit-modal");
+  if (!modal) {
+    return;
+  }
+
+  const update = () => {
+    if (!window.visualViewport) {
+      return;
+    }
+    const vv = window.visualViewport;
+    backdrop.style.height = `${vv.height}px`;
+    backdrop.style.top = `${vv.offsetTop}px`;
+    backdrop.style.bottom = "auto";
+  };
+
+  const onFocusIn = (event) => {
+    const el = event.target;
+    if (el?.matches?.("textarea, input")) {
+      setTimeout(() => {
+        el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }, 300);
+    }
+  };
+
+  update();
+  window.visualViewport?.addEventListener("resize", update);
+  window.visualViewport?.addEventListener("scroll", update);
+  modal.addEventListener("focusin", onFocusIn);
+
+  modalViewportCleanup = () => {
+    backdrop.style.height = "";
+    backdrop.style.top = "";
+    backdrop.style.bottom = "";
+    window.visualViewport?.removeEventListener("resize", update);
+    window.visualViewport?.removeEventListener("scroll", update);
+    modal.removeEventListener("focusin", onFocusIn);
+    modalViewportCleanup = null;
+  };
+}
+
 function showModalBackdrop(backdrop) {
   backdrop.hidden = false;
   backdrop.classList.add("content-edit-modal-backdrop--open");
+  bindModalMobileViewport(backdrop);
 }
 
 function hideModalBackdrop(backdrop) {
+  unbindModalMobileViewport();
   backdrop.classList.remove("content-edit-modal-backdrop--open");
   backdrop.hidden = true;
 }
