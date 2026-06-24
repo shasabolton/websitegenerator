@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "slug": "lasercuttingtips",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "laser cutting tips",
+    "description": "",
+    "redirects": [
+      "lasercuttingtips"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Laser Cutting Tips"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "Thank you for ordering my laser cut plans from www.contraptionCart.etsy.com\nThese are digital plans available for immediate download on a PC (not a phone) at https://www.etsy.com/your/purchases\n\nIf you would like the physical posted version of any design, many are also available as separate listings on my Etsy store as kits or fully assembled.\n\nImporting the file into your software with correct sizing:\n\nMy files are designed to suit a specific material thickness. Usually 3mm or 3.2mm (8th of an inch).\nIf your material is a different thickness, you can generally scale the file by the following percentage (thickness of your wood divided by intended thickness of the design x 100). Files with external hardware should not be scaled unless you can also scale the hardware (screws, rods etc to match)\n\nImporting The Files:\nDXF files are to be imported in millimetres.\nSVG files are to be imported at 72DPI unless 96DPI is written in the file name.\nTo change import settings in Lightburn, before opening the file click Edit > settings > Import/Export > 72DPI or 96DPI\nSome files contain a small reference square. Click on it and read off its size. Check it is the size written next to it. If there is no reference square, just find a slot in the design and click on it. It should be the thickness of the wood specified in the file minus 2 x any kerf offset specified in the file name.\neg 3.2mm - 2 x 0.08mm kerf offset = 3.04mm\n\nMaterial Thickness:\nMeasure your wood with calipers to the nearest 0.1mm. Many of the designs will work if your wood is up to 0.4mm thinner than the intended thickness but will work better if they are scaled until the slots match your wood thickness. Some designs require fine tolerances and will not work unless they are scaled to match your wood. This necessity will be mentioned in the laser cutting section of the pdf. For these designs even a 3.2mm file will need scaling by 94% to suit 3mm wood. (3 divided by 3.2 x 100 = 94)\n\nKerf Allowance:\nKerf is the thickness of your laser beam cut. It varies between machines and wood so it is hard for me to accurately account for everybody. It causes the part to be a little less than the intended size. eg a 10mm square may end up 9.9mm if you have an 0.05mm kerf. To get accurate fits, this needs to be accounted for with a kerf offset. Most designs do not have springy lugs built into the design, so for these I often add an extra 0.03mm offset to get tight press fits, reducing the need for glue. eg 0.08mm offset in total if my kerf is 0.05mm.\nI recommend cutting just two small mating parts from the file. Adjust your kerf settings until they fit snuggly. Then cut the entire file. \nSome designs come with a small kerf offset already added. You may still need to add more. In lightburn this is done by double clicking a layer in the layers panel. In rdWorks I add an in/out offset. In for holes, out for parts.\n\nColours:\nUsually Cut lines = black or blue, score = green, fill etch = pink\nSome files may have holes set to a different colour to help you select them quickly.\n",
+      "clearFloat": ""
+    }
+  ]
+}
