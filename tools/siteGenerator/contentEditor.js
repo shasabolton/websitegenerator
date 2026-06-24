@@ -108,6 +108,10 @@ const BLOCK_SCHEMAS = {
     label: "Product thumbs",
     fields: [{ key: "slugs", label: "Products", type: "product_slugs" }],
   },
+  buttons: {
+    label: "Buttons",
+    fields: [{ key: "buttons", label: "Buttons", type: "button_items" }],
+  },
 };
 
 const BLOCK_TYPE_OPTIONS = Object.entries(BLOCK_SCHEMAS).map(([value, schema]) => ({
@@ -166,6 +170,8 @@ function defaultBlockForType(type) {
       return { type: "callout", variant: "note", text: "" };
     case "product_thumbs":
       return { type: "product_thumbs", slugs: [] };
+    case "buttons":
+      return { type: "buttons", buttons: [] };
     default:
       return { type: "text", format: "plain", content: "" };
   }
@@ -802,6 +808,10 @@ function collectFormBlockData(form, type) {
     }
     if (field.type === "product_slugs") {
       block.slugs = normalizeProductSlugList(getProductSlugsFromEditor(form));
+      continue;
+    }
+    if (field.type === "button_items") {
+      block.buttons = sanitizeButtonItemsForSave(getButtonItemsFromEditor(form));
       continue;
     }
     const input = form.querySelector(`[name="${field.key}"]`);
@@ -1555,6 +1565,199 @@ function bindProductSlugsEditor(editor, products) {
   });
 }
 
+function defaultButtonItem() {
+  return { url: "", text: "" };
+}
+
+function normalizeButtonItems(items) {
+  const normalize = window.contentBlocks?.normalizeButtonItems;
+  if (typeof normalize === "function") {
+    return normalize(items);
+  }
+  if (!Array.isArray(items)) {
+    return [];
+  }
+  return items
+    .map((item) => ({
+      url: String(item?.url || "").trim(),
+      text: String(item?.text || "").trim(),
+    }))
+    .filter((item) => item.url || item.text);
+}
+
+function serializeButtonItemForSave(item) {
+  const url = String(item?.url || "").trim();
+  const text = String(item?.text || "").trim();
+  if (!url && !text) {
+    return null;
+  }
+  return { url, text };
+}
+
+function sanitizeButtonItemsForSave(items) {
+  const list = Array.isArray(items) ? items : [];
+  return list.map((item) => serializeButtonItemForSave(item)).filter(Boolean);
+}
+
+function getButtonItemsFromEditor(form) {
+  const editor = form?.querySelector("[data-button-items-editor]");
+  if (!editor) {
+    return [];
+  }
+  return Array.isArray(editor._buttonItems) ? editor._buttonItems.map((item) => ({ ...item })) : [];
+}
+
+function syncButtonItemsEditor(editor, items) {
+  const list = Array.isArray(items) ? items.map((item) => ({ ...item })) : [];
+  editor._buttonItems = list;
+  const hidden = editor.querySelector('[name="buttons"]');
+  if (hidden) {
+    hidden.value = JSON.stringify(sanitizeButtonItemsForSave(list));
+  }
+}
+
+function renderButtonItemsEditor(editor) {
+  const listEl = editor.querySelector("[data-button-item-list]");
+  if (!listEl) {
+    return;
+  }
+  const items = editor._buttonItems || [];
+  listEl.textContent = "";
+
+  if (!items.length) {
+    const empty = document.createElement("p");
+    empty.className = "content-edit-product-empty";
+    empty.textContent = "No buttons yet. Click “Add button” below.";
+    listEl.appendChild(empty);
+    return;
+  }
+
+  const ul = document.createElement("ul");
+  ul.className = "content-edit-button-items";
+  for (let i = 0; i < items.length; i += 1) {
+    const item = items[i];
+    const li = document.createElement("li");
+    li.className = "content-edit-button-item";
+
+    const fields = document.createElement("div");
+    fields.className = "content-edit-button-item-fields";
+
+    const textWrap = document.createElement("label");
+    textWrap.className = "content-edit-button-item-field";
+    textWrap.textContent = "Display text";
+    const textInput = document.createElement("input");
+    textInput.type = "text";
+    textInput.value = String(item.text || "");
+    textInput.placeholder = "Shop now";
+    textInput.addEventListener("input", () => {
+      editor._buttonItems[i].text = textInput.value;
+      syncButtonItemsEditor(editor, editor._buttonItems);
+    });
+    textWrap.appendChild(textInput);
+
+    const urlWrap = document.createElement("label");
+    urlWrap.className = "content-edit-button-item-field";
+    urlWrap.textContent = "URL";
+    const urlInput = document.createElement("input");
+    urlInput.type = "text";
+    urlInput.value = String(item.url || "");
+    urlInput.placeholder = "shop or https://…";
+    urlInput.addEventListener("input", () => {
+      editor._buttonItems[i].url = urlInput.value;
+      syncButtonItemsEditor(editor, editor._buttonItems);
+    });
+    urlWrap.appendChild(urlInput);
+
+    fields.appendChild(textWrap);
+    fields.appendChild(urlWrap);
+
+    const actions = document.createElement("div");
+    actions.className = "content-edit-button-item-actions";
+
+    const upBtn = document.createElement("button");
+    upBtn.type = "button";
+    upBtn.className = "content-edit-product-slug-action";
+    upBtn.textContent = "↑";
+    upBtn.setAttribute("aria-label", "Move up");
+    upBtn.disabled = i === 0;
+    upBtn.addEventListener("click", () => {
+      const current = [...(editor._buttonItems || [])];
+      [current[i - 1], current[i]] = [current[i], current[i - 1]];
+      syncButtonItemsEditor(editor, current);
+      renderButtonItemsEditor(editor);
+    });
+
+    const downBtn = document.createElement("button");
+    downBtn.type = "button";
+    downBtn.className = "content-edit-product-slug-action";
+    downBtn.textContent = "↓";
+    downBtn.setAttribute("aria-label", "Move down");
+    downBtn.disabled = i >= items.length - 1;
+    downBtn.addEventListener("click", () => {
+      const current = [...(editor._buttonItems || [])];
+      [current[i], current[i + 1]] = [current[i + 1], current[i]];
+      syncButtonItemsEditor(editor, current);
+      renderButtonItemsEditor(editor);
+    });
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "content-edit-product-slug-action content-edit-product-slug-action--danger";
+    removeBtn.textContent = "×";
+    removeBtn.setAttribute("aria-label", "Remove");
+    removeBtn.addEventListener("click", () => {
+      const current = (editor._buttonItems || []).filter((_, idx) => idx !== i);
+      syncButtonItemsEditor(editor, current);
+      renderButtonItemsEditor(editor);
+    });
+
+    actions.appendChild(upBtn);
+    actions.appendChild(downBtn);
+    actions.appendChild(removeBtn);
+    li.appendChild(fields);
+    li.appendChild(actions);
+    ul.appendChild(li);
+  }
+  listEl.appendChild(ul);
+}
+
+function bindButtonItemsEditor(editor) {
+  const addBtn = editor.querySelector("[data-button-add]");
+  addBtn?.addEventListener("click", (event) => {
+    event.preventDefault();
+    const items = [...(editor._buttonItems || []), defaultButtonItem()];
+    syncButtonItemsEditor(editor, items);
+    renderButtonItemsEditor(editor);
+    const lastInput = editor.querySelector(".content-edit-button-item:last-child input");
+    lastInput?.focus();
+  });
+}
+
+function appendButtonItemsFieldInput(container, field, block) {
+  const buttons = normalizeButtonItems(block.buttons);
+
+  const wrap = document.createElement("div");
+  wrap.className = "content-edit-field content-edit-field--wide";
+
+  const label = document.createElement("label");
+  label.textContent = field.label;
+  wrap.appendChild(label);
+
+  const editor = document.createElement("div");
+  editor.className = "content-edit-button-items-editor";
+  editor.setAttribute("data-button-items-editor", "");
+  editor.innerHTML = `<input type="hidden" name="buttons" value="[]" />
+<div data-button-item-list class="content-edit-button-item-list"></div>
+<button type="button" class="content-edit-add-btn" data-button-add>+ Add button</button>
+<p class="content-edit-field-hint">Use site-relative paths (e.g. <code>shop</code>, <code>about</code>) or full URLs. External links open in a new tab.</p>`;
+  wrap.appendChild(editor);
+  container.appendChild(wrap);
+
+  syncButtonItemsEditor(editor, buttons.length ? buttons : []);
+  renderButtonItemsEditor(editor);
+  bindButtonItemsEditor(editor);
+}
+
 function appendProductSlugsFieldInput(container, field, block, form) {
   const state = getState();
   const products = Array.isArray(state?.products) ? state.products : [];
@@ -1590,6 +1793,10 @@ function appendFieldInput(container, field, block, form) {
   }
   if (field.type === "product_slugs") {
     appendProductSlugsFieldInput(container, field, block, form);
+    return;
+  }
+  if (field.type === "button_items") {
+    appendButtonItemsFieldInput(container, field, block);
     return;
   }
   if (field.type === "product_media") {

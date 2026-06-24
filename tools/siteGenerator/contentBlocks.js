@@ -89,6 +89,18 @@ function formatDisplayDate(isoDate) {
  * @param {unknown[]} items
  * @param {(raw: string) => string | null} parseYoutubeVideoId
  */
+function normalizeButtonItems(items) {
+  if (!Array.isArray(items)) {
+    return [];
+  }
+  return items
+    .map((item) => ({
+      url: String(item?.url || "").trim(),
+      text: String(item?.text || "").trim(),
+    }))
+    .filter((item) => item.url || item.text);
+}
+
 function normalizeCarouselItems(items, parseYoutubeVideoId) {
   if (!Array.isArray(items) || items.length === 0) {
     return [];
@@ -283,6 +295,36 @@ async function renderBlock(block, ctx) {
 </aside>`;
   }
 
+  if (type === "buttons") {
+    const items = normalizeButtonItems(block.buttons);
+    if (!items.length) {
+      if (lenient) {
+        return editPlaceholder("Buttons block (no buttons configured).");
+      }
+      return "";
+    }
+    const links = items
+      .map((item) => {
+        const url = String(item.url || "").trim();
+        const text = escapeHtml(String(item.text || "").trim());
+        if (!url || !text) {
+          return "";
+        }
+        const safeUrl = escapeHtml(url);
+        const external = /^https?:\/\//i.test(url);
+        const targetAttrs = external ? ' target="_blank" rel="noopener noreferrer"' : "";
+        return `<a class="content-button" href="${safeUrl}"${targetAttrs}>${text}</a>`;
+      })
+      .filter(Boolean);
+    if (!links.length) {
+      if (lenient) {
+        return editPlaceholder("Buttons block (no valid buttons).");
+      }
+      return "";
+    }
+    return `<div class="content-buttons">\n  ${links.join("\n  ")}\n</div>`;
+  }
+
   if (type === "product_thumbs") {
     const slugs = Array.isArray(block.slugs) ? block.slugs : [];
     if (!slugs.length) {
@@ -360,6 +402,7 @@ window.contentBlocks = {
   renderBlock,
   renderBlocks,
   buildContentMetaHtml,
+  normalizeButtonItems,
   normalizeCarouselItems,
   normalizeImageWidth,
   normalizeImageAlign,
