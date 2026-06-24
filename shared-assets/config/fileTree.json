@@ -36,6 +36,18 @@
       "label": "About",
       "href": "about",
       "hide": false
+    },
+    {
+      "label": "help",
+      "href": "help",
+      "draft": true,
+      "children": [
+        {
+          "label": "laser cutting tips",
+          "href": "lasercuttingtips",
+          "draft": true
+        }
+      ]
     }
   ]
 }
