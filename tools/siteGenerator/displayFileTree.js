@@ -1034,6 +1034,80 @@ function isDirectNestHover(event, row) {
   return deepestRow === row;
 }
 
+const COLLAPSED_TREE_STORAGE_KEY = "preview-picker-tree-collapsed";
+
+function readCollapsedTreeKeys() {
+  try {
+    const raw = sessionStorage.getItem(COLLAPSED_TREE_STORAGE_KEY);
+    if (!raw) {
+      return new Set();
+    }
+    const parsed = JSON.parse(raw);
+    return new Set(Array.isArray(parsed) ? parsed.filter((key) => String(key || "").trim()) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function writeCollapsedTreeKeys(keys) {
+  try {
+    sessionStorage.setItem(COLLAPSED_TREE_STORAGE_KEY, JSON.stringify([...keys]));
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
+
+function collapseKeyForNode(href, nodeId) {
+  return normalizeTreeHref(href) || String(nodeId || "").trim();
+}
+
+function isTreeNodeExpanded(collapsedKeys, collapseKey, href) {
+  if (collapsedKeys.has(collapseKey)) {
+    return false;
+  }
+  if (collapsedKeys.size === 0 && !sessionStorage.getItem(COLLAPSED_TREE_STORAGE_KEY)) {
+    return normalizeTreeHref(href) !== "shop";
+  }
+  return true;
+}
+
+function setTreeNodeExpanded(collapsedKeys, collapseKey, open) {
+  if (open) {
+    collapsedKeys.delete(collapseKey);
+  } else {
+    collapsedKeys.add(collapseKey);
+  }
+  writeCollapsedTreeKeys(collapsedKeys);
+}
+
+function createTreeExpandToggle({ label, collapseKey, href, collapsedKeys, onExpandedChange }) {
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "preview-picker-tree-toggle";
+  toggle.textContent = "▸";
+
+  const applyExpanded = (open) => {
+    toggle.classList.toggle("preview-picker-tree-toggle--open", open);
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    toggle.setAttribute("aria-label", open ? `Collapse ${label}` : `Expand ${label}`);
+    if (typeof onExpandedChange === "function") {
+      onExpandedChange(open);
+    }
+  };
+
+  const open = isTreeNodeExpanded(collapsedKeys, collapseKey, href);
+  applyExpanded(open);
+
+  toggle.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const nextOpen = toggle.getAttribute("aria-expanded") !== "true";
+    setTreeNodeExpanded(collapsedKeys, collapseKey, nextOpen);
+    applyExpanded(nextOpen);
+  });
+
+  return { toggle, applyExpanded, isInitiallyOpen: open };
+}
+
 function bindRowNestDrop(row, indexPath, callbacks, nodeId) {
   row.addEventListener("dragenter", (event) => {
     const sourcePath = callbacks.getDragSourcePath?.();
@@ -1091,11 +1165,37 @@ function renderTreeNode(parent, node, indexPath, depth, callbacks) {
     block.appendChild(createDropZone("before", indexPath, callbacks, depth));
   }
 
+  const children = Array.isArray(node.children) ? node.children : [];
+  const hasChildren = children.length > 0;
+  const collapseKey = collapseKeyForNode(href, nodeId);
+  const collapsedKeys = callbacks.getCollapsedKeys?.() || new Set();
+  let childWrap = null;
+
   const row = document.createElement("div");
   row.className = "preview-picker-tree-row";
   row.style.setProperty("--tree-depth", String(depth));
   if (!canDrag) {
     row.classList.add("preview-picker-tree-row--static");
+  }
+
+  if (hasChildren) {
+    const expandControl = createTreeExpandToggle({
+      label,
+      collapseKey,
+      href,
+      collapsedKeys,
+      onExpandedChange: (open) => {
+        if (childWrap) {
+          childWrap.hidden = !open;
+        }
+      },
+    });
+    row.appendChild(expandControl.toggle);
+  } else {
+    const spacer = document.createElement("span");
+    spacer.className = "preview-picker-tree-toggle preview-picker-tree-toggle--spacer";
+    spacer.setAttribute("aria-hidden", "true");
+    row.appendChild(spacer);
   }
 
   if (canDrag) {
@@ -1127,6 +1227,13 @@ function renderTreeNode(parent, node, indexPath, depth, callbacks) {
   const labelEl = document.createElement("span");
   labelEl.className = "preview-picker-tree-label";
   labelEl.textContent = label;
+  if (hasChildren) {
+    labelEl.classList.add("preview-picker-tree-label--expandable");
+    labelEl.addEventListener("click", () => {
+      const toggle = row.querySelector(".preview-picker-tree-toggle:not(.preview-picker-tree-toggle--spacer)");
+      toggle?.click();
+    });
+  }
   row.appendChild(labelEl);
 
   if (canToggleTreeNodeHide(node)) {
@@ -1271,10 +1378,10 @@ function renderTreeNode(parent, node, indexPath, depth, callbacks) {
 
   block.appendChild(row);
 
-  const children = Array.isArray(node.children) ? node.children : [];
-  if (children.length) {
-    const childWrap = document.createElement("div");
+  if (hasChildren) {
+    childWrap = document.createElement("div");
     childWrap.className = "preview-picker-tree-children";
+    childWrap.hidden = !isTreeNodeExpanded(collapsedKeys, collapseKey, href);
     children.forEach((child, childIndex) => {
       renderTreeNode(childWrap, child, [...indexPath, childIndex], depth + 1, callbacks);
     });
@@ -1321,9 +1428,11 @@ function renderPreviewPicker(container, fileTree, options = {}) {
   container.classList.add("preview-picker-root");
 
   let dragSourcePath = null;
+  const collapsedKeys = readCollapsedTreeKeys();
   const callbacks = {
     getCurrentTree: () => options.getCurrentTree?.() || fileTree,
     getProducts: () => (typeof options.getProducts === "function" ? options.getProducts() : []),
+    getCollapsedKeys: () => collapsedKeys,
     getDragSourcePath: () => dragSourcePath,
     setDragSourcePath: (path) => {
       dragSourcePath = path;

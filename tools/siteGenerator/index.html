@@ -409,6 +409,29 @@
         background: #eff6ff;
       }
 
+      .preview-picker-tree-toggle {
+        flex: 0 0 18px;
+        width: 18px;
+        height: 18px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: #6b7280;
+        font-size: 11px;
+        line-height: 1;
+        cursor: pointer;
+        text-align: center;
+      }
+
+      .preview-picker-tree-toggle--open {
+        transform: rotate(90deg);
+      }
+
+      .preview-picker-tree-toggle--spacer {
+        visibility: hidden;
+        cursor: default;
+      }
+
       .preview-picker-tree-handle {
         color: #9ca3af;
         font-size: 12px;
@@ -421,6 +444,10 @@
         font-weight: 600;
         color: #374151;
         min-width: 5rem;
+      }
+
+      .preview-picker-tree-label--expandable {
+        cursor: pointer;
       }
 
       .preview-picker-tree-actions {
