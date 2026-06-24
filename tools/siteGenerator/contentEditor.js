@@ -1,3 +1,17 @@
+const IMAGE_WIDTH_OPTIONS = [
+  { value: "100", label: "100% (full column)" },
+  { value: "75", label: "75%" },
+  { value: "50", label: "50%" },
+  { value: "25", label: "25%" },
+  { value: "10", label: "10%" },
+];
+
+const IMAGE_ALIGN_OPTIONS = [
+  { value: "left", label: "Float left" },
+  { value: "right", label: "Float right" },
+  { value: "center", label: "Center (no wrap)" },
+];
+
 const BLOCK_SCHEMAS = {
   title: {
     label: "Title",
@@ -20,6 +34,15 @@ const BLOCK_SCHEMAS = {
         ],
       },
       { key: "content", label: "Content", type: "textarea" },
+      {
+        key: "clearFloat",
+        label: "Layout",
+        type: "select",
+        options: [
+          { value: "", label: "Wrap beside floated images" },
+          { value: "below", label: "Full width below images (no wrap)" },
+        ],
+      },
     ],
   },
   image: {
@@ -32,11 +55,15 @@ const BLOCK_SCHEMAS = {
         key: "width",
         label: "Width",
         type: "select",
-        options: [
-          { value: "", label: "Default" },
-          { value: "wide", label: "Wide" },
-          { value: "full", label: "Full" },
-        ],
+        hint: "Percent of the content column on larger screens. Images are always full column width on phones.",
+        options: IMAGE_WIDTH_OPTIONS,
+      },
+      {
+        key: "align",
+        label: "Alignment",
+        type: "select",
+        hint: "Left and right float beside following text on larger screens. Center keeps text above and below.",
+        options: IMAGE_ALIGN_OPTIONS,
       },
     ],
   },
@@ -126,7 +153,7 @@ function defaultBlockForType(type) {
     case "text":
       return { type: "text", format: "plain", content: "" };
     case "image":
-      return { type: "image", src: "", alt: "", caption: "" };
+      return { type: "image", src: "", alt: "", caption: "", width: "100", align: "left" };
     case "carousel":
       return { type: "carousel", items: [] };
     case "video":
@@ -576,6 +603,12 @@ function getState() {
 
 function fieldValueToInput(block, field) {
   const raw = block[field.key];
+  if (field.key === "width" && typeof window.contentBlocks?.normalizeImageWidth === "function") {
+    return window.contentBlocks.normalizeImageWidth(raw);
+  }
+  if (field.key === "align" && typeof window.contentBlocks?.normalizeImageAlign === "function") {
+    return window.contentBlocks.normalizeImageAlign(raw);
+  }
   if (field.type === "json") {
     if (Array.isArray(raw) || (raw && typeof raw === "object")) {
       return JSON.stringify(raw, null, 2);
@@ -608,11 +641,13 @@ const CAROUSEL_IMAGE_ITEM_FIELDS = [
     key: "width",
     label: "Width",
     type: "select",
-    options: [
-      { value: "", label: "Default" },
-      { value: "wide", label: "Wide" },
-      { value: "full", label: "Full" },
-    ],
+    options: IMAGE_WIDTH_OPTIONS,
+  },
+  {
+    key: "align",
+    label: "Alignment",
+    type: "select",
+    options: IMAGE_ALIGN_OPTIONS,
   },
 ];
 
@@ -623,7 +658,7 @@ const CAROUSEL_VIDEO_ITEM_FIELDS = [
 ];
 
 function defaultCarouselImageItem() {
-  return { kind: "image", url: "", alt: "", caption: "", width: "" };
+  return { kind: "image", url: "", alt: "", caption: "", width: "100", align: "left" };
 }
 
 function defaultCarouselVideoItem() {
@@ -648,7 +683,8 @@ function normalizeCarouselItemForEdit(item) {
     url: String(item.url || item.src || "").trim(),
     alt: String(item.alt || "").trim(),
     caption: String(item.caption || "").trim(),
-    width: String(item.width || "").trim(),
+    width: String(item.width || "100").trim(),
+    align: String(item.align || "left").trim(),
   };
 }
 
@@ -702,8 +738,11 @@ function serializeCarouselItemForSave(item) {
   if (normalized.caption) {
     out.caption = normalized.caption;
   }
-  if (normalized.width) {
+  if (normalized.width && normalized.width !== "100") {
     out.width = normalized.width;
+  }
+  if (normalized.align && normalized.align !== "left") {
+    out.align = normalized.align;
   }
   return out;
 }

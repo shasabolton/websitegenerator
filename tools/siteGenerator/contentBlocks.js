@@ -38,6 +38,35 @@ function markdownToHtml(md) {
     .join("\n");
 }
 
+const IMAGE_WIDTH_PRESETS = new Set(["10", "25", "50", "75", "100"]);
+
+function normalizeImageWidth(raw) {
+  let value = String(raw ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/%$/, "");
+  if (!value || value === "wide" || value === "full") {
+    return "100";
+  }
+  return IMAGE_WIDTH_PRESETS.has(value) ? value : "100";
+}
+
+function normalizeImageAlign(raw) {
+  const value = String(raw || "")
+    .trim()
+    .toLowerCase();
+  if (value === "left" || value === "right" || value === "center") {
+    return value;
+  }
+  return "left";
+}
+
+function buildImageFigureClassList(block) {
+  const width = normalizeImageWidth(block?.width);
+  const align = normalizeImageAlign(block?.align);
+  return ["content-figure", `content-figure--w${width}`, `content-figure--align-${align}`];
+}
+
 function formatDisplayDate(isoDate) {
   const s = String(isoDate || "").trim();
   if (!s) {
@@ -80,9 +109,13 @@ function normalizeCarouselItems(items, parseYoutubeVideoId) {
       if (caption) {
         out.caption = caption;
       }
-      const width = String(item.width || "").trim().toLowerCase();
-      if (width === "wide" || width === "full") {
+      const width = normalizeImageWidth(item.width);
+      if (width !== "100") {
         out.width = width;
+      }
+      const align = normalizeImageAlign(item.align);
+      if (align !== "left") {
+        out.align = align;
       }
       return out;
     }
@@ -166,10 +199,14 @@ async function renderBlock(block, ctx) {
     if (!content) {
       return "";
     }
+    const clearBelow = String(block.clearFloat || "")
+      .trim()
+      .toLowerCase() === "below";
+    const textClass = clearBelow ? "content-text content-text--below-float" : "content-text";
     if (format === "markdown") {
-      return `<div class="content-text">${markdownToHtml(content)}</div>`;
+      return `<div class="${textClass}">${markdownToHtml(content)}</div>`;
     }
-    return `<div class="content-text"><p>${renderInlineMarkdown(content)}</p></div>`;
+    return `<div class="${textClass}"><p>${renderInlineMarkdown(content)}</p></div>`;
   }
 
   if (type === "image") {
@@ -182,12 +219,11 @@ async function renderBlock(block, ctx) {
     }
     const alt = escapeHtml(String(block.alt || "").trim() || "Image");
     const caption = String(block.caption || "").trim();
-    const width = String(block.width || "").trim().toLowerCase();
-    const widthClass = width === "wide" || width === "full" ? ` content-figure--${width}` : "";
+    const figureClass = escapeHtml(buildImageFigureClassList(block).join(" "));
     const captionHtml = caption
       ? `<figcaption class="content-figure-caption">${escapeHtml(caption)}</figcaption>`
       : "";
-    return `<figure class="content-figure${widthClass}">
+    return `<figure class="${figureClass}">
   <img class="content-figure-img" src="${escapeHtml(src)}" alt="${alt}" loading="lazy" />
   ${captionHtml}
 </figure>`;
@@ -325,5 +361,8 @@ window.contentBlocks = {
   renderBlocks,
   buildContentMetaHtml,
   normalizeCarouselItems,
+  normalizeImageWidth,
+  normalizeImageAlign,
+  buildImageFigureClassList,
   markdownToHtml,
 };
