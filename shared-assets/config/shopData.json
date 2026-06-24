@@ -1,5 +1,5 @@
 {
-  "deployVersion": 81,
+  "deployVersion": 82,
   "shopName": "Contraption Cart",
   "owner": "Shasa Bolton",
   "about": "A shop of mechanical curiosities designed by Tasmanian maker Shasa Bolton, featuring automata, puzzle boxes, magic tricks, robots, and other buildable contraptions.",
@@ -25,11 +25,11 @@
     },
     "toys-and-games": {
       "name": "Toys and Games",
-      "description": "Playful mechanical toys and hands-on games — wooden contraptions for makers, families, and anyone who likes things that move."
+      "description": "Interactive and educational mechanical toys designed to inspire curiosity through making and exploration."
     },
     "whirligigs": {
       "name": "Whirligigs",
-      "description": "Wind-powered whirligigs and kinetic garden ornaments — colourful characters that spin and bob in the breeze, as kits or finished pieces."
+      "description": "Wind-powered whirligigs and kinetic garden ornaments — colourful characters that spin, bob and come alive in the breeze. Available as DIY kits or finished pieces."
     }
   },
   "websites": {
