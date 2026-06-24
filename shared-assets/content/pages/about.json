@@ -16,16 +16,18 @@
       "text": "Mechanical wooden kits, automata, magic tricks and puzzle boxes"
     },
     {
-      "type": "text",
-      "format": "markdown",
-      "content": "Hello, I am Shasa Bolton, the designer behind Contraption Cart. I am a mechanical engineer with a passion for mechanisms and objects of curiosity and wonder. I love to design, build and share my ideas so that others can build them too. On my shop page you will find mechanical wooden automata, puzzle boxes, magic tricks and DIY kits designed to be built, explored, and enjoyed.\n\nEach contraption combines engineering, creativity, and hands-on play. Available as laser-cut file downloads or fully assembled pieces, these creations suit adults, hobbyists, and kids working with guidance."
-    },
-    {
       "type": "image",
       "src": "https://images.contraptioncart.com/branding/bio-photo-shasa-edited/il_fullxfull.bio-photo-shasa-edited.webp",
       "alt": "Contraption Cart branding",
-      "caption": "Turning simple parts into fascinating moving machines.",
-      "width": ""
+      "caption": "",
+      "width": "50",
+      "align": "left"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "Hello, I am Shasa Bolton, the designer behind Contraption Cart. I am a mechanical engineer with a passion for mechanisms and objects of curiosity and wonder. I love to design, build and share my ideas so that others can build them too. On my shop page you will find mechanical wooden automata, puzzle boxes, magic tricks and DIY kits designed to be built, explored, and enjoyed.\n\nEach contraption combines engineering, creativity, and hands-on play. Available as laser-cut file downloads or fully assembled pieces, these creations suit adults, hobbyists, and kids working with guidance.",
+      "clearFloat": ""
     },
     {
       "type": "callout",
