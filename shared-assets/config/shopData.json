@@ -1,5 +1,5 @@
 {
-  "deployVersion": 80,
+  "deployVersion": 81,
   "shopName": "Contraption Cart",
   "owner": "Shasa Bolton",
   "about": "A shop of mechanical curiosities designed by Tasmanian maker Shasa Bolton, featuring automata, puzzle boxes, magic tricks, robots, and other buildable contraptions.",
@@ -21,7 +21,7 @@
     },
     "puzzle-boxes": {
       "name": "Puzzle Boxes",
-      "description": "Secret-opening puzzle boxes and mechanical brain teasers — laser-cut kits and assembled pieces that reward patience, curiosity, and clever fingers."
+      "description": "Wooden puzzle boxes featuring clever secret opening mechanisms. Solve the puzzle, discover the hidden mechanism, and unlock the box. Perfect for escape rooms, unique gifts, conversation pieces, and anyone who loves clever mechanical puzzles."
     },
     "toys-and-games": {
       "name": "Toys and Games",
