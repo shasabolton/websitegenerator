@@ -30,9 +30,17 @@
       "clearFloat": ""
     },
     {
-      "type": "callout",
-      "variant": "note",
-      "text": "Browse the shop for magic tricks, puzzle boxes, automata, and more."
+      "type": "buttons",
+      "buttons": [
+        {
+          "url": "shop",
+          "text": "browse the shop"
+        },
+        {
+          "url": "projects",
+          "text": "explore projects"
+        }
+      ]
     }
   ]
 }
