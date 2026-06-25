@@ -5,6 +5,7 @@
     "SHORT_TITLE",
     "SLUG",
     "REDIRECTS",
+    "LINKS",
     "DESCRIPTION",
     "PRICE",
     "CURRENCY_CODE",

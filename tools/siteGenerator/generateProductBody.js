@@ -373,6 +373,23 @@ async function buildImageCarouselHtml(items, productTitleRaw, carouselPartial) {
 }
 
 /**
+ * @param {unknown} links
+ * @returns {Promise<string>}
+ */
+async function buildProductLinksHtml(links) {
+  const sanitize = window.productData?.sanitizeProductLinksForSave;
+  const items = typeof sanitize === "function" ? sanitize(links) : [];
+  if (!items.length) {
+    return "";
+  }
+  const renderBlock = window.contentBlocks?.renderBlock;
+  if (typeof renderBlock !== "function") {
+    return "";
+  }
+  return renderBlock({ type: "buttons", buttons: items }, { lenient: true });
+}
+
+/**
  * @param {{ shopData: object, navigationConfig: object, products: object[], catalogProducts?: object[], productSlug: string }} ctx
  * @returns {Promise<{ bodyHtml: string, categoryNames: string[], pageTitle: string }>}
  */
@@ -417,6 +434,7 @@ async function generateProductBody(ctx) {
   }
 
   const carouselHtml = await buildImageCarouselHtml(carouselItems, title, carouselPartial);
+  const linksHtml = await buildProductLinksHtml(row.LINKS);
   const homePageHref = ctx.homePageHref ?? null;
   const shopLandingHref = escapeHtml(
     window.homePage?.resolvePublicHref
@@ -476,6 +494,7 @@ async function generateProductBody(ctx) {
     PRODUCT_TITLE: titleEsc,
     PRODUCT_PRICE: productPriceDisplay,
     PRODUCT_DESCRIPTION: escapeHtml(description),
+    PRODUCT_LINKS_HTML: linksHtml,
     PRODUCT_CAROUSEL: carouselHtml,
     PRODUCT_SKU_ESC: escapeHtml(sku),
     PRODUCT_VARIATIONS_HTML: variationsHtml,

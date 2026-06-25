@@ -2430,6 +2430,17 @@ window.carouselEditor = {
   },
 };
 
+window.buttonItemsEditor = {
+  normalizeButtonItems,
+  sanitizeButtonItemsForSave,
+  getButtonItemsFromEditor,
+  mountButtonItemsEditor(container, form, items, label) {
+    const block = { buttons: Array.isArray(items) ? items : [] };
+    const field = { label: label || "Buttons" };
+    appendButtonItemsFieldInput(container, field, block, form);
+  },
+};
+
 window.contentEditor = {
   bootEditPage,
   initEditorUi,

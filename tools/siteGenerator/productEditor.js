@@ -231,6 +231,7 @@ function buildProductSettingsHtml(row, pagePath) {
       )}" placeholder="shop/old-name, old-name" />
       <p class="content-edit-field-hint">Old paths that should redirect to this product. Comma-separated (e.g. <code>shop/calculator</code> or <code>calculator</code>).</p>
     </div>
+    <div class="content-edit-field content-edit-field--wide" data-product-links-mount></div>
     <div class="content-edit-field content-edit-field--wide">
       <label for="product-edit-legacy-url">Legacy shop URL</label>
       <input id="product-edit-legacy-url" type="text" name="LEGACY_SHOP_URL" value="${escapeAttr(String(row.LEGACY_SHOP_URL || ""))}" />
@@ -320,6 +321,15 @@ function collectProductRowFromForm(form) {
   const redirectsRaw = get("REDIRECTS");
   base.REDIRECTS =
     typeof parseRedirects === "function" ? parseRedirects(redirectsRaw) : redirectsRaw ? [redirectsRaw] : [];
+  const parseLinks = window.productData?.parseProductLinksList;
+  const sanitizeLinks = window.productData?.sanitizeProductLinksForSave;
+  const linkItems = window.buttonItemsEditor?.getButtonItemsFromEditor(form) || [];
+  base.LINKS =
+    typeof sanitizeLinks === "function"
+      ? sanitizeLinks(linkItems)
+      : typeof parseLinks === "function"
+        ? parseLinks(linkItems)
+        : [];
   base.DESCRIPTION = get("DESCRIPTION");
   base.PRICE = get("PRICE");
   base.CURRENCY_CODE = get("CURRENCY_CODE") || "AUD";
@@ -414,9 +424,15 @@ ${footerHtml}`;
 
   const form = document.querySelector("[data-product-edit-form]");
   const mount = form?.querySelector("[data-product-carousel-mount]");
+  const linksMount = form?.querySelector("[data-product-links-mount]");
   const carouselItems = window.productCarouselMap.productRowToCarouselItems(row);
   if (form && mount && window.carouselEditor?.mountCarouselEditor) {
     window.carouselEditor.mountCarouselEditor(mount, form, carouselItems, "Product images & video");
+  }
+  const parseLinks = window.productData?.parseProductLinksList;
+  const linkItems = typeof parseLinks === "function" ? parseLinks(row.LINKS) : [];
+  if (form && linksMount && window.buttonItemsEditor?.mountButtonItemsEditor) {
+    window.buttonItemsEditor.mountButtonItemsEditor(linksMount, form, linkItems, "Page links");
   }
 
   if (form) {

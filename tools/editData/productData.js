@@ -44,6 +44,30 @@ function parseRedirectsList(value) {
 }
 
 /**
+ * @param {unknown} value
+ * @returns {{ text: string, url: string }[]}
+ */
+function parseProductLinksList(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value
+    .map((item) => ({
+      text: String(item?.text || "").trim(),
+      url: String(item?.url || "").trim(),
+    }))
+    .filter((item) => item.text && item.url);
+}
+
+/**
+ * @param {unknown} value
+ * @returns {{ text: string, url: string }[]}
+ */
+function sanitizeProductLinksForSave(value) {
+  return parseProductLinksList(value);
+}
+
+/**
  * @param {string} segment - `shop/<segment>` slug part
  * @param {string} redirectPath - stored redirect (segment or full path)
  */
@@ -997,6 +1021,8 @@ function clearProductLayoutOverlays() {
     getProductSlugForRow,
     findProductBySlug,
     parseRedirectsList,
+    parseProductLinksList,
+    sanitizeProductLinksForSave,
     normalizeRedirectPath,
     redirectPathMatchesProductSlug,
     slugify,

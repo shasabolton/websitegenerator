@@ -1384,7 +1384,7 @@
 
     const columns = Array.isArray(root.columns) ? root.columns.slice() : [];
     const columnSet = new Set(columns);
-    for (const key of ["SLUG", "REDIRECTS", "DRAFT"]) {
+    for (const key of ["SLUG", "REDIRECTS", "LINKS", "DRAFT"]) {
       if (!columnSet.has(key)) {
         columns.push(key);
         columnSet.add(key);
