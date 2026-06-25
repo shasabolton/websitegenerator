@@ -315,7 +315,12 @@
       "REDIRECTS": [
         "shop/scriblo"
       ],
-      "LINKS": []
+      "LINKS": [
+        {
+          "text": "try the cam generator app",
+          "url": "https://shasabolton.github.io/lankydoodler/"
+        }
+      ]
     },
     {
       "TITLE": "Fluttering Heart Automata Kit - Kinetic mechanical model - Valentines Gift",
