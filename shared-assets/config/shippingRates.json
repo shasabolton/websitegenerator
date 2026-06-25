@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "notes": "Cart page maps country (ISO 3166-1 alpha-2: AU, NZ, etc.) to a zone; default zone is used for other codes (e.g. cart Other → US lookup). weight is tier ceiling in grams; pick smallest tier where cart weight <= weight.",
+  "notes": "Cart maps ISO country to a zone: AU and NZ have dedicated tiers; all other codes (listed countries and Other) use the default international zone.",
   "currency": "AUD",
   "rates": [
     {

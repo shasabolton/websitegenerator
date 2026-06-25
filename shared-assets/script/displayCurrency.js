@@ -27,29 +27,32 @@
   ];
   const ZERO_DECIMAL_CURRENCIES = ["JPY"];
 
-  const COUNTRY_TO_CURRENCY = {
-    AU: "AUD",
-    NZ: "NZD",
-    US: "USD",
-    GB: "GBP",
-    CA: "CAD",
-    JP: "JPY",
-    SG: "SGD",
-    HK: "HKD",
-    CH: "CHF",
-    SE: "SEK",
-    NO: "NOK",
-    DE: "EUR",
-    FR: "EUR",
-    IT: "EUR",
-    ES: "EUR",
-    NL: "EUR",
-    IE: "EUR",
-    AT: "EUR",
-    BE: "EUR",
-    PT: "EUR",
-    FI: "EUR",
-  };
+  const COUNTRY_TO_CURRENCY =
+    window.siteShipCountries && window.siteShipCountries.COUNTRY_TO_CURRENCY
+      ? window.siteShipCountries.COUNTRY_TO_CURRENCY
+      : {
+          AU: "AUD",
+          NZ: "NZD",
+          US: "USD",
+          GB: "GBP",
+          CA: "CAD",
+          JP: "JPY",
+          SG: "SGD",
+          HK: "HKD",
+          CH: "CHF",
+          SE: "SEK",
+          NO: "NOK",
+          DE: "EUR",
+          FR: "EUR",
+          IT: "EUR",
+          ES: "EUR",
+          NL: "EUR",
+          IE: "EUR",
+          AT: "EUR",
+          BE: "EUR",
+          PT: "EUR",
+          FI: "EUR",
+        };
 
   const TZ_TO_CURRENCY = {
     "Australia/Hobart": "AUD",

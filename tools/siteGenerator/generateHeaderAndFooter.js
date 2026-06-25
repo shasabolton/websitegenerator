@@ -160,6 +160,10 @@ function buildProductInstructionVideosScriptPath() {
   return "shared-assets/script/productInstructionVideos.js";
 }
 
+function buildShipCountriesScriptPath() {
+  return "shared-assets/script/shipCountries.js";
+}
+
 function buildDisplayCurrencyScriptPath() {
   return "shared-assets/script/displayCurrency.js";
 }
@@ -184,6 +188,7 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
   const productDataScriptPath = escapeHtml(buildProductDataScriptPath());
   const shoppingCartScriptPath = escapeHtml(buildShoppingCartScriptPath());
   const productInstructionVideosScriptPath = escapeHtml(buildProductInstructionVideosScriptPath());
+  const shipCountriesScriptPath = escapeHtml(buildShipCountriesScriptPath());
   const displayCurrencyScriptPath = escapeHtml(buildDisplayCurrencyScriptPath());
   const siteSearchScriptPath = escapeHtml(buildSiteSearchScriptPath());
 
@@ -209,6 +214,7 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
     productDataScriptPath,
     shoppingCartScriptPath,
     productInstructionVideosScriptPath,
+    shipCountriesScriptPath,
     displayCurrencyScriptPath,
     siteSearchScriptPath,
   };
