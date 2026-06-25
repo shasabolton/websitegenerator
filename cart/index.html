@@ -990,12 +990,6 @@ window.siteCart = new ShoppingCart("Contraption Cart");
             return;
           }
           paypalButtonsInstance = window.paypal.Buttons({
-            onShippingAddressChange: function (data, actions) {
-              var cc = data && data.shippingAddress && data.shippingAddress.countryCode;
-              if (!paypalShippingCountryMatchesCart(cc)) {
-                return actions.reject(data.errors.COUNTRY_ERROR);
-              }
-            },
             createOrder: function (data, actions) {
               if (!hasShipCountrySelected()) {
                 return Promise.reject(new Error("Ship to country not selected"));
