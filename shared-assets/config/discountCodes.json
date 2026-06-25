@@ -4,11 +4,12 @@
   "notes": "Each code may target the whole shop (omit skus) or specific product SKUs. minSubtotal and minQuantity apply to eligible lines only. Set active: false to disable without deleting.",
   "codes": [
     {
-      "code": "WELCOME10",
+      "code": "THANKYOU2ORMORE",
       "type": "percent",
       "value": 10,
-      "minSubtotal": 50,
-      "note": "10% off eligible items when subtotal is at least $50"
+      "minSubtotal": 100,
+      "minQuantity": 2,
+      "note": "10% off for 2 or more items"
     },
     {
       "code": "SAVE5",
