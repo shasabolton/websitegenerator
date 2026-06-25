@@ -1438,7 +1438,13 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "magic-frame",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "LINKS": [
+        {
+          "text": "Try the app to generate your own words and images",
+          "url": "https://shasabolton.github.io/magicFrame/"
+        }
+      ]
     },
     {
       "TITLE": "Dice Tunnel Magic Trick Laser Cut Illusion DIY Kit",
