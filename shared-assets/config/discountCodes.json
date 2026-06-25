@@ -4,14 +4,22 @@
   "notes": "Each code may target the whole shop (omit skus) or specific product SKUs. minSubtotal and minQuantity apply to eligible lines only. Set active: false to disable without deleting.",
   "codes": [
     {
+      "code": "NEWDESIGN",
+      "type": "percent",
+      "value": 20,
+      "skus": ["5"],
+      "note": "20% off specific product"
+    },
+    {
       "code": "THANKYOU2ORMORE",
       "type": "percent",
       "value": 10,
-      "minSubtotal": 100,
+      "minSubtotal": 0,
       "minQuantity": 2,
       "note": "10% off for 2 or more items"
     },
     {
+      "active": false,
       "code": "SAVE5",
       "type": "fixed",
       "value": 5,

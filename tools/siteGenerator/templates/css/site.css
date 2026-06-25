@@ -1430,6 +1430,40 @@ body.nav-scroll-lock {
   color: #111827;
 }
 
+.cart-ship-to-required {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.cart-ship-country-message {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.cart-ship-country-message--error {
+  color: #b91c1c;
+}
+
+.cart-ship-to-country--error {
+  border-color: #b91c1c;
+  outline-color: #b91c1c;
+}
+
+.cart-checkout-blocked {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #374151;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
 .cart-ship-to-country {
   min-width: 200px;
   padding: 6px 10px;

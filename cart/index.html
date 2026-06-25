@@ -279,13 +279,23 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       <strong id="cart-total-weight-amount"></strong>
     </p>
     <p class="cart-ship-to-row">
-      <label class="cart-ship-to-label" for="cart-ship-to-country">Ship to (sets shipping rate)</label>
-      <select id="cart-ship-to-country" class="cart-ship-to-country" aria-label="Ship to country for shipping cost">
+      <label class="cart-ship-to-label" for="cart-ship-to-country">
+        Ship to (sets shipping rate)
+        <span class="cart-ship-to-required">Required before checkout</span>
+      </label>
+      <select
+        id="cart-ship-to-country"
+        class="cart-ship-to-country"
+        aria-label="Ship to country for shipping cost"
+        required
+      >
+        <option value="" disabled selected hidden>Select shipping country</option>
         <option value="AU">Australia</option>
         <option value="NZ">New Zealand</option>
         <option value="__OTHER__">Other countries</option>
       </select>
     </p>
+    <p id="cart-ship-country-message" class="cart-ship-country-message" hidden></p>
     <p class="cart-shipping-estimate-row">
       Estimated shipping:
       <strong id="cart-shipping-estimate-amount"></strong>
@@ -294,12 +304,14 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       Estimated total:
       <strong id="cart-estimated-total-amount"></strong>
     </p>
+    <p id="cart-checkout-blocked" class="cart-checkout-blocked" hidden>
+      Select ship-to country above to continue to payment.
+    </p>
     <div id="cart-paypal-section" class="cart-paypal-section" hidden>
       <h2 class="cart-paypal-heading">Checkout with PayPal</h2>
       <p class="cart-paypal-hint">
-        Pay with your PayPal balance or card (where available). Choose <strong>Ship to</strong> above so
-        shipping matches your rates by weight. Use the <strong>same country</strong> for your PayPal shipping
-        address so the total stays correct.
+        Pay with your PayPal balance or card (where available). The <strong>Ship to</strong> country above
+        must match the shipping country you enter in PayPal so the total stays correct.
       </p>
       <div id="paypal-button-container" class="paypal-button-container"></div>
     </div>
@@ -330,6 +342,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       var displayCurrencyCodeEl = document.getElementById("cart-display-currency-code");
       var totalWeightEl = document.getElementById("cart-total-weight-amount");
       var shipCountryEl = document.getElementById("cart-ship-to-country");
+      var shipCountryMessageEl = document.getElementById("cart-ship-country-message");
+      var checkoutBlockedEl = document.getElementById("cart-checkout-blocked");
       var shippingEstimateEl = document.getElementById("cart-shipping-estimate-amount");
       var estimatedTotalEl = document.getElementById("cart-estimated-total-amount");
       var paypalSectionEl = document.getElementById("cart-paypal-section");
@@ -340,6 +354,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       var paypalSdkLoading = false;
       var shipCountryListenerBound = false;
       var SHIP_COUNTRY_STORAGE_KEY = "websitegenerator-cart-ship-country";
+      var SHIP_MISMATCH_MSG =
+        "Ship to in shopping cart does not match PayPal shipping address. Please check both and try again.";
       var cachedProducts = null;
 
       if (!cart || !root) {
@@ -645,14 +661,80 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         return Number(last.price) || 0;
       }
 
+      function getCartShipToSelection() {
+        if (!shipCountryEl) {
+          return "";
+        }
+        return String(shipCountryEl.value || "").trim();
+      }
+
+      function hasShipCountrySelected() {
+        var v = getCartShipToSelection();
+        return v === "AU" || v === "NZ" || v === "__OTHER__";
+      }
+
       /** Map cart "Other" to a non-listed ISO code so the default rate zone applies. */
       function getCartShipToCountryCode() {
-        var sel = shipCountryEl;
-        var v = sel && sel.value ? String(sel.value).trim() : "AU";
+        var v = getCartShipToSelection();
         if (v === "__OTHER__") {
           return "US";
         }
         return v;
+      }
+
+      function paypalShippingCountryMatchesCart(paypalCountryCode) {
+        var actual = String(paypalCountryCode || "")
+          .trim()
+          .toUpperCase();
+        if (!actual) {
+          return false;
+        }
+        var cartSel = getCartShipToSelection();
+        if (cartSel === "__OTHER__") {
+          return actual !== "AU" && actual !== "NZ";
+        }
+        if (cartSel === "AU" || cartSel === "NZ") {
+          return actual === cartSel;
+        }
+        return false;
+      }
+
+      function setShipCountryMessage(text, kind) {
+        if (!shipCountryMessageEl) {
+          return;
+        }
+        var msg = String(text || "").trim();
+        if (!msg) {
+          shipCountryMessageEl.hidden = true;
+          shipCountryMessageEl.textContent = "";
+          shipCountryMessageEl.classList.remove(
+            "cart-ship-country-message--error",
+            "cart-ship-country-message--success",
+          );
+          return;
+        }
+        shipCountryMessageEl.hidden = false;
+        shipCountryMessageEl.textContent = msg;
+        shipCountryMessageEl.classList.remove(
+          "cart-ship-country-message--error",
+          "cart-ship-country-message--success",
+        );
+        if (kind === "error") {
+          shipCountryMessageEl.classList.add("cart-ship-country-message--error");
+        } else if (kind === "success") {
+          shipCountryMessageEl.classList.add("cart-ship-country-message--success");
+        }
+      }
+
+      function highlightShipCountryError(on) {
+        if (shipCountryEl) {
+          shipCountryEl.classList.toggle("cart-ship-to-country--error", !!on);
+        }
+      }
+
+      function clearShipCountryError() {
+        setShipCountryMessage("", null);
+        highlightShipCountryError(false);
       }
 
       function shippingCostForCountryCode(countryCode) {
@@ -675,8 +757,14 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           }
         } catch (e) {}
         shipCountryEl.addEventListener("change", function () {
+          clearShipCountryError();
           try {
-            sessionStorage.setItem(SHIP_COUNTRY_STORAGE_KEY, shipCountryEl.value);
+            var sel = shipCountryEl.value;
+            if (sel === "AU" || sel === "NZ" || sel === "__OTHER__") {
+              sessionStorage.setItem(SHIP_COUNTRY_STORAGE_KEY, sel);
+            } else {
+              sessionStorage.removeItem(SHIP_COUNTRY_STORAGE_KEY);
+            }
           } catch (e2) {}
           destroyPayPalButtons();
           paypalMounted = false;
@@ -872,7 +960,23 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           paypalMounted = false;
           paypalMountInProgress = false;
           paypalSectionEl.hidden = true;
+          if (checkoutBlockedEl) {
+            checkoutBlockedEl.hidden = true;
+          }
           return;
+        }
+        if (!hasShipCountrySelected()) {
+          destroyPayPalButtons();
+          paypalMounted = false;
+          paypalMountInProgress = false;
+          paypalSectionEl.hidden = true;
+          if (checkoutBlockedEl) {
+            checkoutBlockedEl.hidden = false;
+          }
+          return;
+        }
+        if (checkoutBlockedEl) {
+          checkoutBlockedEl.hidden = true;
         }
         paypalSectionEl.hidden = false;
         if (paypalMounted || paypalMountInProgress) {
@@ -886,7 +990,16 @@ window.siteCart = new ShoppingCart("Contraption Cart");
             return;
           }
           paypalButtonsInstance = window.paypal.Buttons({
+            onShippingAddressChange: function (data, actions) {
+              var cc = data && data.shippingAddress && data.shippingAddress.countryCode;
+              if (!paypalShippingCountryMatchesCart(cc)) {
+                return actions.reject(data.errors.COUNTRY_ERROR);
+              }
+            },
             createOrder: function (data, actions) {
+              if (!hasShipCountrySelected()) {
+                return Promise.reject(new Error("Ship to country not selected"));
+              }
               var cur = (cart.data.currencyCode || "AUD").trim() || "AUD";
               var built = buildPayPalLineItems(cur);
               var itemTotal = built.itemTotalCents / 100;
@@ -929,19 +1042,43 @@ window.siteCart = new ShoppingCart("Contraption Cart");
             },
             onApprove: function (data, actions) {
               paypalDebug("onApprove start", { orderID: data.orderID });
-              return actions.order.capture().then(function (details) {
-                paypalDebug("onApprove capture OK", {
-                  status: details && details.status,
-                  payerEmail: details && details.payer && details.payer.email_address,
+              return actions.order
+                .get()
+                .then(function (order) {
+                  var pu = order && order.purchase_units && order.purchase_units[0];
+                  var shipAddr = pu && pu.shipping && pu.shipping.address;
+                  var cc = shipAddr && shipAddr.country_code;
+                  paypalDebug("onApprove order shipping", { country_code: cc });
+                  if (!paypalShippingCountryMatchesCart(cc)) {
+                    setShipCountryMessage(SHIP_MISMATCH_MSG, "error");
+                    highlightShipCountryError(true);
+                    if (shipCountryEl && typeof shipCountryEl.scrollIntoView === "function") {
+                      shipCountryEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                    }
+                    return Promise.reject(new Error("shipping_country_mismatch"));
+                  }
+                  return actions.order.capture().then(function (details) {
+                    paypalDebug("onApprove capture OK", {
+                      status: details && details.status,
+                      payerEmail: details && details.payer && details.payer.email_address,
+                    });
+                    clearShipCountryError();
+                    cart.data.items = [];
+                    cart.data.appliedDiscountCode = null;
+                    cart.saveToLocalStorage();
+                    destroyPayPalButtons();
+                    paypalMounted = false;
+                    renderCartPage();
+                    window.alert("Payment successful. Thank you!");
+                  });
+                })
+                .catch(function (err) {
+                  if (err && err.message === "shipping_country_mismatch") {
+                    return;
+                  }
+                  paypalDebug("onApprove FAILED", { error: paypalSerializeError(err) });
+                  throw err;
                 });
-                cart.data.items = [];
-                cart.data.appliedDiscountCode = null;
-                cart.saveToLocalStorage();
-                destroyPayPalButtons();
-                paypalMounted = false;
-                renderCartPage();
-                window.alert("Payment successful. Thank you!");
-              });
             },
             onError: function (err) {
               paypalDebug("Buttons onError", { error: paypalSerializeError(err) });
@@ -987,6 +1124,9 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           paypalMountInProgress = false;
           if (paypalSectionEl) {
             paypalSectionEl.hidden = true;
+          }
+          if (checkoutBlockedEl) {
+            checkoutBlockedEl.hidden = true;
           }
           return;
         }
@@ -1099,15 +1239,19 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         if (totalWeightEl && typeof cart.getTotalWeightKg === "function") {
           totalWeightEl.textContent = formatTotalWeightKg(cart.getTotalWeightKg());
         }
-        var shipCostDisplay = shippingCostForCountryCode(getCartShipToCountryCode());
+        var shipSelected = hasShipCountrySelected();
+        var shipCostDisplay = shipSelected
+          ? shippingCostForCountryCode(getCartShipToCountryCode())
+          : 0;
         if (shippingEstimateEl) {
-          shippingEstimateEl.textContent = formatMoney(shipCostDisplay, currency);
+          shippingEstimateEl.textContent = shipSelected
+            ? formatMoney(shipCostDisplay, currency)
+            : "—";
         }
         if (estimatedTotalEl) {
-          estimatedTotalEl.textContent = formatMoney(
-            Math.max(0, subtotal - discountAmount) + shipCostDisplay,
-            currency,
-          );
+          estimatedTotalEl.textContent = shipSelected
+            ? formatMoney(Math.max(0, subtotal - discountAmount) + shipCostDisplay, currency)
+            : "—";
         }
         ensurePayPalButtons();
       }
