@@ -1,3 +1,4 @@
+<script src="shared-assets/script/cartConfig.js"></script>
 <script src="shared-assets/script/discountCodes.js"></script>
 <section class="page-content cart-page" id="cart-page-root">
   <h1>Shopping cart</h1>
@@ -69,8 +70,9 @@
       var paypalClientId = __PAYPAL_CLIENT_ID_JSON__;
       var paypalEnv = __PAYPAL_ENV_JSON__;
       var paypalBuyerCountry = __PAYPAL_BUYER_COUNTRY_JSON__;
-      var shippingRatesConfig = __SHIPPING_RATES_JSON__;
-      var discountCodesConfig = __DISCOUNT_CODES_JSON__;
+      var shippingRatesConfig = { version: 0, currency: "AUD", rates: [] };
+      var discountCodesConfig = { version: 0, currency: "AUD", codes: [] };
+      var cartConfigLoadPromise = null;
       var cart = window.siteCart;
       var root = document.getElementById("cart-page-root");
       var emptyEl = document.getElementById("cart-page-empty");
@@ -103,6 +105,35 @@
 
       if (!cart || !root) {
         return;
+      }
+
+      function loadCartConfigs() {
+        if (cartConfigLoadPromise) {
+          return cartConfigLoadPromise;
+        }
+        if (!window.cartConfig) {
+          return Promise.resolve();
+        }
+        cartConfigLoadPromise = Promise.all([
+          typeof window.cartConfig.fetchShippingRates === "function"
+            ? window.cartConfig.fetchShippingRates()
+            : Promise.resolve(shippingRatesConfig),
+          typeof window.cartConfig.fetchDiscountCodes === "function"
+            ? window.cartConfig.fetchDiscountCodes()
+            : Promise.resolve(discountCodesConfig),
+        ])
+          .then(function (results) {
+            if (results[0] && typeof results[0] === "object") {
+              shippingRatesConfig = results[0];
+            }
+            if (results[1] && typeof results[1] === "object") {
+              discountCodesConfig = results[1];
+            }
+          })
+          .catch(function () {
+            /* keep defaults */
+          });
+        return cartConfigLoadPromise;
       }
 
       function escHtml(s) {
@@ -844,15 +875,16 @@
 
       function renderCartPage() {
         var items = cart.data.items || [];
+        var configsPromise = loadCartConfigs();
         if (
           items.length > 0 &&
           window.productData &&
           typeof window.productData.fetchProductDataJson === "function" &&
           typeof window.productData.repriceCartItemsInPlace === "function"
         ) {
-          window.productData
-            .fetchProductDataJson()
-            .then(function (data) {
+          Promise.all([configsPromise, window.productData.fetchProductDataJson()])
+            .then(function (results) {
+              var data = results[1];
               var products = (data && data.products) || [];
               cachedProducts = products;
               if (window.productData.repriceCartItemsInPlace(cart.data, products)) {
@@ -865,7 +897,9 @@
             });
           return;
         }
-        renderCartPageInner();
+        configsPromise.then(function () {
+          renderCartPageInner();
+        });
       }
 
       root.addEventListener("click", function (e) {

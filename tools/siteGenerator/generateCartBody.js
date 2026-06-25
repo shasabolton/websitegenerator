@@ -15,23 +15,7 @@ async function buildCartBody(ctx) {
   const fetchText = window.generateAnyPage.fetchText;
   const applyTemplate = window.generateAnyPage.applyTemplate;
   const { shopData, products } = ctx;
-  const [cartTemplate, shippingRatesText, discountCodesText] = await Promise.all([
-    fetchText("./templates/partials/cartBody.html"),
-    fetchText("../../shared-assets/config/shippingRates.json"),
-    fetchText("../../shared-assets/config/discountCodes.json"),
-  ]);
-  let shippingRatesData = { version: 0, currency: "AUD", rates: [] };
-  try {
-    shippingRatesData = JSON.parse(shippingRatesText);
-  } catch {
-    /* keep default */
-  }
-  let discountCodesData = { version: 0, currency: "AUD", codes: [] };
-  try {
-    discountCodesData = JSON.parse(discountCodesText);
-  } catch {
-    /* keep default */
-  }
+  const cartTemplate = await fetchText("./templates/partials/cartBody.html");
   const categories = window.productData.getProductsByCategory(products);
   const shopNameEsc = escapeHtml(shopData?.shopName || "Shop");
   const paypalClientId = String(shopData?.paypal?.clientId ?? "").trim();
@@ -43,8 +27,6 @@ async function buildCartBody(ctx) {
     PAYPAL_CLIENT_ID_JSON: JSON.stringify(paypalClientId),
     PAYPAL_ENV_JSON: JSON.stringify(paypalEnvironment === "live" ? "live" : "sandbox"),
     PAYPAL_BUYER_COUNTRY_JSON: JSON.stringify(/^[A-Z]{2}$/.test(paypalBuyerCountry) ? paypalBuyerCountry : "AU"),
-    SHIPPING_RATES_JSON: JSON.stringify(shippingRatesData),
-    DISCOUNT_CODES_JSON: JSON.stringify(discountCodesData),
   });
   const truncateText = window.structuredData?.truncateText;
   const metaDescription =
