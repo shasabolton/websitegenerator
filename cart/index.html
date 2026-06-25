@@ -60,7 +60,6 @@
     -->
     <script src="tools/editData/productData.js"></script>
     <script src="shared-assets/script/shoppingCart.js"></script>
-    <script src="shared-assets/script/shipCountries.js"></script>
     <script src="shared-assets/script/displayCurrency.js"></script>
     <script src="shared-assets/script/siteSearch.js" defer></script>
     <script>
@@ -238,7 +237,6 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </script>
 
     <main class="site-main">
-      <script src="shared-assets/script/shipCountries.js"></script>
       <script src="shared-assets/script/cartConfig.js"></script>
 <script src="shared-assets/script/discountCodes.js"></script>
 <section class="page-content cart-page" id="cart-page-root">
@@ -290,7 +288,12 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         class="cart-ship-to-country"
         aria-label="Ship to country for shipping cost"
         required
-      ></select>
+      >
+        <option value="" disabled selected hidden>Select shipping country</option>
+        <option value="AU">Australia</option>
+        <option value="NZ">New Zealand</option>
+        <option value="__OTHER__">Other countries</option>
+      </select>
     </p>
     <p id="cart-ship-country-message" class="cart-ship-country-message" hidden></p>
     <p class="cart-shipping-estimate-row">
@@ -307,9 +310,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     <div id="cart-paypal-section" class="cart-paypal-section" hidden>
       <h2 class="cart-paypal-heading">Checkout with PayPal</h2>
       <p class="cart-paypal-hint">
-        Pay with your PayPal balance or card (where available). Your <strong>Ship to</strong> country is
-        applied to the card form (locked for listed countries; choose <strong>Other countries</strong> if yours
-        is not listed).
+        Pay with your PayPal balance or card (where available). The <strong>Ship to</strong> country above
+        must match the shipping country you enter in PayPal so the total stays correct.
       </p>
       <div id="paypal-button-container" class="paypal-button-container"></div>
     </div>
@@ -355,110 +357,9 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       var SHIP_MISMATCH_MSG =
         "Ship to in shopping cart does not match PayPal shipping address. Please check both and try again.";
       var cachedProducts = null;
-      var shipCountryOptionsBuilt = false;
 
       if (!cart || !root) {
         return;
-      }
-
-      function shipCountriesApi() {
-        return window.siteShipCountries || null;
-      }
-
-      function getCartShipToSelection() {
-        if (!shipCountryEl) {
-          return "";
-        }
-        return String(shipCountryEl.value || "").trim();
-      }
-
-      function hasShipCountrySelected() {
-        var api = shipCountriesApi();
-        if (api && typeof api.hasShipCountrySelected === "function") {
-          return api.hasShipCountrySelected(getCartShipToSelection());
-        }
-        var v = getCartShipToSelection();
-        return v === "AU" || v === "NZ" || v === "__OTHER__";
-      }
-
-      function getCartShipToCountryCode() {
-        var api = shipCountriesApi();
-        var sel = getCartShipToSelection();
-        if (api && typeof api.getShippingRateCountryCode === "function") {
-          return api.getShippingRateCountryCode(sel);
-        }
-        if (sel === "__OTHER__") {
-          return "US";
-        }
-        return sel;
-      }
-
-      function paypalShippingCountryMatchesCart(paypalCountryCode) {
-        var api = shipCountriesApi();
-        if (api && typeof api.paypalCountryMatchesCart === "function") {
-          return api.paypalCountryMatchesCart(getCartShipToSelection(), paypalCountryCode);
-        }
-        var actual = String(paypalCountryCode || "")
-          .trim()
-          .toUpperCase();
-        if (!actual) {
-          return false;
-        }
-        var cartSel = getCartShipToSelection();
-        if (cartSel === "__OTHER__") {
-          return actual !== "AU" && actual !== "NZ";
-        }
-        return actual === String(cartSel || "").trim().toUpperCase();
-      }
-
-      function buildPayPalShippingForOrder() {
-        var api = shipCountriesApi();
-        var sel = getCartShipToSelection();
-        var countryCode = "";
-        var preference = "GET_FROM_FILE";
-        if (api) {
-          if (typeof api.getPayPalShippingCountryCode === "function") {
-            countryCode = api.getPayPalShippingCountryCode(sel);
-          }
-          if (typeof api.getPayPalShippingPreference === "function") {
-            preference = api.getPayPalShippingPreference(sel);
-          }
-        } else if (sel && sel !== "__OTHER__") {
-          countryCode = sel;
-          preference = "SET_PROVIDED_ADDRESS";
-        } else if (sel === "__OTHER__") {
-          countryCode = "US";
-        }
-        return {
-          countryCode: countryCode,
-          preference: preference,
-        };
-      }
-
-      function ensureShipCountryOptions() {
-        if (!shipCountryEl || shipCountryOptionsBuilt) {
-          return;
-        }
-        var api = shipCountriesApi();
-        var saved = "";
-        try {
-          saved = sessionStorage.getItem(SHIP_COUNTRY_STORAGE_KEY) || "";
-        } catch (e) {}
-        if (api && typeof api.isValidStoredShipCountry === "function" && !api.isValidStoredShipCountry(saved)) {
-          saved = "";
-        } else if (
-          saved &&
-          saved !== "__OTHER__" &&
-          saved !== "AU" &&
-          saved !== "NZ" &&
-          (!api || typeof api.isListedCountryCode !== "function" || !api.isListedCountryCode(saved))
-        ) {
-          saved = "";
-        }
-        if (api && typeof api.populateShipCountrySelect === "function") {
-          api.populateShipCountrySelect(shipCountryEl, saved);
-        }
-        shipCountryOptionsBuilt = true;
       }
 
       function loadCartConfigs() {
@@ -760,6 +661,44 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         return Number(last.price) || 0;
       }
 
+      function getCartShipToSelection() {
+        if (!shipCountryEl) {
+          return "";
+        }
+        return String(shipCountryEl.value || "").trim();
+      }
+
+      function hasShipCountrySelected() {
+        var v = getCartShipToSelection();
+        return v === "AU" || v === "NZ" || v === "__OTHER__";
+      }
+
+      /** Map cart "Other" to a non-listed ISO code so the default rate zone applies. */
+      function getCartShipToCountryCode() {
+        var v = getCartShipToSelection();
+        if (v === "__OTHER__") {
+          return "US";
+        }
+        return v;
+      }
+
+      function paypalShippingCountryMatchesCart(paypalCountryCode) {
+        var actual = String(paypalCountryCode || "")
+          .trim()
+          .toUpperCase();
+        if (!actual) {
+          return false;
+        }
+        var cartSel = getCartShipToSelection();
+        if (cartSel === "__OTHER__") {
+          return actual !== "AU" && actual !== "NZ";
+        }
+        if (cartSel === "AU" || cartSel === "NZ") {
+          return actual === cartSel;
+        }
+        return false;
+      }
+
       function setShipCountryMessage(text, kind) {
         if (!shipCountryMessageEl) {
           return;
@@ -810,20 +749,18 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         if (shipCountryListenerBound || !shipCountryEl) {
           return;
         }
-        ensureShipCountryOptions();
         shipCountryListenerBound = true;
+        try {
+          var saved = sessionStorage.getItem(SHIP_COUNTRY_STORAGE_KEY);
+          if (saved === "AU" || saved === "NZ" || saved === "__OTHER__") {
+            shipCountryEl.value = saved;
+          }
+        } catch (e) {}
         shipCountryEl.addEventListener("change", function () {
           clearShipCountryError();
           try {
             var sel = shipCountryEl.value;
-            var api = shipCountriesApi();
-            if (
-              api &&
-              typeof api.isValidStoredShipCountry === "function" &&
-              api.isValidStoredShipCountry(sel)
-            ) {
-              sessionStorage.setItem(SHIP_COUNTRY_STORAGE_KEY, sel);
-            } else if (sel === "AU" || sel === "NZ" || sel === "__OTHER__") {
+            if (sel === "AU" || sel === "NZ" || sel === "__OTHER__") {
               sessionStorage.setItem(SHIP_COUNTRY_STORAGE_KEY, sel);
             } else {
               sessionStorage.removeItem(SHIP_COUNTRY_STORAGE_KEY);
@@ -1053,6 +990,12 @@ window.siteCart = new ShoppingCart("Contraption Cart");
             return;
           }
           paypalButtonsInstance = window.paypal.Buttons({
+            onShippingAddressChange: function (data, actions) {
+              var cc = data && data.shippingAddress && data.shippingAddress.countryCode;
+              if (!paypalShippingCountryMatchesCart(cc)) {
+                return actions.reject(data.errors.COUNTRY_ERROR);
+              }
+            },
             createOrder: function (data, actions) {
               if (!hasShipCountrySelected()) {
                 return Promise.reject(new Error("Ship to country not selected"));
@@ -1063,28 +1006,11 @@ window.siteCart = new ShoppingCart("Contraption Cart");
               var shipCc = getCartShipToCountryCode();
               var shipCost = shippingCostForCountryCode(shipCc);
               var discountAmount = currentDiscountAmount();
-              var paypalShip = buildPayPalShippingForOrder();
-              var purchaseUnit = {
-                reference_id: "cart",
-                description: discountAmount > 0 ? "Cart order (discount applied)" : "Cart order",
-                items: built.items,
-                amount: orderAmountValue(itemTotal, shipCost, discountAmount, cur),
-              };
-              if (paypalShip.countryCode) {
-                purchaseUnit.shipping = {
-                  type: "SHIPPING",
-                  address: {
-                    country_code: paypalShip.countryCode,
-                  },
-                };
-              }
               paypalDebug("createOrder start", {
                 currency: cur,
                 itemTotal: itemTotal,
                 discountAmount: discountAmount,
                 shipCountryResolved: shipCc,
-                paypalShipCountry: paypalShip.countryCode,
-                paypalShipPreference: paypalShip.preference,
                 shipCost: shipCost,
                 weightGrams: cartWeightGrams(),
                 lineCount: (cart.data.items || []).length,
@@ -1092,9 +1018,16 @@ window.siteCart = new ShoppingCart("Contraption Cart");
               });
               return actions.order
                 .create({
-                  purchase_units: [purchaseUnit],
+                  purchase_units: [
+                    {
+                      reference_id: "cart",
+                      description: discountAmount > 0 ? "Cart order (discount applied)" : "Cart order",
+                      items: built.items,
+                      amount: orderAmountValue(itemTotal, shipCost, discountAmount, cur),
+                    },
+                  ],
                   application_context: {
-                    shipping_preference: paypalShip.preference,
+                    shipping_preference: "GET_FROM_FILE",
                     user_action: "PAY_NOW",
                   },
                 })
@@ -1208,7 +1141,6 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         }
 
         bindShipCountryOnce();
-        ensureShipCountryOptions();
 
         clearAppliedDiscountIfInvalid();
         var discountResult = evaluateAppliedDiscount();
