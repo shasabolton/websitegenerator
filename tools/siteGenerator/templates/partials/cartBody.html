@@ -1,3 +1,4 @@
+<script src="shared-assets/script/discountCodes.js"></script>
 <section class="page-content cart-page" id="cart-page-root">
   <h1>Shopping cart</h1>
   <p id="cart-page-empty" class="cart-page-empty">Your cart is empty.</p>
@@ -10,6 +11,28 @@
     <p class="cart-subtotal-row">
       Subtotal (<span id="cart-currency-label"></span>):
       <strong id="cart-subtotal-amount"></strong>
+    </p>
+    <div class="cart-promo-row" id="cart-promo-section">
+      <label class="cart-promo-label" for="cart-promo-input">Discount code</label>
+      <div class="cart-promo-controls">
+        <input
+          type="text"
+          id="cart-promo-input"
+          class="cart-promo-input"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Enter code"
+        />
+        <button type="button" id="cart-promo-apply" class="cart-promo-apply">Apply</button>
+      </div>
+      <p id="cart-promo-message" class="cart-promo-message" hidden></p>
+    </div>
+    <p class="cart-discount-row" id="cart-discount-row" hidden>
+      Discount (<span id="cart-discount-label"></span>):
+      <strong id="cart-discount-amount"></strong>
+      <button type="button" id="cart-discount-remove" class="cart-discount-remove">
+        Remove
+      </button>
     </p>
     <p class="cart-total-weight-row">
       Total weight:
@@ -47,12 +70,20 @@
       var paypalEnv = __PAYPAL_ENV_JSON__;
       var paypalBuyerCountry = __PAYPAL_BUYER_COUNTRY_JSON__;
       var shippingRatesConfig = __SHIPPING_RATES_JSON__;
+      var discountCodesConfig = __DISCOUNT_CODES_JSON__;
       var cart = window.siteCart;
       var root = document.getElementById("cart-page-root");
       var emptyEl = document.getElementById("cart-page-empty");
       var linesEl = document.getElementById("cart-lines-container");
       var summaryEl = document.getElementById("cart-page-summary");
       var subtotalEl = document.getElementById("cart-subtotal-amount");
+      var promoInputEl = document.getElementById("cart-promo-input");
+      var promoApplyEl = document.getElementById("cart-promo-apply");
+      var promoMessageEl = document.getElementById("cart-promo-message");
+      var discountRowEl = document.getElementById("cart-discount-row");
+      var discountLabelEl = document.getElementById("cart-discount-label");
+      var discountAmountEl = document.getElementById("cart-discount-amount");
+      var discountRemoveEl = document.getElementById("cart-discount-remove");
       var currencyLabelEl = document.getElementById("cart-currency-label");
       var displayCurrencyNoteEl = document.getElementById("cart-display-currency-note");
       var displayCurrencyCodeEl = document.getElementById("cart-display-currency-code");
@@ -168,6 +199,124 @@
           sum += lineSubtotal(items[i]);
         }
         return sum;
+      }
+
+      function getAppliedDiscountCode() {
+        var raw = cart.data.appliedDiscountCode;
+        if (raw == null || raw === "") {
+          return "";
+        }
+        return String(raw).trim();
+      }
+
+      function evaluateAppliedDiscount() {
+        var code = getAppliedDiscountCode();
+        if (!code || !window.discountCodes || typeof window.discountCodes.evaluateDiscount !== "function") {
+          return { ok: false, amount: 0 };
+        }
+        return window.discountCodes.evaluateDiscount(discountCodesConfig, code, cart.data.items || []);
+      }
+
+      function clearAppliedDiscountIfInvalid() {
+        var code = getAppliedDiscountCode();
+        if (!code) {
+          return false;
+        }
+        var result = evaluateAppliedDiscount();
+        if (!result.ok) {
+          cart.data.appliedDiscountCode = null;
+          cart.saveToLocalStorage();
+          return true;
+        }
+        return false;
+      }
+
+      function setPromoMessage(text, kind) {
+        if (!promoMessageEl) {
+          return;
+        }
+        var msg = String(text || "").trim();
+        if (!msg) {
+          promoMessageEl.hidden = true;
+          promoMessageEl.textContent = "";
+          promoMessageEl.classList.remove("cart-promo-message--error", "cart-promo-message--success");
+          return;
+        }
+        promoMessageEl.hidden = false;
+        promoMessageEl.textContent = msg;
+        promoMessageEl.classList.remove("cart-promo-message--error", "cart-promo-message--success");
+        if (kind === "error") {
+          promoMessageEl.classList.add("cart-promo-message--error");
+        } else if (kind === "success") {
+          promoMessageEl.classList.add("cart-promo-message--success");
+        }
+      }
+
+      function syncDiscountUi(discountResult, currency) {
+        var applied = discountResult && discountResult.ok;
+        if (discountRowEl) {
+          discountRowEl.hidden = !applied;
+        }
+        if (applied) {
+          if (discountLabelEl) {
+            discountLabelEl.textContent = discountResult.label || discountResult.code || "Discount";
+          }
+          if (discountAmountEl) {
+            discountAmountEl.textContent = "−" + formatMoney(discountResult.amount, currency);
+          }
+          if (promoInputEl) {
+            promoInputEl.value = discountResult.code || "";
+          }
+        } else if (promoInputEl && !getAppliedDiscountCode()) {
+          /* keep typed value when not applied */
+        }
+      }
+
+      function resetPayPalForTotalChange() {
+        destroyPayPalButtons();
+        paypalMounted = false;
+        paypalMountInProgress = false;
+      }
+
+      function applyPromoCode() {
+        var raw = promoInputEl ? promoInputEl.value : "";
+        if (!window.discountCodes || typeof window.discountCodes.evaluateDiscount !== "function") {
+          setPromoMessage("Discount codes are not available.", "error");
+          return;
+        }
+        var result = window.discountCodes.evaluateDiscount(
+          discountCodesConfig,
+          raw,
+          cart.data.items || [],
+        );
+        if (!result.ok) {
+          setPromoMessage(result.reason || "Discount code could not be applied.", "error");
+          return;
+        }
+        cart.data.appliedDiscountCode = result.code;
+        cart.saveToLocalStorage();
+        setPromoMessage("Discount applied.", "success");
+        resetPayPalForTotalChange();
+        renderCartPage();
+      }
+
+      function removePromoCode() {
+        if (!getAppliedDiscountCode()) {
+          return;
+        }
+        cart.data.appliedDiscountCode = null;
+        cart.saveToLocalStorage();
+        if (promoInputEl) {
+          promoInputEl.value = "";
+        }
+        setPromoMessage("", null);
+        resetPayPalForTotalChange();
+        renderCartPage();
+      }
+
+      function currentDiscountAmount() {
+        var result = evaluateAppliedDiscount();
+        return result.ok ? result.amount : 0;
       }
 
       function cartWeightGrams() {
@@ -312,8 +461,19 @@
         return { items: items, itemTotalCents: itemTotalCents };
       }
 
-      /** Money as integer cents so value === item_total + shipping in PayPal validation. */
-      function orderAmountValue(itemTotal, shippingVal, currencyCode) {
+      /** Money as integer cents so value === item_total - discount + shipping in PayPal validation. */
+      function orderAmountValue(itemTotal, shippingVal, discountVal, currencyCode) {
+        if (
+          window.discountCodes &&
+          typeof window.discountCodes.orderAmountWithDiscount === "function"
+        ) {
+          return window.discountCodes.orderAmountWithDiscount(
+            itemTotal,
+            shippingVal,
+            discountVal,
+            currencyCode,
+          );
+        }
         var cur = String(currencyCode || "AUD").trim() || "AUD";
         var itemCents = Math.round(Math.max(0, Number(itemTotal) || 0) * 100);
         var shipCents = Math.round(Math.max(0, Number(shippingVal) || 0) * 100);
@@ -462,9 +622,11 @@
               var itemTotal = built.itemTotalCents / 100;
               var shipCc = getCartShipToCountryCode();
               var shipCost = shippingCostForCountryCode(shipCc);
+              var discountAmount = currentDiscountAmount();
               paypalDebug("createOrder start", {
                 currency: cur,
                 itemTotal: itemTotal,
+                discountAmount: discountAmount,
                 shipCountryResolved: shipCc,
                 shipCost: shipCost,
                 weightGrams: cartWeightGrams(),
@@ -476,9 +638,9 @@
                   purchase_units: [
                     {
                       reference_id: "cart",
-                      description: "Cart order",
+                      description: discountAmount > 0 ? "Cart order (discount applied)" : "Cart order",
                       items: built.items,
-                      amount: orderAmountValue(itemTotal, shipCost, cur),
+                      amount: orderAmountValue(itemTotal, shipCost, discountAmount, cur),
                     },
                   ],
                   application_context: {
@@ -503,6 +665,7 @@
                   payerEmail: details && details.payer && details.payer.email_address,
                 });
                 cart.data.items = [];
+                cart.data.appliedDiscountCode = null;
                 cart.saveToLocalStorage();
                 destroyPayPalButtons();
                 paypalMounted = false;
@@ -568,6 +731,11 @@
         }
 
         bindShipCountryOnce();
+
+        clearAppliedDiscountIfInvalid();
+        var discountResult = evaluateAppliedDiscount();
+        var discountAmount = discountResult.ok ? discountResult.amount : 0;
+        syncDiscountUi(discountResult, currency);
 
         var subtotal = 0;
         var rowsHtml = items
@@ -666,7 +834,10 @@
           shippingEstimateEl.textContent = formatMoney(shipCostDisplay, currency);
         }
         if (estimatedTotalEl) {
-          estimatedTotalEl.textContent = formatMoney(subtotal + shipCostDisplay, currency);
+          estimatedTotalEl.textContent = formatMoney(
+            Math.max(0, subtotal - discountAmount) + shipCostDisplay,
+            currency,
+          );
         }
         ensurePayPalButtons();
       }
@@ -700,6 +871,16 @@
       root.addEventListener("click", function (e) {
         var t = e.target;
         if (!t || !t.closest) {
+          return;
+        }
+        if (t.closest("#cart-promo-apply")) {
+          e.preventDefault();
+          applyPromoCode();
+          return;
+        }
+        if (t.closest("#cart-discount-remove")) {
+          e.preventDefault();
+          removePromoCode();
           return;
         }
         var lineEl = t.closest(".cart-line");
@@ -750,6 +931,13 @@
         }
         cart.setLineItemQuantity(lineKey, v);
         renderCartPage();
+      });
+
+      root.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && e.target && e.target.id === "cart-promo-input") {
+          e.preventDefault();
+          applyPromoCode();
+        }
       });
 
       renderCartPage();

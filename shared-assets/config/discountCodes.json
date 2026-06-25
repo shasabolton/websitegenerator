@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "currency": "AUD",
+  "notes": "Each code may target the whole shop (omit skus) or specific product SKUs. minSubtotal and minQuantity apply to eligible lines only. Set active: false to disable without deleting.",
+  "codes": [
+    {
+      "code": "WELCOME10",
+      "type": "percent",
+      "value": 10,
+      "minSubtotal": 50,
+      "note": "10% off eligible items when subtotal is at least $50"
+    },
+    {
+      "code": "SAVE5",
+      "type": "fixed",
+      "value": 5,
+      "skus": ["5"],
+      "minQuantity": 2,
+      "note": "$5 off when buying 2+ units of listed automata SKUs"
+    }
+  ]
+}

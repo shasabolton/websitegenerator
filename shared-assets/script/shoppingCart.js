@@ -135,11 +135,12 @@ function slugifyStorageKeyPart(value) {
 class ShoppingCart {
   constructor(shopName = "") {
     this.shopName = String(shopName || "").trim();
-    /** @type {{ items: CartLineItem[], currencyCode: string, updatedAt: string | null }} */
+    /** @type {{ items: CartLineItem[], currencyCode: string, updatedAt: string | null, appliedDiscountCode: string | null }} */
     this.data = {
       items: [],
       currencyCode: "AUD",
       updatedAt: null,
+      appliedDiscountCode: null,
     };
     this.loadFromLocalStorage();
   }
@@ -356,7 +357,12 @@ class ShoppingCart {
     const currencyCode =
       typeof parsed.currencyCode === "string" ? parsed.currencyCode : this.data.currencyCode;
     const updatedAt = parsed.updatedAt == null ? null : String(parsed.updatedAt);
-    this.data = { items, currencyCode, updatedAt };
+    const appliedRaw = parsed.appliedDiscountCode;
+    const appliedDiscountCode =
+      appliedRaw == null || appliedRaw === ""
+        ? null
+        : String(appliedRaw).trim().toUpperCase() || null;
+    this.data = { items, currencyCode, updatedAt, appliedDiscountCode };
   }
 }
 
