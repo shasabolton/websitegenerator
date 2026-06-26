@@ -13,7 +13,14 @@
   "blocks": [
     {
       "type": "title",
-      "text": "Sword Through Finger"
+      "text": "Sword Through Finger Help"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/2LFEcOYopx4?si=239Wf3pGYUqwiesm",
+      "title": "",
+      "caption": ""
     },
     {
       "type": "video",
