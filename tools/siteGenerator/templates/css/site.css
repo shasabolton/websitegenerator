@@ -792,9 +792,6 @@ body.nav-scroll-lock {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  max-width: var(--site-content-max-width);
-  margin: 0 auto;
-  padding: 0 var(--site-inline-padding);
   color: #ffffff;
 }
 
