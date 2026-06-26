@@ -1,14 +1,17 @@
  
- Lanky webapp link in product data
  add google analytics
  wholesale pricelist
  advertising and social media generation
- discount codes
  newsletter for discounts and new products
  click tracking
 
  After live
  Change tinycc links to instr=true etc
+
+
+done:------------------------
+Lanky webapp link in product data
+discount codes
 
 magic tricks with legacy tutorial slugs to copy
 
