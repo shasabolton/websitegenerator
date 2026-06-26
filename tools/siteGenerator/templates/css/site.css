@@ -846,8 +846,8 @@ body.nav-scroll-lock {
 
 .shop-category-scroll {
   position: relative;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 8px;
   min-width: 0;
@@ -858,6 +858,8 @@ body.nav-scroll-lock {
 
 .shop-category-scroll-viewport {
   position: relative;
+  order: 2;
+  flex: 1 1 0%;
   min-width: 0;
   max-width: 100%;
   overflow-x: clip;
@@ -938,6 +940,14 @@ body.nav-scroll-lock {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+.shop-category-scroll-btn--prev {
+  order: 1;
+}
+
+.shop-category-scroll-btn--next {
+  order: 3;
+}
+
 .shop-category-scroll-btn:hover:not(:disabled) {
   background: #1f2937;
   border-color: #1f2937;
@@ -954,21 +964,22 @@ body.nav-scroll-lock {
 }
 
 .shop-category-scroll-btn-icon {
-  font-size: 2rem;
-  line-height: 1;
-  font-weight: 700;
+  display: block;
+  flex-shrink: 0;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.shop-category-scroll-btn--prev .shop-category-scroll-btn-icon {
+  border-right: none;
+  border-left: 2px solid currentColor;
+  transform: rotate(-45deg);
 }
 
 @media (max-width: 767px) {
-  .shop-category-scroll {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-  }
-
-  .shop-category-scroll-viewport {
-    grid-column: 1;
-  }
-
   .shop-category-scroll-btn {
     display: none;
   }
