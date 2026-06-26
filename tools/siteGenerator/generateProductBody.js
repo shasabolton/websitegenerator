@@ -63,9 +63,10 @@ function productDisplayImageUrl(url, size) {
   return String(url || "").trim();
 }
 
-function buildProductThumbsHtml(productThumbTemplate, products) {
+function buildProductThumbsHtml(productThumbTemplate, products, options = {}) {
+  const eagerCount = Math.max(0, Number(options.eagerCount) || 0);
   return products
-    .map((product) => {
+    .map((product, index) => {
       const priceAud = product.priceAud;
       const priceDisplay =
         product.priceRow && typeof formatProductPriceDisplay === "function"
@@ -84,6 +85,7 @@ function buildProductThumbsHtml(productThumbTemplate, products) {
         PRODUCT_TITLE: escapeHtml(product.title),
         PRODUCT_PRICE: priceDisplay,
         PRODUCT_PRICE_AUD: priceAudAttr,
+        PRODUCT_IMAGE_LOADING: index < eagerCount ? "eager" : "lazy",
       });
     })
     .join("");

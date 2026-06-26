@@ -79,21 +79,21 @@ async function buildCategoryPreviewsHtml(products, shopData) {
   }
 
   const fetchText = window.generateAnyPage.fetchText;
-  const [productThumbTemplate, productThumbRowTemplate, categoryPreviewTemplate] = await Promise.all([
+  const [productThumbTemplate, shopCategoryThumbRowTemplate, categoryPreviewTemplate] = await Promise.all([
     fetchText("./templates/partials/productThumb.html"),
-    fetchText("./templates/partials/productThumbRow.html"),
+    fetchText("./templates/partials/shopCategoryThumbRow.html"),
     fetchText("./templates/partials/categoryPreview.html"),
   ]);
 
   const categorySections = categories
     .map((category) => {
-      const slice = category.products.slice(0, 3);
       const buildThumbs = window.generateProductBody?.buildProductThumbsHtml;
       if (typeof buildThumbs !== "function") {
         throw new Error("generateProductBody.js must be loaded before generateShopBody.");
       }
-      const thumbsHtml = buildThumbs(productThumbTemplate, slice);
-      const rowHtml = applyTemplate(productThumbRowTemplate, {
+      const thumbsHtml = buildThumbs(productThumbTemplate, category.products, { eagerCount: 3 });
+      const rowHtml = applyTemplate(shopCategoryThumbRowTemplate, {
+        CATEGORY_NAME: escapeHtml(category.name),
         PRODUCT_THUMBS: thumbsHtml || EMPTY_THUMB_ROW,
       });
 
@@ -141,6 +141,8 @@ async function generateShopBody(ctx) {
       products,
       catalogProducts: products,
     },
+    extraDeferScripts:
+      '<script src="shared-assets/script/shopCategoryScroll.js" defer></script>',
   };
 }
 
