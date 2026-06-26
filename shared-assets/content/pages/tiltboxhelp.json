@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "slug": "tiltboxhelp",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "Instant Coke",
+    "description": "",
+    "redirects": [
+      "tiltboxhelp"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Instant Coke"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://www.youtube.com/watch?v=sXj3tAQBmlA",
+      "title": "",
+      "caption": ""
+    }
+  ]
+}

@@ -41,6 +41,41 @@
       "label": "laser cutting tips",
       "href": "lasercuttingtips",
       "hide": true
+    },
+    {
+      "label": "Sword Through Finger",
+      "href": "fingerswordhelp",
+      "hide": true
+    },
+    {
+      "label": "Newcomb's Paradox",
+      "href": "newcombtutorial",
+      "hide": true
+    },
+    {
+      "label": "Instant Coke",
+      "href": "tiltboxhelp",
+      "hide": true
+    },
+    {
+      "label": "Dice Tunnel",
+      "href": "dicetunnelhelp",
+      "hide": true
+    },
+    {
+      "label": "Chicken And Egg",
+      "href": "chickenboxtutorial",
+      "hide": true
+    },
+    {
+      "label": "Magic Drawer",
+      "href": "magicdrawerhelp",
+      "hide": true
+    },
+    {
+      "label": "Magic Frame",
+      "href": "magicframehelp",
+      "hide": true
     }
   ]
 }

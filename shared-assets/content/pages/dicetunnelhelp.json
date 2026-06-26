@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "slug": "dicetunnelhelp",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "Dice Tunnel",
+    "description": "",
+    "redirects": [
+      "dicetunnelhelp"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Dice Tunnel"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/pGDLD25tn5c",
+      "title": "",
+      "caption": ""
+    }
+  ]
+}

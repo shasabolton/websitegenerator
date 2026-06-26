@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "slug": "chickenboxtutorial",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "Chicken And Egg",
+    "description": "",
+    "redirects": [
+      "chickenboxtutorial"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Chicken And Egg"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/20YbJhav17c",
+      "title": "",
+      "caption": ""
+    }
+  ]
+}

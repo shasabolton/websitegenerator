@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "slug": "newcombtutorial",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "Newcomb's Paradox",
+    "description": "",
+    "redirects": [
+      "newcombtutorial"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Newcomb's Paradox"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/GwpEC5nxEwE",
+      "title": "",
+      "caption": ""
+    }
+  ]
+}

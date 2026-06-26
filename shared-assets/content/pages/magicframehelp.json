@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "slug": "magicframehelp",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "Magic Frame",
+    "description": "",
+    "redirects": [
+      "magicframehelp"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Magic Frame"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/vuHn7t345b4",
+      "title": "",
+      "caption": ""
+    }
+  ]
+}

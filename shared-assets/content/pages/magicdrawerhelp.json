@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "slug": "magicdrawerhelp",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "Magic Drawer",
+    "description": "",
+    "redirects": [
+      "magicdrawerhelp"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Magic Drawer"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://www.youtube.com/watch?v=eJtonuQIIr0",
+      "title": "",
+      "caption": ""
+    }
+  ]
+}

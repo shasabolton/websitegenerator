@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "slug": "fingerswordhelp",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "Sword Through Finger",
+    "description": "",
+    "redirects": [
+      "fingerswordhelp"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Sword Through Finger"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://www.youtube.com/watch?v=m7JEZrtqhQE",
+      "title": "",
+      "caption": ""
+    }
+  ]
+}
