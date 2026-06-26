@@ -16,11 +16,138 @@
       "text": "Newcomb's Paradox"
     },
     {
+      "type": "text",
+      "format": "plain",
+      "content": "Please watch and read this content to help you perform my Newcomb's Paradox Magic Trick."
+    },
+    {
+      "type": "subtitle",
+      "text": "Performance Example Video"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://www.youtube.com/watch?v=FeXOHwqgDgY",
+      "title": "",
+      "caption": ""
+    },
+    {
+      "type": "subtitle",
+      "text": "Performance Tutorial Video"
+    },
+    {
       "type": "video",
       "videoId": "",
       "url": "https://youtu.be/GwpEC5nxEwE",
       "title": "",
       "caption": ""
+    },
+    {
+      "type": "subtitle",
+      "text": "Full Performance Dialogue"
+    },
+    {
+      "type": "subtitle",
+      "text": "Intro"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "Open side A to show that box A contains $1.\n\nMagician: \"Box A is open and clearly contains $1. Box B will contain either $2 or nothing. If I predict that you will choose box B then I will place $2 into Box B. If I predict that you will make the greedy choice of both Boxes, I will place nothing into box B.\n\nTell me, do you believe in free will?\n\nNow tell me, do you believe in determinism? By this I mean that if we could analyse the positions and velocities of every particle in this room, including your brain, we could in fact calculate your choice before you even knew it for yourself?\n\nWell this wooden case is finely tuned to all of the particles in the room, such that if I hold it just right, I can predict what choice you will soon make.\""
+    },
+    {
+      "type": "subtitle",
+      "text": "Prediction"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "Hold the case thoughtfully.\n\nMagician: \"I am now making my prediction. Ok, I have my prediction.\"\n\nFace the box front away from the audience and open drawer B downwards while keeping it concealed behind your hand\n\nMagician: \"If I predicted that you would choose just box B, then I am now placing $2 into box B. If I predicted that you would make the greedy choice of both boxes, I am putting nothing into box B and returning the $2 coin to my pocket.\"\n\nAs you say this, keep box B hidden behind your hand. Mime the action of taking $2 from your pocket and placing it into box B and also into your pocket. The audience now does not know if box B is empty or contains $2. In reality the $2 coin is in box B all along. Now open box A once again to show the $1 coin inside.\n\nMagician: \"Box A is open and clearly contains $1. Box B contains either $2 or nothing. If I predicted that you will choose box B then I placed $2 into Box B. If I predicted that you will make the greedy choice of both Boxes, I placed nothing into box B. Please make your choice. Box B or both.\""
+    },
+    {
+      "type": "subtitle",
+      "text": "Choice"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "Spectator: \"Both\"\n\nMagician: \"You're choosing both?\"\n\n(Optional dialogue to reinforce that if I am a perfect predictor then this is a bad choice)\n\n\"So you're hoping that I put $2 into box B and you will walk away with $3? I told you I can predict if you will be greedy. Which means box B is empty and you will only get $1? It's not too late to change your mind and win $2 rather than just $1.\"\n\nIf the spectator chooses both boxes, take out the $1 coin from box A and hand it to them saying \"Well, here is your $1. But I knew you would choose both boxes, so into box B I placed…\"\n\nNow open side B to reveal it empty. \"Nothing.\"\n\nSpectator: \"Box B only\"\n\nMagician: \"You want box B only?\"\n\n(optional banter to add suspense and make apparent how illogical it is to pick only one box.)\n\n\"So you believe I predicted your decision and placed $2 into box B? Well if you are so sure that box B contains $2, why not take both boxes and walk away with $3? Box B could be empty. If it is, you will walk away with nothing. Choose both boxes and you at least get $1. You are still allowed to change your mind…\"\n\nIf the spectator chooses just box B say,\n\n\"Good, I knew you would choose just box B so into it I placed $2.\" Open drawer B and hand the spectator their $2 coin.\n\nMagician: \"Ok maybe I just made a lucky guess. Let's try again. Can I please have your coin back?\"\n\nReturn their $1 coin to Box A or their $2 to your pocket.\n\nRepeat the prediction and choice sections another 1 or 2 times"
+    },
+    {
+      "type": "subtitle",
+      "text": "Grand Reveal"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "Magician: \"If we were to repeat this many times you would soon see that I am indeed able to perfectly predict your decision every time. But the truth is, it is not because this box is finely tuned to all of the particles in the room. The truth about this box is that I don't need to put any coins into it at all.\"\n\nSince the spectator now has one of the coins you can now open each side of the box showing it completely empty.\n\nMagician: \"The truth is that into this box I have in fact placed a genie. This genie simply does not like greedy people so it only ever gives them $1. But it does in fact reward generous people. If you give the genie a gift you will be greatly rewarded. Let's give your coin back to the genie as a gift.\"\n\nTake the spectator's coin and return it to the incorrect side of the box. $1 into B, or $2 into A.\n\nMagician: \"If you give the genie a gift you will be rewarded with…\"\n\nOpen the opposite drawer to reveal a folded $100 bank note hidden within the square wooden centre frame. Hand it to the spectator to unfold and show to the audience. This may be a real bank note or a piece of paper on which you have written $1000, thank you, monopoly money, etc… the choice is yours.\n\nTo fit a bank note you must carefully concertina fold the note to exactly fit within the wooden frame."
+    },
+    {
+      "type": "subtitle",
+      "text": "Discussion"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "If the context is right you may like to ask the spectator the following questions, share opinions and carry out a philosophical discussion.\n\nWhat do they think is the correct strategy?\n\nWhat causes the paradox?\n\nDo they think that free will and determinism are compatible?"
+    },
+    {
+      "type": "subtitle",
+      "text": "Analysis"
+    },
+    {
+      "type": "subtitle",
+      "text": "Why is it a Paradox?"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "This scenario is considered a paradox because two reputable decision-making principles point to different strategies. Expected utility says that we should always choose box B because we will get $2 rather than $1. Strategic dominance says the boxes are already set before you make a decision, so why not pick both and always receive the extra $1 from box A."
+    },
+    {
+      "type": "subtitle",
+      "text": "Entanglement"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "I sought a way to implement a working version of Newcomb's Paradox in the hope that it might provide some insight into the cause of the paradox. After working through this task, my current view is that the paradox arises when we fail to treat our thoughts and decisions as part of the same physics that govern everything else. Our choices do not live in some separate realm but are influenced and influence the world in which they are embedded. When we acknowledge this, we see the possibility that our choice could be entangled with the boxes and the predictor. There are ways in which I could have allowed the boxes to influence both the choice and the predictor's prediction, such as lighting box A on fire, but to make this function as a magic trick I really needed the causality to work the other way around, such that a spectator's choice could influence the contents of the boxes. That is precisely what this device does. A decision to remove the contents of box A, mechanically causes box B to automatically become empty. This device is essentially a No Greedy Box. It appears that the all-knowing predicting magician causes box B to be empty or full, but in fact it is the spectator, and the magician is not required at all. According to the formulation of the paradox, it is only the behaviour of a perfect predictor that we really ever observe. The predictor need not even exist, as long as a two-box choice always leads to box B appearing empty and one-box choice always leads to it appearing full. I achieve this entanglement with a simple mechanism hidden within the box, but one can conceive of a more complex interaction such as an advanced technology that could scan our brain and vaporise the contents of box B when it detects a two-box decision. Once one sees how the two boxes are mechanically entangled, it becomes intuitive that choosing both boxes is equivalent to choosing just box A. Hence it becomes clear that box B with the higher value is the correct choice.\n\nMy hope is that this mechanism demonstrates how our decisions are themselves a physical process. They do not live in some separate isolated realm and hence in theory there is nothing to stop them interacting with the environment in highly correlated ways.\n\nPerhaps you will think that this is breaking the rules of the game, and that box B must really be set before the choice is made. In which case, below are two alternative methods of entanglement, though harder for me to implement in a working device."
+    },
+    {
+      "type": "subtitle",
+      "text": "Common Cause"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "My favourite solution is probably the existence of a common cause. The initial conditions that caused the predictor to have a particular prediction, also caused the chooser to make a particular choice. This will not be recognisable when the common cause is small or complex but easy to intuit if it had some large scale manifestation such as Box A is on fire. The predictor can clearly see that the chooser will not choose to open a burning box. Once again box B is the rational choice in this situation."
+    },
+    {
+      "type": "subtitle",
+      "text": "The Perfect Predictor is You"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "If the predictor indeed had all of the information and computational apparatus required to predict your decision, it would be performing an exact copy of your own decision-making procedure. It would essentially be you. The prediction and choice are the same event. So the scenario now becomes a choice between taking both boxes but discarding the contents of box B, or choosing just the contents from box B."
+    },
+    {
+      "type": "subtitle",
+      "text": "Free Will?"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "So if choices are a physical process, can we still have free will? I think yes, but my definition of free will may not be regarded as such by others. My free will is simply the deterministic processes that I identify with. The values and beliefs stored within my brain that shape incoming information into decision and action. It is still deterministic and could potentially be simulated on a powerful computer. But the closer that computer got to correctly predicting my decision, the closer it would be to becoming me."
+    },
+    {
+      "type": "subtitle",
+      "text": "Footnote"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "That is my conservative stance. Though in fact I have some deep-seated reservations about the viability of causality in general. It seems to me that reductionist causal explanations will always lead to infinite regress. One will always be left looking for the next cause one layer down. Perhaps rather than cause, the laws of physics are more to do with constraint. We are constrained to only be conscious of those mathematical truths that are themselves a conscious experience."
     }
   ]
 }

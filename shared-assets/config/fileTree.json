@@ -53,27 +53,27 @@
       "hide": true
     },
     {
-      "label": "Instant Coke",
+      "label": "Instant Coke help",
       "href": "tiltboxhelp",
       "hide": true
     },
     {
-      "label": "Dice Tunnel",
+      "label": "Dice Tunnel help",
       "href": "dicetunnelhelp",
       "hide": true
     },
     {
-      "label": "Chicken And Egg",
+      "label": "Chicken And Egg help",
       "href": "chickenboxtutorial",
       "hide": true
     },
     {
-      "label": "Magic Drawer",
+      "label": "Magic Drawer help",
       "href": "magicdrawerhelp",
       "hide": true
     },
     {
-      "label": "Magic Frame",
+      "label": "Magic Frame help",
       "href": "magicframehelp",
       "hide": true
     }
