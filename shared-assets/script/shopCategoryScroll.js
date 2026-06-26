@@ -14,7 +14,7 @@
     return card.offsetWidth + gap;
   }
 
-  function updateButtons(root) {
+  function updateScrollState(root) {
     const track = root.querySelector(".shop-category-scroll-track");
     const prev = root.querySelector('[data-shop-scroll="prev"]');
     const next = root.querySelector('[data-shop-scroll="next"]');
@@ -31,6 +31,8 @@
     prev.disabled = !overflow || atStart;
     next.hidden = !overflow || atEnd;
     next.disabled = !overflow || atEnd;
+    root.setAttribute("data-fade-start", overflow && !atStart ? "true" : "false");
+    root.setAttribute("data-fade-end", overflow && !atEnd ? "true" : "false");
   }
 
   function initRoot(root) {
@@ -39,10 +41,10 @@
       return;
     }
 
-    const onChange = () => updateButtons(root);
+    const onChange = () => updateScrollState(root);
     track.addEventListener("scroll", onChange, { passive: true });
     window.addEventListener("resize", onChange);
-    updateButtons(root);
+    updateScrollState(root);
   }
 
   function initAll() {

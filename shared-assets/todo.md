@@ -5,6 +5,7 @@
  advertising and social media generation
  discount codes
  newsletter for discounts and new products
+ click tracking
 
  After live
  Change tinycc links to instr=true etc
