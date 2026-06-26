@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Default base for custom domain / local server; sync script below may set /repo/ on GitHub Pages. -->
+    <base href="/" data-site-base="true" />
+    <script>
+(function () {
+  const GITHUB_PAGES_REPO = "websitegenerator";
+  const hostname = window.location.hostname;
+  const onGithubPages = hostname === "github.io" || hostname.endsWith(".github.io");
+
+  let baseHref = "/";
+  if (onGithubPages) {
+    const segments = window.location.pathname.split("/").filter(Boolean);
+    if (segments.length > 0) {
+      const first = segments[0];
+      baseHref =
+        first === GITHUB_PAGES_REPO ? `/${GITHUB_PAGES_REPO}/` : `/${first}/`;
+    }
+  }
+
+  let baseEl = document.querySelector("base[data-site-base]");
+  if (!baseEl) {
+    baseEl = document.createElement("base");
+    baseEl.setAttribute("data-site-base", "true");
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport && viewport.parentNode) {
+      viewport.insertAdjacentElement("afterend", baseEl);
+    } else {
+      document.head.insertBefore(baseEl, document.head.firstChild);
+    }
+  }
+  baseEl.href = baseHref;
+})();
+
+</script>
+    <title>Contraption Cart - Newcomb&#39;s Paradox help</title>
+    <link rel="canonical" href="https://www.contraptioncart.com/newcombtutorial" />
+    <meta property="og:title" content="Contraption Cart - Newcomb&amp;#39;s Paradox help" />
+    <meta name="twitter:title" content="Contraption Cart - Newcomb&amp;#39;s Paradox help" />
+    <meta property="og:url" content="https://www.contraptioncart.com/newcombtutorial" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" />
+    <meta name="twitter:image" content="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:site_name" content="Contraption Cart" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.contraptioncart.com/#organization","name":"Contraption Cart","url":"https://www.contraptioncart.com/","logo":"https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg","email":"shasabolton@gmail.com","sameAs":["https://www.instagram.com/contraptioncart","https://www.facebook.com/contraptioncart/","https://contraptioncart.etsy.com"]},{"@type":"WebSite","@id":"https://www.contraptioncart.com/#website","name":"Contraption Cart","url":"https://www.contraptioncart.com/","publisher":{"@id":"https://www.contraptioncart.com/#organization"}},{"@type":"WebPage","@id":"https://www.contraptioncart.com/newcombtutorial#webpage","url":"https://www.contraptioncart.com/newcombtutorial","name":"Newcomb's Paradox help","isPartOf":{"@id":"https://www.contraptioncart.com/#website"},"publisher":{"@id":"https://www.contraptioncart.com/#organization"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Contraption Cart","item":"https://www.contraptioncart.com/"},{"@type":"ListItem","position":2,"name":"Newcomb's Paradox help","item":"https://www.contraptioncart.com/newcombtutorial"}]}]}</script>
+    <link rel="icon" type="image/jpeg" href="shared-assets/images/branding/favicon.jpg" />
+    <link rel="stylesheet" href="tools/siteGenerator/templates/css/site.css" />
+  </head>
+  <body>
+    <!--
+      Global scripts below run in the same `window` as the siteGenerator preview shell after `document.write()`.
+      Each file must avoid redeclaring top-level const/let/class (use an IIFE + guard). New shared scripts: same pattern.
+    -->
+    <script src="tools/editData/productData.js"></script>
+    <script src="shared-assets/script/shoppingCart.js"></script>
+    <script src="shared-assets/script/displayCurrency.js"></script>
+    <script src="shared-assets/script/siteSearch.js" defer></script>
+    <script>
+window.siteCart = new ShoppingCart("Contraption Cart");
+</script>
+    <header class="site-header">
+  <div class="site-header-inner">
+    <div class="header-top">
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="site-nav-flyout"
+        aria-label="Open menu"
+      >
+        <span class="nav-toggle-icon" aria-hidden="true">
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+        </span>
+      </button>
+      <div class="brand">
+        <img class="brand-logo" src="shared-assets/images/branding/favicon.jpg" alt="Contraption Cart logo" />
+        <span class="brand-name">Contraption Cart</span>
+      </div>
+      <div class="header-actions">
+        <div class="header-display-currency-wrap header-display-currency-wrap--desktop">
+          <label class="visually-hidden" for="site-display-currency">Display currency</label>
+          <select
+            id="site-display-currency"
+            class="header-display-currency"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
+        <a class="header-cart-link" href="cart" aria-label="Shopping cart">
+          <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
+      <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
+      <div class="nav-flyout-panel">
+        <div class="nav-flyout-currency">
+          <label class="nav-flyout-currency-label" for="site-display-currency-flyout">Display currency</label>
+          <select
+            id="site-display-currency-flyout"
+            class="header-display-currency header-display-currency--flyout"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
+        <div class="site-search-wrap">
+          <form class="site-search-form" id="site-search-form" role="search">
+            <label class="visually-hidden" for="site-search-query">Search products</label>
+            <input
+              id="site-search-query"
+              class="site-search-input"
+              type="search"
+              autocomplete="off"
+              placeholder="Search products…"
+              data-site-search-input
+              role="combobox"
+              aria-expanded="false"
+              aria-controls="site-search-results"
+              aria-autocomplete="list"
+            />
+            <button class="site-search-submit" type="submit">Search</button>
+          </form>
+          <div id="site-search-results" class="site-search-results" role="listbox" hidden></div>
+        </div>
+        <nav class="site-nav" aria-label="Main navigation">
+          <ul class="nav-list">
+            
+        <li class="nav-item nav-item-has-children">
+          <a href=".">Shop</a>
+          <ul class="submenu"><li><a href="shop/automata">automata</a></li><li><a href="shop/magic-tricks">magic tricks</a></li><li><a href="shop/puzzle-boxes">puzzle boxes</a></li><li><a href="shop/toys-and-games">toys and games</a></li><li><a href="shop/whirligigs">whirligigs</a></li></ul>
+        </li>
+      <li class="nav-item"><a href="blog">Blog</a></li><li class="nav-item"><a href="projects">projects</a></li><li class="nav-item"><a href="about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+<script>
+  (function () {
+    var header = document.querySelector(".site-header");
+    var toggle = document.querySelector(".nav-toggle");
+    var flyout = document.getElementById("site-nav-flyout");
+    if (!header || !toggle || !flyout) return;
+
+    var mobileQuery = window.matchMedia("(max-width: 767px)");
+
+    function setNavOpen(open) {
+      header.classList.toggle("is-nav-open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      if (mobileQuery.matches) {
+        flyout.setAttribute("aria-hidden", open ? "false" : "true");
+        document.body.classList.toggle("nav-scroll-lock", open);
+      }
+    }
+
+    function syncNavForViewport() {
+      if (!mobileQuery.matches) {
+        setNavOpen(false);
+        flyout.removeAttribute("aria-hidden");
+        document.body.classList.remove("nav-scroll-lock");
+      } else if (!header.classList.contains("is-nav-open")) {
+        flyout.setAttribute("aria-hidden", "true");
+      }
+    }
+
+    toggle.addEventListener("click", function () {
+      setNavOpen(!header.classList.contains("is-nav-open"));
+    });
+
+    flyout.querySelectorAll("[data-nav-close]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        setNavOpen(false);
+      });
+    });
+
+    flyout.querySelectorAll(".nav-list a").forEach(function (link) {
+      link.addEventListener("click", function () {
+        if (mobileQuery.matches) {
+          setNavOpen(false);
+        }
+      });
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && header.classList.contains("is-nav-open")) {
+        setNavOpen(false);
+        toggle.focus();
+      }
+    });
+
+    if (typeof mobileQuery.addEventListener === "function") {
+      mobileQuery.addEventListener("change", syncNavForViewport);
+    } else if (typeof mobileQuery.addListener === "function") {
+      mobileQuery.addListener(syncNavForViewport);
+    }
+    syncNavForViewport();
+  })();
+</script>
+
+    <main class="site-main">
+      <section class="page-content content-page">
+  
+  <h1 class="content-title">Newcomb&#39;s Paradox</h1>
+<div class="content-text"><p>Please watch and read this content to help you perform my Newcomb&#39;s Paradox Magic Trick.</p></div>
+<p class="content-subtitle">Performance Example Video</p>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/FeXOHwqgDgY?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<p class="content-subtitle">Performance Tutorial Video</p>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/GwpEC5nxEwE?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+<p class="content-subtitle">Full Performance Dialogue</p>
+<p class="content-subtitle">Intro</p>
+<div class="content-text"><p>Open side A to show that box A contains $1.</p>
+<p>Magician: &quot;Box A is open and clearly contains $1. Box B will contain either $2 or nothing. If I predict that you will choose box B then I will place $2 into Box B. If I predict that you will make the greedy choice of both Boxes, I will place nothing into box B.</p>
+<p>Tell me, do you believe in free will?</p>
+<p>Now tell me, do you believe in determinism? By this I mean that if we could analyse the positions and velocities of every particle in this room, including your brain, we could in fact calculate your choice before you even knew it for yourself?</p>
+<p>Well this wooden case is finely tuned to all of the particles in the room, such that if I hold it just right, I can predict what choice you will soon make.&quot;</p></div>
+<p class="content-subtitle">Prediction</p>
+<div class="content-text"><p>Hold the case thoughtfully.</p>
+<p>Magician: &quot;I am now making my prediction. Ok, I have my prediction.&quot;</p>
+<p>Face the box front away from the audience and open drawer B downwards while keeping it concealed behind your hand</p>
+<p>Magician: &quot;If I predicted that you would choose just box B, then I am now placing $2 into box B. If I predicted that you would make the greedy choice of both boxes, I am putting nothing into box B and returning the $2 coin to my pocket.&quot;</p>
+<p>As you say this, keep box B hidden behind your hand. Mime the action of taking $2 from your pocket and placing it into box B and also into your pocket. The audience now does not know if box B is empty or contains $2. In reality the $2 coin is in box B all along. Now open box A once again to show the $1 coin inside.</p>
+<p>Magician: &quot;Box A is open and clearly contains $1. Box B contains either $2 or nothing. If I predicted that you will choose box B then I placed $2 into Box B. If I predicted that you will make the greedy choice of both Boxes, I placed nothing into box B. Please make your choice. Box B or both.&quot;</p></div>
+<p class="content-subtitle">Choice</p>
+<div class="content-text"><p>Spectator: &quot;Both&quot;</p>
+<p>Magician: &quot;You&#39;re choosing both?&quot;</p>
+<p>(Optional dialogue to reinforce that if I am a perfect predictor then this is a bad choice)</p>
+<p>&quot;So you&#39;re hoping that I put $2 into box B and you will walk away with $3? I told you I can predict if you will be greedy. Which means box B is empty and you will only get $1? It&#39;s not too late to change your mind and win $2 rather than just $1.&quot;</p>
+<p>If the spectator chooses both boxes, take out the $1 coin from box A and hand it to them saying &quot;Well, here is your $1. But I knew you would choose both boxes, so into box B I placed…&quot;</p>
+<p>Now open side B to reveal it empty. &quot;Nothing.&quot;</p>
+<p>Spectator: &quot;Box B only&quot;</p>
+<p>Magician: &quot;You want box B only?&quot;</p>
+<p>(optional banter to add suspense and make apparent how illogical it is to pick only one box.)</p>
+<p>&quot;So you believe I predicted your decision and placed $2 into box B? Well if you are so sure that box B contains $2, why not take both boxes and walk away with $3? Box B could be empty. If it is, you will walk away with nothing. Choose both boxes and you at least get $1. You are still allowed to change your mind…&quot;</p>
+<p>If the spectator chooses just box B say,</p>
+<p>&quot;Good, I knew you would choose just box B so into it I placed $2.&quot; Open drawer B and hand the spectator their $2 coin.</p>
+<p>Magician: &quot;Ok maybe I just made a lucky guess. Let&#39;s try again. Can I please have your coin back?&quot;</p>
+<p>Return their $1 coin to Box A or their $2 to your pocket.</p>
+<p>Repeat the prediction and choice sections another 1 or 2 times</p></div>
+<p class="content-subtitle">Grand Reveal</p>
+<div class="content-text"><p>Magician: &quot;If we were to repeat this many times you would soon see that I am indeed able to perfectly predict your decision every time. But the truth is, it is not because this box is finely tuned to all of the particles in the room. The truth about this box is that I don&#39;t need to put any coins into it at all.&quot;</p>
+<p>Since the spectator now has one of the coins you can now open each side of the box showing it completely empty.</p>
+<p>Magician: &quot;The truth is that into this box I have in fact placed a genie. This genie simply does not like greedy people so it only ever gives them $1. But it does in fact reward generous people. If you give the genie a gift you will be greatly rewarded. Let&#39;s give your coin back to the genie as a gift.&quot;</p>
+<p>Take the spectator&#39;s coin and return it to the incorrect side of the box. $1 into B, or $2 into A.</p>
+<p>Magician: &quot;If you give the genie a gift you will be rewarded with…&quot;</p>
+<p>Open the opposite drawer to reveal a folded $100 bank note hidden within the square wooden centre frame. Hand it to the spectator to unfold and show to the audience. This may be a real bank note or a piece of paper on which you have written $1000, thank you, monopoly money, etc… the choice is yours.</p>
+<p>To fit a bank note you must carefully concertina fold the note to exactly fit within the wooden frame.</p></div>
+<p class="content-subtitle">Discussion</p>
+<div class="content-text"><p>If the context is right you may like to ask the spectator the following questions, share opinions and carry out a philosophical discussion.
+
+What do they think is the correct strategy?
+
+What causes the paradox?
+
+Do they think that free will and determinism are compatible?</p></div>
+<p class="content-subtitle">Analysis</p>
+<p class="content-subtitle">Why is it a Paradox?</p>
+<div class="content-text"><p>This scenario is considered a paradox because two reputable decision-making principles point to different strategies. Expected utility says that we should always choose box B because we will get $2 rather than $1. Strategic dominance says the boxes are already set before you make a decision, so why not pick both and always receive the extra $1 from box A.</p></div>
+<p class="content-subtitle">Entanglement</p>
+<div class="content-text"><p>I sought a way to implement a working version of Newcomb&#39;s Paradox in the hope that it might provide some insight into the cause of the paradox. After working through this task, my current view is that the paradox arises when we fail to treat our thoughts and decisions as part of the same physics that govern everything else. Our choices do not live in some separate realm but are influenced and influence the world in which they are embedded. When we acknowledge this, we see the possibility that our choice could be entangled with the boxes and the predictor. There are ways in which I could have allowed the boxes to influence both the choice and the predictor&#39;s prediction, such as lighting box A on fire, but to make this function as a magic trick I really needed the causality to work the other way around, such that a spectator&#39;s choice could influence the contents of the boxes. That is precisely what this device does. A decision to remove the contents of box A, mechanically causes box B to automatically become empty. This device is essentially a No Greedy Box. It appears that the all-knowing predicting magician causes box B to be empty or full, but in fact it is the spectator, and the magician is not required at all. According to the formulation of the paradox, it is only the behaviour of a perfect predictor that we really ever observe. The predictor need not even exist, as long as a two-box choice always leads to box B appearing empty and one-box choice always leads to it appearing full. I achieve this entanglement with a simple mechanism hidden within the box, but one can conceive of a more complex interaction such as an advanced technology that could scan our brain and vaporise the contents of box B when it detects a two-box decision. Once one sees how the two boxes are mechanically entangled, it becomes intuitive that choosing both boxes is equivalent to choosing just box A. Hence it becomes clear that box B with the higher value is the correct choice.
+
+My hope is that this mechanism demonstrates how our decisions are themselves a physical process. They do not live in some separate isolated realm and hence in theory there is nothing to stop them interacting with the environment in highly correlated ways.
+
+Perhaps you will think that this is breaking the rules of the game, and that box B must really be set before the choice is made. In which case, below are two alternative methods of entanglement, though harder for me to implement in a working device.</p></div>
+<p class="content-subtitle">Common Cause</p>
+<div class="content-text"><p>My favourite solution is probably the existence of a common cause. The initial conditions that caused the predictor to have a particular prediction, also caused the chooser to make a particular choice. This will not be recognisable when the common cause is small or complex but easy to intuit if it had some large scale manifestation such as Box A is on fire. The predictor can clearly see that the chooser will not choose to open a burning box. Once again box B is the rational choice in this situation.</p></div>
+<p class="content-subtitle">The Perfect Predictor is You</p>
+<div class="content-text"><p>If the predictor indeed had all of the information and computational apparatus required to predict your decision, it would be performing an exact copy of your own decision-making procedure. It would essentially be you. The prediction and choice are the same event. So the scenario now becomes a choice between taking both boxes but discarding the contents of box B, or choosing just the contents from box B.</p></div>
+<p class="content-subtitle">Free Will?</p>
+<div class="content-text"><p>So if choices are a physical process, can we still have free will? I think yes, but my definition of free will may not be regarded as such by others. My free will is simply the deterministic processes that I identify with. The values and beliefs stored within my brain that shape incoming information into decision and action. It is still deterministic and could potentially be simulated on a powerful computer. But the closer that computer got to correctly predicting my decision, the closer it would be to becoming me.</p></div>
+<p class="content-subtitle">Footnote</p>
+<div class="content-text"><p>That is my conservative stance. Though in fact I have some deep-seated reservations about the viability of causality in general. It seems to me that reductionist causal explanations will always lead to infinite regress. One will always be left looking for the next cause one layer down. Perhaps rather than cause, the laws of physics are more to do with constraint. We are constrained to only be conscious of those mathematical truths that are themselves a conscious experience.</p></div>
+</section>
+
+    </main>
+    <footer class="site-footer">
+  <div class="footer-content">
+    <p class="footer-heading">Stay connected</p>
+    <div class="footer-links"><ul class="footer-social-list"><li class="footer-social-item"><a class="footer-social-link" href="https://www.instagram.com/contraptioncart" target="_blank" rel="noreferrer noopener" aria-label="Instagram"><svg class="footer-social-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg></a></li><li class="footer-social-item"><a class="footer-social-link" href="https://www.facebook.com/contraptioncart/" target="_blank" rel="noreferrer noopener" aria-label="Facebook"><svg class="footer-social-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg></a></li></ul></div>
+    <form
+      class="footer-subscribe-form"
+      action="https://docs.google.com/forms/d/e/1FAIpQLSe5K8SJbldzZ46AbY1LvyogCVWnCZPbln1rAUFi1vmc879KvQ/formResponse"
+      method="post"
+      target="_self"
+    >
+      <p class="footer-form-heading">Newsletter</p>
+      <div class="footer-form-field">
+        <label class="footer-form-label" for="footer-subscribe-name">Name</label>
+        <input
+          id="footer-subscribe-name"
+          class="footer-form-input"
+          name="entry.268156310"
+          type="text"
+          autocomplete="name"
+        />
+      </div>
+      <div class="footer-form-field">
+        <label class="footer-form-label" for="footer-subscribe-email">Email</label>
+        <input
+          id="footer-subscribe-email"
+          class="footer-form-input"
+          name="entry.866413073"
+          type="email"
+          autocomplete="email"
+        />
+      </div>
+      <button class="footer-subscribe-button" type="submit">Subscribe</button>
+    </form>
+    <p class="footer-contact">Contact: <a href="mailto:shasabolton@gmail.com">shasabolton@gmail.com</a></p>
+  </div>
+</footer>
+
+    <script src="tools/siteGenerator/templates/js/image-carousel.js" defer></script>
+    <script src="shared-assets/script/productInstructionVideos.js" defer></script>
+    
+  </body>
+</html>
