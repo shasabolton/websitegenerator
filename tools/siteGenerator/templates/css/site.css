@@ -887,23 +887,15 @@ body.nav-scroll-lock {
 
 .shop-category-scroll {
   position: relative;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 8px;
   min-width: 0;
-  max-width: var(--site-content-max-width);
-  margin: 6px auto 0;
-  padding: 0 var(--site-inline-padding);
+  margin: 6px 0 0;
   container-type: inline-size;
 }
 
 .shop-category-scroll-viewport {
   position: relative;
-  order: 2;
-  flex: 1 1 0%;
   min-width: 0;
-  max-width: 100%;
+  width: 100%;
   overflow-x: clip;
 }
 
@@ -964,15 +956,14 @@ body.nav-scroll-lock {
 }
 
 .shop-category-scroll-btn {
-  position: relative;
+  position: absolute;
   z-index: 2;
-  flex: 0 0 auto;
+  top: max(0px, calc(min(320px, calc((100cqw - 21px) / 3.5)) / 2 - 1.5rem));
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 3rem;
   height: 3rem;
-  margin: max(0px, calc(min(320px, calc((100cqw - 6rem - 37px) / 3.5)) / 2 - 1.5rem)) 0 0;
   padding: 0;
   border: 1px solid #000000;
   border-radius: 999px;
@@ -983,11 +974,11 @@ body.nav-scroll-lock {
 }
 
 .shop-category-scroll-btn--prev {
-  order: 1;
+  left: calc(-0.5 * var(--site-inline-padding) - 1.5rem);
 }
 
 .shop-category-scroll-btn--next {
-  order: 3;
+  right: calc(-0.5 * var(--site-inline-padding) - 1.5rem);
 }
 
 .shop-category-scroll-btn:hover:not(:disabled) {
