@@ -1040,6 +1040,11 @@ body.nav-scroll-lock {
 
 .category-page .product-thumb-row {
   margin-top: 14px;
+  justify-items: stretch;
+}
+
+.category-page .product-thumb-card {
+  max-width: none;
 }
 
 .content-page .product-thumb-row {
