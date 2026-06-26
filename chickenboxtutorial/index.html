@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Default base for custom domain / local server; sync script below may set /repo/ on GitHub Pages. -->
+    <base href="/" data-site-base="true" />
+    <script>
+(function () {
+  const GITHUB_PAGES_REPO = "websitegenerator";
+  const hostname = window.location.hostname;
+  const onGithubPages = hostname === "github.io" || hostname.endsWith(".github.io");
+
+  let baseHref = "/";
+  if (onGithubPages) {
+    const segments = window.location.pathname.split("/").filter(Boolean);
+    if (segments.length > 0) {
+      const first = segments[0];
+      baseHref =
+        first === GITHUB_PAGES_REPO ? `/${GITHUB_PAGES_REPO}/` : `/${first}/`;
+    }
+  }
+
+  let baseEl = document.querySelector("base[data-site-base]");
+  if (!baseEl) {
+    baseEl = document.createElement("base");
+    baseEl.setAttribute("data-site-base", "true");
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport && viewport.parentNode) {
+      viewport.insertAdjacentElement("afterend", baseEl);
+    } else {
+      document.head.insertBefore(baseEl, document.head.firstChild);
+    }
+  }
+  baseEl.href = baseHref;
+})();
+
+</script>
+    <title>Contraption Cart - Chicken And Egg help</title>
+    <link rel="canonical" href="https://www.contraptioncart.com/chickenboxtutorial" />
+    <meta property="og:title" content="Contraption Cart - Chicken And Egg help" />
+    <meta name="twitter:title" content="Contraption Cart - Chicken And Egg help" />
+    <meta property="og:url" content="https://www.contraptioncart.com/chickenboxtutorial" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" />
+    <meta name="twitter:image" content="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:site_name" content="Contraption Cart" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.contraptioncart.com/#organization","name":"Contraption Cart","url":"https://www.contraptioncart.com/","logo":"https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg","email":"shasabolton@gmail.com","sameAs":["https://www.instagram.com/contraptioncart","https://www.facebook.com/contraptioncart/","https://contraptioncart.etsy.com"]},{"@type":"WebSite","@id":"https://www.contraptioncart.com/#website","name":"Contraption Cart","url":"https://www.contraptioncart.com/","publisher":{"@id":"https://www.contraptioncart.com/#organization"}},{"@type":"WebPage","@id":"https://www.contraptioncart.com/chickenboxtutorial#webpage","url":"https://www.contraptioncart.com/chickenboxtutorial","name":"Chicken And Egg help","isPartOf":{"@id":"https://www.contraptioncart.com/#website"},"publisher":{"@id":"https://www.contraptioncart.com/#organization"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Contraption Cart","item":"https://www.contraptioncart.com/"},{"@type":"ListItem","position":2,"name":"Chicken And Egg help","item":"https://www.contraptioncart.com/chickenboxtutorial"}]}]}</script>
+    <link rel="icon" type="image/jpeg" href="shared-assets/images/branding/favicon.jpg" />
+    <link rel="stylesheet" href="tools/siteGenerator/templates/css/site.css" />
+  </head>
+  <body>
+    <!--
+      Global scripts below run in the same `window` as the siteGenerator preview shell after `document.write()`.
+      Each file must avoid redeclaring top-level const/let/class (use an IIFE + guard). New shared scripts: same pattern.
+    -->
+    <script src="tools/editData/productData.js"></script>
+    <script src="shared-assets/script/shoppingCart.js"></script>
+    <script src="shared-assets/script/displayCurrency.js"></script>
+    <script src="shared-assets/script/siteSearch.js" defer></script>
+    <script>
+window.siteCart = new ShoppingCart("Contraption Cart");
+</script>
+    <header class="site-header">
+  <div class="site-header-inner">
+    <div class="header-top">
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="site-nav-flyout"
+        aria-label="Open menu"
+      >
+        <span class="nav-toggle-icon" aria-hidden="true">
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+        </span>
+      </button>
+      <div class="brand">
+        <img class="brand-logo" src="shared-assets/images/branding/favicon.jpg" alt="Contraption Cart logo" />
+        <span class="brand-name">Contraption Cart</span>
+      </div>
+      <div class="header-actions">
+        <div class="header-display-currency-wrap header-display-currency-wrap--desktop">
+          <label class="visually-hidden" for="site-display-currency">Display currency</label>
+          <select
+            id="site-display-currency"
+            class="header-display-currency"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
+        <a class="header-cart-link" href="cart" aria-label="Shopping cart">
+          <svg class="header-cart-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="nav-flyout" id="site-nav-flyout" aria-hidden="true">
+      <button class="nav-flyout-backdrop" type="button" tabindex="-1" aria-label="Close menu" data-nav-close></button>
+      <div class="nav-flyout-panel">
+        <div class="nav-flyout-currency">
+          <label class="nav-flyout-currency-label" for="site-display-currency-flyout">Display currency</label>
+          <select
+            id="site-display-currency-flyout"
+            class="header-display-currency header-display-currency--flyout"
+            aria-label="Display currency"
+          >
+            <option value="AUD">AUD</option>
+            <option value="NZD">NZD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+            <option value="HKD">HKD</option>
+            <option value="CHF">CHF</option>
+            <option value="SEK">SEK</option>
+            <option value="NOK">NOK</option>
+          </select>
+        </div>
+        <div class="site-search-wrap">
+          <form class="site-search-form" id="site-search-form" role="search">
+            <label class="visually-hidden" for="site-search-query">Search products</label>
+            <input
+              id="site-search-query"
+              class="site-search-input"
+              type="search"
+              autocomplete="off"
+              placeholder="Search products…"
+              data-site-search-input
+              role="combobox"
+              aria-expanded="false"
+              aria-controls="site-search-results"
+              aria-autocomplete="list"
+            />
+            <button class="site-search-submit" type="submit">Search</button>
+          </form>
+          <div id="site-search-results" class="site-search-results" role="listbox" hidden></div>
+        </div>
+        <nav class="site-nav" aria-label="Main navigation">
+          <ul class="nav-list">
+            
+        <li class="nav-item nav-item-has-children">
+          <a href=".">Shop</a>
+          <ul class="submenu"><li><a href="shop/automata">automata</a></li><li><a href="shop/magic-tricks">magic tricks</a></li><li><a href="shop/puzzle-boxes">puzzle boxes</a></li><li><a href="shop/toys-and-games">toys and games</a></li><li><a href="shop/whirligigs">whirligigs</a></li></ul>
+        </li>
+      <li class="nav-item"><a href="blog">Blog</a></li><li class="nav-item"><a href="projects">projects</a></li><li class="nav-item"><a href="about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+<script>
+  (function () {
+    var header = document.querySelector(".site-header");
+    var toggle = document.querySelector(".nav-toggle");
+    var flyout = document.getElementById("site-nav-flyout");
+    if (!header || !toggle || !flyout) return;
+
+    var mobileQuery = window.matchMedia("(max-width: 767px)");
+
+    function setNavOpen(open) {
+      header.classList.toggle("is-nav-open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      if (mobileQuery.matches) {
+        flyout.setAttribute("aria-hidden", open ? "false" : "true");
+        document.body.classList.toggle("nav-scroll-lock", open);
+      }
+    }
+
+    function syncNavForViewport() {
+      if (!mobileQuery.matches) {
+        setNavOpen(false);
+        flyout.removeAttribute("aria-hidden");
+        document.body.classList.remove("nav-scroll-lock");
+      } else if (!header.classList.contains("is-nav-open")) {
+        flyout.setAttribute("aria-hidden", "true");
+      }
+    }
+
+    toggle.addEventListener("click", function () {
+      setNavOpen(!header.classList.contains("is-nav-open"));
+    });
+
+    flyout.querySelectorAll("[data-nav-close]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        setNavOpen(false);
+      });
+    });
+
+    flyout.querySelectorAll(".nav-list a").forEach(function (link) {
+      link.addEventListener("click", function () {
+        if (mobileQuery.matches) {
+          setNavOpen(false);
+        }
+      });
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && header.classList.contains("is-nav-open")) {
+        setNavOpen(false);
+        toggle.focus();
+      }
+    });
+
+    if (typeof mobileQuery.addEventListener === "function") {
+      mobileQuery.addEventListener("change", syncNavForViewport);
+    } else if (typeof mobileQuery.addListener === "function") {
+      mobileQuery.addListener(syncNavForViewport);
+    }
+    syncNavForViewport();
+  })();
+</script>
+
+    <main class="site-main">
+      <section class="page-content content-page">
+  
+  <h1 class="content-title">Chicken And Egg</h1>
+<figure class="content-video">
+  <div class="content-video-wrap">
+    <iframe class="content-video-embed" title="Video" width="560" height="315" src="https://www.youtube.com/embed/20YbJhav17c?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  </div>
+  
+</figure>
+</section>
+
+    </main>
+    <footer class="site-footer">
+  <div class="footer-content">
+    <p class="footer-heading">Stay connected</p>
+    <div class="footer-links"><ul class="footer-social-list"><li class="footer-social-item"><a class="footer-social-link" href="https://www.instagram.com/contraptioncart" target="_blank" rel="noreferrer noopener" aria-label="Instagram"><svg class="footer-social-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg></a></li><li class="footer-social-item"><a class="footer-social-link" href="https://www.facebook.com/contraptioncart/" target="_blank" rel="noreferrer noopener" aria-label="Facebook"><svg class="footer-social-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg></a></li></ul></div>
+    <form
+      class="footer-subscribe-form"
+      action="https://docs.google.com/forms/d/e/1FAIpQLSe5K8SJbldzZ46AbY1LvyogCVWnCZPbln1rAUFi1vmc879KvQ/formResponse"
+      method="post"
+      target="_self"
+    >
+      <p class="footer-form-heading">Newsletter</p>
+      <div class="footer-form-field">
+        <label class="footer-form-label" for="footer-subscribe-name">Name</label>
+        <input
+          id="footer-subscribe-name"
+          class="footer-form-input"
+          name="entry.268156310"
+          type="text"
+          autocomplete="name"
+        />
+      </div>
+      <div class="footer-form-field">
+        <label class="footer-form-label" for="footer-subscribe-email">Email</label>
+        <input
+          id="footer-subscribe-email"
+          class="footer-form-input"
+          name="entry.866413073"
+          type="email"
+          autocomplete="email"
+        />
+      </div>
+      <button class="footer-subscribe-button" type="submit">Subscribe</button>
+    </form>
+    <p class="footer-contact">Contact: <a href="mailto:shasabolton@gmail.com">shasabolton@gmail.com</a></p>
+  </div>
+</footer>
+
+    <script src="tools/siteGenerator/templates/js/image-carousel.js" defer></script>
+    <script src="shared-assets/script/productInstructionVideos.js" defer></script>
+    
+  </body>
+</html>

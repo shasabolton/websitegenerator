@@ -1,14 +1,20 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-25T01:55:58.898Z",
+  "generatedAt": "2026-06-26T11:53:01.001Z",
   "outputs": [
     "about/index.html",
     "blog/how-does-a-mechanical-calculator-work/index.html",
     "blog/how-does-a-writing-automaton-work/index.html",
     "blog/index.html",
     "cart/index.html",
+    "chickenboxtutorial/index.html",
+    "dicetunnelhelp/index.html",
+    "fingerswordhelp/index.html",
     "index.html",
     "lasercuttingtips/index.html",
+    "magicdrawerhelp/index.html",
+    "magicframehelp/index.html",
+    "newcombtutorial/index.html",
     "projects/index.html",
     "shop/automata/index.html",
     "shop/bird-bank/index.html",
@@ -50,6 +56,7 @@
     "shop/whirligig-hardware/index.html",
     "shop/whirligigs/index.html",
     "shop/woodchopper-whirligig/index.html",
-    "shop/zig-zag-pencil/index.html"
+    "shop/zig-zag-pencil/index.html",
+    "tiltboxhelp/index.html"
   ]
 }
