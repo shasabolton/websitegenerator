@@ -48,6 +48,7 @@
       paypal: { clientId: "", environment: "sandbox", buyerCountry: "" },
       branding: { faviconPath: "" },
       blog: { title: "Blog", description: "" },
+      newsletter: { label: "" },
       categories: {},
       contact: {
         email: "",
@@ -130,6 +131,11 @@
       ...(input.branding && typeof input.branding === "object" ? input.branding : {}),
     };
     next.blog = { ...next.blog, ...(input.blog && typeof input.blog === "object" ? input.blog : {}) };
+    next.newsletter = {
+      ...next.newsletter,
+      ...(input.newsletter && typeof input.newsletter === "object" ? input.newsletter : {}),
+    };
+    next.newsletter.label = String(next.newsletter.label ?? "").trim();
     next.categories = normalizeCategories(input.categories);
     next.contact = {
       ...next.contact,
@@ -357,6 +363,9 @@
         title: get("blogTitle"),
         description: get("blogDescription"),
       },
+      newsletter: {
+        label: get("newsletterLabel"),
+      },
       contact: {
         email: get("contactEmail"),
         phone: get("contactPhone"),
@@ -434,6 +443,7 @@
     set("faviconPath", shop.branding?.faviconPath);
     set("blogTitle", shop.blog?.title);
     set("blogDescription", shop.blog?.description);
+    set("newsletterLabel", shop.newsletter?.label);
     set("contactEmail", shop.contact?.email);
     set("contactPhone", shop.contact?.phone);
     set("addressLine1", shop.contact?.address?.line1);
@@ -710,6 +720,16 @@
     blogSection.appendChild(field("Blog title", "blogTitle"));
     blogSection.appendChild(field("Blog description", "blogDescription", { type: "textarea", rows: 2 }));
     form.appendChild(blogSection);
+
+    const newsletterSection = section("Newsletter");
+    newsletterSection.appendChild(
+      field("Email signup message", "newsletterLabel", {
+        type: "textarea",
+        rows: 3,
+        hint: "Shown above the footer subscribe form. Leave blank to use “Newsletter”.",
+      }),
+    );
+    form.appendChild(newsletterSection);
 
     const contactSection = section("Contact");
     contactSection.appendChild(field("Email", "contactEmail", { inputType: "email" }));

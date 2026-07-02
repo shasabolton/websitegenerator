@@ -1963,8 +1963,9 @@ body.nav-scroll-lock {
 
 .footer-form-heading {
   margin: 0 0 10px;
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.45;
   color: #f8fafc;
 }
 

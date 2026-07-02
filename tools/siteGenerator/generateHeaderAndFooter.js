@@ -193,10 +193,15 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
     NAV_ITEMS: navHtml,
   });
 
+  const newsletterLabel = escapeHtml(
+    String(shopData?.newsletter?.label ?? "").trim() || "Newsletter"
+  );
+
   const footerHtml = applyTemplate(footerTemplate, {
     SHOP_NAME: shopName,
     SOCIAL_LINKS: buildSocialLinksHtml(shopData),
     CONTACT_BLOCK: buildFooterContactHtml(shopData),
+    NEWSLETTER_LABEL: newsletterLabel,
   });
 
   return {
