@@ -1958,13 +1958,13 @@ body.nav-scroll-lock {
 
 .footer-subscribe-form {
   margin: 16px 0 0;
-  max-width: 320px;
+  max-width: 420px;
 }
 
 .footer-form-heading {
-  margin: 0 0 10px;
-  font-weight: 600;
-  font-size: 1rem;
+  margin: 0 0 12px;
+  font-weight: 700;
+  font-size: 1.2rem;
   line-height: 1.45;
   color: #f8fafc;
 }
