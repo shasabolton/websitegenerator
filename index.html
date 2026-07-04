@@ -36,6 +36,13 @@
 })();
 
 </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BEH6TSQ9VX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-BEH6TSQ9VX');
+</script>
     <title>Contraption Cart - Shop</title>
     <meta name="description" content="A shop of mechanical curiosities designed by Tasmanian maker Shasa Bolton, featuring automata, puzzle boxes, magic tricks, robots, and other buildable contrapt…" />
     <link rel="canonical" href="https://www.contraptioncart.com/" />
@@ -59,6 +66,7 @@
       Each file must avoid redeclaring top-level const/let/class (use an IIFE + guard). New shared scripts: same pattern.
     -->
     <script src="tools/editData/productData.js"></script>
+    <script src="shared-assets/script/siteAnalytics.js"></script>
     <script src="shared-assets/script/shoppingCart.js"></script>
     <script src="shared-assets/script/displayCurrency.js"></script>
     <script src="shared-assets/script/siteSearch.js" defer></script>
@@ -251,12 +259,26 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           automata <span class="category-heading-chevron" aria-hidden="true">&rsaquo;</span>
         </a>
       </h2>
+      <a class="category-view-all-link" href="shop/automata">View all</a>
     </div>
   </div>
-  <div class="product-thumb-row">
-  <article class="product-thumb-card">
+  <div class="shop-category-scroll" data-shop-category-scroll data-fade-start="false" data-fade-end="false">
+  <button
+    type="button"
+    class="shop-category-scroll-btn shop-category-scroll-btn--prev"
+    data-shop-scroll="prev"
+    aria-label="Scroll automata products left"
+    hidden
+  >
+    <span class="shop-category-scroll-btn-icon" aria-hidden="true"></span>
+  </button>
+  <div class="shop-category-scroll-viewport">
+    <div class="shop-category-scroll-fade shop-category-scroll-fade--start" aria-hidden="true"></div>
+    <div class="shop-category-scroll-fade shop-category-scroll-fade--end" aria-hidden="true"></div>
+    <div class="product-thumb-row shop-category-scroll-track" tabindex="0">
+      <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/hummingbird-and-flower">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/b40a27/7905899944/il_570xN.7905899944_exsm.jpg" alt="Hummingbird and Flower" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/b40a27/7905899944/il_570xN.7905899944_exsm.jpg" alt="Hummingbird and Flower" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/hummingbird-and-flower">Hummingbird and Flower</a>
@@ -265,7 +287,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/dog-and-cat-running">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/1291ff/5741377892/il_570xN.5741377892_mo3z.jpg" alt="Dog and Cat Running" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/1291ff/5741377892/il_570xN.5741377892_mo3z.jpg" alt="Dog and Cat Running" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/dog-and-cat-running">Dog and Cat Running</a>
@@ -274,14 +296,105 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/lankydoodler">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/a0833b/7065669237/il_570xN.7065669237_72fe.jpg" alt="Lankydoodler" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/a0833b/7065669237/il_570xN.7065669237_72fe.jpg" alt="Lankydoodler" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/lankydoodler">Lankydoodler</a>
   </h3>
   <p class="product-thumb-price" data-price-aud="49">AUD$49.00</p>
 </article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/fluttering-heart">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/355899/4526666951/il_570xN.4526666951_igt0.jpg" alt="Fluttering Heart" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/fluttering-heart">Fluttering Heart</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="40">AUD$40.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/hummingbird-pole-pet">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/2f7cf2/3979887369/il_570xN.3979887369_p0lp.jpg" alt="Hummingbird Pole Pet" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/hummingbird-pole-pet">Hummingbird Pole Pet</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="49">AUD$49.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/bird-zoetrope">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/ff0b3f/3659623310/il_570xN.3659623310_2in0.jpg" alt="Bird Zoetrope" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/bird-zoetrope">Bird Zoetrope</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="40">AUD$40.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/swinging-monkey">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/5d0025/5850380013/il_570xN.5850380013_pu5w.jpg" alt="Swinging Monkey" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/swinging-monkey">Swinging Monkey</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="40">AUD$40.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/whale-pulley-pet">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/d73939/2578454161/il_570xN.2578454161_t55f.jpg" alt="Whale Pulley Pet" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/whale-pulley-pet">Whale Pulley Pet</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="32">AUD$32.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/bird-bank">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/0222dd/3203550682/il_570xN.3203550682_iyzb.jpg" alt="Bird Bank" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/bird-bank">Bird Bank</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="55">AUD$55.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/goldfish">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/54d3fc/3277769191/il_570xN.3277769191_chd1.jpg" alt="Goldfish" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/goldfish">Goldfish</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="55">AUD$55.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/tortoise-tally">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/0afdd3/3230052300/il_570xN.3230052300_ewkv.jpg" alt="Tortoise Tally" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/tortoise-tally">Tortoise Tally</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="55">AUD$55.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/gorilla-pulley-pet">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/7fe8fb/4872386232/il_570xN.4872386232_hgbf.jpg" alt="Gorilla Pulley Pet" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/gorilla-pulley-pet">Gorilla Pulley Pet</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="32">AUD$32.00</p>
+</article>
 
+    </div>
+  </div>
+  <button
+    type="button"
+    class="shop-category-scroll-btn shop-category-scroll-btn--next"
+    data-shop-scroll="next"
+    aria-label="Scroll automata products right"
+  >
+    <span class="shop-category-scroll-btn-icon" aria-hidden="true"></span>
+  </button>
 </div>
 
 </section>
@@ -293,12 +406,26 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           magic tricks <span class="category-heading-chevron" aria-hidden="true">&rsaquo;</span>
         </a>
       </h2>
+      <a class="category-view-all-link" href="shop/magic-tricks">View all</a>
     </div>
   </div>
-  <div class="product-thumb-row">
-  <article class="product-thumb-card">
+  <div class="shop-category-scroll" data-shop-category-scroll data-fade-start="false" data-fade-end="false">
+  <button
+    type="button"
+    class="shop-category-scroll-btn shop-category-scroll-btn--prev"
+    data-shop-scroll="prev"
+    aria-label="Scroll magic tricks products left"
+    hidden
+  >
+    <span class="shop-category-scroll-btn-icon" aria-hidden="true"></span>
+  </button>
+  <div class="shop-category-scroll-viewport">
+    <div class="shop-category-scroll-fade shop-category-scroll-fade--start" aria-hidden="true"></div>
+    <div class="shop-category-scroll-fade shop-category-scroll-fade--end" aria-hidden="true"></div>
+    <div class="product-thumb-row shop-category-scroll-track" tabindex="0">
+      <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/instant-coke">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/66038a/8060809750/il_570xN.8060809750_ocm1.jpg" alt="Instant Coke" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/66038a/8060809750/il_570xN.8060809750_ocm1.jpg" alt="Instant Coke" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/instant-coke">Instant Coke</a>
@@ -307,7 +434,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/zig-zag-pencil">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/5c16f8/8213336579/il_570xN.8213336579_a7e0.jpg" alt="Zig Zag Pencil" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/5c16f8/8213336579/il_570xN.8213336579_a7e0.jpg" alt="Zig Zag Pencil" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/zig-zag-pencil">Zig Zag Pencil</a>
@@ -316,14 +443,87 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/sword-through-finger">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/6131c9/7304342262/il_570xN.7304342262_3pqw.jpg" alt="Sword Through Finger" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/6131c9/7304342262/il_570xN.7304342262_3pqw.jpg" alt="Sword Through Finger" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/sword-through-finger">Sword Through Finger</a>
   </h3>
   <p class="product-thumb-price" data-price-aud="40">AUD$40.00</p>
 </article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/magic-drawer">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/8edb68/7748820039/il_570xN.7748820039_pfre.jpg" alt="Magic Drawer" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/magic-drawer">Magic Drawer</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="50">AUD$50.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/magic-frame">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/ed679c/6874432458/il_570xN.6874432458_ivk5.jpg" alt="Magic Frame" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/magic-frame">Magic Frame</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="40">AUD$40.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/dice-tunnel">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/5fffc7/8021016916/il_570xN.8021016916_33ca.jpg" alt="Dice Tunnel" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/dice-tunnel">Dice Tunnel</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="50">AUD$50.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/magic-empty-box">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/c46a06/8213406109/il_570xN.8213406109_6zjj.jpg" alt="Magic Empty Box" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/magic-empty-box">Magic Empty Box</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="45">AUD$45.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/chicken-and-egg">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/2f7da6/7693611964/il_570xN.7693611964_frf6.jpg" alt="Chicken And Egg" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/chicken-and-egg">Chicken And Egg</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="50">AUD$50.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/newcombs-paradox">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/a4bbac/7239250353/il_570xN.7239250353_iu74.jpg" alt="Newcomb&#39;s Paradox" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/newcombs-paradox">Newcomb&#39;s Paradox</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="60">AUD$60.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/key-through-coin">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/4361ed/8060793952/il_570xN.8060793952_ds5u.jpg" alt="Key Through Coin Magic Trick" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/key-through-coin">Key Through Coin Magic Trick</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="40">AUD$40.00</p>
+</article>
 
+    </div>
+  </div>
+  <button
+    type="button"
+    class="shop-category-scroll-btn shop-category-scroll-btn--next"
+    data-shop-scroll="next"
+    aria-label="Scroll magic tricks products right"
+  >
+    <span class="shop-category-scroll-btn-icon" aria-hidden="true"></span>
+  </button>
 </div>
 
 </section>
@@ -335,12 +535,26 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           puzzle boxes <span class="category-heading-chevron" aria-hidden="true">&rsaquo;</span>
         </a>
       </h2>
+      <a class="category-view-all-link" href="shop/puzzle-boxes">View all</a>
     </div>
   </div>
-  <div class="product-thumb-row">
-  <article class="product-thumb-card">
+  <div class="shop-category-scroll" data-shop-category-scroll data-fade-start="false" data-fade-end="false">
+  <button
+    type="button"
+    class="shop-category-scroll-btn shop-category-scroll-btn--prev"
+    data-shop-scroll="prev"
+    aria-label="Scroll puzzle boxes products left"
+    hidden
+  >
+    <span class="shop-category-scroll-btn-icon" aria-hidden="true"></span>
+  </button>
+  <div class="shop-category-scroll-viewport">
+    <div class="shop-category-scroll-fade shop-category-scroll-fade--start" aria-hidden="true"></div>
+    <div class="shop-category-scroll-fade shop-category-scroll-fade--end" aria-hidden="true"></div>
+    <div class="product-thumb-row shop-category-scroll-track" tabindex="0">
+      <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/mini-cryptex">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/4d4af1/7431628092/il_570xN.7431628092_pq2y.jpg" alt="Mini Cryptex" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/4d4af1/7431628092/il_570xN.7431628092_pq2y.jpg" alt="Mini Cryptex" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/mini-cryptex">Mini Cryptex</a>
@@ -349,7 +563,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/mouse-maze-puzzle-box">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/85639c/4250092607/il_570xN.4250092607_ktow.jpg" alt="Mouse Maze Puzzle Box" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/85639c/4250092607/il_570xN.4250092607_ktow.jpg" alt="Mouse Maze Puzzle Box" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/mouse-maze-puzzle-box">Mouse Maze Puzzle Box</a>
@@ -358,14 +572,33 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/illusionist-pendant-puzzle-box">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/e0dae1/7808588727/il_570xN.7808588727_2dg6.jpg" alt="Illusionist Pendant Puzzle Box" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/e0dae1/7808588727/il_570xN.7808588727_2dg6.jpg" alt="Illusionist Pendant Puzzle Box" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/illusionist-pendant-puzzle-box">Illusionist Pendant Puzzle Box</a>
   </h3>
   <p class="product-thumb-price" data-price-aud="30">AUD$30.00</p>
 </article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/slide-picture-puzzle-box">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/ccf267/4561367052/il_570xN.4561367052_lf6h.jpg" alt="Slide Picture Puzzle Box" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/slide-picture-puzzle-box">Slide Picture Puzzle Box</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="40">AUD$40.00</p>
+</article>
 
+    </div>
+  </div>
+  <button
+    type="button"
+    class="shop-category-scroll-btn shop-category-scroll-btn--next"
+    data-shop-scroll="next"
+    aria-label="Scroll puzzle boxes products right"
+  >
+    <span class="shop-category-scroll-btn-icon" aria-hidden="true"></span>
+  </button>
 </div>
 
 </section>
@@ -377,12 +610,26 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           toys and games <span class="category-heading-chevron" aria-hidden="true">&rsaquo;</span>
         </a>
       </h2>
+      <a class="category-view-all-link" href="shop/toys-and-games">View all</a>
     </div>
   </div>
-  <div class="product-thumb-row">
-  <article class="product-thumb-card">
+  <div class="shop-category-scroll" data-shop-category-scroll data-fade-start="false" data-fade-end="false">
+  <button
+    type="button"
+    class="shop-category-scroll-btn shop-category-scroll-btn--prev"
+    data-shop-scroll="prev"
+    aria-label="Scroll toys and games products left"
+    hidden
+  >
+    <span class="shop-category-scroll-btn-icon" aria-hidden="true"></span>
+  </button>
+  <div class="shop-category-scroll-viewport">
+    <div class="shop-category-scroll-fade shop-category-scroll-fade--start" aria-hidden="true"></div>
+    <div class="shop-category-scroll-fade shop-category-scroll-fade--end" aria-hidden="true"></div>
+    <div class="product-thumb-row shop-category-scroll-track" tabindex="0">
+      <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/mechanical-calculator">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/49b9ec/7764225703/il_570xN.7764225703_iat4.jpg" alt="Mechanical Calculator" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/49b9ec/7764225703/il_570xN.7764225703_iat4.jpg" alt="Mechanical Calculator" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/mechanical-calculator">Mechanical Calculator</a>
@@ -391,7 +638,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/tiny-drive">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/0551df/6652167125/il_570xN.6652167125_7sp9.jpg" alt="Tiny Drive" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/0551df/6652167125/il_570xN.6652167125_7sp9.jpg" alt="Tiny Drive" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/tiny-drive">Tiny Drive</a>
@@ -400,14 +647,33 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/street-sweeper">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/78abf8/4998764623/il_570xN.4998764623_mqoe.jpg" alt="Street Sweeper" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/78abf8/4998764623/il_570xN.4998764623_mqoe.jpg" alt="Street Sweeper" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/street-sweeper">Street Sweeper</a>
   </h3>
   <p class="product-thumb-price" data-price-aud="140">AUD$140.00</p>
 </article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/marble-tree">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/61864a/3653840239/il_570xN.3653840239_jtlh.jpg" alt="Marble Tree" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/marble-tree">Marble Tree</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="38">AUD$38.00</p>
+</article>
 
+    </div>
+  </div>
+  <button
+    type="button"
+    class="shop-category-scroll-btn shop-category-scroll-btn--next"
+    data-shop-scroll="next"
+    aria-label="Scroll toys and games products right"
+  >
+    <span class="shop-category-scroll-btn-icon" aria-hidden="true"></span>
+  </button>
 </div>
 
 </section>
@@ -419,12 +685,26 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           whirligigs <span class="category-heading-chevron" aria-hidden="true">&rsaquo;</span>
         </a>
       </h2>
+      <a class="category-view-all-link" href="shop/whirligigs">View all</a>
     </div>
   </div>
-  <div class="product-thumb-row">
-  <article class="product-thumb-card">
+  <div class="shop-category-scroll" data-shop-category-scroll data-fade-start="false" data-fade-end="false">
+  <button
+    type="button"
+    class="shop-category-scroll-btn shop-category-scroll-btn--prev"
+    data-shop-scroll="prev"
+    aria-label="Scroll whirligigs products left"
+    hidden
+  >
+    <span class="shop-category-scroll-btn-icon" aria-hidden="true"></span>
+  </button>
+  <div class="shop-category-scroll-viewport">
+    <div class="shop-category-scroll-fade shop-category-scroll-fade--start" aria-hidden="true"></div>
+    <div class="shop-category-scroll-fade shop-category-scroll-fade--end" aria-hidden="true"></div>
+    <div class="product-thumb-row shop-category-scroll-track" tabindex="0">
+      <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/woodchopper-whirligig">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/5f3d80/4182614388/il_570xN.4182614388_pzqy.jpg" alt="Woodchopper Whirligig" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/5f3d80/4182614388/il_570xN.4182614388_pzqy.jpg" alt="Woodchopper Whirligig" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/woodchopper-whirligig">Woodchopper Whirligig</a>
@@ -433,7 +713,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/dog-whirligig">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/705fde/4218904869/il_570xN.4218904869_62e3.jpg" alt="Dog Whirligig" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/705fde/4218904869/il_570xN.4218904869_62e3.jpg" alt="Dog Whirligig" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/dog-whirligig">Dog Whirligig</a>
@@ -442,14 +722,51 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 </article>
 <article class="product-thumb-card">
   <a class="product-thumb-link" href="shop/fisherman-whirligig">
-    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/c0af1b/4227293783/il_570xN.4227293783_o4l3.jpg" alt="Fisherman Whirligig" loading="lazy" />
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/c0af1b/4227293783/il_570xN.4227293783_o4l3.jpg" alt="Fisherman Whirligig" loading="eager" />
   </a>
   <h3 class="product-thumb-title">
     <a class="product-thumb-title-link" href="shop/fisherman-whirligig">Fisherman Whirligig</a>
   </h3>
   <p class="product-thumb-price" data-price-aud="75">AUD$75.00</p>
 </article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/surfer-whirligig">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/ff60a4/4199153987/il_570xN.4199153987_28b6.jpg" alt="Surfer Whirligig" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/surfer-whirligig">Surfer Whirligig</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="75">AUD$75.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/fantail-whirligig">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/0ebaf9/5142894636/il_570xN.5142894636_j9vj.jpg" alt="Fantail Whirligig" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/fantail-whirligig">Fantail Whirligig</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="50">AUD$50.00</p>
+</article>
+<article class="product-thumb-card">
+  <a class="product-thumb-link" href="shop/whirligig-hardware">
+    <img class="product-thumb-image" src="https://i.etsystatic.com/25031074/r/il/2d3dc8/5025710985/il_570xN.5025710985_st50.jpg" alt="Whirligig Hardware" loading="lazy" />
+  </a>
+  <h3 class="product-thumb-title">
+    <a class="product-thumb-title-link" href="shop/whirligig-hardware">Whirligig Hardware</a>
+  </h3>
+  <p class="product-thumb-price" data-price-aud="40">AUD$40.00</p>
+</article>
 
+    </div>
+  </div>
+  <button
+    type="button"
+    class="shop-category-scroll-btn shop-category-scroll-btn--next"
+    data-shop-scroll="next"
+    aria-label="Scroll whirligigs products right"
+  >
+    <span class="shop-category-scroll-btn-icon" aria-hidden="true"></span>
+  </button>
 </div>
 
 </section>
@@ -465,7 +782,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       method="post"
       target="_self"
     >
-      <p class="footer-form-heading">Newsletter</p>
+      <p class="footer-form-heading">Join the Contraption Newsletter for new designs, discounts and articles.</p>
       <div class="footer-form-field">
         <label class="footer-form-label" for="footer-subscribe-name">Name</label>
         <input
@@ -494,6 +811,6 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 
     <script src="tools/siteGenerator/templates/js/image-carousel.js" defer></script>
     <script src="shared-assets/script/productInstructionVideos.js" defer></script>
-    
+    <script src="shared-assets/script/shopCategoryScroll.js" defer></script>
   </body>
 </html>

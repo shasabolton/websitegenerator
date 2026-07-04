@@ -36,6 +36,13 @@
 })();
 
 </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BEH6TSQ9VX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-BEH6TSQ9VX');
+</script>
     <title>Contraption Cart - Toys and Games</title>
     <meta name="description" content="Interactive and educational mechanical toys designed to inspire curiosity through making and exploration." />
     <link rel="canonical" href="https://www.contraptioncart.com/shop/toys-and-games" />
@@ -59,6 +66,7 @@
       Each file must avoid redeclaring top-level const/let/class (use an IIFE + guard). New shared scripts: same pattern.
     -->
     <script src="tools/editData/productData.js"></script>
+    <script src="shared-assets/script/siteAnalytics.js"></script>
     <script src="shared-assets/script/shoppingCart.js"></script>
     <script src="shared-assets/script/displayCurrency.js"></script>
     <script src="shared-assets/script/siteSearch.js" defer></script>
@@ -300,7 +308,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       method="post"
       target="_self"
     >
-      <p class="footer-form-heading">Newsletter</p>
+      <p class="footer-form-heading">Join the Contraption Newsletter for new designs, discounts and articles.</p>
       <div class="footer-form-field">
         <label class="footer-form-label" for="footer-subscribe-name">Name</label>
         <input
