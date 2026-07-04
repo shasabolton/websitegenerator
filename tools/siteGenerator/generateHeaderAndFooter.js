@@ -168,6 +168,25 @@ function buildSiteSearchScriptPath() {
   return "shared-assets/script/siteSearch.js";
 }
 
+function buildSiteAnalyticsScriptPath() {
+  return "shared-assets/script/siteAnalytics.js";
+}
+
+function buildGa4HeadHtml(shopData) {
+  const id = String(shopData?.analytics?.measurementId ?? "").trim();
+  if (!id || !/^G-[A-Z0-9]+$/i.test(id)) {
+    return "";
+  }
+  const safeId = escapeHtml(id);
+  return `<script async src="https://www.googletagmanager.com/gtag/js?id=${safeId}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '${safeId}');
+</script>`;
+}
+
 async function generateHeaderAndFooter(shopData, navigationConfig, options = {}) {
   const [headerTemplate, footerTemplate] = await Promise.all([
     fetchTemplate("./templates/partials/header.html"),
@@ -186,6 +205,8 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
   const productInstructionVideosScriptPath = escapeHtml(buildProductInstructionVideosScriptPath());
   const displayCurrencyScriptPath = escapeHtml(buildDisplayCurrencyScriptPath());
   const siteSearchScriptPath = escapeHtml(buildSiteSearchScriptPath());
+  const siteAnalyticsScriptPath = escapeHtml(buildSiteAnalyticsScriptPath());
+  const ga4HeadHtml = buildGa4HeadHtml(shopData);
 
   const headerHtml = applyTemplate(headerTemplate, {
     SHOP_NAME: shopName,
@@ -216,6 +237,8 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
     productInstructionVideosScriptPath,
     displayCurrencyScriptPath,
     siteSearchScriptPath,
+    siteAnalyticsScriptPath,
+    ga4HeadHtml,
   };
 }
 
@@ -230,5 +253,7 @@ window.generateHeaderAndFooter = {
   buildProductInstructionVideosScriptPath,
   buildDisplayCurrencyScriptPath,
   buildSiteSearchScriptPath,
+  buildSiteAnalyticsScriptPath,
+  buildGa4HeadHtml,
   generateHeaderAndFooter,
 };

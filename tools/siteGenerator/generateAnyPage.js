@@ -98,6 +98,8 @@ async function mergeBodyIntoFullHtml(
     productInstructionVideosScriptPath,
     displayCurrencyScriptPath,
     siteSearchScriptPath,
+    siteAnalyticsScriptPath,
+    ga4HeadHtml,
   } = await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig, {
     categoryNames,
     homePageHref,
@@ -120,6 +122,7 @@ async function mergeBodyIntoFullHtml(
 
   return applyTemplate(pageTemplate, {
     PAGE_TITLE: pageTitle,
+    GA4_HEAD: ga4HeadHtml || "",
     HEAD_SEO: seo.headSeoHtml || "",
     STRUCTURED_DATA: seo.structuredDataHtml || "",
     FAVICON_PATH: faviconPath,
@@ -130,6 +133,7 @@ async function mergeBodyIntoFullHtml(
     PRODUCT_INSTRUCTION_VIDEOS_SCRIPT_PATH: productInstructionVideosScriptPath,
     DISPLAY_CURRENCY_SCRIPT_PATH: displayCurrencyScriptPath,
     SITE_SEARCH_SCRIPT_PATH: siteSearchScriptPath,
+    SITE_ANALYTICS_SCRIPT_PATH: siteAnalyticsScriptPath,
     SITE_CART_INIT_SCRIPT: siteCartInitScript,
     SET_BASE_SCRIPT: wrapInlineScript(setBaseSource),
     HEADER: headerHtml,

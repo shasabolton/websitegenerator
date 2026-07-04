@@ -6,6 +6,7 @@
     <!-- Default base for custom domain / local server; sync script below may set /repo/ on GitHub Pages. -->
     <base href="/" data-site-base="true" />
     __SET_BASE_SCRIPT__
+    __GA4_HEAD__
     <title>__PAGE_TITLE__</title>
     __HEAD_SEO__
     __STRUCTURED_DATA__
@@ -18,6 +19,7 @@
       Each file must avoid redeclaring top-level const/let/class (use an IIFE + guard). New shared scripts: same pattern.
     -->
     <script src="__PRODUCT_DATA_SCRIPT_PATH__"></script>
+    <script src="__SITE_ANALYTICS_SCRIPT_PATH__"></script>
     <script src="__SHOPPING_CART_SCRIPT_PATH__"></script>
     <script src="__DISPLAY_CURRENCY_SCRIPT_PATH__"></script>
     <script src="__SITE_SEARCH_SCRIPT_PATH__" defer></script>

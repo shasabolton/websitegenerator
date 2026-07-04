@@ -777,6 +777,12 @@
                 lineCount: (cart.data.items || []).length,
                 paypalItemLines: built.items.length,
               });
+              if (window.siteAnalytics?.beginCheckout) {
+                window.siteAnalytics.beginCheckout(
+                  cart.data.items || [],
+                  Math.max(0, itemTotal - discountAmount) + shipCost,
+                );
+              }
               return actions.order
                 .create({
                   purchase_units: [
@@ -823,6 +829,22 @@
                       status: details && details.status,
                       payerEmail: details && details.payer && details.payer.email_address,
                     });
+                    var purchaseLines = (cart.data.items || []).slice();
+                    var purchasePu =
+                      details &&
+                      details.purchase_units &&
+                      details.purchase_units[0];
+                    var purchaseAmount =
+                      purchasePu &&
+                      purchasePu.amount &&
+                      purchasePu.amount.value;
+                    if (window.siteAnalytics?.purchase) {
+                      window.siteAnalytics.purchase(
+                        data.orderID,
+                        purchaseAmount,
+                        purchaseLines,
+                      );
+                    }
                     clearShipCountryError();
                     cart.data.items = [];
                     cart.data.appliedDiscountCode = null;

@@ -1,5 +1,5 @@
 {
-  "deployVersion": 122,
+  "deployVersion": 123,
   "shopName": "Contraption Cart",
   "owner": "Shasa Bolton",
   "about": "A shop of mechanical curiosities designed by Tasmanian maker Shasa Bolton, featuring automata, puzzle boxes, magic tricks, robots, and other buildable contraptions.",
@@ -43,6 +43,9 @@
     "clientId": "Adg6IasG1Q7-JOHkkke2xaHQqgwf6edUaOjiM2lboWOftGPMQS5UpNRqVUbgoyLEJoz0-SS61QaMADpp",
     "environment": "sandbox",
     "buyerCountry": "AU"
+  },
+  "analytics": {
+    "measurementId": ""
   },
   "branding": {
     "faviconPath": "shared-assets/images/branding/favicon.jpg"

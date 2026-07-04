@@ -46,6 +46,7 @@
       shopFocus: [],
       websites: { primary: "", images: "", imagesRepo: "", etsy: "", newsletterSignup: "" },
       paypal: { clientId: "", environment: "sandbox", buyerCountry: "" },
+      analytics: { measurementId: "" },
       branding: { faviconPath: "" },
       blog: { title: "Blog", description: "" },
       newsletter: { label: "" },
@@ -126,6 +127,11 @@
     next.websites.etsy = String(next.websites.etsy ?? "").trim();
     next.websites.newsletterSignup = String(next.websites.newsletterSignup ?? "").trim();
     next.paypal = { ...next.paypal, ...(input.paypal && typeof input.paypal === "object" ? input.paypal : {}) };
+    next.analytics = {
+      ...next.analytics,
+      ...(input.analytics && typeof input.analytics === "object" ? input.analytics : {}),
+    };
+    next.analytics.measurementId = String(next.analytics.measurementId ?? "").trim();
     next.branding = {
       ...next.branding,
       ...(input.branding && typeof input.branding === "object" ? input.branding : {}),
@@ -356,6 +362,9 @@
         environment: get("paypalEnvironment") || "sandbox",
         buyerCountry: get("paypalBuyerCountry"),
       },
+      analytics: {
+        measurementId: get("analyticsMeasurementId"),
+      },
       branding: {
         faviconPath: get("faviconPath"),
       },
@@ -440,6 +449,7 @@
     set("paypalClientId", shop.paypal?.clientId);
     set("paypalEnvironment", shop.paypal?.environment || "sandbox");
     set("paypalBuyerCountry", shop.paypal?.buyerCountry);
+    set("analyticsMeasurementId", shop.analytics?.measurementId);
     set("faviconPath", shop.branding?.faviconPath);
     set("blogTitle", shop.blog?.title);
     set("blogDescription", shop.blog?.description);
@@ -711,6 +721,15 @@
     );
     paySection.appendChild(field("Buyer country (ISO)", "paypalBuyerCountry", { placeholder: "AU" }));
     form.appendChild(paySection);
+
+    const analyticsSection = section("Google Analytics (GA4)");
+    analyticsSection.appendChild(
+      field("Measurement ID", "analyticsMeasurementId", {
+        placeholder: "G-XXXXXXXXXX",
+        hint: "From GA4 Admin → Data streams → your web stream. Leave blank to disable analytics on generated pages.",
+      }),
+    );
+    form.appendChild(analyticsSection);
 
     const brandSection = section("Branding");
     brandSection.appendChild(field("Favicon path", "faviconPath"));

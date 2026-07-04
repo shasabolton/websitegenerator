@@ -228,6 +228,9 @@ class ShoppingCart {
       this.data.items.push(line);
     }
     this.saveToLocalStorage();
+    if (window.siteAnalytics?.addToCart) {
+      window.siteAnalytics.addToCart(line);
+    }
     return true;
   }
 
