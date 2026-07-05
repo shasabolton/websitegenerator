@@ -39,6 +39,12 @@
       "alt": "writing automaton pantograph method",
       "caption": "writing automaton pantograph method",
       "width": ""
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "I have always found writing automata one of the most fascinating. Seeing your own hand writing emerge from a machine really encapsulates the illusion of life that traditional automata pursued. I have designed a few writing machines over the years and will discuss the mechanisms and considerations here. The original inspiration was from the elaborate clockwork writing automata made in the 1800's. Like this writing boy made by Malardet. It is very complex, with different cams for each letter.",
+      "clearFloat": ""
     }
   ]
 }
