@@ -45,6 +45,14 @@
       "format": "plain",
       "content": "I have always found writing automata one of the most fascinating. Seeing your own hand writing emerge from a machine really encapsulates the illusion of life that traditional automata pursued. I have designed a few writing machines over the years and will discuss the mechanisms and considerations here. The original inspiration was from the elaborate clockwork writing automata made in the 1800's. Like this writing boy made by Malardet. It is very complex, with different cams for each letter.",
       "clearFloat": ""
+    },
+    {
+      "type": "image",
+      "src": "https://images.contraptioncart.com/Blogs/500px-Henri_Maillardet_automaton__London__England__c._1810_-_Franklin_Institute_-_DSC06656.jpg",
+      "alt": "Maillardet's writing drawings automaton",
+      "caption": "Maillardet's writing drawings automaton",
+      "width": "75",
+      "align": "left"
     }
   ]
 }
