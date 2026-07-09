@@ -97,7 +97,7 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "The next design used a pantograph style mechanism, with a large parallelogram that pivoted at the top. This made it easier to increase the size of the drawing that could be made. I also went back to 2 separate cams to allow for more detail to be stored.",
+      "content": "The next design I named Lanky Doodler and used a pantograph style mechanism, with a large parallelogram that pivoted at the top This made it easier to increase the size of the drawing that could be made. I also went back to 2 separate cams to allow for more detail to be stored. The forearms have follower screws that ride on the cams. I like this design as it is quite easy for people to see how the cams dictate the output of the sketch.",
       "clearFloat": ""
     },
     {
@@ -107,7 +107,7 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "The most interesting part of these machines is generating the cams that store its sketch. First one must use some trigenometry to find a formular that maps the pencil tip x,y coordinate to the cam radius required. This will be diferent depending on the method and geometry of the mechanism. One I had that figured out, I decided the best way to generate the cams would be to write some custom software.",
+      "content": "The most interesting part of these machines is generating the cams that store its sketch. First one must use some math to find a formular that maps the pencil tip x,y coordinate to the cam radius required. This will be diferent depending on the method and geometry of the mechanism. Once I had that figured out, I decided the best way to generate the cams would be to write some custom software. This way people could draw a sketch to a computer screen. The app then stores it as discrete coordinates, converts those to cam radiuses with the specific formular and space them evenly around the 360 degrees of the cam. These are then joined into an svg vector that can be cut on a laser utter. The lastest cam generator app, I wrote in javascript so it runs in a web browser. So people can use it without needing to download anything.",
       "clearFloat": ""
     }
   ]
