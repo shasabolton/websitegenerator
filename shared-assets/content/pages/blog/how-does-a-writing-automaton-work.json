@@ -97,7 +97,7 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "The next design I named Lanky Doodler and used a pantograph style mechanism, with a large parallelogram that pivoted at the top This made it easier to increase the size of the drawing that could be made. I also went back to 2 separate cams to allow for more detail to be stored. The forearms have follower screws that ride on the cams. I like this design as it is quite easy for people to see how the cams dictate the output of the sketch. I try to make designs that only use laser cut parts, as it makes it easier for people to make at home without needing to source components. This one does use screws for the joints but these are not too hard to source. I wanted to avoid the need for springs or weights, so put the entire board on an angle. It relies on gravity to keep the followers agains the cams and to hold the pen down on the page. Since there is now no control over the pressure of the pen on the page I found a very soft 12B pencil of a felt pen is best to get a dark sketch. ",
+      "content": "The next design I named Lanky Doodler and used a pantograph style mechanism, with a large parallelogram that pivoted at the top This made it easier to increase the size of the drawing that could be made. I also went back to 2 separate cams to allow for more detail to be stored. The forearms have follower screws that ride on the cams. I like this design as it is quite easy for people to see how the cams dictate the output of the sketch. I try to make designs that only use laser cut parts, as it makes it easier for people to make at home without needing to source components. This one does use screws for the joints but these are not too hard to source. I wanted to avoid the need for springs or weights, so put the entire board on an angle. It relies on gravity to keep the followers against the cams and to hold the pen down on the page. Since there is now no control over the pressure of the pen on the page I found a very soft 12B pencil of a felt pen is best to get a nice dark sketch. ",
       "clearFloat": ""
     },
     {
@@ -107,7 +107,7 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "The most interesting part of these machines is generating the cams that store its sketch. First one must use some math to find a formular that maps the pencil tip x,y coordinate to the cam radius required. This will be diferent depending on the method and geometry of the mechanism. Once I had that figured out, I decided the best way to generate the cams would be to write some custom software. This way people could draw a sketch to a computer screen. The app then stores it as discrete coordinates, converts those to cam radiuses with the specific formular and space them evenly around the 360 degrees of the cam. These are then joined into an svg vector that can be cut on a laser utter. The lastest cam generator app, I wrote in javascript so it runs in a web browser. So people can use it without needing to download anything.",
+      "content": "The most interesting part of these machines is generating the cams that store its sketch. First one must use some math to find a formular that maps the pencil tip x,y coordinate to the cam radius required. This will be diferent depending on the method and geometry of the mechanism. Once I had that figured out, I decided the best way to generate the cams would be to write some custom software. This way people could draw a sketch to a computer screen. The app then stores it as discrete coordinates, converts those to cam radiuses with the specific formular and space them evenly around the 360 degrees of the cam. These are then joined into an svg vector that can be cut on a laser cutter or scroll saw. The lastest cam generator app, I wrote in javascript so it runs in a web browser, so people can use it without needing to download anything. You can try it out at the button bellow.",
       "clearFloat": ""
     },
     {
@@ -117,8 +117,27 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "One challenge is controlling the pressure of the pen or pencil on the page.\nOne improvement would cenrtainly be the ability to lift the pen off the page. In these designs we are restricted to sketches and words that are all one conituous path. This would require another cam responsible for z position. ",
+      "content": "One improvement would cenrtainly be the ability to lift the pen off the page. In these designs we are restricted to sketches and words that are all one conituous path. This would require another cam responsible for z position. Perhaps I will address this in a future design. My latest desing is at least reasonably simple for people to make and intuit. They can design their own cams and swap them in and out of the single machine. I sell my latest wiritng automaton \"Lanky Doodler\" as either digital plans to laser cut or scroll saw yourself, as a kit posted with all the parts for your to assemble, or as a complete assembled automaton ready to draw and write. Check out the product just below.  ",
       "clearFloat": ""
+    },
+    {
+      "type": "product_thumbs",
+      "slugs": [
+        "lankydoodler"
+      ]
+    },
+    {
+      "type": "buttons",
+      "buttons": [
+        {
+          "url": "https://shasabolton.github.io/lankydoodler/",
+          "text": "Cam Generator App"
+        },
+        {
+          "url": "https://contraptioncart.etsy.com/au/listing/1219046950/writing-automaton-plans-scroll-sawlaser",
+          "text": "digital plans for download"
+        }
+      ]
     }
   ]
 }
