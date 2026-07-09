@@ -29,21 +29,17 @@
       "content": "Explanation coming soon.\nScriblo, Skrippy, Lanky Doodler, Software"
     },
     {
-      "type": "text",
-      "format": "plain",
-      "content": ""
-    },
-    {
       "type": "image",
       "src": "https://i.etsystatic.com/25031074/r/il/53af33/7017683670/il_fullxfull.7017683670_px9j.jpg",
       "alt": "writing automaton pantograph method",
       "caption": "writing automaton pantograph method",
-      "width": ""
+      "width": "50",
+      "align": "left"
     },
     {
       "type": "text",
       "format": "plain",
-      "content": "I have always found writing automata one of the most fascinating. Seeing your own hand writing emerge from a machine really encapsulates the illusion of life that traditional automata pursued. I have designed a few writing machines over the years and will discuss the mechanisms and considerations here. The original inspiration was from elaborate clockwork writing automata made in the 18th and 19th centuries. Often very complex such as this boy made by Maillardet.",
+      "content": "I have always found writing automata one of the most fascinating. Seeing your own hand writing emerge from a machine really encapsulates the illusion of life that traditional automata makers pursued. I have designed a few writing machines over the years and will discuss the mechanisms and considerations here. The original inspiration was from elaborate clockwork writing automata made in the 18th and 19th centuries. These were often very complex such as this boy made by Maillardet that could write and draw pictures. My goal was to design something much simpler, that people could make at home from a diy kit. I have come across 3 different approaches for writing automata. The classical ones tended to use a telescopic forearm that pivoted at the elbow. Other options are to use a 2 axis gymbol or a pantograph.",
       "clearFloat": ""
     },
     {
@@ -55,14 +51,18 @@
       "align": "left"
     },
     {
+      "type": "subtitle",
+      "text": "Gymbol"
+    },
+    {
       "type": "text",
       "format": "plain",
-      "content": "My goal was to design something much simpler, that people could make at home from a diy kit. I have come across 3 different approaches for writing automata. The classical ones like that above, tended to use a telescopic forearm that pivoted at the elbow. Others use a gymbol  or a pantograph. The first ones I made use the gymbol approach. The pencil could pivot and yaw about its center, each controlled by a separate cam. Since the pencil tip traces an arc, the page must either be on a pivot to maintain contact with the pencil, or the pencil must slide inside the gymbol. Here are the two I made, the first using all cnc routered parts, the second using cables to reduce the overall size.",
+      "content": "The first ones I made use the gymbol approach. The pencil could pivot and yaw about its center, each controlled by a separate cam. Since the pencil tip traces an arc, the page must either be on a pivot to maintain contact with the pencil, or the pencil must slide inside the gymbol. Here are the two I made, the first using all cnc routered parts, the second using cables to reduce the overall size.",
       "clearFloat": ""
     },
     {
       "type": "image",
-      "src": "https://images.contraptioncart.com/Blogs/scriblo-edited/il_fullxfull.scriblo-edited.webp",
+      "src": "https://images.contraptioncart.com/Blogs/scriblo-edited/il_570xN.scriblo-edited.webp",
       "alt": "Scriblo writing automaton",
       "caption": "",
       "width": "50",
