@@ -55,15 +55,41 @@
       "text": "Gymbol"
     },
     {
+      "type": "image",
+      "src": "https://images.contraptioncart.com/Blogs/scriblo-edited/il_570xN.scriblo-edited.webp",
+      "alt": "Scriblo writing automaton",
+      "caption": "",
+      "width": "50",
+      "align": "left"
+    },
+    {
       "type": "text",
       "format": "plain",
-      "content": "The first ones I made use the gymbol approach. The pencil could pivot and yaw about its center, each controlled by a separate cam. Since the pencil tip traces an arc, the page must either be on a pivot to maintain contact with the pencil, or the pencil must slide inside the gymbol. Here are the two I made, the first using all cnc routered parts, the second using cables to reduce the overall size.",
+      "content": "The first writing automaton I made used the gymbol approach.  I named it Scriblo and it was made with all cnc routered parts. The pencil could pivot and yaw about its center, each controlled by a separate cam. Since the pencil tip traces an arc, the page must be on a sprung loaded pivot to maintain contact with the pencil .The page was a removable receipt roll so you could tear off your message and pull in fresh paper.",
       "clearFloat": ""
     },
     {
       "type": "image",
-      "src": "https://images.contraptioncart.com/Blogs/scriblo-edited/il_570xN.scriblo-edited.webp",
-      "alt": "Scriblo writing automaton",
+      "src": "https://images.contraptioncart.com/Blogs/Skrippy%20Front-edited/il_570xN.Skrippy%20Front-edited.webp",
+      "alt": "writing automaton Skrippy",
+      "caption": "",
+      "width": "100",
+      "align": "left"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "The next design was similar but with the aim of shrinking everything down and making it look more like a character. This is a little kangaroo named Skrippy. It used fire line cables rather than rigid linkages. This helped reduce the size, but was moe fiddly to assemble and tension. It also only use one cam, with each half alocated to pitch and yaw of the pencil. Then pencil also slid inside the gymbol rather than using a sprung loaded page. This required a couple of nuts on the pencil to weigh it down.",
+      "clearFloat": ""
+    },
+    {
+      "type": "subtitle",
+      "text": "Pantograph Approach"
+    },
+    {
+      "type": "image",
+      "src": "https://i.etsystatic.com/25031074/r/il/3bb6fe/7065669245/il_fullxfull.7065669245_xic2.jpg",
+      "alt": "writing automaton kit",
       "caption": "",
       "width": "50",
       "align": "left"
