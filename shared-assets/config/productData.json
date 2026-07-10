@@ -189,7 +189,7 @@
       "PRICE": "50",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "3",
-      "WEIGHT_KG": "0.25",
+      "WEIGHT_KG": "0.4",
       "TAGS": "Hummingbird,Automata,Kits,Wooden_gift,STEM_education,Craft,Maker,Model,Engineering,Robotics,Technology,Woodwork,Laser_cut",
       "MATERIALS": "Wood",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/b40a27/7905899944/il_fullxfull.7905899944_exsm.jpg",
@@ -224,7 +224,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "hummingbird-and-flower",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "LINKS": []
     },
     {
       "TITLE": "Dog and Cat Running Automata kit",
