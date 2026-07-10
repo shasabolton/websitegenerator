@@ -4,8 +4,8 @@
   "pageType": "blog",
   "meta": {
     "title": "How Does a Writing Automaton Work?",
-    "description": "Learn how mechanical writing automatons work — gimbal, pantograph, and cam mechanisms explained, with a free cam generator app and DIY Lanky Doodler kit.",
-    "date": "2026-06-03",
+    "description": "Learn how mechanical writing automatons work — gimbal, pantograph, and cam mechanisms explained, with a free cam generator app and DIY Lanky Doodler Writing Automaton kit.",
+    "date": "2026-07-10",
     "author": "Shasa Bolton",
     "tags": [
       "automata",
@@ -38,6 +38,11 @@
         "question": "What pen or pencil works best?",
         "answer": "A standard felt pen gives the darkest lines. A very soft 12B pencil also works well. Because the design uses gravity rather than a spring to press the pen down, a soft writing tip gives the best results."
       }
+    ],
+    "redirects": [
+      "blog/howmywritingautomatonworks",
+      "blog/scriblothewritingautomaton",
+      "blog/skrippy-mywritinganddrawingautomaton"
     ]
   },
   "blocks": [
@@ -139,7 +144,7 @@
     },
     {
       "type": "image",
-      "src": "https://i.etsystatic.com/25031074/r/il/6a8592/8233456432/il_fullxfull.8233456432_kmi7.jpg",
+      "src": "https://i.etsystatic.com/25031074/r/il/b4ac98/8233333304/il_fullxfull.8233333304_8d31.jpg",
       "alt": "Cam generator web app for designing writing automaton cams from hand-drawn sketches",
       "caption": "The free cam generator app converts hand-drawn sketches into laser-cuttable cam profiles.",
       "width": "75",
