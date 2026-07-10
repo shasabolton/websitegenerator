@@ -3,114 +3,118 @@
   "slug": "how-does-a-writing-automaton-work",
   "pageType": "blog",
   "meta": {
-    "title": "How Does A Writing Automaton Work",
-    "description": "An explanation of various mechanisms inside mechanical writing machines",
+    "title": "How Does a Writing Automaton Work?",
+    "description": "Learn how mechanical writing automatons work — gimbal, pantograph, and cam mechanisms explained, with a free cam generator app and DIY Lanky Doodler kit.",
     "date": "2026-06-03",
     "author": "Shasa Bolton",
     "tags": [
       "automata",
       "writing automaton",
       "mechanical computing",
-      "cams"
+      "cams",
+      "Lanky Doodler",
+      "DIY kit",
+      "laser cutting",
+      "STEM"
     ]
   },
   "blocks": [
     {
       "type": "title",
-      "text": "How does a Writing Automaton work?"
+      "text": "How does a writing automaton work?"
     },
     {
       "type": "subtitle",
-      "text": "An explanation of various mechanisms inside mechanical writing machines"
+      "text": "An explanation of the mechanisms inside mechanical writing machines"
     },
     {
       "type": "image",
       "src": "https://i.etsystatic.com/25031074/r/il/53af33/7017683670/il_fullxfull.7017683670_px9j.jpg",
-      "alt": "writing automaton pantograph method",
-      "caption": "writing automaton pantograph method",
+      "alt": "Lanky Doodler writing automaton with pantograph arms and interchangeable cams",
+      "caption": "The Lanky Doodler writing automaton uses a pantograph mechanism driven by interchangeable cams.",
       "width": "75",
       "align": "left"
     },
     {
       "type": "text",
       "format": "plain",
-      "content": "I have always found writing automata one of the most fascinating. Seeing your own hand writing emerge from a machine really encapsulates the illusion of life that traditional automata makers pursued. I have designed a few writing machines over the years and will discuss the mechanisms and considerations here. The original inspiration was from elaborate clockwork writing automata made in the 18th and 19th centuries. These were often very complex such as this boy made by Maillardet that could write and draw pictures. My goal was to design something much simpler, that people could make at home from a diy kit. I have come across 3 different approaches for writing automata. The classical ones tended to use a telescopic forearm that pivoted at the elbow. Other options are to use a 2 axis gymbol or a pantograph.",
+      "content": "I have always found writing automata among the most fascinating automata. Seeing your own handwriting emerge from a machine really encapsulates the illusion of life that traditional automata makers pursued. I have designed a few writing machines over the years and will discuss the mechanisms and considerations here. The original inspiration came from elaborate clockwork writing automata made in the 18th and 19th centuries. These were often very complex, such as the boy made by Maillardet that could write and draw pictures. My goal was to design something much simpler that people could make at home from a DIY kit. I have come across three different approaches for writing automata. The classical ones tended to use a telescopic forearm that pivoted at the elbow. Other options are to use a two-axis gimbal or a pantograph.",
       "clearFloat": "below"
     },
     {
       "type": "image",
       "src": "https://images.contraptioncart.com/Blogs/500px-Henri_Maillardet_automaton__London__England__c._1810_-_Franklin_Institute_-_DSC06656.jpg",
-      "alt": "Maillardet's writing drawings automaton",
-      "caption": "Maillardet's writing drawings automaton",
+      "alt": "Maillardet's boy writing and drawing automaton, c. 1810, at the Franklin Institute",
+      "caption": "Maillardet's boy automaton (c. 1810), now at the Franklin Institute — one of the most famous historical writing automatons.",
       "width": "75",
       "align": "left"
     },
     {
       "type": "subtitle",
-      "text": "Gymbol"
+      "text": "Gimbal"
     },
     {
       "type": "image",
       "src": "https://images.contraptioncart.com/Blogs/scriblo-edited/il_fullxfull.scriblo-edited.webp",
-      "alt": "Scriblo writing automaton",
-      "caption": "",
+      "alt": "Scriblo writing automaton with two-axis gimbal and cam-driven pencil",
+      "caption": "Scriblo, my first writing automaton, uses a two-axis gimbal controlled by separate cams.",
       "width": "75",
       "align": "left"
     },
     {
       "type": "text",
       "format": "plain",
-      "content": "The first writing automaton I made used the gymbol approach.  I named it Scriblo and it was made with all cnc routered parts. The pencil could pivot and yaw about its center, each controlled by a separate cam. Since the pencil tip traces an arc, the page must be on a sprung loaded pivot to maintain contact with the pencil .The page was a removable receipt roll so you could tear off your message and pull in fresh paper. The linkages conecting the gymbol to the cam followers were also rigid laser cut wood.",
+      "content": "The first writing automaton I made used the gimbal approach. I named it Scriblo, and it was made with all CNC-routed parts. The pencil could pivot and yaw about its centre, each motion controlled by a separate cam. Since the pencil tip traces an arc, the page must sit on a spring-loaded pivot to maintain contact with the pencil. The page was a removable receipt roll so you could tear off your message and pull in fresh paper. The linkages connecting the gimbal to the cam followers were also rigid laser-cut wood.",
       "clearFloat": "below"
     },
     {
       "type": "image",
       "src": "https://images.contraptioncart.com/Blogs/Skrippy%20Front-edited/il_fullxfull.Skrippy%20Front-edited.webp",
-      "alt": "writing automaton Skrippy",
-      "caption": "",
+      "alt": "Skrippy kangaroo writing automaton with cable-driven gimbal mechanism",
+      "caption": "Skrippy the kangaroo — a compact writing automaton using FireLine cable linkages.",
       "width": "75",
       "align": "left"
     },
     {
       "type": "text",
       "format": "markdown",
-      "content": "The next design was similar but with the aim of shrinking everything down and making it look more like a character. This is a little kangaroo named Skrippy. It used fire line cables rather than rigid linkages. This helped reduce the size, but was more fiddly to assemble and tension. It also only use one cam, with each half alocated to pitch and yaw of the pencil. Then pencil also slid inside the gymbol rather than using a sprung loaded page. This required a couple of nuts on the pencil to weigh it down.",
+      "content": "The next design was similar but aimed at shrinking everything down and making it look more like a character. This is a little kangaroo named Skrippy. It used FireLine cables rather than rigid linkages. This helped reduce the size, but was fiddlier to assemble and tension. It also used only one cam, with each half allocated to pitch and yaw of the pencil. The pencil also slid inside the gimbal rather than using a spring-loaded page. This required a couple of nuts on the pencil to weigh it down.",
       "clearFloat": "below"
     },
     {
       "type": "subtitle",
-      "text": "Pantograph Approach"
+      "text": "Pantograph approach"
     },
     {
       "type": "image",
       "src": "https://i.etsystatic.com/25031074/r/il/3bb6fe/7065669245/il_fullxfull.7065669245_xic2.jpg",
-      "alt": "writing automaton kit",
-      "caption": "",
+      "alt": "Lanky Doodler writing automaton kit with pantograph arms and cam followers",
+      "caption": "Lanky Doodler, my latest writing automaton — pantograph arms driven by interchangeable cams.",
       "width": "75",
       "align": "left"
     },
     {
       "type": "text",
       "format": "markdown",
-      "content": "The next design I named Lanky Doodler and used a pantograph style mechanism, with a large parallelogram that pivoted at the top This made it easier to increase the size of the drawing that could be made. I also went back to 2 separate cams to allow for more detail to be stored. The forearms have follower screws that ride on the cams. I like this design as it is quite easy for people to see how the cams dictate the output of the sketch. I try to make designs that only use laser cut parts, as it makes it easier for people to make at home without needing to source components. This one does use screws for the joints but these are not too hard to source. I wanted to avoid the need for springs or weights, so put the entire board on an angle. It relies on gravity to keep the followers against the cams and to hold the pen down on the page. Since there is now no control over the pressure of the pen on the page I found a very soft 12B pencil or a felt pen is best to get a nice dark sketch. ",
+      "content": "The next design, which I named Lanky Doodler, used a pantograph-style mechanism with a large parallelogram that pivoted at the top. This made it easier to increase the size of the drawing that could be made. I also went back to two separate cams to allow more detail to be stored. The forearms have follower screws that ride on the cams. I like this design because it is quite easy for people to see how the cams dictate the output of the sketch. I try to make designs that only use laser-cut parts, as it makes it easier for people to make at home without needing to source many components. This one does use screws for the joints, but these are not too hard to source. I wanted to avoid the need for springs or weights, so I put the entire board on an angle. It relies on gravity to keep the followers against the cams and to hold the pen down on the page. Since there is now no control over the pressure of the pen on the page, I found a very soft 12B pencil or a felt pen works best for a nice dark sketch.",
       "clearFloat": "below"
     },
     {
       "type": "subtitle",
-      "text": "Generating The Cams"
+      "text": "Generating the cams"
     },
     {
       "type": "image",
       "src": "https://i.etsystatic.com/25031074/r/il/6a8592/8233456432/il_fullxfull.8233456432_kmi7.jpg",
-      "alt": "cam generator software for writing automaton",
-      "caption": "cam generator software for writing automaton",
+      "alt": "Cam generator web app for designing writing automaton cams from hand-drawn sketches",
+      "caption": "The free cam generator app converts hand-drawn sketches into laser-cuttable cam profiles.",
       "width": "75",
       "align": "left"
     },
     {
       "type": "text",
       "format": "markdown",
-      "content": "The most interesting part of these machines is generating the cams that store its sketch. First one must use some math to find a formular that maps the pencil tip x,y coordinate to the cam radius required. This will be diferent depending on the method and geometry of the mechanism. Once I had that figured out, I decided the best way to generate the cams would be to write some custom software. This way people could draw a sketch to a computer screen. The app then stores it as discrete coordinates, converts those to cam radiuses with the specific formular and space them evenly around the 360 degrees of the cam. These are then joined into an svg vector that can be cut on a laser cutter or scroll saw. The lastest cam generator app, I wrote in javascript so it runs in a web browser, so people can use it without needing to download anything. You can try it out at the button bellow.",
+      "content": "The most interesting part of these machines is generating the cams that store the sketch. First, you need some maths to find a formula that maps the pencil tip's x,y coordinates to the cam radius required. This will be different depending on the method and geometry of the mechanism. Once I had that figured out, I decided the best way to generate the cams would be to write some custom software. This way people could draw a sketch on a computer screen. The app then stores it as discrete coordinates, converts those to cam radii with the specific formula, and spaces them evenly around the 360 degrees of the cam. These are then joined into an SVG vector that can be cut on a laser cutter or scroll saw. The latest cam generator app I wrote in JavaScript so it runs in a web browser, meaning people can use it without needing to download anything. You can try it out using the button below.",
       "clearFloat": "below"
     },
     {
@@ -120,7 +124,7 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "One improvement would cenrtainly be the ability to lift the pen off the page. In these designs we are restricted to sketches and words that are all one continuous path. This would require another cam responsible for z position. Perhaps I will address this in a future design. My latest design is at least reasonably simple for people to make and intuit. They can design their own cams and swap them in and out of the single machine. I sell my latest wiritng automaton \"Lanky Doodler\" as either digital plans to laser cut or scroll saw yourself, as a kit posted with all the parts for you to assemble, or as a complete assembled automaton ready to draw and write. Check out the product just below.  ",
+      "content": "One improvement would certainly be the ability to lift the pen off the page. In these designs we are restricted to sketches and words that are all one continuous path. This would require another cam responsible for z position. Perhaps I will address this in a future design.\n\nMy latest design is at least reasonably simple for people to make and intuitive to understand. You can design your own cams in the free web app, then swap them in and out of the same machine to write a new message — no need to rebuild the automaton each time.\n\nI sell the Lanky Doodler as digital plans to laser cut or scroll saw yourself, as a posted kit with all the parts for you to assemble in about 40 minutes, or as a complete assembled automaton ready to draw and write. Premade cam sets include messages like \"hello\" and \"love you\", or you can generate custom cams for a name or short sketch. See the product listing just below.",
       "clearFloat": ""
     },
     {
@@ -134,11 +138,11 @@
       "buttons": [
         {
           "url": "https://shasabolton.github.io/lankydoodler/",
-          "text": "Cam Generator App"
+          "text": "Try the Cam Generator App"
         },
         {
           "url": "https://contraptioncart.etsy.com/au/listing/1219046950/writing-automaton-plans-scroll-sawlaser",
-          "text": "digital plans for download"
+          "text": "Digital Plans for Download"
         }
       ]
     }
