@@ -1,7 +1,25 @@
 {
   "version": 1,
-  "generatedAt": "2026-07-04T21:52:07.345Z",
+  "generatedAt": "2026-07-10T04:46:00.540Z",
   "entries": [
+    {
+      "from": "blog/howmywritingautomatonworks",
+      "to": "blog/how-does-a-writing-automaton-work",
+      "title": "How Does a Writing Automaton Work?",
+      "description": "Learn how mechanical writing automatons work — gimbal, pantograph, and cam mechanisms explained, with a free cam generator app and DIY Lanky Doodler Writing Automaton kit."
+    },
+    {
+      "from": "blog/scriblothewritingautomaton",
+      "to": "blog/how-does-a-writing-automaton-work",
+      "title": "How Does a Writing Automaton Work?",
+      "description": "Learn how mechanical writing automatons work — gimbal, pantograph, and cam mechanisms explained, with a free cam generator app and DIY Lanky Doodler Writing Automaton kit."
+    },
+    {
+      "from": "blog/skrippy-mywritinganddrawingautomaton",
+      "to": "blog/how-does-a-writing-automaton-work",
+      "title": "How Does a Writing Automaton Work?",
+      "description": "Learn how mechanical writing automatons work — gimbal, pantograph, and cam mechanisms explained, with a free cam generator app and DIY Lanky Doodler Writing Automaton kit."
+    },
     {
       "from": "project-gallery",
       "to": "projects",
