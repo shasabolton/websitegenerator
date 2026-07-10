@@ -207,7 +207,8 @@ async function runGenerateAnyPage(treePath, options = {}) {
   const productsForShop = window.productData.filterVisibleProducts(
     window.productData.filterProductsByDigital(productsFull, digitalFilter),
   );
-  const ctxBase = { shopData, navigationConfig: effectiveNavigation, products: productsForShop, homePageHref };
+  const previewShell = Boolean(previewParams?.path) && !publishContext;
+  const ctxBase = { shopData, navigationConfig: effectiveNavigation, products: productsForShop, homePageHref, previewShell };
 
   if (path === "cart") {
     const gen = window.generateCartBody?.buildCartBody;

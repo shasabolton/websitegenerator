@@ -376,9 +376,10 @@ async function buildImageCarouselHtml(items, productTitleRaw, carouselPartial) {
 
 /**
  * @param {unknown} links
+ * @param {{ pagePath?: string, homePageHref?: string | null, previewShell?: boolean }} [linkCtx]
  * @returns {Promise<string>}
  */
-async function buildProductLinksHtml(links) {
+async function buildProductLinksHtml(links, linkCtx = {}) {
   const sanitize = window.productData?.sanitizeProductLinksForSave;
   const items = typeof sanitize === "function" ? sanitize(links) : [];
   if (!items.length) {
@@ -388,7 +389,15 @@ async function buildProductLinksHtml(links) {
   if (typeof renderBlock !== "function") {
     return "";
   }
-  return renderBlock({ type: "buttons", buttons: items }, { lenient: true });
+  return renderBlock(
+    { type: "buttons", buttons: items },
+    {
+      lenient: true,
+      pagePath: String(linkCtx.pagePath || "").trim(),
+      homePageHref: linkCtx.homePageHref ?? null,
+      previewShell: linkCtx.previewShell === true,
+    },
+  );
 }
 
 /**
@@ -436,7 +445,11 @@ async function generateProductBody(ctx) {
   }
 
   const carouselHtml = await buildImageCarouselHtml(carouselItems, title, carouselPartial);
-  const linksHtml = await buildProductLinksHtml(row.LINKS);
+  const linksHtml = await buildProductLinksHtml(row.LINKS, {
+    pagePath: `shop/${productSlug}`,
+    homePageHref: ctx.homePageHref,
+    previewShell: ctx.previewShell,
+  });
   const homePageHref = ctx.homePageHref ?? null;
   const shopLandingHref = escapeHtml(
     window.homePage?.resolvePublicHref

@@ -22,18 +22,45 @@ function normalizeAnchorHref(url) {
   return s;
 }
 
-function renderInlineMarkdown(text) {
+/**
+ * Fragment-only hrefs (#newsletter) resolve against <base>, not the current page URL.
+ * Prefix with the current page path on published pages; keep bare #fragment in preview shell.
+ * @param {string} href
+ * @param {object} [ctx]
+ */
+function resolveFragmentHref(href, ctx) {
+  const normalized = normalizeAnchorHref(href);
+  if (!normalized.startsWith("#")) {
+    return normalized;
+  }
+  if (ctx?.previewShell) {
+    return normalized;
+  }
+  const pagePath = String(ctx?.pagePath || "").trim();
+  const homePageHref = ctx?.homePageHref ?? null;
+  const resolve = window.homePage?.resolvePublicHref;
+  if (typeof resolve !== "function" || !pagePath) {
+    return normalized;
+  }
+  const pageHref = resolve(pagePath, homePageHref);
+  if (!pageHref || pageHref === ".") {
+    return normalized;
+  }
+  return `${pageHref}${normalized}`;
+}
+
+function renderInlineMarkdown(text, ctx) {
   let s = escapeHtml(text);
   s = s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
   s = s.replace(/\*(.+?)\*/g, "<em>$1</em>");
   s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, url) => {
-    const safeUrl = escapeHtml(normalizeAnchorHref(url));
+    const safeUrl = escapeHtml(resolveFragmentHref(url, ctx));
     return `<a href="${safeUrl}">${label}</a>`;
   });
   return s;
 }
 
-function markdownToHtml(md) {
+function markdownToHtml(md, ctx) {
   const raw = String(md || "").trim();
   if (!raw) {
     return "";
@@ -42,7 +69,7 @@ function markdownToHtml(md) {
     .split(/\n\s*\n/)
     .map((para) => para.trim())
     .filter(Boolean)
-    .map((para) => `<p>${renderInlineMarkdown(para.replace(/\n/g, " "))}</p>`)
+    .map((para) => `<p>${renderInlineMarkdown(para.replace(/\n/g, " "), ctx)}</p>`)
     .join("\n");
 }
 
@@ -224,9 +251,9 @@ async function renderBlock(block, ctx) {
       .toLowerCase() === "below";
     const textClass = clearBelow ? "content-text content-text--below-float" : "content-text";
     if (format === "markdown") {
-      return `<div class="${textClass}">${markdownToHtml(content)}</div>`;
+      return `<div class="${textClass}">${markdownToHtml(content, ctx)}</div>`;
     }
-    return `<div class="${textClass}"><p>${renderInlineMarkdown(content)}</p></div>`;
+    return `<div class="${textClass}"><p>${renderInlineMarkdown(content, ctx)}</p></div>`;
   }
 
   if (type === "image") {
@@ -313,7 +340,7 @@ async function renderBlock(block, ctx) {
     }
     const links = items
       .map((item) => {
-        const url = normalizeAnchorHref(item.url);
+        const url = resolveFragmentHref(item.url, ctx);
         const text = escapeHtml(String(item.text || "").trim());
         if (!url || !text) {
           return "";

@@ -121,7 +121,7 @@ function createDefaultPageData(pagePath, hints = {}) {
   };
 }
 
-async function buildBlockRenderContext(products) {
+async function buildBlockRenderContext(products, pageCtx = {}) {
   const fetchText = window.generateAnyPage.fetchText;
   const parseYoutubeVideoId = window.generateProductBody?.parseYoutubeVideoId;
   const buildImageCarouselHtml = window.generateProductBody?.buildImageCarouselHtml;
@@ -144,6 +144,9 @@ async function buildBlockRenderContext(products) {
     buildProductThumbRowHtml: (catalogProducts, slugs) =>
       buildProductThumbRowHtml(catalogProducts, slugs, productThumbTemplate, productThumbRowTemplate),
     products: Array.isArray(products) ? products : [],
+    pagePath: String(pageCtx.pagePath || "").trim(),
+    homePageHref: pageCtx.homePageHref ?? null,
+    previewShell: pageCtx.previewShell === true,
   };
 }
 
@@ -160,7 +163,11 @@ async function generateContentPageBodyFromData(ctx) {
 
   const [contentPageTemplate, blockCtx] = await Promise.all([
     window.generateAnyPage.fetchText("./templates/partials/contentPage.html"),
-    buildBlockRenderContext(products),
+    buildBlockRenderContext(products, {
+      pagePath: ctx.pagePath,
+      homePageHref: ctx.homePageHref,
+      previewShell: ctx.previewShell,
+    }),
   ]);
 
   const blocksHtml = await window.contentBlocks.renderBlocks(blocks, blockCtx);

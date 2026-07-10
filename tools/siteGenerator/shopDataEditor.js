@@ -705,7 +705,10 @@
       }),
     );
     webSection.appendChild(field("Etsy shop URL", "websitesEtsy", { inputType: "url" }));
-    webSection.appendChild(field("Newsletter signup URL", "websitesNewsletter", { inputType: "url" }));
+    webSection.appendChild(field("Newsletter signup URL", "websitesNewsletter", {
+      inputType: "url",
+      hint: "Use #newsletter to scroll to the footer subscribe form on the current page.",
+    }));
     form.appendChild(webSection);
 
     const paySection = section("PayPal");
