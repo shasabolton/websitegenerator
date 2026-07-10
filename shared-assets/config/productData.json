@@ -1784,7 +1784,7 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembley",
       "VARIATION 1 VALUES": "Kit,Assembled",
-      "VARIATION 1 PRICE DELTA": "0,20",
+      "VARIATION 1 PRICE DELTA": "0,25",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
@@ -1803,7 +1803,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "chicken-and-egg",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "LINKS": []
     },
     {
       "TITLE": "Moving Head Illusion Robot Laser cut files svg dxf pdf",
