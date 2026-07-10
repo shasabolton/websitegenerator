@@ -337,6 +337,43 @@ function buildItemListFromProducts(products, catalog, siteOrigin, homePageHref) 
   };
 }
 
+function buildFaqPageNode(pageData, siteOrigin, homePageHref) {
+  const meta = pageData?.meta && typeof pageData.meta === "object" ? pageData.meta : {};
+  const faqs = Array.isArray(meta.faqs) ? meta.faqs : [];
+  const slug = String(pageData?.slug || "").trim();
+  if (!slug || faqs.length === 0) {
+    return null;
+  }
+  const treePath = `blog/${slug}`;
+  const url = resolveAbsoluteUrl(siteOrigin, treePath, homePageHref);
+  const mainEntity = faqs
+    .map((item) => {
+      const question = String(item?.question || "").trim();
+      const answer = String(item?.answer || "").trim();
+      if (!question || !answer) {
+        return null;
+      }
+      return {
+        "@type": "Question",
+        name: question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: answer,
+        },
+      };
+    })
+    .filter(Boolean);
+  if (mainEntity.length === 0) {
+    return null;
+  }
+  return compactObject({
+    "@type": "FAQPage",
+    "@id": `${url}#faq`,
+    url: `${url}#faq`,
+    mainEntity,
+  });
+}
+
 function buildBlogPostingNode(pageData, siteOrigin, homePageHref) {
   const meta = pageData?.meta && typeof pageData.meta === "object" ? pageData.meta : {};
   const slug = String(pageData?.slug || "").trim();
@@ -665,6 +702,10 @@ function buildForPage(input) {
       }),
     );
     graph.push(buildBlogPostingNode(pageData, siteOrigin, homePageHref));
+    const faqNode = buildFaqPageNode(pageData, siteOrigin, homePageHref);
+    if (faqNode) {
+      graph.push(faqNode);
+    }
     graph.push(buildBreadcrumbList(crumbs, siteOrigin, homePageHref));
     ogType = "article";
     if (typeof window.generateContentBody?.deriveCoverFromPageData === "function") {

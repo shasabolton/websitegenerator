@@ -16,6 +16,28 @@
       "DIY kit",
       "laser cutting",
       "STEM"
+    ],
+    "faqs": [
+      {
+        "question": "Can I write my own message on the Lanky Doodler?",
+        "answer": "Yes. Use the free cam generator web app to draw a short sketch or message, then download the cam profiles to cut yourself or order custom cams at checkout. Premade cam sets are also available for messages like hello and love you."
+      },
+      {
+        "question": "Do I need a laser cutter to build a writing automaton?",
+        "answer": "Not necessarily. The Lanky Doodler is available as digital plans for laser cutting or scroll sawing, as a posted kit with pre-cut parts, or fully assembled. If you do not own a laser cutter, the kit or assembled options are the easiest way to get started."
+      },
+      {
+        "question": "How long does it take to build the Lanky Doodler kit?",
+        "answer": "The kit takes about 40 minutes to assemble. Parts slot together without glue, and you only need a screwdriver and a few standard M5 machine screws."
+      },
+      {
+        "question": "Can I use a scroll saw instead of a laser cutter?",
+        "answer": "Yes. The digital plans include SVG, DXF, and PDF files suitable for scroll sawing as well as laser cutting. An offset cut layer is included to help account for kerf on laser cutters."
+      },
+      {
+        "question": "What pen or pencil works best?",
+        "answer": "A standard felt pen gives the darkest lines. A very soft 12B pencil also works well. Because the design uses gravity rather than a spring to press the pen down, a soft writing tip gives the best results."
+      }
     ]
   },
   "blocks": [
@@ -25,7 +47,7 @@
     },
     {
       "type": "subtitle",
-      "text": "An explanation of the mechanisms inside mechanical writing machines"
+      "text": "Mechanisms inside mechanical writing machines — including a DIY writing automaton kit for laser cutter or scroll saw"
     },
     {
       "type": "image",
@@ -37,8 +59,8 @@
     },
     {
       "type": "text",
-      "format": "plain",
-      "content": "I have always found writing automata among the most fascinating automata. Seeing your own handwriting emerge from a machine really encapsulates the illusion of life that traditional automata makers pursued. I have designed a few writing machines over the years and will discuss the mechanisms and considerations here. The original inspiration came from elaborate clockwork writing automata made in the 18th and 19th centuries. These were often very complex, such as the boy made by Maillardet that could write and draw pictures. My goal was to design something much simpler that people could make at home from a DIY kit. I have come across three different approaches for writing automata. The classical ones tended to use a telescopic forearm that pivoted at the elbow. Other options are to use a two-axis gimbal or a pantograph.",
+      "format": "markdown",
+      "content": "I have always found writing automata among the most fascinating [automata kits](shop/automata). Seeing your own handwriting emerge from a machine really encapsulates the illusion of life that traditional automata makers pursued. I have designed a few writing machines over the years and will discuss the mechanisms and considerations here. The original inspiration came from elaborate clockwork writing automata made in the 18th and 19th centuries. These were often very complex, such as the boy made by Maillardet that could write and draw pictures. My goal was to design something much simpler that people could make at home from a DIY kit. I have come across three different approaches for writing automata. The classical ones tended to use a telescopic forearm that pivoted at the elbow. Other options are to use a two-axis gimbal or a pantograph.",
       "clearFloat": "below"
     },
     {
@@ -96,8 +118,20 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "The next design, which I named Lanky Doodler, used a pantograph-style mechanism with a large parallelogram that pivoted at the top. This made it easier to increase the size of the drawing that could be made. I also went back to two separate cams to allow more detail to be stored. The forearms have follower screws that ride on the cams. I like this design because it is quite easy for people to see how the cams dictate the output of the sketch. I try to make designs that only use laser-cut parts, as it makes it easier for people to make at home without needing to source many components. This one does use screws for the joints, but these are not too hard to source. I wanted to avoid the need for springs or weights, so I put the entire board on an angle. It relies on gravity to keep the followers against the cams and to hold the pen down on the page. Since there is now no control over the pressure of the pen on the page, I found a very soft 12B pencil or a felt pen works best for a nice dark sketch.",
+      "content": "The next design, which I named [Lanky Doodler](shop/lankydoodler), used a pantograph-style mechanism with a large parallelogram that pivoted at the top. This made it easier to increase the size of the drawing that could be made. I also went back to two separate cams to allow more detail to be stored. The forearms have follower screws that ride on the cams. I like this design because it is quite easy for people to see how the cams dictate the output of the sketch. I try to make designs that only use laser-cut parts, as it makes it easier for people to make at home without needing to source many components. This one does use screws for the joints, but these are not too hard to source. I wanted to avoid the need for springs or weights, so I put the entire board on an angle. It relies on gravity to keep the followers against the cams and to hold the pen down on the page. Since there is now no control over the pressure of the pen on the page, I found a very soft 12B pencil or a felt pen works best for a nice dark sketch.",
       "clearFloat": "below"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "The video below shows the Lanky Doodler in action — turn the crank and watch it sketch a message."
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/RZuqqMIS6CM?si=Zkw_YhOZEr3zMMgq",
+      "title": "Lanky Doodler writing automaton demo",
+      "caption": "The Lanky Doodler writing automaton sketches a message as you turn the crank."
     },
     {
       "type": "subtitle",
@@ -114,7 +148,7 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "The most interesting part of these machines is generating the cams that store the sketch. First, you need some maths to find a formula that maps the pencil tip's x,y coordinates to the cam radius required. This will be different depending on the method and geometry of the mechanism. Once I had that figured out, I decided the best way to generate the cams would be to write some custom software. This way people could draw a sketch on a computer screen. The app then stores it as discrete coordinates, converts those to cam radii with the specific formula, and spaces them evenly around the 360 degrees of the cam. These are then joined into an SVG vector that can be cut on a laser cutter or scroll saw. The latest cam generator app I wrote in JavaScript so it runs in a web browser, meaning people can use it without needing to download anything. You can try it out using the button below.",
+      "content": "The most interesting part of these machines is generating the cams that store the sketch. First, you need some maths to find a formula that maps the pencil tip's x,y coordinates to the cam radius required. This will be different depending on the method and geometry of the mechanism. Once I had that figured out, I decided the best way to generate the cams would be to write some custom software. This way people could draw a sketch on a computer screen. The app then stores it as discrete coordinates, converts those to cam radii with the specific formula, and spaces them evenly around the 360 degrees of the cam. These are then joined into an SVG vector that can be cut on a laser cutter or scroll saw. The latest [cam generator app](https://shasabolton.github.io/lankydoodler/) I wrote in JavaScript so it runs in a web browser, meaning people can use it without needing to download anything. You can try it out using the button below.",
       "clearFloat": "below"
     },
     {
@@ -124,8 +158,32 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "One improvement would certainly be the ability to lift the pen off the page. In these designs we are restricted to sketches and words that are all one continuous path. This would require another cam responsible for z position. Perhaps I will address this in a future design.\n\nMy latest design is at least reasonably simple for people to make and intuitive to understand. You can design your own cams in the free web app, then swap them in and out of the same machine to write a new message — no need to rebuild the automaton each time.\n\nI sell the Lanky Doodler as digital plans to laser cut or scroll saw yourself, as a posted kit with all the parts for you to assemble in about 40 minutes, or as a complete assembled automaton ready to draw and write. Premade cam sets include messages like \"hello\" and \"love you\", or you can generate custom cams for a name or short sketch. See the product listing just below.",
+      "content": "One improvement would certainly be the ability to lift the pen off the page. In these designs we are restricted to sketches and words that are all one continuous path. This would require another cam responsible for z position. Perhaps I will address this in a future design.\n\nMy latest design is at least reasonably simple for people to make and intuitive to understand. You can design your own cams in the free web app, then swap them in and out of the same machine to write a new message — no need to rebuild the automaton each time.\n\nI sell the [Lanky Doodler](shop/lankydoodler) as digital plans to laser cut or scroll saw yourself, as a posted kit with all the parts for you to assemble in about 40 minutes, or as a complete assembled automaton ready to draw and write. Premade cam sets include messages like \"hello\" and \"love you\", or you can generate custom cams for a name or short sketch. See the product listing just below.",
       "clearFloat": ""
+    },
+    {
+      "type": "subtitle",
+      "text": "Frequently asked questions"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "**Can I write my own message?**\nYes. Use the free cam generator app to draw a short sketch or message, then download the cam profiles to cut yourself or order custom cams at checkout.\n\n**Do I need a laser cutter?**\nNot necessarily. You can buy the [Lanky Doodler kit](shop/lankydoodler) with pre-cut parts, order it fully assembled, or download digital plans if you already have access to a laser cutter or scroll saw.\n\n**How long does it take to build?**\nAbout 40 minutes. The parts slot together without glue.\n\n**What pen or pencil works best?**\nA standard felt pen gives the darkest lines. A very soft 12B pencil also works well."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Stay in the loop",
+      "text": "Want new designs, build tips, and shop discounts? Join the Contraption Newsletter."
+    },
+    {
+      "type": "buttons",
+      "buttons": [
+        {
+          "url": "https://www.contraptioncart.com/news-letter-sign-up",
+          "text": "Join the Newsletter"
+        }
+      ]
     },
     {
       "type": "product_thumbs",

@@ -317,6 +317,10 @@
       ],
       "LINKS": [
         {
+          "text": "How does a writing automaton work?",
+          "url": "blog/how-does-a-writing-automaton-work"
+        },
+        {
           "text": "try the cam generator app",
           "url": "https://shasabolton.github.io/lankydoodler/"
         }
