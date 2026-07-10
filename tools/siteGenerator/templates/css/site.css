@@ -1959,6 +1959,7 @@ body.nav-scroll-lock {
 .footer-subscribe-form {
   margin: 16px 0 0;
   max-width: 420px;
+  scroll-margin-bottom: 24px;
 }
 
 .footer-form-heading {

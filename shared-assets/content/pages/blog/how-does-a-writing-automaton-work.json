@@ -180,7 +180,7 @@
       "type": "buttons",
       "buttons": [
         {
-          "url": "https://www.contraptioncart.com/news-letter-sign-up",
+          "url": "#newsletter",
           "text": "Join the Newsletter"
         }
       ]
