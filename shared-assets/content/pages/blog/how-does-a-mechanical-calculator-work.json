@@ -115,7 +115,8 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "Division is essentially repeated subtraction.\n\n**Example: 22 ÷ 3**\n\n1. Set the dials to show 22.\n\n2. Subtract 3 repeatedly, counting as you go: 1, 2, 3, 4…\n\n3. When you reach a number smaller than your divisor, stop. …5, 6, 7.\n\n4. You should now see 1 on the machine. This is smaller than 3, so stop.\n\n5. Your count equals the answer and the number on the machine is the remainder. So 22 ÷ 3 = 7 remainder 1."
+      "content": "Division is essentially repeated subtraction.\n\n**Example: 22 ÷ 3**\n\n1. Set the dials to show 22.\n\n2. Subtract 3 repeatedly, counting as you go: 1, 2, 3, 4…\n\n3. When the machine displays a number smaller than your divisor, stop subtracting. Count. …5, 6, 7.\n\n4. You should now read the value 1 on the machine. This is smaller than 3, so stop subtracting.\n\n5. Your count equals the answer and the number on the machine is the remainder. So 22 ÷ 3 = 7 remainder 1.",
+      "clearFloat": ""
     },
     {
       "type": "text",
