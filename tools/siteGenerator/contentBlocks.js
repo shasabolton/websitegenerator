@@ -14,12 +14,20 @@ function applyTemplate(template, values) {
   }, template);
 }
 
+function normalizeAnchorHref(url) {
+  const s = String(url || "").trim();
+  if (/^\/#/.test(s)) {
+    return s.slice(1);
+  }
+  return s;
+}
+
 function renderInlineMarkdown(text) {
   let s = escapeHtml(text);
   s = s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
   s = s.replace(/\*(.+?)\*/g, "<em>$1</em>");
   s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, url) => {
-    const safeUrl = escapeHtml(String(url || "").trim());
+    const safeUrl = escapeHtml(normalizeAnchorHref(url));
     return `<a href="${safeUrl}">${label}</a>`;
   });
   return s;
@@ -305,7 +313,7 @@ async function renderBlock(block, ctx) {
     }
     const links = items
       .map((item) => {
-        const url = String(item.url || "").trim();
+        const url = normalizeAnchorHref(item.url);
         const text = escapeHtml(String(item.text || "").trim());
         if (!url || !text) {
           return "";
