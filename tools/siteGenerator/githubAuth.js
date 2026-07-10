@@ -26,6 +26,7 @@
   const NAVIGATION_PATH = "shared-assets/config/navigation.json";
   const PRODUCT_DATA_PATH = "shared-assets/config/productData.json";
   const SHOP_DATA_PATH = "shared-assets/config/shopData.json";
+  const DISCOUNT_CODES_PATH = "shared-assets/config/discountCodes.json";
   const MANIFEST_PATH = ".generated/manifest.json";
   const REDIRECTS_PATH = "shared-assets/config/redirects.json";
   const SITEMAP_PATH = "sitemap.xml";
@@ -1010,6 +1011,40 @@
     if (typeof window.shopDataEditor?.clearShopDataOverlay === "function") {
       window.shopDataEditor.clearShopDataOverlay();
     }
+    return fileTreeResult;
+  }
+
+  async function pushDiscountCodes(discountCodesJson) {
+    const fullName = getSelectedRepo();
+    const parsed = parseRepoFullName(fullName);
+    if (!parsed) {
+      throw new Error("Select a GitHub repository on the site generator picker page.");
+    }
+    const branch = getBranch();
+    const normalize =
+      typeof window.discountCodesEditor?.normalizeDiscountCodes === "function"
+        ? window.discountCodesEditor.normalizeDiscountCodes
+        : (data) => data;
+    const format =
+      typeof window.discountCodesEditor?.formatDiscountCodesJsonText === "function"
+        ? window.discountCodesEditor.formatDiscountCodesJsonText
+        : (data) => `${JSON.stringify(data, null, 2)}\n`;
+    const payload =
+      discountCodesJson && typeof discountCodesJson === "object"
+        ? normalize(discountCodesJson)
+        : normalize({});
+    const fileData = await readRepoJson(parsed.owner, parsed.repo, DISCOUNT_CODES_PATH, branch);
+    const remoteBase = fileData.json && typeof fileData.json === "object" ? fileData.json : {};
+    const merged = normalize({ ...remoteBase, ...payload, codes: payload.codes });
+    const fileTreeResult = await putFileContent(
+      parsed.owner,
+      parsed.repo,
+      DISCOUNT_CODES_PATH,
+      "Update discount codes",
+      format(merged),
+      branch,
+      fileData.meta?.sha || null,
+    );
     return fileTreeResult;
   }
 
@@ -3131,6 +3166,7 @@ ${publishBtn}
     pushContentPage,
     pushFileTree,
     pushShopData,
+    pushDiscountCodes,
     syncNavigationFromFileTree,
     pushProductRow,
     pushProductOrder,

@@ -1,0 +1,219 @@
+.discount-codes-panel {
+  margin-bottom: 20px;
+}
+
+.discount-codes-details {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.discount-codes-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.discount-codes-summary::-webkit-details-marker {
+  display: none;
+}
+
+.discount-codes-summary::before {
+  content: "▸";
+  font-size: 12px;
+  color: #6b7280;
+  transition: transform 0.15s ease;
+}
+
+.discount-codes-details[open] > .discount-codes-summary::before {
+  transform: rotate(90deg);
+}
+
+.discount-codes-body {
+  padding: 0 14px 14px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.discount-codes-intro,
+.discount-codes-loading {
+  margin: 12px 0;
+  color: #4b5563;
+  line-height: 1.45;
+  font-size: 14px;
+}
+
+.discount-codes-error {
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+.discount-codes-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.discount-codes-section {
+  margin: 0;
+  padding: 12px 14px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.discount-codes-section legend {
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.discount-codes-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.discount-codes-field:first-of-type {
+  margin-top: 4px;
+}
+
+.discount-codes-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.discount-codes-label--checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+}
+
+.discount-codes-field input[type="text"],
+.discount-codes-field input[type="number"],
+.discount-codes-field select,
+.discount-codes-field textarea {
+  font-size: 14px;
+  padding: 7px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  max-width: 40rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.discount-codes-field textarea {
+  resize: vertical;
+  min-height: 2.5rem;
+  line-height: 1.45;
+}
+
+.discount-codes-hint {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.discount-codes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.discount-codes-code-card {
+  margin: 0;
+  padding: 12px 14px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  position: relative;
+}
+
+.discount-codes-code-card legend {
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.discount-codes-remove-code {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+}
+
+.discount-codes-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding-top: 4px;
+}
+
+.discount-codes-btn {
+  font-size: 14px;
+  padding: 7px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+}
+
+.discount-codes-btn:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.discount-codes-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.discount-codes-btn--primary {
+  background: #111827;
+  border-color: #111827;
+  color: #fff;
+}
+
+.discount-codes-btn--primary:hover:not(:disabled) {
+  background: #1f2937;
+}
+
+.discount-codes-btn--muted {
+  color: #6b7280;
+}
+
+.discount-codes-btn--danger {
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.discount-codes-btn--danger:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+.discount-codes-status {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.discount-codes-status--ok {
+  color: #047857;
+}
+
+.discount-codes-status--error {
+  color: #b91c1c;
+}

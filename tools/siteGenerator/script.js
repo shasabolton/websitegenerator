@@ -209,6 +209,10 @@ window.addEventListener("load", () => {
     window.shopDataEditor.initShopDataEditor({ rootId: "shop-data-editor-root" });
   }
 
+  if (window.discountCodesEditor?.initDiscountCodesEditor) {
+    window.discountCodesEditor.initDiscountCodesEditor({ rootId: "discount-codes-editor-root" });
+  }
+
   if (window.imagesBrowser?.initImagesBrowser) {
     window.imagesBrowser.initImagesBrowser({ rootId: "images-browser-root" });
   }
