@@ -632,13 +632,14 @@
       "ETSY_VIDEO1": "",
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
-      "VIDEO1": "",
+      "VIDEO1": "https://youtube.com/shorts/ekqALCbArNo?si=7ZHhrdC5msRA-L42",
       "INSTRUCTION VIDEOS": "",
       "HIDE INSTRUCTIONS": false,
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "swinging-monkey",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "LINKS": []
     },
     {
       "TITLE": "Whale Automata Toy Kit: Mechanical Pet, DIY Build",
