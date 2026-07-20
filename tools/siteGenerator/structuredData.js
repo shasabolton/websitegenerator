@@ -276,7 +276,10 @@ function buildProductNode(row, catalog, shopData, siteOrigin, homePageHref, cate
   const currency = String(row.CURRENCY_CODE || "AUD")
     .trim()
     .toUpperCase();
-  const sku = String(row.SKU || "").trim();
+  // Google merchant listings: sku must not contain whitespace.
+  const sku = String(row.SKU || "")
+    .trim()
+    .replace(/\s+/g, "-");
   const product = compactObject({
     "@type": "Product",
     "@id": `${url}#product`,
