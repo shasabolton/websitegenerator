@@ -1704,6 +1704,19 @@
       .replace(/'/g, "&apos;");
   }
 
+  /** Let the browser paint status text before continuing with sync work. */
+  function yieldToUiPaint() {
+    return new Promise((resolve) => {
+      if (typeof requestAnimationFrame === "function") {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => resolve());
+        });
+        return;
+      }
+      setTimeout(resolve, 0);
+    });
+  }
+
   function getSiteOriginFromShopData(shopData) {
     const raw = shopData?.websites?.primary;
     if (!raw || typeof raw !== "string") {
@@ -2362,6 +2375,7 @@
       new Date().toISOString(),
     );
     onProgress("Generating Google Merchant feed…");
+    await yieldToUiPaint();
     const manifest = appendPublishIndexFiles(
       fileChanges,
       nextOutputs,
@@ -2371,6 +2385,7 @@
       homePageHref,
     );
     onProgress("Uploading…");
+    await yieldToUiPaint();
     const commit = await publishSiteCommit({
       message: "Publish full site",
       fileChanges,
