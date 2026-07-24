@@ -31,6 +31,7 @@
   const REDIRECTS_PATH = "shared-assets/config/redirects.json";
   const SITEMAP_PATH = "sitemap.xml";
   const ROBOTS_PATH = "robots.txt";
+  const GOOGLE_MERCHANT_FEED_PATH = "feeds/google-merchant.txt";
   const SITEMAP_EXCLUDED_OUTPUTS = new Set(["cart/index.html"]);
   const OAUTH_SCOPE = "repo";
   const DEFAULT_BRANCH = "main";
@@ -1791,7 +1792,18 @@
     return remote.json && typeof remote.json === "object" ? remote.json : {};
   }
 
-  function appendPublishIndexFiles(fileChanges, nextOutputs, shopData, redirectsJson) {
+  function buildGoogleMerchantFeedContent(products, shopData, homePageHref) {
+    if (typeof window.googleMerchantFeed?.buildGoogleMerchantFeedTxt === "function") {
+      return window.googleMerchantFeed.buildGoogleMerchantFeedTxt(products, shopData, { homePageHref });
+    }
+    return "id\ttitle\tdescription\tlink\timage_link\tavailability\tcondition\tprice\n";
+  }
+
+  function getGoogleMerchantFeedPath() {
+    return window.googleMerchantFeed?.FEED_PATH || GOOGLE_MERCHANT_FEED_PATH;
+  }
+
+  function appendPublishIndexFiles(fileChanges, nextOutputs, shopData, redirectsJson, products = [], homePageHref = "") {
     const manifest = buildManifestJson(nextOutputs);
     fileChanges.push({
       path: MANIFEST_PATH,
@@ -1804,6 +1816,10 @@
     fileChanges.push({
       path: ROBOTS_PATH,
       content: buildRobotsTxt(shopData),
+    });
+    fileChanges.push({
+      path: getGoogleMerchantFeedPath(),
+      content: buildGoogleMerchantFeedContent(products, shopData, homePageHref),
     });
     if (redirectsJson && typeof redirectsJson === "object") {
       fileChanges.push({
@@ -2177,7 +2193,14 @@
       publishContext?.contentPages,
       new Date().toISOString(),
     );
-    const manifest = appendPublishIndexFiles(fileChanges, nextOutputs, bumpedShopData, redirectsJson);
+    const manifest = appendPublishIndexFiles(
+      fileChanges,
+      nextOutputs,
+      bumpedShopData,
+      redirectsJson,
+      draftProducts,
+      homePageHref,
+    );
 
     const commit = await publishSiteCommit({ message, fileChanges });
     clearPendingNewPagesForPaths(publishablePaths);
@@ -2338,7 +2361,14 @@
       publishContext?.contentPages,
       new Date().toISOString(),
     );
-    const manifest = appendPublishIndexFiles(fileChanges, nextOutputs, bumpedShopData, redirectsJson);
+    const manifest = appendPublishIndexFiles(
+      fileChanges,
+      nextOutputs,
+      bumpedShopData,
+      redirectsJson,
+      products,
+      homePageHref,
+    );
     onProgress("Uploading…");
     const commit = await publishSiteCommit({
       message: "Publish full site",
