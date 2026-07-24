@@ -2361,6 +2361,7 @@
       publishContext?.contentPages,
       new Date().toISOString(),
     );
+    onProgress("Generating Google Merchant feed…");
     const manifest = appendPublishIndexFiles(
       fileChanges,
       nextOutputs,
