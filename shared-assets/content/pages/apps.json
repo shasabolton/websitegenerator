@@ -15,7 +15,7 @@
     {
       "type": "text",
       "format": "plain",
-      "content": "Whenever I have something I want to understand, I tend to write a small game or simulation to help me. Over the years I have accumulated a collection of small app experiments based on concepts in areas such as physics, philosophy, economics, machine learning, and biology. Not all of these are worth sharing but I have decided I will try and clean a few up to be presentable in case others find them interesting. I also have made a few simple games to play with my kids and family, tools I find I need, and software to accompany some of my mechanical creations. Here  is where I am now posting some these little software projects.",
+      "content": "Whenever there’s something I want to understand, I tend to write a small game or simulation to help me explore it. Over the years, I’ve accumulated a collection of little app experiments based on concepts from areas such as physics, philosophy, economics, machine learning, and biology.\n\nNot all of them are worth sharing, but I’ve decided to clean up a few and make them presentable, in case others find them interesting.\n\nI’ve also made a few simple games to play with my kids and family, tools I’ve found useful, and software to accompany some of my mechanical creations.\n\nThis is where I’ll be posting some of these little software projects.",
       "clearFloat": "below"
     },
     {
@@ -29,8 +29,17 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "**Shrewd Robot**\nThis is a little.game I made to help my 4 year old daughter learn about saving. \nGoal: Open all the presents and keep the the robot fed. Your wage of coins runs out much too soon. The only way to win is to put as much as possible in the bank, as early as possible and keep the robot just above the poverty line. \nA little bit of delayed gratification, and soon you find your investments have taken over from your wage.",
+      "content": "**Shrewd Robot**\nThis is a little game I made to help my 4-year-old daughter learn about saving and investing.\n**Goal:** Open all the presents and keep the robot fed. Your wage of coins runs out much too soon. The only way to win is to put as much as possible in the bank, as early as possible, while keeping the robot just above the poverty line.\nA little delayed gratification goes a long way. Before long, you’ll find that your investments have taken over from your wage",
       "clearFloat": ""
+    },
+    {
+      "type": "buttons",
+      "buttons": [
+        {
+          "url": "https://shasabolton.github.io/coins/",
+          "text": "Play Shrewd Robot here"
+        }
+      ]
     }
   ]
 }
