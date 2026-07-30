@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "slug": "apps",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "apps",
+    "description": "Educational games and tools"
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Apps"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "Whenever I have something I want to understand, I tend to write a small game or simulation to help me. Over the years I have accumulated a collection of small app experiments based on concepts in areas such as physics, philosophy, economics, machine learning, and biology. Not all of these are worth sharing but I have decided I will try and clean a few up to be presentable in case others find them interesting. I also have made a few simple games to play with my kids and family, tools I find I need, and software to accompany some of my mechanical creations. Here  is where I am now posting some these little software projects.",
+      "clearFloat": "below"
+    },
+    {
+      "type": "image",
+      "src": "https://images.contraptioncart.com/apps/Screenshot_20260730_203618_Chrome.jpg",
+      "alt": "",
+      "caption": "",
+      "width": "50",
+      "align": "left"
+    }
+  ]
+}
