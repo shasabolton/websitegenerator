@@ -76,6 +76,10 @@
       "label": "Magic Frame help",
       "href": "magicframehelp",
       "hide": true
+    },
+    {
+      "label": "apps",
+      "href": "apps"
     }
   ]
 }
