@@ -25,6 +25,12 @@
       "caption": "",
       "width": "50",
       "align": "left"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "**Shrewd Robot**\nThis is a little.game I made to help my 4 year old daughter learn about saving. \nGoal: Open all the presents and keep the the robot fed. Your wage of coins runs out much too soon. The only way to win is to put as much as possible in the bank, as early as possible and keep the robot just above the poverty line. \nA little bit of delayed gratification, and soon you find your investments have taken over from your wage.",
+      "clearFloat": ""
     }
   ]
 }
