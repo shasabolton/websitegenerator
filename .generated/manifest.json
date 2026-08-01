@@ -1,8 +1,9 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-01T23:31:15.224Z",
+  "generatedAt": "2026-08-01T23:35:40.134Z",
   "outputs": [
     "about/index.html",
+    "apps/index.html",
     "blog/how-does-a-mechanical-calculator-work/index.html",
     "blog/how-does-a-writing-automaton-work/index.html",
     "blog/index.html",
