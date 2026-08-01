@@ -1243,7 +1243,7 @@
       "IMAGE10": "https://i.etsystatic.com/25031074/r/il/6501a2/8108732995/il_fullxfull.8108732995_l9r9.jpg",
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "assembly",
-      "VARIATION 1 VALUES": "kit,assembled,Collector&#39;s Edition",
+      "VARIATION 1 VALUES": "kit,assembled,Deluxe",
       "VARIATION 1 PRICE DELTA": "0,20,150",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
@@ -1265,7 +1265,8 @@
       "SLUG": "instant-coke",
       "REDIRECTS": [
         "shop/tiltbox"
-      ]
+      ],
+      "LINKS": []
     },
     {
       "TITLE": "Magic Trick Pencil Box Kit: Wooden 3D Puzzle, STEM Toy",
