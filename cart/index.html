@@ -933,8 +933,17 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           amount: orderAmountValue(itemTotal, shipCost, discountAmount, cur),
         };
         var shipping = contact && contact.shipping ? contact.shipping : null;
+        var email = contact && contact.email ? String(contact.email).trim() : "";
         if (shipping && shipping.address && shipping.address.country_code) {
+          if (email) {
+            shipping.email_address = email;
+          }
           purchaseUnit.shipping = shipping;
+        }
+        if (email) {
+          // PayPal Activity often hides Google Pay payer.email; custom_id stays visible.
+          purchaseUnit.custom_id = email.slice(0, 127);
+          purchaseUnit.description = purchaseUnit.description + " | " + email;
         }
         var payload = {
           intent: "CAPTURE",
@@ -951,11 +960,11 @@ window.siteCart = new ShoppingCart("Contraption Cart");
             shipCost: shipCost,
             shipCc: shipCc,
             hasShipping: !!purchaseUnit.shipping,
-            email: (contact && contact.email) || "",
+            email: email,
           },
         };
-        if (contact && contact.email) {
-          payload.payer = { email_address: String(contact.email).trim() };
+        if (email) {
+          payload.payer = { email_address: email };
         }
         return payload;
       }
@@ -1033,11 +1042,11 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       }
 
       function contactFromGooglePay(paymentData) {
+        var addr = paymentData && paymentData.shippingAddress;
         return {
           email: (paymentData && paymentData.email) || "",
-          shipping: paypalShippingFromGoogleAddress(
-            paymentData && paymentData.shippingAddress,
-          ),
+          phone: (addr && addr.phoneNumber) || "",
+          shipping: paypalShippingFromGoogleAddress(addr),
         };
       }
 
@@ -1045,6 +1054,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         var ship = payment && payment.shippingContact;
         return {
           email: (ship && ship.emailAddress) || "",
+          phone: (ship && ship.phoneNumber) || "",
           shipping: paypalShippingFromAppleContact(ship),
         };
       }
@@ -2028,6 +2038,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     })();
   </script>
 </section>
+
 
 
 
