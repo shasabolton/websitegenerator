@@ -258,6 +258,14 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           >Pay with PayPal. Guest checkout supported — no account login required.</span
         >
       </li>
+      <li class="accepted-payments-item">
+        <span class="accepted-payments-mark accepted-payments-mark--googlepay">Google Pay</span>
+        <span class="accepted-payments-note">Pay with Google Pay where available.</span>
+      </li>
+      <li class="accepted-payments-item">
+        <span class="accepted-payments-mark accepted-payments-mark--applepay">Apple Pay</span>
+        <span class="accepted-payments-note">Pay with Apple Pay on supported Apple devices.</span>
+      </li>
     </ul>
   </aside>
   <p id="cart-page-empty" class="cart-page-empty">Your cart is empty.</p>
@@ -327,11 +335,13 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       Select ship-to country above to continue to payment.
     </p>
     <div id="cart-paypal-section" class="cart-paypal-section" hidden>
-      <h2 class="cart-paypal-heading">Checkout with PayPal</h2>
+      <h2 class="cart-paypal-heading">Checkout</h2>
       <p class="cart-paypal-hint">
-        Pay with your PayPal balance or card (where available). The <strong>Ship to</strong> country above
-        must match the shipping country you enter in PayPal so the total stays correct.
+        Pay with Google Pay, Apple Pay, or PayPal. The <strong>Ship to</strong> country above
+        must match the shipping country you enter at checkout so the total stays correct.
       </p>
+      <div id="googlepay-button-container" class="wallet-button-container" hidden></div>
+      <div id="applepay-button-container" class="wallet-button-container" hidden></div>
       <div id="paypal-button-container" class="paypal-button-container"></div>
     </div>
   </div>
@@ -340,6 +350,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       var paypalClientId = "AVwOMA5ITLJeZWetR7yow5HnWd3U1JfYAkF3n5NfhY1PRMNRk9agUISqwIvvv6Tn-2qwNVT5BXfvGCNt";
       var paypalEnv = "live";
       var paypalBuyerCountry = "AU";
+      var paypalOrdersApiBase = "https://contraptioncart-paypal-orders.contraptioncart.workers.dev/api/paypal";
+      var shopDisplayName = "Contraption Cart";
       var shippingRatesConfig = { version: 0, currency: "AUD", rates: [] };
       var discountCodesConfig = { version: 0, currency: "AUD", codes: [] };
       var cartConfigLoadPromise = null;
@@ -367,10 +379,17 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       var estimatedTotalEl = document.getElementById("cart-estimated-total-amount");
       var paypalSectionEl = document.getElementById("cart-paypal-section");
       var paypalContainerEl = document.getElementById("paypal-button-container");
+      var googlePayContainerEl = document.getElementById("googlepay-button-container");
+      var applePayContainerEl = document.getElementById("applepay-button-container");
       var paypalButtonsInstance = null;
       var paypalMounted = false;
       var paypalMountInProgress = false;
       var paypalSdkLoading = false;
+      var googlePayMounted = false;
+      var applePayMounted = false;
+      var googlePaySdkLoading = false;
+      var applePaySdkLoading = false;
+      var googlePaymentsClient = null;
       var shipCountryListenerBound = false;
       var SHIP_COUNTRY_STORAGE_KEY = "websitegenerator-cart-ship-country";
       var SHIP_MISMATCH_MSG =
@@ -788,6 +807,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           destroyPayPalButtons();
           paypalMounted = false;
           paypalMountInProgress = false;
+          googlePayMounted = false;
+          applePayMounted = false;
           renderCartPage();
         });
       }
@@ -878,6 +899,466 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         if (paypalContainerEl) {
           paypalContainerEl.innerHTML = "";
         }
+        if (googlePayContainerEl) {
+          googlePayContainerEl.innerHTML = "";
+          googlePayContainerEl.hidden = true;
+        }
+        if (applePayContainerEl) {
+          applePayContainerEl.innerHTML = "";
+          applePayContainerEl.hidden = true;
+        }
+        googlePayMounted = false;
+        applePayMounted = false;
+      }
+
+      function resolveOrdersApiBase() {
+        var base = String(paypalOrdersApiBase || "").trim().replace(/\/+$/, "");
+        if (base) {
+          return base;
+        }
+        return "/api/paypal";
+      }
+
+      function buildCreateOrderPayload() {
+        var cur = (cart.data.currencyCode || "AUD").trim() || "AUD";
+        var built = buildPayPalLineItems(cur);
+        var itemTotal = built.itemTotalCents / 100;
+        var shipCc = getCartShipToCountryCode();
+        var shipCost = shippingCostForCountryCode(shipCc);
+        var discountAmount = currentDiscountAmount();
+        return {
+          intent: "CAPTURE",
+          purchase_units: [
+            {
+              reference_id: "cart",
+              description: discountAmount > 0 ? "Cart order (discount applied)" : "Cart order",
+              items: built.items,
+              amount: orderAmountValue(itemTotal, shipCost, discountAmount, cur),
+            },
+          ],
+          application_context: {
+            shipping_preference: "GET_FROM_FILE",
+            user_action: "PAY_NOW",
+          },
+          _meta: {
+            currency: cur,
+            itemTotal: itemTotal,
+            discountAmount: discountAmount,
+            shipCost: shipCost,
+            shipCc: shipCc,
+          },
+        };
+      }
+
+      function createOrderOnServer() {
+        var payload = buildCreateOrderPayload();
+        var meta = payload._meta;
+        delete payload._meta;
+        paypalDebug("server createOrder start", meta);
+        if (window.siteAnalytics?.beginCheckout) {
+          window.siteAnalytics.beginCheckout(
+            cart.data.items || [],
+            Math.max(0, meta.itemTotal - meta.discountAmount) + meta.shipCost,
+          );
+        }
+        return fetch(resolveOrdersApiBase() + "/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }).then(function (res) {
+          return res.json().then(function (data) {
+            if (!res.ok || !data || !data.id) {
+              paypalDebug("server createOrder FAILED", { status: res.status, data: data });
+              throw new Error((data && (data.message || data.error)) || "Could not create order");
+            }
+            paypalDebug("server createOrder OK", { orderId: data.id });
+            return data.id;
+          });
+        });
+      }
+
+      function captureOrderOnServer(orderId) {
+        return fetch(
+          resolveOrdersApiBase() + "/orders/" + encodeURIComponent(orderId) + "/capture",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: "{}",
+          },
+        ).then(function (res) {
+          return res.json().then(function (data) {
+            if (!res.ok) {
+              paypalDebug("server capture FAILED", { status: res.status, data: data });
+              throw new Error((data && (data.message || data.error)) || "Could not capture order");
+            }
+            return data;
+          });
+        });
+      }
+
+      function finishSuccessfulPayment(orderId, details) {
+        var purchaseLines = (cart.data.items || []).slice();
+        var purchasePu = details && details.purchase_units && details.purchase_units[0];
+        var purchaseAmount =
+          purchasePu && purchasePu.amount && purchasePu.amount.value;
+        if (window.siteAnalytics?.purchase) {
+          window.siteAnalytics.purchase(orderId, purchaseAmount, purchaseLines);
+        }
+        clearShipCountryError();
+        cart.data.items = [];
+        cart.data.appliedDiscountCode = null;
+        cart.saveToLocalStorage();
+        destroyPayPalButtons();
+        paypalMounted = false;
+        renderCartPage();
+        window.alert("Payment successful. Thank you!");
+      }
+
+      function shippingContactCountry(contact) {
+        if (!contact) {
+          return "";
+        }
+        return String(
+          contact.countryCode || contact.country_code || contact.country || "",
+        )
+          .trim()
+          .toUpperCase();
+      }
+
+      function loadScriptOnce(src, flagName, done) {
+        if (flagName === "google" && window.google && window.google.payments) {
+          done();
+          return;
+        }
+        if (
+          flagName === "apple" &&
+          window.customElements &&
+          window.customElements.get("apple-pay-button")
+        ) {
+          done();
+          return;
+        }
+        var existing = document.querySelector('script[src="' + src + '"]');
+        if (existing) {
+          var tries = 0;
+          var t = window.setInterval(function () {
+            tries += 1;
+            if (
+              (flagName === "google" && window.google && window.google.payments) ||
+              (flagName === "apple" &&
+                window.customElements &&
+                window.customElements.get("apple-pay-button"))
+            ) {
+              window.clearInterval(t);
+              done();
+            } else if (tries > 200) {
+              window.clearInterval(t);
+              done();
+            }
+          }, 50);
+          return;
+        }
+        if (flagName === "google") {
+          googlePaySdkLoading = true;
+        } else {
+          applePaySdkLoading = true;
+        }
+        var script = document.createElement("script");
+        script.src = src;
+        script.async = true;
+        script.crossOrigin = "anonymous";
+        script.onload = function () {
+          if (flagName === "google") {
+            googlePaySdkLoading = false;
+          } else {
+            applePaySdkLoading = false;
+          }
+          done();
+        };
+        script.onerror = function () {
+          if (flagName === "google") {
+            googlePaySdkLoading = false;
+          } else {
+            applePaySdkLoading = false;
+          }
+          done();
+        };
+        document.head.appendChild(script);
+      }
+
+      function cartTotalPriceString() {
+        var payload = buildCreateOrderPayload();
+        var meta = payload._meta;
+        var total = Math.max(0, meta.itemTotal - meta.discountAmount) + meta.shipCost;
+        return (Math.round(total * 100) / 100).toFixed(2);
+      }
+
+      function ensureGooglePayButton() {
+        if (
+          !window.paypal ||
+          typeof window.paypal.Googlepay !== "function" ||
+          !googlePayContainerEl ||
+          googlePayMounted
+        ) {
+          return;
+        }
+        loadScriptOnce("https://pay.google.com/gp/p/js/pay.js", "google", function () {
+          if (!window.google || !window.google.payments || !window.google.payments.api) {
+            return;
+          }
+          var googlepay = window.paypal.Googlepay();
+          googlepay
+            .config()
+            .then(function (googlePayConfig) {
+              if (!googlePayConfig || !googlePayConfig.allowedPaymentMethods) {
+                return;
+              }
+              var env = paypalEnv === "live" ? "PRODUCTION" : "TEST";
+              googlePaymentsClient = new google.payments.api.PaymentsClient({
+                environment: env,
+                paymentDataCallbacks: {
+                  onPaymentAuthorized: function (paymentData) {
+                    return processGooglePayPayment(paymentData);
+                  },
+                },
+              });
+              var readyReq = {
+                apiVersion: googlePayConfig.apiVersion || 2,
+                apiVersionMinor: googlePayConfig.apiVersionMinor || 0,
+                allowedPaymentMethods: googlePayConfig.allowedPaymentMethods,
+              };
+              return googlePaymentsClient.isReadyToPay(readyReq).then(function (response) {
+                if (!response || !response.result || googlePayMounted) {
+                  return;
+                }
+                googlePayContainerEl.innerHTML = "";
+                var button = googlePaymentsClient.createButton({
+                  onClick: onGooglePayButtonClicked,
+                  allowedPaymentMethods: googlePayConfig.allowedPaymentMethods,
+                  buttonType: "pay",
+                  buttonSizeMode: "fill",
+                });
+                googlePayContainerEl.appendChild(button);
+                googlePayContainerEl.hidden = false;
+                googlePayMounted = true;
+                googlePayContainerEl._googlePayConfig = googlePayConfig;
+              });
+            })
+            .catch(function (err) {
+              paypalDebug("Google Pay config failed", { error: paypalSerializeError(err) });
+            });
+        });
+      }
+
+      function onGooglePayButtonClicked() {
+        if (!hasShipCountrySelected()) {
+          window.alert("Select ship-to country above to continue to payment.");
+          return;
+        }
+        var googlePayConfig = googlePayContainerEl && googlePayContainerEl._googlePayConfig;
+        if (!googlePaymentsClient || !googlePayConfig) {
+          return;
+        }
+        var cur = (cart.data.currencyCode || "AUD").trim() || "AUD";
+        var paymentDataRequest = {
+          apiVersion: googlePayConfig.apiVersion || 2,
+          apiVersionMinor: googlePayConfig.apiVersionMinor || 0,
+          allowedPaymentMethods: googlePayConfig.allowedPaymentMethods,
+          merchantInfo: googlePayConfig.merchantInfo,
+          transactionInfo: {
+            countryCode: googlePayConfig.countryCode || paypalBuyerCountry || "AU",
+            currencyCode: cur,
+            totalPriceStatus: "FINAL",
+            totalPrice: cartTotalPriceString(),
+          },
+          callbackIntents: ["PAYMENT_AUTHORIZATION"],
+          emailRequired: true,
+          shippingAddressRequired: true,
+          shippingAddressParameters: {
+            phoneNumberRequired: true,
+          },
+        };
+        googlePaymentsClient.loadPaymentData(paymentDataRequest).catch(function (err) {
+          if (err && err.statusCode === "CANCELED") {
+            return;
+          }
+          paypalDebug("Google Pay loadPaymentData failed", {
+            error: paypalSerializeError(err),
+          });
+          window.alert("Google Pay could not be started. Please try PayPal or try again.");
+        });
+      }
+
+      function processGooglePayPayment(paymentData) {
+        return new Promise(function (resolve) {
+          var shipCc = shippingContactCountry(
+            paymentData && paymentData.shippingAddress,
+          );
+          if (!paypalShippingCountryMatchesCart(shipCc)) {
+            setShipCountryMessage(SHIP_MISMATCH_MSG, "error");
+            highlightShipCountryError(true);
+            resolve({
+              transactionState: "ERROR",
+              error: {
+                intent: "PAYMENT_AUTHORIZATION",
+                message: SHIP_MISMATCH_MSG,
+              },
+            });
+            return;
+          }
+          createOrderOnServer()
+            .then(function (orderId) {
+              return window
+                .paypal.Googlepay()
+                .confirmOrder({
+                  orderId: orderId,
+                  paymentMethodData: paymentData.paymentMethodData,
+                })
+                .then(function (confirmResult) {
+                  var status = confirmResult && confirmResult.status;
+                  if (status === "PAYER_ACTION_REQUIRED") {
+                    return window
+                      .paypal.Googlepay()
+                      .initiatePayerAction({ orderId: orderId })
+                      .then(function () {
+                        return captureOrderOnServer(orderId);
+                      });
+                  }
+                  if (status === "APPROVED") {
+                    return captureOrderOnServer(orderId);
+                  }
+                  throw new Error("Google Pay was not approved");
+                })
+                .then(function (details) {
+                  finishSuccessfulPayment(orderId, details);
+                  resolve({ transactionState: "SUCCESS" });
+                });
+            })
+            .catch(function (err) {
+              paypalDebug("Google Pay payment failed", {
+                error: paypalSerializeError(err),
+              });
+              resolve({
+                transactionState: "ERROR",
+                error: {
+                  intent: "PAYMENT_AUTHORIZATION",
+                  message: (err && err.message) || "TRANSACTION FAILED",
+                },
+              });
+            });
+        });
+      }
+
+      function ensureApplePayButton() {
+        if (
+          !window.paypal ||
+          typeof window.paypal.Applepay !== "function" ||
+          !applePayContainerEl ||
+          applePayMounted
+        ) {
+          return;
+        }
+        if (!window.ApplePaySession || !ApplePaySession.canMakePayments()) {
+          return;
+        }
+        loadScriptOnce(
+          "https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js",
+          "apple",
+          function () {
+            var applepay = window.paypal.Applepay();
+            applepay
+              .config()
+              .then(function (applepayConfig) {
+                if (!applepayConfig || !applepayConfig.isEligible || applePayMounted) {
+                  return;
+                }
+                applePayContainerEl.innerHTML =
+                  '<apple-pay-button id="cart-apple-pay-btn" buttonstyle="black" type="buy" locale="en-AU"></apple-pay-button>';
+                applePayContainerEl.hidden = false;
+                applePayMounted = true;
+                var btn = document.getElementById("cart-apple-pay-btn");
+                if (btn) {
+                  btn.addEventListener("click", function () {
+                    onApplePayButtonClicked(applepay, applepayConfig);
+                  });
+                }
+              })
+              .catch(function (err) {
+                paypalDebug("Apple Pay config failed", {
+                  error: paypalSerializeError(err),
+                });
+              });
+          },
+        );
+      }
+
+      function onApplePayButtonClicked(applepay, applepayConfig) {
+        if (!hasShipCountrySelected()) {
+          window.alert("Select ship-to country above to continue to payment.");
+          return;
+        }
+        var cur = (cart.data.currencyCode || "AUD").trim() || "AUD";
+        var paymentRequest = {
+          countryCode: applepayConfig.countryCode || paypalBuyerCountry || "AU",
+          merchantCapabilities: applepayConfig.merchantCapabilities,
+          supportedNetworks: applepayConfig.supportedNetworks,
+          currencyCode: cur,
+          requiredShippingContactFields: ["name", "phone", "email", "postalAddress"],
+          requiredBillingContactFields: ["postalAddress"],
+          total: {
+            label: shopDisplayName || "Contraption Cart",
+            type: "final",
+            amount: cartTotalPriceString(),
+          },
+        };
+        var session = new ApplePaySession(4, paymentRequest);
+        session.onvalidatemerchant = function (event) {
+          applepay
+            .validateMerchant({
+              validationUrl: event.validationURL,
+              displayName: shopDisplayName || "Contraption Cart",
+            })
+            .then(function (validateResult) {
+              session.completeMerchantValidation(validateResult.merchantSession);
+            })
+            .catch(function (err) {
+              paypalDebug("Apple Pay validateMerchant failed", {
+                error: paypalSerializeError(err),
+              });
+              session.abort();
+            });
+        };
+        session.onpaymentauthorized = function (event) {
+          var shipCc = shippingContactCountry(event.payment && event.payment.shippingContact);
+          if (!paypalShippingCountryMatchesCart(shipCc)) {
+            setShipCountryMessage(SHIP_MISMATCH_MSG, "error");
+            highlightShipCountryError(true);
+            session.completePayment(ApplePaySession.STATUS_FAILURE);
+            return;
+          }
+          createOrderOnServer()
+            .then(function (orderId) {
+              return applepay
+                .confirmOrder({
+                  orderId: orderId,
+                  token: event.payment.token,
+                  billingContact: event.payment.billingContact,
+                })
+                .then(function () {
+                  return captureOrderOnServer(orderId).then(function (details) {
+                    session.completePayment(ApplePaySession.STATUS_SUCCESS);
+                    finishSuccessfulPayment(orderId, details);
+                  });
+                });
+            })
+            .catch(function (err) {
+              paypalDebug("Apple Pay payment failed", {
+                error: paypalSerializeError(err),
+              });
+              session.completePayment(ApplePaySession.STATUS_FAILURE);
+            });
+        };
+        session.begin();
       }
 
       /** Logs one JSON line prefixed with [PayPal debug] — copy from DevTools Console to share. */
@@ -927,7 +1408,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           "client-id=" + encodeURIComponent(clientId),
           "currency=" + encodeURIComponent(currency),
           "intent=capture",
-          "components=buttons",
+          "components=buttons,applepay,googlepay",
           "commit=true",
         ];
         if (!isLive && paypalBuyerCountry && /^[A-Z]{2}$/.test(paypalBuyerCountry)) {
@@ -1132,12 +1613,18 @@ window.siteCart = new ShoppingCart("Contraption Cart");
             if (renderResult && typeof renderResult.then === "function") {
               renderResult.then(function () {
                 paypalMounted = true;
+                ensureGooglePayButton();
+                ensureApplePayButton();
               });
             } else {
               paypalMounted = true;
+              ensureGooglePayButton();
+              ensureApplePayButton();
             }
           } catch (e) {
             console.error("PayPal render failed", e);
+            ensureGooglePayButton();
+            ensureApplePayButton();
           }
         });
       }
@@ -1163,6 +1650,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           destroyPayPalButtons();
           paypalMounted = false;
           paypalMountInProgress = false;
+          googlePayMounted = false;
+          applePayMounted = false;
           if (paypalSectionEl) {
             paypalSectionEl.hidden = true;
           }
@@ -1405,6 +1894,9 @@ window.siteCart = new ShoppingCart("Contraption Cart");
   </script>
 </section>
 
+
+
+
     </main>
     <footer class="site-footer">
   <div class="footer-content">
@@ -1447,6 +1939,14 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <li class="accepted-payments-item">
           <span class="accepted-payments-mark accepted-payments-mark--paypal">PayPal</span>
           <span class="accepted-payments-note">Guest checkout with PayPal — no account login required.</span>
+        </li>
+        <li class="accepted-payments-item">
+          <span class="accepted-payments-mark accepted-payments-mark--googlepay">Google Pay</span>
+          <span class="accepted-payments-note">Google Pay where available.</span>
+        </li>
+        <li class="accepted-payments-item">
+          <span class="accepted-payments-mark accepted-payments-mark--applepay">Apple Pay</span>
+          <span class="accepted-payments-note">Apple Pay on supported devices.</span>
         </li>
       </ul>
     </div>

@@ -45,7 +45,7 @@
       about: "",
       shopFocus: [],
       websites: { primary: "", images: "", imagesRepo: "", etsy: "", newsletterSignup: "" },
-      paypal: { clientId: "", environment: "sandbox", buyerCountry: "" },
+      paypal: { clientId: "", environment: "sandbox", buyerCountry: "", ordersApiBase: "" },
       analytics: { measurementId: "" },
       branding: { faviconPath: "" },
       blog: { title: "Blog", description: "" },
@@ -361,6 +361,7 @@
         clientId: get("paypalClientId"),
         environment: get("paypalEnvironment") || "sandbox",
         buyerCountry: get("paypalBuyerCountry"),
+        ordersApiBase: get("paypalOrdersApiBase"),
       },
       analytics: {
         measurementId: get("analyticsMeasurementId"),
@@ -449,6 +450,7 @@
     set("paypalClientId", shop.paypal?.clientId);
     set("paypalEnvironment", shop.paypal?.environment || "sandbox");
     set("paypalBuyerCountry", shop.paypal?.buyerCountry);
+    set("paypalOrdersApiBase", shop.paypal?.ordersApiBase);
     set("analyticsMeasurementId", shop.analytics?.measurementId);
     set("faviconPath", shop.branding?.faviconPath);
     set("blogTitle", shop.blog?.title);
@@ -723,6 +725,12 @@
       }),
     );
     paySection.appendChild(field("Buyer country (ISO)", "paypalBuyerCountry", { placeholder: "AU" }));
+    paySection.appendChild(
+      field("Orders API base (Apple/Google Pay)", "paypalOrdersApiBase", {
+        placeholder: "/api/paypal",
+        hint: "Leave blank to use /api/paypal on this domain. Required for Apple Pay / Google Pay create+capture (Cloudflare Worker). PayPal Buttons still work without it.",
+      }),
+    );
     form.appendChild(paySection);
 
     const analyticsSection = section("Google Analytics (GA4)");

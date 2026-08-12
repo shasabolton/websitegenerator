@@ -23,10 +23,14 @@ async function buildCartBody(ctx) {
     .trim()
     .toLowerCase();
   const paypalBuyerCountry = String(shopData?.paypal?.buyerCountry ?? "AU").trim().toUpperCase();
+  const paypalOrdersApiBase = String(shopData?.paypal?.ordersApiBase ?? "").trim();
+  const shopName = String(shopData?.shopName ?? "Contraption Cart").trim() || "Contraption Cart";
   const bodyHtml = applyTemplate(cartTemplate, {
     PAYPAL_CLIENT_ID_JSON: JSON.stringify(paypalClientId),
     PAYPAL_ENV_JSON: JSON.stringify(paypalEnvironment === "live" ? "live" : "sandbox"),
     PAYPAL_BUYER_COUNTRY_JSON: JSON.stringify(/^[A-Z]{2}$/.test(paypalBuyerCountry) ? paypalBuyerCountry : "AU"),
+    PAYPAL_ORDERS_API_BASE_JSON: JSON.stringify(paypalOrdersApiBase),
+    SHOP_NAME_JSON: JSON.stringify(shopName),
   });
   const truncateText = window.structuredData?.truncateText;
   const metaDescription =
