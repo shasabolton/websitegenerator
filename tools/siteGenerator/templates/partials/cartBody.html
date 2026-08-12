@@ -982,8 +982,12 @@
                   throw new Error("Google Pay was not approved");
                 })
                 .then(function (details) {
-                  finishSuccessfulPayment(orderId, details);
+                  // Tell Google Pay SUCCESS before any UI work — alert/re-render
+                  // otherwise leaves the sheet spinning forever.
                   resolve({ transactionState: "SUCCESS" });
+                  window.setTimeout(function () {
+                    finishSuccessfulPayment(orderId, details);
+                  }, 0);
                 });
             })
             .catch(function (err) {
@@ -1099,7 +1103,9 @@
                 .then(function () {
                   return captureOrderOnServer(orderId).then(function (details) {
                     session.completePayment(ApplePaySession.STATUS_SUCCESS);
-                    finishSuccessfulPayment(orderId, details);
+                    window.setTimeout(function () {
+                      finishSuccessfulPayment(orderId, details);
+                    }, 0);
                   });
                 });
             })
