@@ -249,6 +249,17 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 <script src="shared-assets/script/discountCodes.js"></script>
 <section class="page-content cart-page" id="cart-page-root">
   <h1>Shopping cart</h1>
+  <aside class="cart-accepted-payments" aria-label="Accepted payment methods">
+    <p class="cart-accepted-payments-label">Accepted payment methods</p>
+    <ul class="accepted-payments-list">
+      <li class="accepted-payments-item">
+        <span class="accepted-payments-mark accepted-payments-mark--paypal">PayPal</span>
+        <span class="accepted-payments-note"
+          >Pay with PayPal. Guest checkout supported — no account login required.</span
+        >
+      </li>
+    </ul>
+  </aside>
   <p id="cart-page-empty" class="cart-page-empty">Your cart is empty.</p>
   <div id="cart-lines-container" class="cart-lines-container" hidden></div>
   <div id="cart-page-summary" class="cart-page-summary" hidden>
@@ -1430,6 +1441,15 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       <button class="footer-subscribe-button" type="submit">Subscribe</button>
     </form>
     <p class="footer-contact">Contact: <a href="mailto:shasabolton@gmail.com">shasabolton@gmail.com</a></p>
+    <div class="footer-payments" aria-label="Accepted payment methods">
+      <p class="footer-heading">We accept</p>
+      <ul class="accepted-payments-list accepted-payments-list--footer">
+        <li class="accepted-payments-item">
+          <span class="accepted-payments-mark accepted-payments-mark--paypal">PayPal</span>
+          <span class="accepted-payments-note">Guest checkout with PayPal — no account login required.</span>
+        </li>
+      </ul>
+    </div>
   </div>
 </footer>
 

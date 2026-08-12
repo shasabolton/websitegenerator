@@ -1692,6 +1692,53 @@ body.nav-scroll-lock {
   color: #111827;
 }
 
+.cart-accepted-payments {
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+}
+
+.cart-accepted-payments-label {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.accepted-payments-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.accepted-payments-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+}
+
+.accepted-payments-mark {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.accepted-payments-mark--paypal {
+  color: #003087;
+}
+
+.accepted-payments-note {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
 .cart-paypal-section {
   margin-top: 20px;
   padding-top: 16px;
@@ -2023,6 +2070,18 @@ body.nav-scroll-lock {
 
 .footer-contact {
   margin: 16px 0 0;
+}
+
+.footer-payments {
+  margin: 20px 0 0;
+}
+
+.accepted-payments-list--footer .accepted-payments-mark--paypal {
+  color: #93c5fd;
+}
+
+.accepted-payments-list--footer .accepted-payments-note {
+  color: #cbd5e1;
 }
 
 .content-page {

@@ -124,6 +124,23 @@ function buildFooterContactHtml(shopData) {
   return `Contact: <a href="mailto:${safeEmail}">${safeEmail}</a>`;
 }
 
+function buildFooterPaymentsHtml(shopData) {
+  const paypalClientId = String(shopData?.paypal?.clientId ?? "").trim();
+  if (!paypalClientId) {
+    return "";
+  }
+
+  return `<div class="footer-payments" aria-label="Accepted payment methods">
+      <p class="footer-heading">We accept</p>
+      <ul class="accepted-payments-list accepted-payments-list--footer">
+        <li class="accepted-payments-item">
+          <span class="accepted-payments-mark accepted-payments-mark--paypal">PayPal</span>
+          <span class="accepted-payments-note">Guest checkout with PayPal — no account login required.</span>
+        </li>
+      </ul>
+    </div>`;
+}
+
 function buildFaviconPath(shopData) {
   return shopData?.branding?.faviconPath || "shared-assets/images/branding/favicon.jpg";
 }
@@ -223,6 +240,7 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
     SOCIAL_LINKS: buildSocialLinksHtml(shopData),
     CONTACT_BLOCK: buildFooterContactHtml(shopData),
     NEWSLETTER_LABEL: newsletterLabel,
+    PAYMENT_METHODS: buildFooterPaymentsHtml(shopData),
   });
 
   return {
