@@ -2,6 +2,7 @@
 <script src="shared-assets/script/discountCodes.js"></script>
 <section class="page-content cart-page" id="cart-page-root">
   <h1>Shopping cart</h1>
+  <p id="cart-payment-success" class="cart-payment-success" hidden role="status"></p>
   <aside class="cart-accepted-payments" aria-label="Accepted payment methods">
     <p class="cart-accepted-payments-label">Accepted payment methods</p>
     <ul class="accepted-payments-list">
@@ -126,6 +127,7 @@
       var cart = window.siteCart;
       var root = document.getElementById("cart-page-root");
       var emptyEl = document.getElementById("cart-page-empty");
+      var paymentSuccessEl = document.getElementById("cart-payment-success");
       var linesEl = document.getElementById("cart-lines-container");
       var summaryEl = document.getElementById("cart-page-summary");
       var subtotalEl = document.getElementById("cart-subtotal-amount");
@@ -967,6 +969,17 @@
         });
       }
 
+      function showPaymentSuccessMessage() {
+        if (paymentSuccessEl) {
+          paymentSuccessEl.hidden = false;
+          paymentSuccessEl.textContent =
+            "Payment successful. Thank you! Your order is confirmed.";
+          if (typeof paymentSuccessEl.scrollIntoView === "function") {
+            paymentSuccessEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }
+        }
+      }
+
       function finishSuccessfulPayment(orderId, details) {
         var purchaseLines = (cart.data.items || []).slice();
         var purchasePu = details && details.purchase_units && details.purchase_units[0];
@@ -976,13 +989,15 @@
           window.siteAnalytics.purchase(orderId, purchaseAmount, purchaseLines);
         }
         clearShipCountryError();
+        clearBuyerEmailError();
         cart.data.items = [];
         cart.data.appliedDiscountCode = null;
         cart.saveToLocalStorage();
         destroyPayPalButtons();
         paypalMounted = false;
         renderCartPage();
-        window.alert("Payment successful. Thank you!");
+        // In-page message — window.alert sits under Google Pay and becomes unclickable.
+        showPaymentSuccessMessage();
       }
 
       function shippingContactCountry(contact) {
@@ -1229,9 +1244,10 @@
                   // Tell Google Pay SUCCESS before any UI work — alert/re-render
                   // otherwise leaves the sheet spinning forever.
                   resolve({ transactionState: "SUCCESS" });
+                  // Wait for Google Pay sheet to dismiss before updating the page.
                   window.setTimeout(function () {
                     finishSuccessfulPayment(orderId, details);
-                  }, 0);
+                  }, 500);
                 });
             })
             .catch(function (err) {
@@ -1596,30 +1612,7 @@
                       status: details && details.status,
                       payerEmail: details && details.payer && details.payer.email_address,
                     });
-                    var purchaseLines = (cart.data.items || []).slice();
-                    var purchasePu =
-                      details &&
-                      details.purchase_units &&
-                      details.purchase_units[0];
-                    var purchaseAmount =
-                      purchasePu &&
-                      purchasePu.amount &&
-                      purchasePu.amount.value;
-                    if (window.siteAnalytics?.purchase) {
-                      window.siteAnalytics.purchase(
-                        data.orderID,
-                        purchaseAmount,
-                        purchaseLines,
-                      );
-                    }
-                    clearShipCountryError();
-                    cart.data.items = [];
-                    cart.data.appliedDiscountCode = null;
-                    cart.saveToLocalStorage();
-                    destroyPayPalButtons();
-                    paypalMounted = false;
-                    renderCartPage();
-                    window.alert("Payment successful. Thank you!");
+                    finishSuccessfulPayment(data.orderID, details);
                   });
                 })
                 .catch(function (err) {
