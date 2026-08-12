@@ -961,6 +961,161 @@
     return btn;
   }
 
+  function selectFileNameStem(input, fileName) {
+    const value = String(fileName || "");
+    const dot = value.lastIndexOf(".");
+    input.setSelectionRange(0, dot > 0 ? dot : value.length);
+  }
+
+  function startInlineRename(entry, nameEl, triggerBtn) {
+    if (!window.githubAuth?.renameImagesRepoEntry || !window.githubAuth?.planImagesRepoRename) {
+      window.alert("Rename is not available.");
+      return;
+    }
+    const row = nameEl.closest(".images-browser-row") || triggerBtn?.closest(".images-browser-row");
+    if (!nameEl.isConnected || row?.querySelector(".images-browser-name-input")) {
+      return;
+    }
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "images-browser-name-input";
+    input.value = entry.name;
+    input.setAttribute("aria-label", `Rename ${entry.name}`);
+    input.spellcheck = false;
+    nameEl.replaceWith(input);
+    if (triggerBtn) {
+      triggerBtn.disabled = true;
+    }
+    input.focus();
+    selectFileNameStem(input, entry.name);
+
+    let closing = false;
+    let busy = false;
+
+    const restoreName = () => {
+      if (closing) {
+        return;
+      }
+      closing = true;
+      input.replaceWith(nameEl);
+      if (triggerBtn) {
+        triggerBtn.disabled = false;
+        triggerBtn.textContent = "Rename";
+      }
+    };
+
+    const commitRename = async () => {
+      if (closing || busy) {
+        return;
+      }
+      let plan;
+      try {
+        plan = window.githubAuth.planImagesRepoRename(entry, input.value);
+      } catch (err) {
+        window.alert(err?.message || String(err));
+        input.focus();
+        return;
+      }
+      if (plan.fromPath === plan.toPath) {
+        restoreName();
+        return;
+      }
+
+      busy = true;
+      let overwrite = false;
+      const ctx = getRepoContext();
+      if (ctx && window.githubAuth.getFileMeta) {
+        try {
+          const destMeta = await window.githubAuth.getFileMeta(
+            ctx.owner,
+            ctx.repo,
+            plan.toPath,
+            ctx.branch,
+          );
+          if (destMeta) {
+            const destIsDir = Array.isArray(destMeta) || destMeta.type === "dir";
+            if (destIsDir) {
+              busy = false;
+              window.alert(`A folder already exists at "${plan.toPath}".`);
+              input.focus();
+              return;
+            }
+            if (!window.confirm(`A file already exists at "${plan.toPath}". Overwrite it?`)) {
+              busy = false;
+              input.focus();
+              return;
+            }
+            overwrite = true;
+          }
+        } catch (err) {
+          busy = false;
+          window.alert(err?.message || String(err));
+          input.focus();
+          return;
+        }
+      }
+
+      closing = true;
+      input.disabled = true;
+      if (triggerBtn) {
+        triggerBtn.textContent = "Renaming…";
+      }
+      try {
+        await window.githubAuth.renameImagesRepoEntry(entry, plan.name, { overwrite });
+        if (typeof reloadTreeCallback === "function") {
+          reloadTreeCallback();
+        }
+      } catch (err) {
+        closing = false;
+        busy = false;
+        input.disabled = false;
+        if (triggerBtn) {
+          triggerBtn.disabled = false;
+          triggerBtn.textContent = "Rename";
+        }
+        window.alert(err?.message || String(err));
+        input.focus();
+      }
+    };
+
+    input.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+    input.addEventListener("keydown", (event) => {
+      event.stopPropagation();
+      if (event.key === "Enter") {
+        event.preventDefault();
+        commitRename();
+      } else if (event.key === "Escape") {
+        event.preventDefault();
+        restoreName();
+      }
+    });
+    input.addEventListener("blur", () => {
+      window.setTimeout(() => {
+        if (!closing && !busy && document.activeElement !== input) {
+          restoreName();
+        }
+      }, 0);
+    });
+  }
+
+  function createRenameButton(entry, nameEl) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "images-browser-rename";
+    btn.textContent = "Rename";
+    const isDir = entry.type === "dir";
+    const label = String(entry.path || entry.name || "item").trim();
+    btn.setAttribute("aria-label", isDir ? `Rename folder ${label}` : `Rename ${label}`);
+    btn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      startInlineRename(entry, nameEl, btn);
+    });
+    return btn;
+  }
+
   function createFileRow(entry, depth, ctx, picker) {
     const row = document.createElement("div");
     row.className = "images-browser-row";
@@ -1079,6 +1234,7 @@
         });
         actions.appendChild(editBtn);
       }
+      actions.appendChild(createRenameButton(entry, name));
       actions.appendChild(createDeleteButton(entry));
       if (isImage) {
         bindImagePreviewOpeners({
@@ -1140,6 +1296,7 @@
     const actions = document.createElement("div");
     actions.className = "images-browser-actions";
     if (!picker?.onSelect) {
+      actions.appendChild(createRenameButton(entry, name));
       actions.appendChild(createDeleteButton(entry));
     }
     row.appendChild(actions);
@@ -1271,7 +1428,7 @@
   }
 
   function mountSignedInBody(body, details) {
-    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. <strong>Upload image</strong> adds a local file (choose the destination folder in the dialog). Click a thumbnail to preview at hero size, then <strong>Edit</strong> to crop and save a new version, or <strong>Generate WebP sizes</strong> to move the original into a folder named after the image and add <code>il_75x75</code>, <code>il_570xN</code>, and <code>il_fullxfull</code> WebP variants (one commit). <strong>Copy URL</strong> copies a public image link (custom domain when the repo matches shop data).</p>
+    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. <strong>Upload image</strong> adds a local file (choose the destination folder in the dialog). Click a thumbnail to preview at hero size, then <strong>Edit</strong> to crop and save a new version, or <strong>Generate WebP sizes</strong> to move the original into a folder named after the image and add <code>il_75x75</code>, <code>il_570xN</code>, and <code>il_fullxfull</code> WebP variants (one commit). <strong>Rename</strong> edits the file or folder name in the GitHub repository (Enter to save, Escape to cancel). <strong>Copy URL</strong> copies a public image link (custom domain when the repo matches shop data).</p>
 <div class="images-browser-toolbar">
   <label for="images-repo-select">Images repository</label>
   <select id="images-repo-select" data-images-repo-select aria-label="GitHub images repository"></select>

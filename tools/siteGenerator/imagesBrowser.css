@@ -475,6 +475,44 @@ body.images-browser-preview-open {
   cursor: not-allowed;
 }
 
+.images-browser-rename {
+  font-size: 11px;
+  padding: 2px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+}
+
+.images-browser-rename:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.images-browser-rename:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.images-browser-name-input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 8rem;
+  box-sizing: border-box;
+  padding: 2px 6px;
+  border: 1px solid #2563eb;
+  border-radius: 4px;
+  background: #fff;
+  color: #111827;
+  font: inherit;
+  font-size: 13px;
+}
+
+.images-browser-name-input:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+}
+
 .images-browser-delete {
   font-size: 11px;
   padding: 2px 8px;

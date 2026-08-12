@@ -1485,7 +1485,7 @@
    *   repo: string,
    *   branch?: string,
    *   message: string,
-   *   upserts?: Array<{ path: string, base64: string }>,
+   *   upserts?: Array<{ path: string, base64?: string, sha?: string }>,
    *   deletes?: Array<{ path: string }>,
    * }} options
    */
@@ -1514,6 +1514,17 @@
       }
 
       const blobShas = await mapWithConcurrency(upsertList, BLOB_CONCURRENCY, async (change) => {
+        const path = String(change?.path || "").trim();
+        if (!path) {
+          throw new Error("Missing path for file change.");
+        }
+        const existingSha = String(change?.sha || "").trim();
+        if (existingSha) {
+          return { path, sha: existingSha };
+        }
+        if (!change?.base64) {
+          throw new Error(`Missing file content for ${path}`);
+        }
         const blob = await githubApi(`/repos/${owner}/${repo}/git/blobs`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1523,9 +1534,9 @@
           }),
         });
         if (!blob?.sha) {
-          throw new Error(`Blob creation failed for ${change.path}`);
+          throw new Error(`Blob creation failed for ${path}`);
         }
-        return { path: change.path, sha: blob.sha };
+        return { path, sha: blob.sha };
       });
 
       const treeEntries = [
@@ -1613,24 +1624,90 @@
     return commitGitTreeFiles({ owner, repo, branch, message, upserts, deletes: deleteList });
   }
 
+  function normalizeImagesRepoPath(raw) {
+    return String(raw || "")
+      .trim()
+      .replace(/\\/g, "/")
+      .replace(/^\/+/, "")
+      .replace(/\/+$/, "");
+  }
+
+  function parentDirOfRepoPath(filePath) {
+    const parts = normalizeImagesRepoPath(filePath).split("/").filter(Boolean);
+    parts.pop();
+    return parts.join("/");
+  }
+
+  function joinImagesRepoPath(folder, name) {
+    const dir = normalizeImagesRepoPath(folder);
+    const file = String(name || "")
+      .trim()
+      .replace(/^\/+/, "")
+      .replace(/\/+$/, "");
+    return dir ? `${dir}/${file}` : file;
+  }
+
+  function sanitizeImagesRepoName(raw) {
+    const base =
+      String(raw || "")
+        .trim()
+        .replace(/\\/g, "/")
+        .split("/")
+        .pop() || "";
+    const cleaned = base.replace(/[^\w.\-()+ ]+/g, "_").replace(/^\.+$/, "");
+    if (!cleaned || cleaned === "." || cleaned === "..") {
+      return "";
+    }
+    return cleaned;
+  }
+
+  /**
+   * @param {{ path?: string, name?: string, type?: "dir" | "file" }} entry
+   * @param {string} newName
+   * @returns {{ fromPath: string, toPath: string, isDir: boolean, name: string }}
+   */
+  function planImagesRepoRename(entry, newName) {
+    const fromPath = normalizeImagesRepoPath(entry?.path);
+    if (!fromPath) {
+      throw new Error("Missing path to rename.");
+    }
+    const isDir = entry?.type === "dir";
+    let name = sanitizeImagesRepoName(newName);
+    if (!name) {
+      throw new Error("Invalid name.");
+    }
+    if (!isDir) {
+      const oldName = fromPath.split("/").pop() || "";
+      const oldExt = oldName.match(/(\.[A-Za-z0-9]+)$/)?.[1] || "";
+      const newHasExt = /\.[A-Za-z0-9]+$/.test(name);
+      if (oldExt && !newHasExt) {
+        name += oldExt;
+      }
+    }
+    const toPath = joinImagesRepoPath(parentDirOfRepoPath(fromPath), name);
+    return { fromPath, toPath, isDir, name };
+  }
+
   async function listAllRepoFilePathsRecursive(owner, repo, dirPath, branch) {
-    const paths = [];
+    const files = await listAllRepoFilesRecursive(owner, repo, dirPath, branch);
+    return files.map((file) => file.path);
+  }
+
+  async function listAllRepoFilesRecursive(owner, repo, dirPath, branch) {
+    const files = [];
     async function walk(currentPath) {
       const entries = await listRepoDirectory(owner, repo, currentPath, branch);
       for (const entry of entries) {
         if (entry.type === "dir") {
           await walk(entry.path);
         } else {
-          paths.push(entry.path);
+          files.push({ path: entry.path, sha: entry.sha || "" });
         }
       }
     }
-    const root = String(dirPath || "")
-      .trim()
-      .replace(/^\/+/, "")
-      .replace(/\/+$/, "");
+    const root = normalizeImagesRepoPath(dirPath);
     await walk(root);
-    return paths;
+    return files;
   }
 
   /**
@@ -1666,6 +1743,83 @@
     }
     const message = isDir ? `Delete folder ${path}` : `Delete ${path}`;
     return deleteImagesRepoPaths({ message, paths });
+  }
+
+  /**
+   * Rename a file or folder in the selected images repo (one Git Trees commit).
+   * Files reuse the existing blob SHA; folders rewrite every nested file path.
+   * @param {{ path: string, name?: string, type?: "dir" | "file", sha?: string }} entry
+   * @param {string} newName
+   * @param {{ overwrite?: boolean }} [options]
+   */
+  async function renameImagesRepoEntry(entry, newName, options = {}) {
+    const { owner, repo, branch } = requireSelectedImagesRepo();
+    const plan = planImagesRepoRename(entry, newName);
+    if (plan.fromPath === plan.toPath) {
+      return { ...plan, skipped: true };
+    }
+
+    const destMeta = await getFileMeta(owner, repo, plan.toPath, branch);
+    if (destMeta) {
+      const destIsDir = Array.isArray(destMeta) || destMeta.type === "dir";
+      if (destIsDir) {
+        throw new Error(`A folder already exists at ${plan.toPath}.`);
+      }
+      if (!options.overwrite) {
+        throw Object.assign(new Error(`A file already exists at ${plan.toPath}.`), {
+          code: "DEST_EXISTS",
+          toPath: plan.toPath,
+        });
+      }
+    }
+
+    if (plan.isDir) {
+      const files = await listAllRepoFilesRecursive(owner, repo, plan.fromPath, branch);
+      if (!files.length) {
+        throw new Error("Folder is empty.");
+      }
+      const prefix = `${plan.fromPath}/`;
+      const upserts = [];
+      const deletes = [];
+      for (const file of files) {
+        if (file.path !== plan.fromPath && !file.path.startsWith(prefix)) {
+          continue;
+        }
+        if (!file.sha) {
+          throw new Error(`Missing SHA for ${file.path}`);
+        }
+        const rel = file.path.slice(plan.fromPath.length);
+        upserts.push({ path: `${plan.toPath}${rel}`, sha: file.sha });
+        deletes.push({ path: file.path });
+      }
+      await commitGitTreeFiles({
+        owner,
+        repo,
+        branch,
+        message: `Rename folder ${plan.fromPath} to ${plan.toPath}`,
+        upserts,
+        deletes,
+      });
+      return plan;
+    }
+
+    let sha = String(entry?.sha || "").trim();
+    if (!sha) {
+      const meta = await getFileMeta(owner, repo, plan.fromPath, branch);
+      sha = String(meta?.sha || "").trim();
+    }
+    if (!sha) {
+      throw new Error(`Could not read file SHA for ${plan.fromPath}.`);
+    }
+    await commitGitTreeFiles({
+      owner,
+      repo,
+      branch,
+      message: `Rename ${plan.fromPath} to ${plan.toPath}`,
+      upserts: [{ path: plan.toPath, sha }],
+      deletes: [{ path: plan.fromPath }],
+    });
+    return plan;
   }
 
   async function readRemoteManifest(owner, repo, branch) {
@@ -3205,6 +3359,8 @@ ${publishBtn}
     commitImagesRepoBinaryFiles,
     deleteImagesRepoEntry,
     deleteImagesRepoPaths,
+    planImagesRepoRename,
+    renameImagesRepoEntry,
     publishContentPageLive,
     publishProductPageLive,
     publishFullSite,
