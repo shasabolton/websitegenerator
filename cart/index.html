@@ -1066,7 +1066,6 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         var script = document.createElement("script");
         script.src = src;
         script.async = true;
-        script.crossOrigin = "anonymous";
         script.onload = function () {
           if (flagName === "google") {
             googlePaySdkLoading = false;
@@ -1893,6 +1892,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     })();
   </script>
 </section>
+
 
 
 
