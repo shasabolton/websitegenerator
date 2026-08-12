@@ -1660,7 +1660,8 @@ body.nav-scroll-lock {
   border-radius: 8px;
 }
 
-.cart-ship-to-country {
+.cart-ship-to-country,
+.cart-buyer-email {
   min-width: 200px;
   padding: 6px 10px;
   font-size: 1rem;
@@ -1670,7 +1671,23 @@ body.nav-scroll-lock {
   color: #111827;
 }
 
-.cart-ship-to-country:focus-visible {
+.cart-buyer-email {
+  min-width: 260px;
+  flex: 1 1 220px;
+}
+
+.cart-buyer-email-row {
+  margin: 14px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  font-size: 1.05rem;
+  color: #374151;
+}
+
+.cart-ship-to-country:focus-visible,
+.cart-buyer-email:focus-visible {
   outline: 2px solid #2563eb;
   outline-offset: 2px;
 }

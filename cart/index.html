@@ -323,6 +323,21 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       </select>
     </p>
     <p id="cart-ship-country-message" class="cart-ship-country-message" hidden></p>
+    <p class="cart-buyer-email-row">
+      <label class="cart-ship-to-label" for="cart-buyer-email">
+        Email for order confirmation
+        <span class="cart-ship-to-required">Required before checkout</span>
+      </label>
+      <input
+        type="email"
+        id="cart-buyer-email"
+        class="cart-buyer-email"
+        autocomplete="email"
+        placeholder="you@example.com"
+        required
+      />
+    </p>
+    <p id="cart-buyer-email-message" class="cart-ship-country-message" hidden></p>
     <p class="cart-shipping-estimate-row">
       Estimated shipping:
       <strong id="cart-shipping-estimate-amount"></strong>
@@ -332,7 +347,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       <strong id="cart-estimated-total-amount"></strong>
     </p>
     <p id="cart-checkout-blocked" class="cart-checkout-blocked" hidden>
-      Select ship-to country above to continue to payment.
+      Select ship-to country and enter your email above to continue to payment.
     </p>
     <div id="cart-paypal-section" class="cart-paypal-section" hidden>
       <h2 class="cart-paypal-heading">Checkout</h2>
@@ -374,6 +389,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       var totalWeightEl = document.getElementById("cart-total-weight-amount");
       var shipCountryEl = document.getElementById("cart-ship-to-country");
       var shipCountryMessageEl = document.getElementById("cart-ship-country-message");
+      var buyerEmailEl = document.getElementById("cart-buyer-email");
+      var buyerEmailMessageEl = document.getElementById("cart-buyer-email-message");
       var checkoutBlockedEl = document.getElementById("cart-checkout-blocked");
       var shippingEstimateEl = document.getElementById("cart-shipping-estimate-amount");
       var estimatedTotalEl = document.getElementById("cart-estimated-total-amount");
@@ -391,7 +408,9 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       var applePaySdkLoading = false;
       var googlePaymentsClient = null;
       var shipCountryListenerBound = false;
+      var buyerEmailListenerBound = false;
       var SHIP_COUNTRY_STORAGE_KEY = "websitegenerator-cart-ship-country";
+      var BUYER_EMAIL_STORAGE_KEY = "websitegenerator-cart-buyer-email";
       var SHIP_MISMATCH_MSG =
         "Ship to in shopping cart does not match PayPal shipping address. Please check both and try again.";
       var cachedProducts = null;
@@ -711,6 +730,62 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         return v === "AU" || v === "NZ" || v === "__OTHER__";
       }
 
+      function getCartBuyerEmail() {
+        if (!buyerEmailEl) {
+          return "";
+        }
+        return String(buyerEmailEl.value || "").trim();
+      }
+
+      function isValidBuyerEmail(email) {
+        var e = String(email || "").trim();
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+      }
+
+      function hasBuyerEmailEntered() {
+        return isValidBuyerEmail(getCartBuyerEmail());
+      }
+
+      function canCheckout() {
+        return hasShipCountrySelected() && hasBuyerEmailEntered();
+      }
+
+      function setBuyerEmailMessage(text, kind) {
+        if (!buyerEmailMessageEl) {
+          return;
+        }
+        var msg = String(text || "").trim();
+        if (!msg) {
+          buyerEmailMessageEl.hidden = true;
+          buyerEmailMessageEl.textContent = "";
+          buyerEmailMessageEl.classList.remove(
+            "cart-ship-country-message--error",
+            "cart-ship-country-message--success",
+          );
+          return;
+        }
+        buyerEmailMessageEl.hidden = false;
+        buyerEmailMessageEl.textContent = msg;
+        buyerEmailMessageEl.classList.remove(
+          "cart-ship-country-message--error",
+          "cart-ship-country-message--success",
+        );
+        if (kind === "error") {
+          buyerEmailMessageEl.classList.add("cart-ship-country-message--error");
+        }
+      }
+
+      function highlightBuyerEmailError(on) {
+        if (buyerEmailEl) {
+          buyerEmailEl.classList.toggle("cart-ship-to-country--error", !!on);
+        }
+      }
+
+      function clearBuyerEmailError() {
+        setBuyerEmailMessage("", null);
+        highlightBuyerEmailError(false);
+      }
+
       /** Map cart "Other" to a non-listed ISO code so the default rate zone applies. */
       function getCartShipToCountryCode() {
         var v = getCartShipToSelection();
@@ -802,6 +877,36 @@ window.siteCart = new ShoppingCart("Contraption Cart");
               sessionStorage.setItem(SHIP_COUNTRY_STORAGE_KEY, sel);
             } else {
               sessionStorage.removeItem(SHIP_COUNTRY_STORAGE_KEY);
+            }
+          } catch (e2) {}
+          destroyPayPalButtons();
+          paypalMounted = false;
+          paypalMountInProgress = false;
+          googlePayMounted = false;
+          applePayMounted = false;
+          renderCartPage();
+        });
+      }
+
+      function bindBuyerEmailOnce() {
+        if (buyerEmailListenerBound || !buyerEmailEl) {
+          return;
+        }
+        buyerEmailListenerBound = true;
+        try {
+          var savedEmail = sessionStorage.getItem(BUYER_EMAIL_STORAGE_KEY);
+          if (savedEmail && !buyerEmailEl.value) {
+            buyerEmailEl.value = savedEmail;
+          }
+        } catch (e) {}
+        buyerEmailEl.addEventListener("input", function () {
+          clearBuyerEmailError();
+          try {
+            var email = getCartBuyerEmail();
+            if (email) {
+              sessionStorage.setItem(BUYER_EMAIL_STORAGE_KEY, email);
+            } else {
+              sessionStorage.removeItem(BUYER_EMAIL_STORAGE_KEY);
             }
           } catch (e2) {}
           destroyPayPalButtons();
@@ -1043,8 +1148,10 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 
       function contactFromGooglePay(paymentData) {
         var addr = paymentData && paymentData.shippingAddress;
+        var walletEmail = (paymentData && paymentData.email) || "";
+        var cartEmail = getCartBuyerEmail();
         return {
-          email: (paymentData && paymentData.email) || "",
+          email: walletEmail || cartEmail,
           phone: (addr && addr.phoneNumber) || "",
           shipping: paypalShippingFromGoogleAddress(addr),
         };
@@ -1052,8 +1159,10 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 
       function contactFromApplePay(payment) {
         var ship = payment && payment.shippingContact;
+        var walletEmail = (ship && ship.emailAddress) || "";
+        var cartEmail = getCartBuyerEmail();
         return {
-          email: (ship && ship.emailAddress) || "",
+          email: walletEmail || cartEmail,
           phone: (ship && ship.phoneNumber) || "",
           shipping: paypalShippingFromAppleContact(ship),
         };
@@ -1259,8 +1368,14 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       }
 
       function onGooglePayButtonClicked() {
-        if (!hasShipCountrySelected()) {
-          window.alert("Select ship-to country above to continue to payment.");
+        if (!canCheckout()) {
+          if (!hasShipCountrySelected()) {
+            window.alert("Select ship-to country above to continue to payment.");
+          } else {
+            window.alert("Enter your email above to continue to payment.");
+            highlightBuyerEmailError(true);
+            setBuyerEmailMessage("Enter a valid email address.", "error");
+          }
           return;
         }
         var googlePayConfig = googlePayContainerEl && googlePayContainerEl._googlePayConfig;
@@ -1425,8 +1540,14 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       }
 
       function onApplePayButtonClicked(applepay, applepayConfig) {
-        if (!hasShipCountrySelected()) {
-          window.alert("Select ship-to country above to continue to payment.");
+        if (!canCheckout()) {
+          if (!hasShipCountrySelected()) {
+            window.alert("Select ship-to country above to continue to payment.");
+          } else {
+            window.alert("Enter your email above to continue to payment.");
+            highlightBuyerEmailError(true);
+            setBuyerEmailMessage("Enter a valid email address.", "error");
+          }
           return;
         }
         var cur = (cart.data.currencyCode || "AUD").trim() || "AUD";
@@ -1610,7 +1731,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           }
           return;
         }
-        if (!hasShipCountrySelected()) {
+        if (!canCheckout()) {
           destroyPayPalButtons();
           paypalMounted = false;
           paypalMountInProgress = false;
@@ -1642,8 +1763,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
               }
             },
             createOrder: function (data, actions) {
-              if (!hasShipCountrySelected()) {
-                return Promise.reject(new Error("Ship to country not selected"));
+              if (!canCheckout()) {
+                return Promise.reject(new Error("Ship to country or email not set"));
               }
               var cur = (cart.data.currencyCode || "AUD").trim() || "AUD";
               var built = buildPayPalLineItems(cur);
@@ -1651,6 +1772,17 @@ window.siteCart = new ShoppingCart("Contraption Cart");
               var shipCc = getCartShipToCountryCode();
               var shipCost = shippingCostForCountryCode(shipCc);
               var discountAmount = currentDiscountAmount();
+              var buyerEmail = getCartBuyerEmail();
+              var unit = {
+                reference_id: "cart",
+                description: discountAmount > 0 ? "Cart order (discount applied)" : "Cart order",
+                items: built.items,
+                amount: orderAmountValue(itemTotal, shipCost, discountAmount, cur),
+              };
+              if (buyerEmail) {
+                unit.custom_id = buyerEmail.slice(0, 127);
+                unit.description = unit.description + " | " + buyerEmail;
+              }
               paypalDebug("createOrder start", {
                 currency: cur,
                 itemTotal: itemTotal,
@@ -1660,6 +1792,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
                 weightGrams: cartWeightGrams(),
                 lineCount: (cart.data.items || []).length,
                 paypalItemLines: built.items.length,
+                buyerEmail: buyerEmail,
               });
               if (window.siteAnalytics?.beginCheckout) {
                 window.siteAnalytics.beginCheckout(
@@ -1667,21 +1800,18 @@ window.siteCart = new ShoppingCart("Contraption Cart");
                   Math.max(0, itemTotal - discountAmount) + shipCost,
                 );
               }
+              var orderBody = {
+                purchase_units: [unit],
+                application_context: {
+                  shipping_preference: "GET_FROM_FILE",
+                  user_action: "PAY_NOW",
+                },
+              };
+              if (buyerEmail) {
+                orderBody.payer = { email_address: buyerEmail };
+              }
               return actions.order
-                .create({
-                  purchase_units: [
-                    {
-                      reference_id: "cart",
-                      description: discountAmount > 0 ? "Cart order (discount applied)" : "Cart order",
-                      items: built.items,
-                      amount: orderAmountValue(itemTotal, shipCost, discountAmount, cur),
-                    },
-                  ],
-                  application_context: {
-                    shipping_preference: "GET_FROM_FILE",
-                    user_action: "PAY_NOW",
-                  },
-                })
+                .create(orderBody)
                 .then(function (orderId) {
                   paypalDebug("createOrder OK", { orderId: orderId });
                   return orderId;
@@ -1816,6 +1946,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         }
 
         bindShipCountryOnce();
+        bindBuyerEmailOnce();
 
         clearAppliedDiscountIfInvalid();
         var discountResult = evaluateAppliedDiscount();
@@ -2038,6 +2169,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     })();
   </script>
 </section>
+
 
 
 
