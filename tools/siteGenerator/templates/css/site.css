@@ -1816,11 +1816,11 @@ body.nav-scroll-lock {
 
 @media (max-width: 640px) {
   .cart-line {
-    grid-template-columns: 64px 1fr;
+    grid-template-columns: 64px 1fr auto;
     grid-template-areas:
-      "thumb main"
-      "qty qty"
-      "total remove";
+      "thumb main main"
+      "qty qty qty"
+      "total total remove";
     justify-items: stretch;
   }
 
@@ -1830,10 +1830,12 @@ body.nav-scroll-lock {
 
   .cart-line-total {
     text-align: left;
+    min-width: 0;
+    padding-right: 8px;
   }
 
   .cart-line-remove {
-    justify-self: start;
+    justify-self: end;
   }
 }
 
