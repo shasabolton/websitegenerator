@@ -29,7 +29,7 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "**Shrewd Robot**\nThis is a little game I made to help my 4-year-old daughter learn about saving and investing.\n**Goal:** Open all the presents and keep the robot fed. Your wage of coins runs out much too soon. The only way to win is to put as much as possible in the bank, as early as possible, while keeping the robot just above the poverty line.\nA little delayed gratification goes a long way. Before long, you’ll find that your investments have taken over from your wage",
+      "content": "**Shrewd Robot: **\nThis is a little game I made to help my 4-year-old daughter learn about saving and investing.\n**Goal:** Open all the presents and keep the robot fed. Your wage of coins runs out much too soon. The only way to win is to put as much as possible in the bank, as early as possible, while keeping the robot just above the poverty line.\nA little delayed gratification goes a long way. Before long, you’ll find that your investments have taken over from your wage",
       "clearFloat": ""
     },
     {
@@ -38,6 +38,33 @@
         {
           "url": "https://shasabolton.github.io/coins/",
           "text": "Play Shrewd Robot here"
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "https://images.contraptioncart.com/apps/lankyApp/il_fullxfull.lankyApp.webp",
+      "alt": "writing automaton cam generator app screenshot",
+      "caption": "writing automaton cam generator app",
+      "width": "25",
+      "align": "left"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "**Writing Automaton Cam Generator: ** \nThis app lets you generate cam profiles for my writing automaton. Sketch your design on the screen, generate the cams, then download them to cut on a laser cutter or scroll saw. This app is specific to my Lanky Doodler machine.",
+      "clearFloat": ""
+    },
+    {
+      "type": "buttons",
+      "buttons": [
+        {
+          "url": "https://shasabolton.github.io/lankydoodler/",
+          "text": "try the app"
+        },
+        {
+          "url": "https://www.contraptioncart.com/shop/lankydoodler/",
+          "text": "view the writing machine"
         }
       ]
     }
