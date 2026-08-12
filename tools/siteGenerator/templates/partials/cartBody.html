@@ -1681,6 +1681,10 @@
           }
           return;
         }
+        if (paymentSuccessEl) {
+          paymentSuccessEl.hidden = true;
+          paymentSuccessEl.textContent = "";
+        }
         if (emptyEl) {
           emptyEl.hidden = true;
         }

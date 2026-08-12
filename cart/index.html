@@ -1928,6 +1928,10 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           }
           return;
         }
+        if (paymentSuccessEl) {
+          paymentSuccessEl.hidden = true;
+          paymentSuccessEl.textContent = "";
+        }
         if (emptyEl) {
           emptyEl.hidden = true;
         }
@@ -2162,6 +2166,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     })();
   </script>
 </section>
+
 
 
 
