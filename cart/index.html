@@ -919,25 +919,29 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         return "/api/paypal";
       }
 
-      function buildCreateOrderPayload() {
+      function buildCreateOrderPayload(contact) {
         var cur = (cart.data.currencyCode || "AUD").trim() || "AUD";
         var built = buildPayPalLineItems(cur);
         var itemTotal = built.itemTotalCents / 100;
         var shipCc = getCartShipToCountryCode();
         var shipCost = shippingCostForCountryCode(shipCc);
         var discountAmount = currentDiscountAmount();
-        return {
+        var purchaseUnit = {
+          reference_id: "cart",
+          description: discountAmount > 0 ? "Cart order (discount applied)" : "Cart order",
+          items: built.items,
+          amount: orderAmountValue(itemTotal, shipCost, discountAmount, cur),
+        };
+        var shipping = contact && contact.shipping ? contact.shipping : null;
+        if (shipping && shipping.address && shipping.address.country_code) {
+          purchaseUnit.shipping = shipping;
+        }
+        var payload = {
           intent: "CAPTURE",
-          purchase_units: [
-            {
-              reference_id: "cart",
-              description: discountAmount > 0 ? "Cart order (discount applied)" : "Cart order",
-              items: built.items,
-              amount: orderAmountValue(itemTotal, shipCost, discountAmount, cur),
-            },
-          ],
+          purchase_units: [purchaseUnit],
           application_context: {
-            shipping_preference: "GET_FROM_FILE",
+            shipping_preference:
+              purchaseUnit.shipping ? "SET_PROVIDED_ADDRESS" : "GET_FROM_FILE",
             user_action: "PAY_NOW",
           },
           _meta: {
@@ -946,12 +950,107 @@ window.siteCart = new ShoppingCart("Contraption Cart");
             discountAmount: discountAmount,
             shipCost: shipCost,
             shipCc: shipCc,
+            hasShipping: !!purchaseUnit.shipping,
+            email: (contact && contact.email) || "",
           },
+        };
+        if (contact && contact.email) {
+          payload.payer = { email_address: String(contact.email).trim() };
+        }
+        return payload;
+      }
+
+      function paypalShippingFromGoogleAddress(addr) {
+        if (!addr) {
+          return null;
+        }
+        var country = String(addr.countryCode || "")
+          .trim()
+          .toUpperCase();
+        if (!country) {
+          return null;
+        }
+        var line1 = String(addr.address1 || "").trim();
+        var line2 = [addr.address2, addr.address3]
+          .map(function (p) {
+            return String(p || "").trim();
+          })
+          .filter(Boolean)
+          .join(", ");
+        var shipping = {
+          name: {
+            full_name: String(addr.name || "").trim() || "Customer",
+          },
+          address: {
+            address_line_1: line1 || "Address unavailable",
+            admin_area_2: String(addr.locality || "").trim() || "Unknown",
+            admin_area_1: String(addr.administrativeArea || "").trim() || "",
+            postal_code: String(addr.postalCode || "").trim() || "",
+            country_code: country,
+          },
+        };
+        if (line2) {
+          shipping.address.address_line_2 = line2;
+        }
+        return shipping;
+      }
+
+      function paypalShippingFromAppleContact(contact) {
+        if (!contact) {
+          return null;
+        }
+        var country = String(contact.countryCode || "")
+          .trim()
+          .toUpperCase();
+        if (!country) {
+          return null;
+        }
+        var lines = contact.addressLines || [];
+        var line1 = String((lines && lines[0]) || "").trim();
+        var line2 = String((lines && lines[1]) || "").trim();
+        var fullName = [contact.givenName, contact.familyName]
+          .map(function (p) {
+            return String(p || "").trim();
+          })
+          .filter(Boolean)
+          .join(" ");
+        var shipping = {
+          name: {
+            full_name: fullName || "Customer",
+          },
+          address: {
+            address_line_1: line1 || "Address unavailable",
+            admin_area_2: String(contact.locality || "").trim() || "Unknown",
+            admin_area_1: String(contact.administrativeArea || "").trim() || "",
+            postal_code: String(contact.postalCode || "").trim() || "",
+            country_code: country,
+          },
+        };
+        if (line2) {
+          shipping.address.address_line_2 = line2;
+        }
+        return shipping;
+      }
+
+      function contactFromGooglePay(paymentData) {
+        return {
+          email: (paymentData && paymentData.email) || "",
+          shipping: paypalShippingFromGoogleAddress(
+            paymentData && paymentData.shippingAddress,
+          ),
         };
       }
 
-      function createOrderOnServer() {
-        var payload = buildCreateOrderPayload();
+      function contactFromApplePay(payment) {
+        var ship = payment && payment.shippingContact;
+        return {
+          email: (ship && ship.emailAddress) || "",
+          shipping: paypalShippingFromAppleContact(ship),
+        };
+      }
+
+      function createOrderOnServer(contact) {
+        var payload = buildCreateOrderPayload(contact || null);
         var meta = payload._meta;
         delete payload._meta;
         paypalDebug("server createOrder start", meta);
@@ -1205,14 +1304,34 @@ window.siteCart = new ShoppingCart("Contraption Cart");
             });
             return;
           }
-          createOrderOnServer()
+          createOrderOnServer(contactFromGooglePay(paymentData))
             .then(function (orderId) {
+              var confirmPayload = {
+                orderId: orderId,
+                paymentMethodData: paymentData.paymentMethodData,
+              };
+              if (paymentData && paymentData.shippingAddress) {
+                confirmPayload.shippingAddress = paymentData.shippingAddress;
+              }
+              if (paymentData && paymentData.email) {
+                confirmPayload.email = paymentData.email;
+              }
+              if (
+                paymentData &&
+                paymentData.paymentMethodData &&
+                paymentData.paymentMethodData.info &&
+                paymentData.paymentMethodData.info.billingAddress
+              ) {
+                confirmPayload.billingAddress =
+                  paymentData.paymentMethodData.info.billingAddress;
+              }
+              paypalDebug("Google Pay confirmOrder contacts", {
+                email: confirmPayload.email || "",
+                hasShipping: !!confirmPayload.shippingAddress,
+              });
               return window
                 .paypal.Googlepay()
-                .confirmOrder({
-                  orderId: orderId,
-                  paymentMethodData: paymentData.paymentMethodData,
-                })
+                .confirmOrder(confirmPayload)
                 .then(function (confirmResult) {
                   var status = confirmResult && confirmResult.status;
                   if (status === "PAYER_ACTION_REQUIRED") {
@@ -1339,14 +1458,25 @@ window.siteCart = new ShoppingCart("Contraption Cart");
             session.completePayment(ApplePaySession.STATUS_FAILURE);
             return;
           }
-          createOrderOnServer()
+          createOrderOnServer(contactFromApplePay(event.payment))
             .then(function (orderId) {
+              var confirmPayload = {
+                orderId: orderId,
+                token: event.payment.token,
+                billingContact: event.payment.billingContact,
+              };
+              if (event.payment && event.payment.shippingContact) {
+                confirmPayload.shippingContact = event.payment.shippingContact;
+              }
+              paypalDebug("Apple Pay confirmOrder contacts", {
+                email:
+                  (event.payment.shippingContact &&
+                    event.payment.shippingContact.emailAddress) ||
+                  "",
+                hasShipping: !!confirmPayload.shippingContact,
+              });
               return applepay
-                .confirmOrder({
-                  orderId: orderId,
-                  token: event.payment.token,
-                  billingContact: event.payment.billingContact,
-                })
+                .confirmOrder(confirmPayload)
                 .then(function () {
                   return captureOrderOnServer(orderId).then(function (details) {
                     session.completePayment(ApplePaySession.STATUS_SUCCESS);
@@ -1898,6 +2028,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     })();
   </script>
 </section>
+
 
 
 
