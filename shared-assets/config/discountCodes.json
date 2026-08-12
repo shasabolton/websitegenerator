@@ -31,6 +31,15 @@
       ],
       "minQuantity": 2,
       "note": "$5 off when buying 2+ units of listed automata SKUs"
+    },
+    {
+      "active": true,
+      "code": "99OFFNOTVALID",
+      "type": "percent",
+      "value": 99,
+      "skus": [
+        "Illusionist Pendant"
+      ]
     }
   ]
 }
