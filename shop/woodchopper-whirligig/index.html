@@ -512,6 +512,8 @@ You will need Glue and exterior primer and paint if you want to protect it from 
       action="https://docs.google.com/forms/d/e/1FAIpQLSe5K8SJbldzZ46AbY1LvyogCVWnCZPbln1rAUFi1vmc879KvQ/formResponse"
       method="post"
       target="_self"
+      data-signup-api-url="https://contraptioncart-newsletter.contraptioncart.workers.dev/api/newsletter"
+      data-turnstile-sitekey="0x4AAAAAAEVZUBRQEE2yuX2j"
     >
       <p class="footer-form-heading">Join the Contraption Newsletter for new designs, discounts and articles.</p>
       <div class="footer-form-field">
@@ -534,6 +536,18 @@ You will need Glue and exterior primer and paint if you want to protect it from 
           autocomplete="email"
         />
       </div>
+      <div class="footer-form-hp" aria-hidden="true">
+        <label for="footer-subscribe-website">Website</label>
+        <input
+          id="footer-subscribe-website"
+          name="website"
+          type="text"
+          tabindex="-1"
+          autocomplete="off"
+        />
+      </div>
+      <div class="footer-turnstile" data-turnstile-mount></div>
+      <p class="footer-form-status" data-newsletter-status hidden></p>
       <button class="footer-subscribe-button" type="submit">Subscribe</button>
     </form>
     <nav class="footer-policy-links" aria-label="Store policies">
@@ -559,6 +573,7 @@ You will need Glue and exterior primer and paint if you want to protect it from 
     </div>
   </div>
 </footer>
+<script src="shared-assets/script/newsletterSignup.js" defer></script>
 
     <script src="tools/siteGenerator/templates/js/image-carousel.js" defer></script>
     <script src="shared-assets/script/productInstructionVideos.js" defer></script>

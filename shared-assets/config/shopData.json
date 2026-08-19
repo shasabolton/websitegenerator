@@ -56,7 +56,9 @@
     "description": "Notes on design, builds, and behind-the-scenes from Contraption Cart."
   },
   "newsletter": {
-    "label": "Join the Contraption Newsletter for new designs, discounts and articles."
+    "label": "Join the Contraption Newsletter for new designs, discounts and articles.",
+    "signupApiUrl": "https://contraptioncart-newsletter.contraptioncart.workers.dev/api/newsletter",
+    "turnstileSiteKey": "0x4AAAAAAEVZUBRQEE2yuX2j"
   },
   "returnPolicy": {
     "path": "returns",

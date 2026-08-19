@@ -8,6 +8,8 @@
       action="https://docs.google.com/forms/d/e/1FAIpQLSe5K8SJbldzZ46AbY1LvyogCVWnCZPbln1rAUFi1vmc879KvQ/formResponse"
       method="post"
       target="_self"
+      data-signup-api-url="__NEWSLETTER_SIGNUP_API_URL__"
+      data-turnstile-sitekey="__TURNSTILE_SITEKEY__"
     >
       <p class="footer-form-heading">__NEWSLETTER_LABEL__</p>
       <div class="footer-form-field">
@@ -28,8 +30,21 @@
           name="entry.866413073"
           type="email"
           autocomplete="email"
+          required
         />
       </div>
+      <div class="footer-form-hp" aria-hidden="true">
+        <label for="footer-subscribe-website">Website</label>
+        <input
+          id="footer-subscribe-website"
+          name="website"
+          type="text"
+          tabindex="-1"
+          autocomplete="off"
+        />
+      </div>
+      <div class="footer-turnstile" data-turnstile-mount></div>
+      <p class="footer-form-status" data-newsletter-status hidden></p>
       <button class="footer-subscribe-button" type="submit">Subscribe</button>
     </form>
     <nav class="footer-policy-links" aria-label="Store policies">
@@ -39,3 +54,4 @@
     __PAYMENT_METHODS__
   </div>
 </footer>
+<script src="shared-assets/script/newsletterSignup.js" defer></script>

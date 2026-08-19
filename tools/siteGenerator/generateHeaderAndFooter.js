@@ -242,12 +242,20 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
   const newsletterLabel = escapeHtml(
     String(shopData?.newsletter?.label ?? "").trim() || "Newsletter"
   );
+  const newsletterSignupApiUrl = escapeHtml(
+    String(shopData?.newsletter?.signupApiUrl ?? "").trim()
+  );
+  const turnstileSitekey = escapeHtml(
+    String(shopData?.newsletter?.turnstileSiteKey ?? "").trim()
+  );
 
   const footerHtml = applyTemplate(footerTemplate, {
     SHOP_NAME: shopName,
     SOCIAL_LINKS: buildSocialLinksHtml(shopData),
     CONTACT_BLOCK: buildFooterContactHtml(shopData),
     NEWSLETTER_LABEL: newsletterLabel,
+    NEWSLETTER_SIGNUP_API_URL: newsletterSignupApiUrl,
+    TURNSTILE_SITEKEY: turnstileSitekey,
     PAYMENT_METHODS: buildFooterPaymentsHtml(shopData),
   });
 

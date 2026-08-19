@@ -1,0 +1,17 @@
+{
+  "name": "contraptioncart-newsletter",
+  "main": "worker.js",
+  "compatibility_date": "2026-08-19",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    "NOTIFY_TO": "shasabolton@gmail.com",
+    "FROM_EMAIL": "Contraption Cart <onboarding@resend.dev>",
+    "FROM_NAME": "Contraption Cart",
+    "TURNSTILE_ACTION": "newsletter",
+    "TURNSTILE_HOSTNAMES": "www.contraptioncart.com,contraptioncart.com"
+  }
+}

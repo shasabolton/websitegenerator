@@ -49,7 +49,7 @@
       analytics: { measurementId: "" },
       branding: { faviconPath: "" },
       blog: { title: "Blog", description: "" },
-      newsletter: { label: "" },
+      newsletter: { label: "", signupApiUrl: "", turnstileSiteKey: "" },
       categories: {},
       contact: {
         email: "",
@@ -142,6 +142,8 @@
       ...(input.newsletter && typeof input.newsletter === "object" ? input.newsletter : {}),
     };
     next.newsletter.label = String(next.newsletter.label ?? "").trim();
+    next.newsletter.signupApiUrl = String(next.newsletter.signupApiUrl ?? "").trim();
+    next.newsletter.turnstileSiteKey = String(next.newsletter.turnstileSiteKey ?? "").trim();
     next.categories = normalizeCategories(input.categories);
     next.contact = {
       ...next.contact,
@@ -375,6 +377,8 @@
       },
       newsletter: {
         label: get("newsletterLabel"),
+        signupApiUrl: get("newsletterSignupApiUrl"),
+        turnstileSiteKey: get("newsletterTurnstileSiteKey"),
       },
       contact: {
         email: get("contactEmail"),
@@ -456,6 +460,8 @@
     set("blogTitle", shop.blog?.title);
     set("blogDescription", shop.blog?.description);
     set("newsletterLabel", shop.newsletter?.label);
+    set("newsletterSignupApiUrl", shop.newsletter?.signupApiUrl);
+    set("newsletterTurnstileSiteKey", shop.newsletter?.turnstileSiteKey);
     set("contactEmail", shop.contact?.email);
     set("contactPhone", shop.contact?.phone);
     set("addressLine1", shop.contact?.address?.line1);
@@ -757,6 +763,16 @@
         type: "textarea",
         rows: 3,
         hint: "Shown above the footer subscribe form. Leave blank to use “Newsletter”.",
+      }),
+    );
+    newsletterSection.appendChild(
+      field("Signup API URL", "newsletterSignupApiUrl", {
+        hint: "Cloudflare Worker endpoint, e.g. https://contraptioncart-newsletter.contraptioncart.workers.dev/api/newsletter",
+      }),
+    );
+    newsletterSection.appendChild(
+      field("Turnstile site key", "newsletterTurnstileSiteKey", {
+        hint: "Public Turnstile sitekey. Leave blank to keep the Google Form until Turnstile is ready.",
       }),
     );
     form.appendChild(newsletterSection);
