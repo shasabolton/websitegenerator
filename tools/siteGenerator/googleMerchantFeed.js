@@ -21,6 +21,7 @@
     "product_type",
     "shipping_weight",
     "shipping",
+    "return_policy_label",
   ];
 
   function getProductDataApi() {
@@ -255,6 +256,7 @@
       product_type: productType,
       shipping_weight: formatShippingWeight(row),
       shipping: formatShipping(row, shopData),
+      return_policy_label: row?.DIGITAL === true ? "digital" : "default",
     };
   }
 

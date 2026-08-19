@@ -156,7 +156,74 @@ function prependHomeCrumbIfNeeded(segments, shopData, homePageHref) {
   return crumbs.concat(segments);
 }
 
-function buildOrganization(shopData, siteOrigin) {
+const DEFAULT_RETURN_APPLICABLE_COUNTRIES = [
+  "AU",
+  "NZ",
+  "US",
+  "GB",
+  "CA",
+  "IE",
+  "DE",
+  "FR",
+  "NL",
+  "IT",
+  "ES",
+  "JP",
+  "SG",
+];
+
+function resolveReturnPolicyPath(shopData) {
+  const path = String(shopData?.returnPolicy?.path || "returns")
+    .trim()
+    .replace(/^\/+|\/+$/g, "");
+  return path || "returns";
+}
+
+function resolveApplicableReturnCountries(shopData) {
+  const raw = shopData?.returnPolicy?.applicableCountry;
+  if (Array.isArray(raw) && raw.length) {
+    return raw
+      .map((code) => String(code || "").trim().toUpperCase())
+      .filter((code) => /^[A-Z]{2}$/.test(code))
+      .slice(0, 50);
+  }
+  return DEFAULT_RETURN_APPLICABLE_COUNTRIES.slice();
+}
+
+function buildMerchantReturnPolicy(shopData, siteOrigin, options = {}) {
+  const daysRaw = parseInt(String(shopData?.returnPolicy?.merchantReturnDays ?? 30), 10);
+  const merchantReturnDays = Number.isFinite(daysRaw) && daysRaw > 0 ? daysRaw : 30;
+  const returnPolicyCountry = String(shopData?.returnPolicy?.returnPolicyCountry || "AU")
+    .trim()
+    .toUpperCase();
+  const applicableCountry = resolveApplicableReturnCountries(shopData);
+  const policyUrl = resolveAbsoluteUrl(siteOrigin, resolveReturnPolicyPath(shopData), options.homePageHref);
+  if (options.digital === true) {
+    return compactObject({
+      "@type": "MerchantReturnPolicy",
+      applicableCountry,
+      returnPolicyCategory: "https://schema.org/MerchantReturnNotPermitted",
+      merchantReturnLink: policyUrl || undefined,
+    });
+  }
+  return compactObject({
+    "@type": "MerchantReturnPolicy",
+    applicableCountry,
+    returnPolicyCountry: /^[A-Z]{2}$/.test(returnPolicyCountry) ? returnPolicyCountry : "AU",
+    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+    merchantReturnDays,
+    itemCondition: ["https://schema.org/NewCondition", "https://schema.org/UsedCondition"],
+    returnMethod: "https://schema.org/ReturnByMail",
+    returnFees: "https://schema.org/ReturnFeesCustomerResponsibility",
+    refundType: ["https://schema.org/FullRefund", "https://schema.org/ExchangeRefund"],
+    returnLabelSource: "https://schema.org/ReturnLabelCustomerResponsibility",
+    customerRemorseReturnFees: "https://schema.org/ReturnFeesCustomerResponsibility",
+    itemDefectReturnFees: "https://schema.org/FreeReturn",
+    merchantReturnLink: policyUrl || undefined,
+  });
+}
+
+function buildOrganization(shopData, siteOrigin, homePageHref = null) {
   const name = String(shopData?.shopName || "").trim();
   if (!name) {
     return null;
@@ -173,14 +240,26 @@ function buildOrganization(shopData, siteOrigin) {
   if (etsy) {
     sameAs.push(etsy);
   }
+  const email = shopData?.contact?.email || undefined;
+  const telephone = shopData?.contact?.phone || undefined;
   return compactObject({
     "@type": "Organization",
     "@id": orgId,
     name,
     url: siteOrigin ? `${siteOrigin}/` : undefined,
     logo: toAbsoluteAssetUrl(siteOrigin, shopData?.branding?.faviconPath),
-    email: shopData?.contact?.email || undefined,
+    email,
     sameAs: sameAs.length ? sameAs : undefined,
+    contactPoint:
+      email || telephone
+        ? compactObject({
+            "@type": "ContactPoint",
+            contactType: "customer service",
+            email,
+            telephone,
+          })
+        : undefined,
+    hasMerchantReturnPolicy: buildMerchantReturnPolicy(shopData, siteOrigin, { homePageHref }),
   });
 }
 
@@ -302,6 +381,10 @@ function buildProductNode(row, catalog, shopData, siteOrigin, homePageHref, cate
       price: priceNum.toFixed(2),
       availability: "https://schema.org/InStock",
       seller: siteOrigin ? { "@id": `${siteOrigin}/#organization` } : undefined,
+      hasMerchantReturnPolicy: buildMerchantReturnPolicy(shopData, siteOrigin, {
+        homePageHref,
+        digital: row?.DIGITAL === true,
+      }),
     });
   }
   return product;
@@ -523,7 +606,7 @@ function buildForPage(input) {
     };
   }
 
-  graph.push(buildOrganization(shopData, siteOrigin));
+  graph.push(buildOrganization(shopData, siteOrigin, homePageHref));
   graph.push(buildWebSite(shopData, siteOrigin));
 
   const webpageType = "WebPage";

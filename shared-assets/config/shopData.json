@@ -58,6 +58,13 @@
   "newsletter": {
     "label": "Join the Contraption Newsletter for new designs, discounts and articles."
   },
+  "returnPolicy": {
+    "path": "returns",
+    "merchantReturnDays": 30,
+    "refundProcessingDays": 5,
+    "returnPolicyCountry": "AU",
+    "applicableCountry": ["AU", "NZ", "US", "GB", "CA", "IE", "DE", "FR", "NL", "IT", "ES", "JP", "SG"]
+  },
   "contact": {
     "email": "shasabolton@gmail.com",
     "phone": "+61 455295848",

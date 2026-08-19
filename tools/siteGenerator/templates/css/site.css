@@ -2123,6 +2123,11 @@ body.nav-scroll-lock {
   color: #fff;
 }
 
+.footer-policy-links {
+  margin: 16px 0 0;
+  font-weight: 600;
+}
+
 .footer-contact {
   margin: 16px 0 0;
 }
@@ -2149,6 +2154,60 @@ body.nav-scroll-lock {
 
 .content-page {
   max-width: 52rem;
+}
+
+.content-page h2 {
+  margin: 1.5rem 0 0.6rem;
+  font-size: 1.2rem;
+  line-height: 1.35;
+  color: #111827;
+}
+
+.content-page h2:first-child {
+  margin-top: 0;
+}
+
+.return-policy-facts {
+  margin: 0 0 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.return-policy-facts > div {
+  display: grid;
+  grid-template-columns: minmax(8.5rem, 13rem) 1fr;
+  gap: 6px 16px;
+  padding: 10px 14px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.return-policy-facts > div:first-child {
+  border-top: 0;
+}
+
+.return-policy-facts dt {
+  margin: 0;
+  font-weight: 700;
+  color: #111827;
+}
+
+.return-policy-facts dd {
+  margin: 0;
+  color: #374151;
+}
+
+.content-page ul {
+  margin: 0 0 1.25rem;
+  padding-left: 1.25rem;
+  line-height: 1.65;
+  color: #374151;
+}
+
+@media (max-width: 640px) {
+  .return-policy-facts > div {
+    grid-template-columns: 1fr;
+  }
 }
 
 .content-title {

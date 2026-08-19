@@ -38,6 +38,11 @@
       "hide": false
     },
     {
+      "label": "Returns and refunds",
+      "href": "returns",
+      "hide": true
+    },
+    {
       "label": "laser cutting tips",
       "href": "lasercuttingtips",
       "hide": true

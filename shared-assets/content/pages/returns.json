@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "slug": "returns",
+  "pageType": "page",
+  "meta": {
+    "title": "Returns and refunds",
+    "description": "Contraption Cart return policy: contact us and send the item back within 30 days of delivery. Returns and exchanges accepted. Buyer pays return postage."
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Returns and refunds"
+    },
+    {
+      "type": "subtitle",
+      "text": "This policy applies to Contraption Cart orders on www.contraptioncart.com, including change of mind and defective items."
+    },
+    {
+      "type": "html",
+      "content": "<dl class=\"return-policy-facts\">\n  <div><dt>Policy URL</dt><dd>https://www.contraptioncart.com/returns</dd></div>\n  <div><dt>Countries</dt><dd>All countries we ship to. Returned items must be posted to Australia.</dd></div>\n  <div><dt>Returns accepted</dt><dd>Yes. I accept returns of physical items, including defective and non-defective (change of mind) orders.</dd></div>\n  <div><dt>Exchanges</dt><dd>Yes. I accept exchanges of physical items when a replacement is available. Otherwise I refund.</dd></div>\n  <div><dt>Product condition</dt><dd>Please return items in original condition. If an item is not returned in original condition, the buyer is responsible for loss in value as agreed with me.</dd></div>\n  <div><dt>Return window</dt><dd>30 days from delivery. You must contact me and send the item back within 30 days of delivery.</dd></div>\n  <div><dt>Window extension</dt><dd>None.</dd></div>\n  <div><dt>Return method</dt><dd>By mail. There is no in-store or drop-off return.</dd></div>\n  <div><dt>Return label</dt><dd>Customer responsibility. The buyer pays return postage costs.</dd></div>\n  <div><dt>Currency</dt><dd>AUD. Refunds go back through the original payment method where the provider allows.</dd></div>\n  <div><dt>Restocking fee</dt><dd>No restocking fee. If the item is not in original condition, any loss in value is agreed with the buyer before the refund is finalised.</dd></div>\n  <div><dt>Refund processing time</dt><dd>5 days after I receive and inspect the returned item.</dd></div>\n</dl>\n<h2>How to start a return or exchange</h2>\n<p>No account or login is required. Email <a href=\"mailto:shasabolton@gmail.com\">shasabolton@gmail.com</a> within 30 days of delivery. Include your order number or PayPal transaction id, the product, and whether you want a return or an exchange.</p>\n<p>I will confirm the return and give you the postal address in Sheffield, Tasmania, Australia. Pack the item securely, post it, and keep your tracking number. You must send the item back within 30 days of delivery.</p>\n<h2>Return window</h2>\n<p>Buyer must contact me and send the item back within 30 days of delivery. The window starts on the delivery date, not the order date.</p>\n<h2>Return costs</h2>\n<p>The buyer is responsible for return postage costs. Original outbound shipping is not refunded on change-of-mind returns.</p>\n<p>If the item arrives damaged, is defective, or is not as described, I will cover return postage and refund the product price and original shipping.</p>\n<h2>Refunds</h2>\n<p>Approved returns are refunded to the original payment method. Processing takes 5 days after the parcel arrives and I have inspected it. Your bank or PayPal may take extra time to show the refund.</p>\n<p>If an item is not returned in original condition, the buyer is responsible for loss in value as agreed with me before the refund is completed.</p>\n<h2>Exchanges</h2>\n<p>I accept exchanges of this item when a replacement is in stock. If it is not available, I will refund instead. The same 30-day window, return postage, and original-condition terms apply.</p>\n<h2>Digital downloads</h2>\n<p>Digital plans and downloadable files cannot be returned or exchanged once delivered, unless they are defective or not as described. In Google Merchant Center those products use the return policy label <strong>digital</strong>. Physical products use the default policy on this page.</p>\n<h2>Australian Consumer Law</h2>\n<p>Nothing in this policy limits your rights under the Australian Consumer Law.</p>\n<h2>Contact</h2>\n<p>Contraption Cart — Shasa Bolton<br>133B Main St, Sheffield TAS 7306, Australia<br><a href=\"mailto:shasabolton@gmail.com\">shasabolton@gmail.com</a><br>+61 455 295 848</p>"
+    }
+  ]
+}
