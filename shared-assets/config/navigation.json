@@ -5,6 +5,10 @@
       "href": "shop"
     },
     {
+      "label": "Download plans",
+      "href": "downloadplans"
+    },
+    {
       "label": "Blog",
       "href": "blog"
     },

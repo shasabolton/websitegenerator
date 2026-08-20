@@ -13,6 +13,10 @@
       "children": []
     },
     {
+      "label": "Download plans",
+      "href": "downloadplans"
+    },
+    {
       "label": "Blog",
       "href": "blog",
       "hide": false,

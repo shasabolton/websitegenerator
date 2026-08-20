@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "slug": "downloadplans",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "Download plans",
+    "description": "Laser-cut digital plans for Contraption Cart designs are available for download on Etsy."
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Download plans"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "Digital plans for my designs are available for download on my Etsy shop. You’ll find the same sections there as on this site — automata, magic tricks, puzzle boxes, toys and games, and whirligigs — but downloadable plans are mixed in with the physical kits and posted items.\n\nLook for listings marked as digital downloads when you browse.",
+      "clearFloat": "below"
+    },
+    {
+      "type": "buttons",
+      "buttons": [
+        {
+          "url": "https://contraptioncart.etsy.com",
+          "text": "Browse plans on Etsy"
+        }
+      ]
+    }
+  ]
+}
