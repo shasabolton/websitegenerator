@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-12T02:04:14.138Z",
+  "generatedAt": "2026-08-21T00:07:06.095Z",
   "outputs": [
     "about/index.html",
     "apps/index.html",
@@ -10,6 +10,7 @@
     "cart/index.html",
     "chickenboxtutorial/index.html",
     "dicetunnelhelp/index.html",
+    "downloadplans/index.html",
     "fingerswordhelp/index.html",
     "index.html",
     "lasercuttingtips/index.html",
@@ -17,6 +18,7 @@
     "magicframehelp/index.html",
     "newcombtutorial/index.html",
     "projects/index.html",
+    "returns/index.html",
     "shop/automata/index.html",
     "shop/bird-bank/index.html",
     "shop/bird-zoetrope/index.html",
