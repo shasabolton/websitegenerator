@@ -2,121 +2,819 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Welcome to Contraption Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Lets productData.js resolve shared-assets/config/productData.json from the repo root. -->
+  <base href="../" data-site-base>
+  <title>Contraption Cart emails</title>
+  <style>
+    .email-tools {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 16px;
+      background: #2c2416;
+      color: #faf6ee;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+    }
+    .email-tools label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .email-tools input,
+    .email-tools select {
+      padding: 8px 10px;
+      border: 1px solid #7a6a50;
+      border-radius: 4px;
+      font-size: 15px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fff;
+      color: #2c2416;
+    }
+    .email-tools input[type="text"] {
+      width: 140px;
+    }
+    .email-tools select {
+      min-width: 190px;
+    }
+    .email-tools button {
+      padding: 8px 14px;
+      border: 0;
+      border-radius: 4px;
+      background: #faf6ee;
+      color: #2c2416;
+      font-size: 15px;
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+    }
+    .email-tools button:hover {
+      background: #fff;
+    }
+    .email-tools .status {
+      min-height: 1.2em;
+      color: #d9cbb3;
+    }
+    .email-tools .subject-hint {
+      flex: 1 1 100%;
+      font-size: 13px;
+      color: #d9cbb3;
+    }
+    .email-tools-product {
+      display: none;
+      flex: 1 1 260px;
+      min-width: 220px;
+      max-width: 420px;
+      position: relative;
+    }
+    .email-tools-product.is-visible {
+      display: block;
+    }
+    .email-tools-tracking {
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .email-tools-tracking.is-visible {
+      display: flex;
+    }
+    .email-tools-tracking input {
+      width: 200px;
+    }
+    .email-product-search-form {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+    .email-product-search-input {
+      flex: 1;
+      min-width: 0;
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #7a6a50;
+      border-radius: 4px;
+      font-size: 15px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fff;
+      color: #2c2416;
+    }
+    .email-product-search-results {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 4px);
+      max-height: 320px;
+      overflow: auto;
+      background: #faf6ee;
+      border: 1px solid #d9cbb3;
+      border-radius: 4px;
+      box-shadow: 0 8px 24px rgba(44, 36, 22, 0.25);
+      z-index: 30;
+    }
+    .email-product-search-results[hidden] {
+      display: none !important;
+    }
+    .email-product-search-empty {
+      margin: 0;
+      padding: 12px;
+      color: #6b5c45;
+      font-size: 14px;
+    }
+    .email-product-search-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .email-product-search-item.is-active .email-product-search-link {
+      background: #efe6d6;
+    }
+    .email-product-search-link {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 10px;
+      text-decoration: none;
+      color: #2c2416;
+      cursor: pointer;
+    }
+    .email-product-search-link:hover {
+      background: #efe6d6;
+    }
+    .email-product-search-image {
+      width: 44px;
+      height: 44px;
+      object-fit: cover;
+      border-radius: 4px;
+      flex: 0 0 auto;
+      background: #e8e2d6;
+    }
+    .email-product-search-title {
+      font-size: 14px;
+      line-height: 1.3;
+    }
+    .email-template {
+      display: none;
+    }
+    .email-template.is-active {
+      display: block;
+    }
+  </style>
 </head>
 <body style="margin:0;padding:0;background-color:#e8e2d6;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#e8e2d6;">
-    <tr>
-      <td align="center" style="padding:16px;">
-        <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:560px;max-width:560px;background-color:#faf6ee;border:1px solid #d9cbb3;">
-          <tr>
-            <td align="center" style="padding:28px 28px 4px 28px;font-family:Arial,Helvetica,sans-serif;color:#2c2416;">
-              <a href="https://www.contraptioncart.com" target="_blank" style="text-decoration:none;">
-                <img src="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" alt="Contraption Cart" width="72" height="72" style="display:block;width:72px;height:72px;border:0;margin:0 auto 12px auto;">
-              </a>
-              <p style="margin:0;font-size:15px;letter-spacing:0.12em;text-transform:uppercase;color:#7a6a50;">Contraption Cart</p>
-              <h1 style="margin:8px 0 0 0;font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.3;font-weight:normal;color:#2c2416;">You're on the list</h1>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:8px 28px 16px 28px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
-              <p style="margin:0 0 14px 0;">Hi,</p>
-              <p style="margin:0 0 14px 0;">Thanks for joining the Contraption Newsletter. I'm Shasa. I design and make wooden automata, puzzle boxes, magic tricks and whirligigs from my workshop in Sheffield, Tasmania.</p>
-              <p style="margin:0;">Most pieces come as a DIY kit or already assembled. They are meant to be picked up, cranked, puzzled over, and shown to someone else.</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:8px 28px 4px 28px;">
-              <a href="https://www.contraptioncart.com/shop/hummingbird-and-flower" target="_blank">
-                <img src="https://i.etsystatic.com/25031074/r/il/b40a27/7905899944/il_fullxfull.7905899944_exsm.jpg" alt="Hummingbird and Flower automaton" width="504" style="display:block;width:100%;max-width:504px;height:auto;border:0;">
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:8px 28px 20px 28px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.45;color:#6b5c45;">
-              The Hummingbird and Flower automaton &mdash;
-              <a href="https://www.contraptioncart.com/shop/hummingbird-and-flower" style="color:#6b3a1f;text-decoration:underline;">see the kit</a>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 28px 8px 28px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
-              A good way back onto the site is to pick the kind of thing you like:
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:8px 20px 16px 20px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td width="33%" valign="top" style="padding:8px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.45;color:#2c2416;text-align:center;">
-                    <a href="https://www.contraptioncart.com/shop/automata" target="_blank">
-                      <img src="https://i.etsystatic.com/25031074/r/il/a0833b/7065669237/il_570xN.7065669237_72fe.jpg" alt="Writing automaton" width="160" style="display:block;width:160px;height:auto;border:0;margin:0 auto 8px auto;">
-                    </a>
-                    <a href="https://www.contraptioncart.com/shop/automata" style="color:#6b3a1f;text-decoration:underline;">Automata</a>
-                  </td>
-                  <td width="33%" valign="top" style="padding:8px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.45;color:#2c2416;text-align:center;">
-                    <a href="https://www.contraptioncart.com/shop/magic-tricks" target="_blank">
-                      <img src="https://i.etsystatic.com/25031074/r/il/8edb68/7748820039/il_570xN.7748820039_pfre.jpg" alt="Magic Drawer illusion box" width="160" style="display:block;width:160px;height:auto;border:0;margin:0 auto 8px auto;">
-                    </a>
-                    <a href="https://www.contraptioncart.com/shop/magic-tricks" style="color:#6b3a1f;text-decoration:underline;">Magic tricks</a>
-                  </td>
-                  <td width="33%" valign="top" style="padding:8px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.45;color:#2c2416;text-align:center;">
-                    <a href="https://www.contraptioncart.com/shop/puzzle-boxes" target="_blank">
-                      <img src="https://i.etsystatic.com/25031074/r/il/85639c/4250092607/il_570xN.4250092607_ktow.jpg" alt="Mouse maze puzzle box" width="160" style="display:block;width:160px;height:auto;border:0;margin:0 auto 8px auto;">
-                    </a>
-                    <a href="https://www.contraptioncart.com/shop/puzzle-boxes" style="color:#6b3a1f;text-decoration:underline;">Puzzle boxes</a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:4px 28px 16px 28px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
-              <p style="margin:0 0 14px 0;">If you'd rather start with how they work:</p>
-              <p style="margin:0 0 8px 0;">
-                <a href="https://www.contraptioncart.com/blog/how-does-a-writing-automaton-work" style="color:#6b3a1f;text-decoration:underline;">How a writing automaton works</a>
-              </p>
-              <p style="margin:0 0 16px 0;">
-                <a href="https://www.contraptioncart.com/blog/how-does-a-mechanical-calculator-work" style="color:#6b3a1f;text-decoration:underline;">How a mechanical calculator works</a>
-              </p>
-              <p style="margin:0 0 14px 0;">If you order two or more items, you can use <strong>THANKYOU2ORMORE</strong> at checkout for 10% off.</p>
-              <p style="margin:0;">I'll write when there is a new design or something worth reading. If you want a first-kit suggestion, just reply &mdash; it comes to me.</p>
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="padding:8px 28px 24px 28px;">
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td align="center" bgcolor="#6b3a1f" style="background-color:#6b3a1f;padding:12px 22px;">
-                    <a href="https://www.contraptioncart.com" style="font-family:Arial,Helvetica,sans-serif;font-size:20px;color:#faf6ee;text-decoration:none;">Browse the shop</a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 28px 16px 28px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
-              <p style="margin:0;">Shasa<br>
-              Contraption Cart<br>
-              <a href="https://www.contraptioncart.com" style="color:#6b3a1f;text-decoration:underline;">contraptioncart.com</a></p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 28px 12px 28px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#6b5c45;">
-              <p style="margin:0;">
-                <a href="https://www.instagram.com/contraptioncart" style="color:#6b3a1f;text-decoration:underline;">Instagram</a>
-                &nbsp;&middot;&nbsp;
-                <a href="https://www.facebook.com/contraptioncart/" style="color:#6b3a1f;text-decoration:underline;">Facebook</a>
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 28px 28px 28px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;color:#7a6a50;">
-              <p style="margin:0;">To leave the list, reply with <strong>unsubscribe</strong> and I'll remove you.</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+  <div class="email-tools" id="email-tools">
+    <label>
+      Email
+      <select id="email-type">
+        <option value="welcome">Welcome to the list</option>
+        <option value="first-kit">First kit order</option>
+      </select>
+    </label>
+    <label>
+      Name
+      <input type="text" id="subscriber-name" placeholder="optional" autocomplete="off">
+    </label>
+    <div class="email-tools-product" id="product-picker">
+      <form class="email-product-search-form" id="email-product-search-form" role="search">
+        <label class="visually-hidden" for="email-product-search-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Search products</label>
+        <input
+          id="email-product-search-input"
+          class="email-product-search-input"
+          type="search"
+          autocomplete="off"
+          placeholder="Search the kit they bought…"
+        >
+      </form>
+      <div id="email-product-search-results" class="email-product-search-results" role="listbox" hidden></div>
+    </div>
+    <label class="email-tools-tracking" id="tracking-picker">
+      Tracking
+      <input type="text" id="auspost-tracking" placeholder="AusPost number" autocomplete="off" spellcheck="false">
+    </label>
+    <button type="button" id="copy-email">Copy to clipboard</button>
+    <span class="status" id="copy-status" aria-live="polite"></span>
+    <div class="subject-hint" id="subject-hint"></div>
+  </div>
+
+  <!-- Welcome to the list -->
+  <div class="email-template is-active" data-email="welcome" data-subject="Welcome to Contraption Cart">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#e8e2d6;">
+      <tr>
+        <td align="center" style="padding:0;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background-color:#faf6ee;border:1px solid #d9cbb3;">
+            <tr>
+              <td align="center" style="padding:24px 20px 4px 20px;font-family:Arial,Helvetica,sans-serif;color:#2c2416;">
+                <a href="https://www.contraptioncart.com" target="_blank" style="text-decoration:none;">
+                  <img src="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" alt="Contraption Cart" width="72" height="72" style="display:block;width:72px;height:72px;border:0;margin:0 auto 12px auto;">
+                </a>
+                <p style="margin:0;font-size:15px;letter-spacing:0.12em;text-transform:uppercase;color:#7a6a50;">Contraption Cart</p>
+                <h1 style="margin:8px 0 0 0;font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.3;font-weight:normal;color:#2c2416;">You're on the list</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 20px 16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
+                <p style="margin:0 0 14px 0;" class="greeting">Hi,</p>
+                <p style="margin:0 0 14px 0;">Thanks for joining the Contraption Newsletter. I'm Shasa. I design and make wooden automata, puzzle boxes, magic tricks and whirligigs from my workshop in Sheffield, Tasmania.</p>
+                <p style="margin:0;">Most pieces come as a DIY kit or already assembled. They are meant to be picked up, cranked, puzzled over, and shown to someone else.</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 20px 4px 20px;">
+                <a href="https://www.contraptioncart.com/shop/hummingbird-and-flower" target="_blank">
+                  <img src="https://i.etsystatic.com/25031074/r/il/b40a27/7905899944/il_fullxfull.7905899944_exsm.jpg" alt="Hummingbird and Flower automaton" width="520" style="display:block;width:100%;max-width:520px;height:auto;border:0;">
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 20px 20px 20px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.45;color:#6b5c45;">
+                The Hummingbird and Flower automaton &mdash;
+                <a href="https://www.contraptioncart.com/shop/hummingbird-and-flower" style="color:#6b3a1f;text-decoration:underline;">see the kit</a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 20px 8px 20px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
+                A good way back onto the site is to pick the kind of thing you like:
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 12px 16px 12px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td width="33%" valign="top" style="padding:8px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.45;color:#2c2416;text-align:center;">
+                      <a href="https://www.contraptioncart.com/shop/automata" target="_blank">
+                        <img src="https://i.etsystatic.com/25031074/r/il/a0833b/7065669237/il_570xN.7065669237_72fe.jpg" alt="Writing automaton" width="160" style="display:block;width:100%;max-width:160px;height:auto;border:0;margin:0 auto 8px auto;">
+                      </a>
+                      <a href="https://www.contraptioncart.com/shop/automata" style="color:#6b3a1f;text-decoration:underline;">Automata</a>
+                    </td>
+                    <td width="33%" valign="top" style="padding:8px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.45;color:#2c2416;text-align:center;">
+                      <a href="https://www.contraptioncart.com/shop/magic-tricks" target="_blank">
+                        <img src="https://i.etsystatic.com/25031074/r/il/8edb68/7748820039/il_570xN.7748820039_pfre.jpg" alt="Magic Drawer illusion box" width="160" style="display:block;width:100%;max-width:160px;height:auto;border:0;margin:0 auto 8px auto;">
+                      </a>
+                      <a href="https://www.contraptioncart.com/shop/magic-tricks" style="color:#6b3a1f;text-decoration:underline;">Magic tricks</a>
+                    </td>
+                    <td width="33%" valign="top" style="padding:8px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.45;color:#2c2416;text-align:center;">
+                      <a href="https://www.contraptioncart.com/shop/puzzle-boxes" target="_blank">
+                        <img src="https://i.etsystatic.com/25031074/r/il/85639c/4250092607/il_570xN.4250092607_ktow.jpg" alt="Mouse maze puzzle box" width="160" style="display:block;width:100%;max-width:160px;height:auto;border:0;margin:0 auto 8px auto;">
+                      </a>
+                      <a href="https://www.contraptioncart.com/shop/puzzle-boxes" style="color:#6b3a1f;text-decoration:underline;">Puzzle boxes</a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:4px 20px 16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
+                <p style="margin:0 0 14px 0;">If you'd rather start with how they work:</p>
+                <p style="margin:0 0 8px 0;">
+                  <a href="https://www.contraptioncart.com/blog/how-does-a-writing-automaton-work" style="color:#6b3a1f;text-decoration:underline;">How a writing automaton works</a>
+                </p>
+                <p style="margin:0 0 16px 0;">
+                  <a href="https://www.contraptioncart.com/blog/how-does-a-mechanical-calculator-work" style="color:#6b3a1f;text-decoration:underline;">How a mechanical calculator works</a>
+                </p>
+                <p style="margin:0 0 14px 0;">If you order two or more items, you can use <strong>THANKYOU2ORMORE</strong> at checkout for 10% off.</p>
+                <p style="margin:0;">I'll write when there is a new design or something worth reading. If you want a first-kit suggestion, just reply &mdash; it comes to me.</p>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding:8px 20px 24px 20px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td align="center" bgcolor="#6b3a1f" style="background-color:#6b3a1f;padding:12px 22px;">
+                      <a href="https://www.contraptioncart.com" style="font-family:Arial,Helvetica,sans-serif;font-size:20px;color:#faf6ee;text-decoration:none;">Browse the shop</a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 20px 16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
+                <p style="margin:0;">Shasa<br>
+                Contraption Cart<br>
+                <a href="https://www.contraptioncart.com" style="color:#6b3a1f;text-decoration:underline;">contraptioncart.com</a></p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 20px 12px 20px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#6b5c45;">
+                <p style="margin:0;">
+                  <a href="https://www.instagram.com/contraptioncart" style="color:#6b3a1f;text-decoration:underline;">Instagram</a>
+                  &nbsp;&middot;&nbsp;
+                  <a href="https://www.facebook.com/contraptioncart/" style="color:#6b3a1f;text-decoration:underline;">Facebook</a>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 20px 24px 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;color:#7a6a50;">
+                <p style="margin:0;">To leave the list, reply with <strong>unsubscribe</strong> and I'll remove you.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- First kit order -->
+  <div class="email-template" data-email="first-kit" data-subject="Thanks for your order — from Tasmania">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#e8e2d6;">
+      <tr>
+        <td align="center" style="padding:0;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background-color:#faf6ee;border:1px solid #d9cbb3;">
+            <tr>
+              <td align="center" style="padding:24px 20px 4px 20px;font-family:Arial,Helvetica,sans-serif;color:#2c2416;">
+                <a href="https://www.contraptioncart.com" target="_blank" style="text-decoration:none;">
+                  <img src="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" alt="Contraption Cart" width="72" height="72" style="display:block;width:72px;height:72px;border:0;margin:0 auto 12px auto;">
+                </a>
+                <p style="margin:0;font-size:15px;letter-spacing:0.12em;text-transform:uppercase;color:#7a6a50;">Contraption Cart</p>
+                <h1 style="margin:8px 0 0 0;font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.3;font-weight:normal;color:#2c2416;">Thanks for your order</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 20px 16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
+                <p style="margin:0 0 14px 0;" class="greeting">Hi,</p>
+                <p style="margin:0 0 14px 0;">Thank you for buying <span id="first-kit-product-phrase">a kit</span> from Contraption Cart. I'm Shasa — I design and make these wooden automata, puzzle boxes, magic tricks and whirligigs in my workshop in Sheffield, Tasmania.</p>
+                <p style="margin:0;" id="first-kit-shipping-note">Your order is with me personally. I pack each kit here, and I'll email again when it ships.</p>
+              </td>
+            </tr>
+            <tr id="first-kit-tracking-row" style="display:none;">
+              <td style="padding:0 20px 16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
+                <p style="margin:0;">
+                  Australia Post tracking:
+                  <a id="first-kit-tracking-link" href="https://auspost.com.au/mypost/track" style="color:#6b3a1f;text-decoration:underline;"><span id="first-kit-tracking-number"></span></a>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 16px 4px 16px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td width="50%" valign="top" style="padding:4px 6px 4px 4px;">
+                      <a href="https://www.contraptioncart.com/about" target="_blank">
+                        <img src="https://images.contraptioncart.com/branding/bio-photo-shasa-edited/il_fullxfull.bio-photo-shasa-edited.webp" alt="Shasa Bolton in the workshop" width="248" style="display:block;width:100%;max-width:248px;height:auto;border:0;margin:0 auto;">
+                      </a>
+                    </td>
+                    <td width="50%" valign="top" style="padding:4px 4px 4px 6px;">
+                      <a id="first-kit-product-link" href="https://www.contraptioncart.com/shop" target="_blank">
+                        <img id="first-kit-product-image" src="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" alt="Your kit" width="248" style="display:block;width:100%;max-width:248px;height:auto;border:0;margin:0 auto;">
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 20px 20px 20px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.45;color:#6b5c45;">
+                Me in the workshop, and
+                <a id="first-kit-product-caption-link" href="https://www.contraptioncart.com/shop" style="color:#6b3a1f;text-decoration:underline;"><span id="first-kit-product-caption">your kit</span></a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 20px 16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
+                <p style="margin:0 0 14px 0;">If you get stuck while building, just reply to this email — it comes straight to me.</p>
+                <p style="margin:0;">If you'd like occasional notes about new designs and how the mechanisms work, you can join the Contraption Newsletter at the bottom of any page on the site.</p>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding:8px 20px 24px 20px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td align="center" bgcolor="#6b3a1f" style="background-color:#6b3a1f;padding:12px 22px;">
+                      <a href="https://www.contraptioncart.com/about" style="font-family:Arial,Helvetica,sans-serif;font-size:20px;color:#faf6ee;text-decoration:none;">Meet the maker</a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 20px 16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
+                <p style="margin:0;">Shasa<br>
+                Contraption Cart<br>
+                <a href="https://www.contraptioncart.com" style="color:#6b3a1f;text-decoration:underline;">contraptioncart.com</a></p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 20px 24px 20px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#6b5c45;">
+                <p style="margin:0;">
+                  <a href="https://www.instagram.com/contraptioncart" style="color:#6b3a1f;text-decoration:underline;">Instagram</a>
+                  &nbsp;&middot;&nbsp;
+                  <a href="https://www.facebook.com/contraptioncart/" style="color:#6b3a1f;text-decoration:underline;">Facebook</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Catalog helpers only (titles, slugs, images). Header siteSearch.js is left untouched. -->
+  <script src="tools/editData/productData.js"></script>
+  <script>
+    (function () {
+      var SITE = "https://www.contraptioncart.com";
+      var typeSelect = document.getElementById("email-type");
+      var nameInput = document.getElementById("subscriber-name");
+      var copyBtn = document.getElementById("copy-email");
+      var status = document.getElementById("copy-status");
+      var subjectHint = document.getElementById("subject-hint");
+      var productPicker = document.getElementById("product-picker");
+      var searchForm = document.getElementById("email-product-search-form");
+      var searchInput = document.getElementById("email-product-search-input");
+      var searchResults = document.getElementById("email-product-search-results");
+      var templates = document.querySelectorAll(".email-template");
+
+      var productLink = document.getElementById("first-kit-product-link");
+      var productImage = document.getElementById("first-kit-product-image");
+      var productCaption = document.getElementById("first-kit-product-caption");
+      var productCaptionLink = document.getElementById("first-kit-product-caption-link");
+      var productPhrase = document.getElementById("first-kit-product-phrase");
+      var trackingPicker = document.getElementById("tracking-picker");
+      var trackingInput = document.getElementById("auspost-tracking");
+      var trackingRow = document.getElementById("first-kit-tracking-row");
+      var trackingLink = document.getElementById("first-kit-tracking-link");
+      var trackingNumberEl = document.getElementById("first-kit-tracking-number");
+      var shippingNote = document.getElementById("first-kit-shipping-note");
+
+      var catalogEntries = [];
+      var catalogPromise = null;
+      var activeResults = [];
+      var activeIndex = -1;
+      var debounceTimer = null;
+      var SHIPPING_NOTE_DEFAULT =
+        "Your order is with me personally. I pack each kit here, and I'll email again when it ships.";
+      var SHIPPING_NOTE_TRACKED =
+        "Your order is with me personally. I packed it here in Tasmania, and it is on its way with Australia Post.";
+
+      function activeTemplate() {
+        return document.querySelector(".email-template.is-active");
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function updateGreeting() {
+        var name = String(nameInput.value || "").trim();
+        var text = name ? "Hi " + name + "," : "Hi,";
+        document.querySelectorAll(".greeting").forEach(function (el) {
+          el.textContent = text;
+        });
+      }
+
+      function updateSubjectHint() {
+        var active = activeTemplate();
+        var subject = active ? active.getAttribute("data-subject") || "" : "";
+        subjectHint.textContent = subject ? "Suggested subject: " + subject : "";
+      }
+
+      function trackingValue() {
+        return String(trackingInput.value || "").trim();
+      }
+
+      function updateTracking() {
+        var code = trackingValue();
+        if (code) {
+          var url = "https://auspost.com.au/mypost/track/details/" + encodeURIComponent(code);
+          trackingNumberEl.textContent = code;
+          trackingLink.href = url;
+          trackingRow.style.display = "";
+          shippingNote.textContent = SHIPPING_NOTE_TRACKED;
+        } else {
+          trackingNumberEl.textContent = "";
+          trackingLink.href = "https://auspost.com.au/mypost/track";
+          trackingRow.style.display = "none";
+          shippingNote.textContent = SHIPPING_NOTE_DEFAULT;
+        }
+      }
+
+      function updateFirstKitToolsVisibility() {
+        var show = typeSelect.value === "first-kit";
+        productPicker.classList.toggle("is-visible", show);
+        trackingPicker.classList.toggle("is-visible", show);
+        if (!show) {
+          setSearchOpen(false);
+        }
+      }
+
+      function showTemplate(type) {
+        templates.forEach(function (el) {
+          el.classList.toggle("is-active", el.getAttribute("data-email") === type);
+        });
+        updateSubjectHint();
+        updateFirstKitToolsVisibility();
+        status.textContent = "";
+      }
+
+      function setStatus(message) {
+        status.textContent = message || "";
+      }
+
+      function copyEmail() {
+        var emailContent = activeTemplate();
+        if (!emailContent) {
+          setStatus("No email selected");
+          return;
+        }
+        if (typeSelect.value === "first-kit" && !productLink.dataset.selected) {
+          setStatus("Pick their kit in search first");
+          searchInput.focus();
+          return;
+        }
+
+        updateTracking();
+
+        var removedTrackingRow = null;
+        var trackingParent = null;
+        var trackingNext = null;
+        if (typeSelect.value === "first-kit" && !trackingValue() && trackingRow) {
+          trackingParent = trackingRow.parentNode;
+          trackingNext = trackingRow.nextSibling;
+          removedTrackingRow = trackingRow;
+          trackingParent.removeChild(trackingRow);
+        }
+
+        var selection = window.getSelection();
+        var range = document.createRange();
+        range.selectNodeContents(emailContent);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        var ok = false;
+        try {
+          ok = document.execCommand("copy");
+        } catch (e) {
+          ok = false;
+        }
+
+        selection.removeAllRanges();
+
+        if (removedTrackingRow && trackingParent) {
+          trackingParent.insertBefore(removedTrackingRow, trackingNext);
+        }
+
+        setStatus(ok ? "Copied — paste into Gmail" : "Copy failed — select the email and copy manually");
+        if (ok) {
+          window.setTimeout(function () {
+            setStatus("");
+          }, 2500);
+        }
+      }
+
+      function buildCatalogEntries(products) {
+        var pd = window.productData;
+        if (!pd) {
+          return [];
+        }
+        var list = Array.isArray(products) ? products : [];
+        var visible =
+          typeof pd.filterVisibleProducts === "function" ? pd.filterVisibleProducts(list) : list;
+        var entries = [];
+        visible.forEach(function (row) {
+          if (!row || (typeof pd.isProductRowDraft === "function" && pd.isProductRowDraft(row))) {
+            return;
+          }
+          var title =
+            typeof pd.resolveProductDisplayTitle === "function"
+              ? pd.resolveProductDisplayTitle(row, "")
+              : String(row.TITLE || "").trim();
+          var etsyTitle = String(row.TITLE || "").trim();
+          var slug =
+            typeof pd.getProductSlugForRow === "function"
+              ? pd.getProductSlugForRow(row, list)
+              : "";
+          if (!slug) {
+            return;
+          }
+          var imageRaw = String(row.IMAGE1 || "").trim();
+          var image =
+            typeof pd.productImageUrlForDisplay === "function"
+              ? pd.productImageUrlForDisplay(imageRaw, "full")
+              : imageRaw;
+          var category =
+            typeof pd.resolveProductCategory === "function"
+              ? pd.resolveProductCategory(row)
+              : String(row.CATEGORY || "").trim();
+          var tags = String(row.TAGS || "").replace(/_/g, " ").trim();
+          entries.push({
+            title: title || etsyTitle || "Product",
+            slug: slug,
+            href: SITE + "/shop/" + slug,
+            image: image,
+            haystack: (title + " " + etsyTitle + " " + category + " " + tags).toLowerCase(),
+          });
+        });
+        return entries;
+      }
+
+      function loadCatalog() {
+        if (catalogEntries.length) {
+          return Promise.resolve(catalogEntries);
+        }
+        if (catalogPromise) {
+          return catalogPromise;
+        }
+        var pd = window.productData;
+        if (!pd || typeof pd.fetchProductDataJson !== "function") {
+          return Promise.resolve([]);
+        }
+        catalogPromise = pd
+          .fetchProductDataJson()
+          .then(function (data) {
+            catalogEntries = buildCatalogEntries((data && data.products) || []);
+            return catalogEntries;
+          })
+          .catch(function () {
+            catalogEntries = [];
+            catalogPromise = null;
+            return catalogEntries;
+          });
+        return catalogPromise;
+      }
+
+      function searchCatalog(query) {
+        var q = String(query || "").trim().toLowerCase();
+        if (!q) {
+          return [];
+        }
+        return catalogEntries
+          .filter(function (entry) {
+            return entry.haystack.indexOf(q) !== -1;
+          })
+          .slice(0, 12);
+      }
+
+      function setSearchOpen(open) {
+        searchResults.hidden = !open;
+      }
+
+      function renderSearchResults(rows) {
+        activeResults = rows;
+        activeIndex = -1;
+        searchResults.replaceChildren();
+
+        if (!String(searchInput.value || "").trim()) {
+          setSearchOpen(false);
+          return;
+        }
+
+        setSearchOpen(true);
+
+        if (!rows.length) {
+          var empty = document.createElement("p");
+          empty.className = "email-product-search-empty";
+          empty.textContent = "No products found.";
+          searchResults.appendChild(empty);
+          return;
+        }
+
+        var list = document.createElement("ul");
+        list.className = "email-product-search-list";
+
+        rows.forEach(function (row, index) {
+          var li = document.createElement("li");
+          li.className = "email-product-search-item";
+          li.setAttribute("role", "option");
+          li.id = "email-product-option-" + index;
+
+          var button = document.createElement("button");
+          button.type = "button";
+          button.className = "email-product-search-link";
+          button.innerHTML =
+            '<img class="email-product-search-image" src="' +
+            escapeHtml(row.image) +
+            '" alt="" loading="lazy" />' +
+            '<span class="email-product-search-title">' +
+            escapeHtml(row.title) +
+            "</span>";
+          button.addEventListener("click", function () {
+            selectProduct(row);
+          });
+
+          li.appendChild(button);
+          list.appendChild(li);
+        });
+
+        searchResults.appendChild(list);
+      }
+
+      function highlightActive() {
+        var items = searchResults.querySelectorAll(".email-product-search-item");
+        items.forEach(function (item, index) {
+          item.classList.toggle("is-active", index === activeIndex);
+        });
+      }
+
+      function selectProduct(row) {
+        if (!row) {
+          return;
+        }
+        productLink.href = row.href;
+        productLink.dataset.selected = "1";
+        productImage.src = row.image;
+        productImage.alt = row.title;
+        productCaption.textContent = row.title;
+        productCaptionLink.href = row.href;
+        productPhrase.textContent = row.title;
+        searchInput.value = row.title;
+        setSearchOpen(false);
+        setStatus("Kit set: " + row.title);
+        window.setTimeout(function () {
+          if (status.textContent.indexOf("Kit set:") === 0) {
+            setStatus("");
+          }
+        }, 2000);
+      }
+
+      function runSearch() {
+        renderSearchResults(searchCatalog(searchInput.value));
+      }
+
+      function scheduleSearch() {
+        window.clearTimeout(debounceTimer);
+        debounceTimer = window.setTimeout(runSearch, 200);
+      }
+
+      typeSelect.addEventListener("change", function () {
+        showTemplate(typeSelect.value);
+      });
+      nameInput.addEventListener("input", updateGreeting);
+      copyBtn.addEventListener("click", copyEmail);
+
+      searchForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        loadCatalog().then(function () {
+          runSearch();
+          if (activeIndex >= 0 && activeResults[activeIndex]) {
+            selectProduct(activeResults[activeIndex]);
+          } else if (activeResults.length === 1) {
+            selectProduct(activeResults[0]);
+          }
+        });
+      });
+
+      searchInput.addEventListener("input", function () {
+        loadCatalog().then(scheduleSearch);
+      });
+
+      searchInput.addEventListener("focus", function () {
+        loadCatalog().then(function () {
+          if (String(searchInput.value || "").trim()) {
+            runSearch();
+          }
+        });
+      });
+
+      searchInput.addEventListener("keydown", function (event) {
+        if (event.key === "ArrowDown") {
+          event.preventDefault();
+          if (!activeResults.length) {
+            return;
+          }
+          activeIndex = Math.min(activeIndex + 1, activeResults.length - 1);
+          highlightActive();
+          setSearchOpen(true);
+          return;
+        }
+        if (event.key === "ArrowUp") {
+          event.preventDefault();
+          if (!activeResults.length) {
+            return;
+          }
+          activeIndex = Math.max(activeIndex - 1, 0);
+          highlightActive();
+          setSearchOpen(true);
+          return;
+        }
+        if (event.key === "Enter" && activeIndex >= 0) {
+          event.preventDefault();
+          selectProduct(activeResults[activeIndex]);
+          return;
+        }
+        if (event.key === "Escape") {
+          setSearchOpen(false);
+        }
+      });
+
+      document.addEventListener("click", function (event) {
+        if (!productPicker.contains(event.target)) {
+          setSearchOpen(false);
+        }
+      });
+
+      trackingInput.addEventListener("input", updateTracking);
+
+      updateGreeting();
+      updateSubjectHint();
+      updateFirstKitToolsVisibility();
+      updateTracking();
+    })();
+  </script>
 </body>
 </html>
