@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "slug": "gearboxpetshelp",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "Gear Box Pets help",
+    "description": "",
+    "redirects": [
+      "gearboxpetshelp"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Gear Box Pets"
+    },
+    {
+      "type": "subtitle",
+      "text": "Gear Box Pets Base Instructions"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://www.youtube.com/watch?v=W-_FtiStox0",
+      "title": "",
+      "caption": ""
+    },
+    {
+      "type": "subtitle",
+      "text": "Bird Bank Instructions"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://www.youtube.com/watch?v=GWmAFqON-QA",
+      "title": "",
+      "caption": ""
+    },
+    {
+      "type": "subtitle",
+      "text": "Fortune Fish Instructions"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://www.youtube.com/watch?v=kh0tAIR7cjk",
+      "title": "",
+      "caption": ""
+    },
+    {
+      "type": "subtitle",
+      "text": "Tortoise Tally Instructions"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://www.youtube.com/watch?v=MuzMU-f6umU",
+      "title": "",
+      "caption": ""
+    },
+    {
+      "type": "subtitle",
+      "text": "Tortoise Tally Troubleshooting Tips"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://www.youtube.com/watch?v=0b6toM4T4t4",
+      "title": "",
+      "caption": ""
+    }
+  ]
+}

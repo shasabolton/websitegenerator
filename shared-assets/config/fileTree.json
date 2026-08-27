@@ -82,6 +82,11 @@
       "hide": true
     },
     {
+      "label": "Gear Box Pets help",
+      "href": "gearboxpetshelp",
+      "hide": true
+    },
+    {
       "label": "Magic Drawer help",
       "href": "magicdrawerhelp",
       "hide": true
