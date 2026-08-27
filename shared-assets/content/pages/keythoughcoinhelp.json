@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "slug": "keythoughcoinhelp",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "Key Through Coin help",
+    "description": "",
+    "redirects": [
+      "keythoughcoinhelp"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Key Through Coin"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/R2I9NNy3Mcc",
+      "title": "",
+      "caption": ""
+    }
+  ]
+}

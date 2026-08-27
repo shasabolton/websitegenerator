@@ -77,6 +77,11 @@
       "hide": true
     },
     {
+      "label": "Key Through Coin help",
+      "href": "keythoughcoinhelp",
+      "hide": true
+    },
+    {
       "label": "Magic Drawer help",
       "href": "magicdrawerhelp",
       "hide": true
