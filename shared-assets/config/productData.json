@@ -2292,12 +2292,13 @@
       "ETSY_VIDEO2": "",
       "ETSY_VIDEO3": "",
       "VIDEO1": "https://www.youtube.com/watch?v=7rOhlLyPxK8",
-      "INSTRUCTION VIDEOS": "",
+      "INSTRUCTION VIDEOS": "https://www.youtube.com/watch?si=Rkt-fEFQtYEButYg&v=mQQyq2xh4f8&feature=youtu.be",
       "HIDE INSTRUCTIONS": false,
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "slide-picture-puzzle-box",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "LINKS": []
     },
     {
       "TITLE": "Mechanical Calculator, Math and Science Toy, Wooden Mechanism, Model Engineering Kit",
