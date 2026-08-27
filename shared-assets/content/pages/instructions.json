@@ -18,8 +18,21 @@
       "content": "Here are some helpful videos for assembly and use. Other help videos can be found on the shop product pages."
     },
     {
-      "type": "html",
-      "content": "<figure class=\"content-figure content-figure--w25 content-figure--align-left\"><a href=\"gearboxpetshelp\"><img class=\"content-figure-img\" src=\"https://i.etsystatic.com/25031074/r/il/0222dd/3203550682/il_570xN.3203550682_iyzb.jpg\" alt=\"Bird Bank — Gear Box Pets\" loading=\"lazy\" /></a><figcaption class=\"content-figure-caption\"><a href=\"gearboxpetshelp\">Gear Box Pets help</a></figcaption></figure>"
+      "type": "image",
+      "src": "https://i.etsystatic.com/25031074/r/il/0222dd/3203550682/il_570xN.3203550682_iyzb.jpg",
+      "alt": "",
+      "caption": "",
+      "width": "50",
+      "align": "left"
+    },
+    {
+      "type": "buttons",
+      "buttons": [
+        {
+          "url": "https://www.contraptioncart.com/gearboxpetshelp",
+          "text": "Gear Box Pets Assembley Instruction Videos"
+        }
+      ]
     }
   ]
 }
