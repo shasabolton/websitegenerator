@@ -99,6 +99,10 @@
     {
       "label": "apps",
       "href": "apps"
+    },
+    {
+      "label": "Instructions",
+      "href": "instructions"
     }
   ]
 }

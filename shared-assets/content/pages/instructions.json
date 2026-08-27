@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "slug": "instructions",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "Instructions",
+    "description": "Helpful videos for assembly and use of Contraption Cart kits."
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Instructions"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "Here are some helpful videos for assembly and use. Other help videos can be found on the shop product pages."
+    },
+    {
+      "type": "html",
+      "content": "<figure class=\"content-figure content-figure--w25 content-figure--align-left\"><a href=\"gearboxpetshelp\"><img class=\"content-figure-img\" src=\"https://i.etsystatic.com/25031074/r/il/0222dd/3203550682/il_570xN.3203550682_iyzb.jpg\" alt=\"Bird Bank — Gear Box Pets\" loading=\"lazy\" /></a><figcaption class=\"content-figure-caption\"><a href=\"gearboxpetshelp\">Gear Box Pets help</a></figcaption></figure>"
+    }
+  ]
+}
