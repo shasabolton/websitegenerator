@@ -94,8 +94,12 @@
     </p>
     <p id="cart-buyer-email-message" class="cart-ship-country-message" hidden></p>
     <p class="cart-shipping-estimate-row">
-      <span id="cart-shipping-estimate-label">Estimated shipping:</span>
+      Estimated shipping:
       <strong id="cart-shipping-estimate-amount"></strong>
+    </p>
+    <p id="cart-import-estimate-row" class="cart-import-estimate-row" hidden>
+      Estimated duty &amp; VAT:
+      <strong id="cart-import-estimate-amount"></strong>
     </p>
     <p class="cart-estimated-total-row">
       Estimated total:
@@ -150,7 +154,8 @@
       var buyerEmailMessageEl = document.getElementById("cart-buyer-email-message");
       var checkoutBlockedEl = document.getElementById("cart-checkout-blocked");
       var shippingEstimateEl = document.getElementById("cart-shipping-estimate-amount");
-      var shippingEstimateLabelEl = document.getElementById("cart-shipping-estimate-label");
+      var importEstimateRowEl = document.getElementById("cart-import-estimate-row");
+      var importEstimateEl = document.getElementById("cart-import-estimate-amount");
       var estimatedTotalEl = document.getElementById("cart-estimated-total-amount");
       var paypalSectionEl = document.getElementById("cart-paypal-section");
       var paypalContainerEl = document.getElementById("paypal-button-container");
@@ -363,7 +368,7 @@
             discountLabelEl.textContent = discountResult.label || discountResult.code || "Discount";
           }
           if (discountAmountEl) {
-            discountAmountEl.textContent = "−" + formatMoney(discountResult.amount, currency);
+            discountAmountEl.textContent = "\u2212" + formatMoney(discountResult.amount, currency);
           }
           if (promoInputEl) {
             promoInputEl.value = discountResult.code || "";
@@ -688,19 +693,37 @@
       }
 
       /**
-       * PayPal shipping line: postage, plus for EU flat duty + ~20% VAT on
-       * (goods after discount + postage + duty). Small rate differences are absorbed.
+       * EU import charges: flat duty + ~20% VAT on (goods after discount + postage + duty).
+       * Returns postage, duty, vat, and totals for display and PayPal.
        */
-      function cartShipAndImportAmount(itemTotal, discountAmount) {
-        var postage = cartPostageAmount();
+      function cartShipAndImportBreakdown(itemTotal, discountAmount) {
+        var postage = roundMoney(cartPostageAmount());
         if (getCartShipToSelection() !== "__EU__") {
-          return roundMoney(postage);
+          return {
+            postage: postage,
+            duty: 0,
+            vat: 0,
+            importTotal: 0,
+            shipAndImport: postage,
+          };
         }
         var goods = Math.max(0, (Number(itemTotal) || 0) - (Number(discountAmount) || 0));
         var eu = euImportConfig();
-        var duty = eu.dutyAud;
-        var vat = eu.vatRate * (goods + postage + duty);
-        return roundMoney(postage + duty + vat);
+        var duty = roundMoney(eu.dutyAud);
+        var vat = roundMoney(eu.vatRate * (goods + postage + duty));
+        var importTotal = roundMoney(duty + vat);
+        return {
+          postage: postage,
+          duty: duty,
+          vat: vat,
+          importTotal: importTotal,
+          shipAndImport: roundMoney(postage + importTotal),
+        };
+      }
+
+      /** PayPal shipping line: postage + EU duty/VAT when applicable. */
+      function cartShipAndImportAmount(itemTotal, discountAmount) {
+        return cartShipAndImportBreakdown(itemTotal, discountAmount).shipAndImport;
       }
 
       function bindShipCountryOnce() {
@@ -1745,7 +1768,7 @@
         var currency = displayCurrencyLabel();
         syncDisplayCurrencyNote();
         if (currencyLabelEl) {
-          currencyLabelEl.textContent = currency || "—";
+          currencyLabelEl.textContent = currency || "\u2014";
         }
         if (items.length === 0) {
           if (emptyEl) {
@@ -1858,7 +1881,7 @@
               '<div class="cart-line-qty" role="group" aria-label="Quantity for ' +
               escAttr(varSumm ? title + " (" + varSumm + ")" : title) +
               '">' +
-              '<button type="button" class="cart-line-dec" aria-label="Decrease quantity">−</button>' +
+              '<button type="button" class="cart-line-dec" aria-label="Decrease quantity">\u2212</button>' +
               '<label class="cart-line-qty-label"><span class="visually-hidden">Quantity</span>' +
               '<input type="number" class="cart-line-qty-input" min="1" step="1" value="' +
               escAttr(String(qty)) +
@@ -1886,24 +1909,28 @@
           totalWeightEl.textContent = formatTotalWeightKg(cart.getTotalWeightKg());
         }
         var shipSelected = hasShipCountrySelected();
-        var shipCostDisplay = shipSelected
-          ? cartShipAndImportAmount(subtotal, discountAmount)
-          : 0;
-        if (shippingEstimateLabelEl) {
-          shippingEstimateLabelEl.textContent =
-            getCartShipToSelection() === "__EU__"
-              ? "Estimated shipping & import charges:"
-              : "Estimated shipping:";
-        }
+        var shipBreakdown = shipSelected
+          ? cartShipAndImportBreakdown(subtotal, discountAmount)
+          : { postage: 0, importTotal: 0, shipAndImport: 0 };
         if (shippingEstimateEl) {
           shippingEstimateEl.textContent = shipSelected
-            ? formatMoney(shipCostDisplay, currency)
-            : "—";
+            ? formatMoney(shipBreakdown.postage, currency)
+            : "\u2014";
+        }
+        if (importEstimateRowEl && importEstimateEl) {
+          var showImport = shipSelected && shipBreakdown.importTotal > 0;
+          importEstimateRowEl.hidden = !showImport;
+          importEstimateEl.textContent = showImport
+            ? formatMoney(shipBreakdown.importTotal, currency)
+            : "";
         }
         if (estimatedTotalEl) {
           estimatedTotalEl.textContent = shipSelected
-            ? formatMoney(Math.max(0, subtotal - discountAmount) + shipCostDisplay, currency)
-            : "—";
+            ? formatMoney(
+                Math.max(0, subtotal - discountAmount) + shipBreakdown.shipAndImport,
+                currency,
+              )
+            : "\u2014";
         }
         ensurePayPalButtons();
       }

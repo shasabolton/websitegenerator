@@ -1693,6 +1693,7 @@ body.nav-scroll-lock {
 }
 
 .cart-shipping-estimate-row,
+.cart-import-estimate-row,
 .cart-estimated-total-row {
   margin: 8px 0 0;
   font-size: 1.05rem;
@@ -1705,6 +1706,7 @@ body.nav-scroll-lock {
 }
 
 .cart-shipping-estimate-row strong,
+.cart-import-estimate-row strong,
 .cart-estimated-total-row strong {
   color: #111827;
 }
