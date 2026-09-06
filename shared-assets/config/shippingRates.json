@@ -1,7 +1,11 @@
 {
-  "version": 1,
-  "notes": "Cart maps ISO country to a zone: AU and NZ have dedicated tiers; all other codes (listed countries and Other) use the default international zone.",
+  "version": 2,
+  "notes": "Cart maps ISO country to a zone: AU and NZ have dedicated tiers; EU (__EU__) and Other (__OTHER__) use the default international postage zone. EU checkout adds euImport duty + VAT on (goods after discount + postage + duty).",
   "currency": "AUD",
+  "euImport": {
+    "dutyAud": 5,
+    "vatRate": 0.2
+  },
   "rates": [
     {
       "countryCodes": ["AU"],

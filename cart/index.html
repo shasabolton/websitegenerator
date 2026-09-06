@@ -320,6 +320,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         <option value="" disabled selected hidden>Select shipping country</option>
         <option value="AU">Australia</option>
         <option value="NZ">New Zealand</option>
+        <option value="__EU__">European Union</option>
         <option value="__OTHER__">Other countries</option>
       </select>
     </p>
@@ -340,7 +341,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     </p>
     <p id="cart-buyer-email-message" class="cart-ship-country-message" hidden></p>
     <p class="cart-shipping-estimate-row">
-      Estimated shipping:
+      <span id="cart-shipping-estimate-label">Estimated shipping:</span>
       <strong id="cart-shipping-estimate-amount"></strong>
     </p>
     <p class="cart-estimated-total-row">
@@ -353,8 +354,9 @@ window.siteCart = new ShoppingCart("Contraption Cart");
     <div id="cart-paypal-section" class="cart-paypal-section" hidden>
       <h2 class="cart-paypal-heading">Checkout</h2>
       <p class="cart-paypal-hint">
-        Pay with Google Pay, Apple Pay, or PayPal. The <strong>Ship to</strong> country above
-        must match the shipping country you enter at checkout so the total stays correct.
+        Pay with Google Pay, Apple Pay, or PayPal. The <strong>Ship to</strong> choice above
+        must match the shipping country you enter at checkout so the total stays correct
+        (European Union = any EU member country; UK is under Other countries).
       </p>
       <div id="googlepay-button-container" class="wallet-button-container" hidden></div>
       <div id="applepay-button-container" class="wallet-button-container" hidden></div>
@@ -395,6 +397,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       var buyerEmailMessageEl = document.getElementById("cart-buyer-email-message");
       var checkoutBlockedEl = document.getElementById("cart-checkout-blocked");
       var shippingEstimateEl = document.getElementById("cart-shipping-estimate-amount");
+      var shippingEstimateLabelEl = document.getElementById("cart-shipping-estimate-label");
       var estimatedTotalEl = document.getElementById("cart-estimated-total-amount");
       var paypalSectionEl = document.getElementById("cart-paypal-section");
       var paypalContainerEl = document.getElementById("paypal-button-container");
@@ -679,6 +682,65 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         return n;
       }
 
+      /** EU member ISO codes (not UK). Cart __EU__ must match one of these at PayPal. */
+      var EU_COUNTRY_CODES = {
+        AT: 1,
+        BE: 1,
+        BG: 1,
+        HR: 1,
+        CY: 1,
+        CZ: 1,
+        DK: 1,
+        EE: 1,
+        FI: 1,
+        FR: 1,
+        DE: 1,
+        GR: 1,
+        HU: 1,
+        IE: 1,
+        IT: 1,
+        LV: 1,
+        LT: 1,
+        LU: 1,
+        MT: 1,
+        NL: 1,
+        PL: 1,
+        PT: 1,
+        RO: 1,
+        SK: 1,
+        SI: 1,
+        ES: 1,
+        SE: 1,
+      };
+
+      function isEuCountryCode(countryCode) {
+        var cc = String(countryCode || "")
+          .trim()
+          .toUpperCase();
+        return !!EU_COUNTRY_CODES[cc];
+      }
+
+      function isValidShipToSelection(v) {
+        return v === "AU" || v === "NZ" || v === "__EU__" || v === "__OTHER__";
+      }
+
+      function roundMoney(n) {
+        return Math.round(Math.max(0, Number(n) || 0) * 100) / 100;
+      }
+
+      function euImportConfig() {
+        var cfg = shippingRatesConfig && shippingRatesConfig.euImport;
+        var duty = cfg && cfg.dutyAud != null ? Number(cfg.dutyAud) : 5;
+        var vat = cfg && cfg.vatRate != null ? Number(cfg.vatRate) : 0.2;
+        if (!Number.isFinite(duty) || duty < 0) {
+          duty = 5;
+        }
+        if (!Number.isFinite(vat) || vat < 0) {
+          vat = 0.2;
+        }
+        return { dutyAud: duty, vatRate: vat };
+      }
+
       function resolveShippingZone(countryCode) {
         var cc = String(countryCode || "")
           .trim()
@@ -728,8 +790,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       }
 
       function hasShipCountrySelected() {
-        var v = getCartShipToSelection();
-        return v === "AU" || v === "NZ" || v === "__OTHER__";
+        return isValidShipToSelection(getCartShipToSelection());
       }
 
       function getCartBuyerEmail() {
@@ -788,9 +849,15 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         highlightBuyerEmailError(false);
       }
 
-      /** Map cart "Other" to a non-listed ISO code so the default rate zone applies. */
+      /**
+       * Map cart zone selections to an ISO code for postage lookup.
+       * __EU__ / __OTHER__ both use the default international zone.
+       */
       function getCartShipToCountryCode() {
         var v = getCartShipToSelection();
+        if (v === "__EU__") {
+          return "DE";
+        }
         if (v === "__OTHER__") {
           return "US";
         }
@@ -805,8 +872,11 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           return false;
         }
         var cartSel = getCartShipToSelection();
+        if (cartSel === "__EU__") {
+          return isEuCountryCode(actual);
+        }
         if (cartSel === "__OTHER__") {
-          return actual !== "AU" && actual !== "NZ";
+          return actual !== "AU" && actual !== "NZ" && !isEuCountryCode(actual);
         }
         if (cartSel === "AU" || cartSel === "NZ") {
           return actual === cartSel;
@@ -860,6 +930,26 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         return shippingPriceForZoneAndGrams(zone, cartWeightGrams());
       }
 
+      function cartPostageAmount() {
+        return shippingCostForCountryCode(getCartShipToCountryCode());
+      }
+
+      /**
+       * PayPal shipping line: postage, plus for EU flat duty + ~20% VAT on
+       * (goods after discount + postage + duty). Small rate differences are absorbed.
+       */
+      function cartShipAndImportAmount(itemTotal, discountAmount) {
+        var postage = cartPostageAmount();
+        if (getCartShipToSelection() !== "__EU__") {
+          return roundMoney(postage);
+        }
+        var goods = Math.max(0, (Number(itemTotal) || 0) - (Number(discountAmount) || 0));
+        var eu = euImportConfig();
+        var duty = eu.dutyAud;
+        var vat = eu.vatRate * (goods + postage + duty);
+        return roundMoney(postage + duty + vat);
+      }
+
       function bindShipCountryOnce() {
         if (shipCountryListenerBound || !shipCountryEl) {
           return;
@@ -867,7 +957,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         shipCountryListenerBound = true;
         try {
           var saved = sessionStorage.getItem(SHIP_COUNTRY_STORAGE_KEY);
-          if (saved === "AU" || saved === "NZ" || saved === "__OTHER__") {
+          if (isValidShipToSelection(saved)) {
             shipCountryEl.value = saved;
           }
         } catch (e) {}
@@ -875,7 +965,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
           clearShipCountryError();
           try {
             var sel = shipCountryEl.value;
-            if (sel === "AU" || sel === "NZ" || sel === "__OTHER__") {
+            if (isValidShipToSelection(sel)) {
               sessionStorage.setItem(SHIP_COUNTRY_STORAGE_KEY, sel);
             } else {
               sessionStorage.removeItem(SHIP_COUNTRY_STORAGE_KEY);
@@ -1031,8 +1121,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         var built = buildPayPalLineItems(cur);
         var itemTotal = built.itemTotalCents / 100;
         var shipCc = getCartShipToCountryCode();
-        var shipCost = shippingCostForCountryCode(shipCc);
         var discountAmount = currentDiscountAmount();
+        var shipCost = cartShipAndImportAmount(itemTotal, discountAmount);
         var purchaseUnit = {
           reference_id: "cart",
           description: discountAmount > 0 ? "Cart order (discount applied)" : "Cart order",
@@ -1786,8 +1876,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
               var built = buildPayPalLineItems(cur);
               var itemTotal = built.itemTotalCents / 100;
               var shipCc = getCartShipToCountryCode();
-              var shipCost = shippingCostForCountryCode(shipCc);
               var discountAmount = currentDiscountAmount();
+              var shipCost = cartShipAndImportAmount(itemTotal, discountAmount);
               var buyerEmail = getCartBuyerEmail();
               var unit = {
                 reference_id: "cart",
@@ -2044,8 +2134,14 @@ window.siteCart = new ShoppingCart("Contraption Cart");
         }
         var shipSelected = hasShipCountrySelected();
         var shipCostDisplay = shipSelected
-          ? shippingCostForCountryCode(getCartShipToCountryCode())
+          ? cartShipAndImportAmount(subtotal, discountAmount)
           : 0;
+        if (shippingEstimateLabelEl) {
+          shippingEstimateLabelEl.textContent =
+            getCartShipToSelection() === "__EU__"
+              ? "Estimated shipping & import charges:"
+              : "Estimated shipping:";
+        }
         if (shippingEstimateEl) {
           shippingEstimateEl.textContent = shipSelected
             ? formatMoney(shipCostDisplay, currency)
