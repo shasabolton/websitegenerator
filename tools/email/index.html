@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Lets productData.js resolve shared-assets/config/productData.json from the repo root. -->
-  <base href="../" data-site-base>
+  <base href="../../" data-site-base>
   <title>Contraption Cart emails</title>
   <style>
     .email-tools {
@@ -63,6 +63,45 @@
       flex: 1 1 100%;
       font-size: 13px;
       color: #d9cbb3;
+    }
+    .email-tools-thumbs {
+      display: none;
+      flex: 1 1 100%;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .email-tools-thumbs.is-visible {
+      display: flex;
+    }
+    .email-tools-thumbs-label {
+      flex: 0 0 auto;
+      font-size: 13px;
+      color: #d9cbb3;
+      margin-right: 4px;
+    }
+    .email-tools-thumb {
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      background: #e8e2d6;
+      flex: 0 0 auto;
+    }
+    .email-tools-thumb:hover {
+      border-color: #d9cbb3;
+    }
+    .email-tools-thumb.is-selected {
+      border-color: #faf6ee;
+    }
+    .email-tools-thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .email-tools-product {
       display: none;
@@ -197,6 +236,7 @@
     <button type="button" id="copy-email">Copy to clipboard</button>
     <span class="status" id="copy-status" aria-live="polite"></span>
     <div class="subject-hint" id="subject-hint"></div>
+    <div class="email-tools-thumbs" id="product-thumbs" aria-label="Choose product photo"></div>
   </div>
 
   <!-- Welcome to the list -->
@@ -420,6 +460,7 @@
       var status = document.getElementById("copy-status");
       var subjectHint = document.getElementById("subject-hint");
       var productPicker = document.getElementById("product-picker");
+      var productThumbs = document.getElementById("product-thumbs");
       var searchForm = document.getElementById("email-product-search-form");
       var searchInput = document.getElementById("email-product-search-input");
       var searchResults = document.getElementById("email-product-search-results");
@@ -500,6 +541,9 @@
         trackingPicker.classList.toggle("is-visible", show);
         if (!show) {
           setSearchOpen(false);
+          productThumbs.classList.remove("is-visible");
+        } else if (productThumbs.childElementCount > 0) {
+          productThumbs.classList.add("is-visible");
         }
       }
 
@@ -592,11 +636,22 @@
           if (!slug) {
             return;
           }
-          var imageRaw = String(row.IMAGE1 || "").trim();
-          var image =
-            typeof pd.productImageUrlForDisplay === "function"
-              ? pd.productImageUrlForDisplay(imageRaw, "full")
-              : imageRaw;
+          var imagesRaw =
+            typeof pd.collectProductImageUrls === "function"
+              ? pd.collectProductImageUrls(row)
+              : [String(row.IMAGE1 || "").trim()].filter(Boolean);
+          var images = imagesRaw.map(function (raw) {
+            var full =
+              typeof pd.productImageUrlForDisplay === "function"
+                ? pd.productImageUrlForDisplay(raw, "full")
+                : raw;
+            var thumb =
+              typeof pd.productImageUrlForDisplay === "function"
+                ? pd.productImageUrlForDisplay(raw, "thumb")
+                : raw;
+            return { full: full, thumb: thumb };
+          });
+          var image = images.length ? images[0].full : "";
           var category =
             typeof pd.resolveProductCategory === "function"
               ? pd.resolveProductCategory(row)
@@ -607,6 +662,7 @@
             slug: slug,
             href: SITE + "/shop/" + slug,
             image: image,
+            images: images,
             haystack: (title + " " + etsyTitle + " " + category + " " + tags).toLowerCase(),
           });
         });
@@ -711,19 +767,66 @@
         });
       }
 
+      function setSelectedProductImage(fullUrl, thumbButton) {
+        if (!fullUrl) {
+          return;
+        }
+        productImage.src = fullUrl;
+        productThumbs.querySelectorAll(".email-tools-thumb").forEach(function (btn) {
+          btn.classList.toggle("is-selected", btn === thumbButton);
+        });
+      }
+
+      function renderProductThumbs(images) {
+        productThumbs.replaceChildren();
+        var list = Array.isArray(images) ? images : [];
+        if (list.length < 2) {
+          productThumbs.classList.remove("is-visible");
+          return;
+        }
+
+        var label = document.createElement("span");
+        label.className = "email-tools-thumbs-label";
+        label.textContent = "Photo";
+        productThumbs.appendChild(label);
+
+        list.forEach(function (img, index) {
+          var button = document.createElement("button");
+          button.type = "button";
+          button.className = "email-tools-thumb" + (index === 0 ? " is-selected" : "");
+          button.title = "Photo " + (index + 1);
+          button.setAttribute("aria-label", "Use photo " + (index + 1));
+          button.innerHTML =
+            '<img src="' + escapeHtml(img.thumb || img.full) + '" alt="" loading="lazy" />';
+          button.addEventListener("click", function () {
+            setSelectedProductImage(img.full, button);
+          });
+          productThumbs.appendChild(button);
+        });
+
+        productThumbs.classList.add("is-visible");
+      }
+
       function selectProduct(row) {
         if (!row) {
           return;
         }
+        var images = Array.isArray(row.images) && row.images.length
+          ? row.images
+          : row.image
+            ? [{ full: row.image, thumb: row.image }]
+            : [];
+        var chosen = images.length ? images[0].full : row.image || "";
         productLink.href = row.href;
         productLink.dataset.selected = "1";
-        productImage.src = row.image;
+        productImage.src = chosen;
         productImage.alt = row.title;
         productCaption.textContent = row.title;
         productCaptionLink.href = row.href;
         productPhrase.textContent = row.title;
         searchInput.value = row.title;
         setSearchOpen(false);
+        renderProductThumbs(images);
         setStatus("Kit set: " + row.title);
         window.setTimeout(function () {
           if (status.textContent.indexOf("Kit set:") === 0) {
