@@ -71,15 +71,19 @@ function getSiteOrigin(shopData) {
   }
 }
 
+/**
+ * Absolute URL for a generated folder page (`…/index.html`).
+ * Always ends with `/` so sitemap/canonical match GitHub Pages (no-slash → 301 → slash).
+ */
 function resolveAbsoluteUrl(siteOrigin, treeHref, homePageHref) {
   const publicHref = resolvePublicHref(treeHref, homePageHref);
   if (!siteOrigin) {
-    return publicHref === "." ? "/" : `/${publicHref}`;
+    return publicHref === "." ? "/" : `/${publicHref}/`;
   }
   if (publicHref === ".") {
     return `${siteOrigin}/`;
   }
-  return `${siteOrigin}/${publicHref}`;
+  return `${siteOrigin}/${publicHref}/`;
 }
 
 function toAbsoluteAssetUrl(siteOrigin, assetPath) {

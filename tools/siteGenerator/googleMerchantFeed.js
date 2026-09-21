@@ -81,9 +81,9 @@
       return window.structuredData.resolveAbsoluteUrl(siteOrigin, treePath, homePageHref);
     }
     if (!siteOrigin) {
-      return `/${treePath}`;
+      return `/${treePath}/`;
     }
-    return `${siteOrigin}/${treePath}`;
+    return `${siteOrigin}/${treePath}/`;
   }
 
   function sanitizeFeedId(raw) {

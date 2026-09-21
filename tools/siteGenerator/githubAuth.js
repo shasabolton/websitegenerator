@@ -1899,10 +1899,12 @@
     if (publicPath === null) {
       return null;
     }
+    // Folder pages (`path/index.html`) must use a trailing slash so <loc> matches
+    // the GitHub Pages 200 URL (no-slash requests 301 to the slash form).
     if (!siteOrigin) {
-      return publicPath ? `/${publicPath}` : "/";
+      return publicPath ? `/${publicPath}/` : "/";
     }
-    return publicPath ? `${siteOrigin}/${publicPath}` : `${siteOrigin}/`;
+    return publicPath ? `${siteOrigin}/${publicPath}/` : `${siteOrigin}/`;
   }
 
   function formatSitemapLastmod(isoTimestamp) {
