@@ -124,6 +124,18 @@
     .email-tools-tracking input {
       width: 200px;
     }
+    .email-tools-delete {
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .email-tools-delete.is-visible {
+      display: flex;
+    }
+    .email-tools-delete select {
+      min-width: 220px;
+      max-width: 360px;
+    }
     .email-product-search-form {
       display: flex;
       gap: 8px;
@@ -210,6 +222,7 @@
       <select id="email-type">
         <option value="welcome">Welcome to the list</option>
         <option value="first-kit">First kit order</option>
+        <option value="wholesale">Wholesale</option>
       </select>
     </label>
     <label>
@@ -232,6 +245,12 @@
     <label class="email-tools-tracking" id="tracking-picker">
       Tracking
       <input type="text" id="auspost-tracking" placeholder="AusPost number" autocomplete="off" spellcheck="false">
+    </label>
+    <label class="email-tools-delete" id="wholesale-delete-picker">
+      Delete
+      <select id="wholesale-delete-select">
+        <option value="">No products yet</option>
+      </select>
     </label>
     <button type="button" id="copy-email">Copy to clipboard</button>
     <span class="status" id="copy-status" aria-live="polite"></span>
@@ -449,6 +468,69 @@
     </table>
   </div>
 
+  <!-- Wholesale -->
+  <div class="email-template" data-email="wholesale" data-subject="Wholesale from Contraption Cart">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#e8e2d6;">
+      <tr>
+        <td align="center" style="padding:0;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background-color:#faf6ee;border:1px solid #d9cbb3;">
+            <tr>
+              <td align="center" style="padding:24px 20px 4px 20px;font-family:Arial,Helvetica,sans-serif;color:#2c2416;">
+                <a href="https://www.contraptioncart.com" target="_blank" style="text-decoration:none;">
+                  <img src="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" alt="Contraption Cart" width="72" height="72" style="display:block;width:72px;height:72px;border:0;margin:0 auto 12px auto;">
+                </a>
+                <p style="margin:0;font-size:15px;letter-spacing:0.12em;text-transform:uppercase;color:#7a6a50;">Contraption Cart</p>
+                <h1 style="margin:8px 0 0 0;font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.3;font-weight:normal;color:#2c2416;">Wholesale restock</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 20px 16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
+                <p style="margin:0 0 14px 0;" class="greeting">Hi,</p>
+                <p style="margin:0 0 14px 0;">I hope you're doing well. I'm Shasa from Contraption Cart — I design and make wooden automata, puzzle boxes, magic tricks and whirligigs in my workshop in Sheffield, Tasmania. If you're new to the shop, we're the ones behind those mechanical curiosities your customers wind, puzzle over and show each other.</p>
+                <p style="margin:0 0 14px 0;">I'm writing to see if you need any restocking. Below are a few pieces you've ordered before, along with some I'd happily recommend if you're looking to refresh the shelf. Wholesale prices are generally half of what is shown on my website.</p>
+                <p style="margin:0;">You're welcome to browse the full site for anything else that might suit. When you're ready, just reply to this email with the product names and quantities you'd like, and I'll send you an invoice.</p>
+              </td>
+            </tr>
+            <!-- Wholesale products are inserted as <tr> rows before this anchor -->
+            <tr id="wholesale-products-anchor" style="display:none;">
+              <td></td>
+            </tr>
+            <tr>
+              <td align="center" style="padding:8px 20px 24px 20px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td align="center" bgcolor="#6b3a1f" style="background-color:#6b3a1f;padding:12px 22px;">
+                      <a href="https://www.contraptioncart.com" style="font-family:Arial,Helvetica,sans-serif;font-size:20px;color:#faf6ee;text-decoration:none;">Browse the shop</a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 20px 16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
+                <p style="margin:0 0 14px 0;">No pressure at all if you're all stocked up for now — just a friendly check-in from the workshop.</p>
+                <p style="margin:0 0 14px 0;">If you have any questions, or if there's something particular you're after, just reply and I'll help however I can.</p>
+                <p style="margin:0;">Warm regards,<br>
+                Shasa<br>
+                Contraption Cart<br>
+                <a href="https://www.contraptioncart.com" style="color:#6b3a1f;text-decoration:underline;">contraptioncart.com</a></p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 20px 24px 20px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#6b5c45;">
+                <p style="margin:0;">
+                  <a href="https://www.instagram.com/contraptioncart" style="color:#6b3a1f;text-decoration:underline;">Instagram</a>
+                  &nbsp;&middot;&nbsp;
+                  <a href="https://www.facebook.com/contraptioncart/" style="color:#6b3a1f;text-decoration:underline;">Facebook</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+
   <!-- Catalog helpers only (titles, slugs, images). Header siteSearch.js is left untouched. -->
   <script src="tools/editData/productData.js"></script>
   <script>
@@ -477,6 +559,12 @@
       var trackingLink = document.getElementById("first-kit-tracking-link");
       var trackingNumberEl = document.getElementById("first-kit-tracking-number");
       var shippingNote = document.getElementById("first-kit-shipping-note");
+      var wholesaleProductsAnchor = document.getElementById("wholesale-products-anchor");
+      var wholesaleDeletePicker = document.getElementById("wholesale-delete-picker");
+      var wholesaleDeleteSelect = document.getElementById("wholesale-delete-select");
+      var SEARCH_PLACEHOLDER_FIRST_KIT = "Search the kit they bought…";
+      var SEARCH_PLACEHOLDER_WHOLESALE = "Search a product to add…";
+      var wholesaleProductSeq = 0;
 
       var catalogEntries = [];
       var catalogPromise = null;
@@ -536,14 +624,78 @@
       }
 
       function updateFirstKitToolsVisibility() {
-        var show = typeSelect.value === "first-kit";
-        productPicker.classList.toggle("is-visible", show);
-        trackingPicker.classList.toggle("is-visible", show);
-        if (!show) {
+        var type = typeSelect.value;
+        var showProduct = type === "first-kit" || type === "wholesale";
+        var showTracking = type === "first-kit";
+        var showDelete = type === "wholesale";
+        productPicker.classList.toggle("is-visible", showProduct);
+        trackingPicker.classList.toggle("is-visible", showTracking);
+        wholesaleDeletePicker.classList.toggle("is-visible", showDelete);
+        searchInput.placeholder =
+          type === "wholesale" ? SEARCH_PLACEHOLDER_WHOLESALE : SEARCH_PLACEHOLDER_FIRST_KIT;
+        if (showDelete) {
+          refreshWholesaleDeleteSelect();
+        }
+        if (!showProduct) {
           setSearchOpen(false);
           productThumbs.classList.remove("is-visible");
-        } else if (productThumbs.childElementCount > 0) {
+        } else if (type === "first-kit" && productThumbs.childElementCount > 0) {
           productThumbs.classList.add("is-visible");
+        } else {
+          productThumbs.classList.remove("is-visible");
+        }
+      }
+
+      function wholesaleProductRows() {
+        return Array.prototype.slice.call(
+          document.querySelectorAll(".wholesale-product-row")
+        );
+      }
+
+      function refreshWholesaleDeleteSelect() {
+        var rows = wholesaleProductRows();
+        wholesaleDeleteSelect.replaceChildren();
+        if (!rows.length) {
+          var empty = document.createElement("option");
+          empty.value = "";
+          empty.textContent = "No products yet";
+          wholesaleDeleteSelect.appendChild(empty);
+          wholesaleDeleteSelect.disabled = true;
+          return;
+        }
+        var placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "Choose a product to remove…";
+        wholesaleDeleteSelect.appendChild(placeholder);
+        rows.forEach(function (row, index) {
+          var option = document.createElement("option");
+          option.value = row.dataset.wholesaleId || String(index);
+          option.textContent =
+            index + 1 + ". " + (row.dataset.wholesaleTitle || "Product");
+          wholesaleDeleteSelect.appendChild(option);
+        });
+        wholesaleDeleteSelect.disabled = false;
+        wholesaleDeleteSelect.value = "";
+      }
+
+      function removeWholesaleProductById(id) {
+        if (!id) {
+          return;
+        }
+        var rows = wholesaleProductRows();
+        for (var i = 0; i < rows.length; i++) {
+          if (rows[i].dataset.wholesaleId === id) {
+            var title = rows[i].dataset.wholesaleTitle || "Product";
+            rows[i].remove();
+            refreshWholesaleDeleteSelect();
+            setStatus("Removed: " + title);
+            window.setTimeout(function () {
+              if (status.textContent.indexOf("Removed:") === 0) {
+                setStatus("");
+              }
+            }, 2000);
+            return;
+          }
         }
       }
 
@@ -584,6 +736,16 @@
           trackingParent.removeChild(trackingRow);
         }
 
+        var removedAnchor = null;
+        var anchorParent = null;
+        var anchorNext = null;
+        if (typeSelect.value === "wholesale" && wholesaleProductsAnchor) {
+          anchorParent = wholesaleProductsAnchor.parentNode;
+          anchorNext = wholesaleProductsAnchor.nextSibling;
+          removedAnchor = wholesaleProductsAnchor;
+          anchorParent.removeChild(wholesaleProductsAnchor);
+        }
+
         var selection = window.getSelection();
         var range = document.createRange();
         range.selectNodeContents(emailContent);
@@ -601,6 +763,9 @@
 
         if (removedTrackingRow && trackingParent) {
           trackingParent.insertBefore(removedTrackingRow, trackingNext);
+        }
+        if (removedAnchor && anchorParent) {
+          anchorParent.insertBefore(removedAnchor, anchorNext);
         }
 
         setStatus(ok ? "Copied — paste into Gmail" : "Copy failed — select the email and copy manually");
@@ -657,12 +822,16 @@
               ? pd.resolveProductCategory(row)
               : String(row.CATEGORY || "").trim();
           var tags = String(row.TAGS || "").replace(/_/g, " ").trim();
+          var priceNum = parseFloat(String(row.PRICE ?? "").trim());
+          var currency = String(row.CURRENCY_CODE || "AUD").trim().toUpperCase() || "AUD";
           entries.push({
             title: title || etsyTitle || "Product",
             slug: slug,
             href: SITE + "/shop/" + slug,
             image: image,
             images: images,
+            price: Number.isFinite(priceNum) && priceNum >= 0 ? priceNum : null,
+            currency: currency,
             haystack: (title + " " + etsyTitle + " " + category + " " + tags).toLowerCase(),
           });
         });
@@ -748,6 +917,11 @@
             '" alt="" loading="lazy" />' +
             '<span class="email-product-search-title">' +
             escapeHtml(row.title) +
+            (typeSelect.value === "wholesale" && formatPrice(row.price, row.currency)
+              ? '<br><span style="color:#6b5c45;font-size:13px;">' +
+                escapeHtml(formatPrice(row.price, row.currency)) +
+                "</span>"
+              : "") +
             "</span>";
           button.addEventListener("click", function () {
             selectProduct(row);
@@ -807,8 +981,88 @@
         productThumbs.classList.add("is-visible");
       }
 
+      function formatPrice(price, currency) {
+        if (price == null || !Number.isFinite(price)) {
+          return "";
+        }
+        var code = String(currency || "AUD").toUpperCase();
+        var amount = Number.isInteger(price) ? String(price) : price.toFixed(2);
+        if (code === "AUD") {
+          return "A$" + amount;
+        }
+        return code + " " + amount;
+      }
+
+      function appendWholesaleProduct(row) {
+        if (!row || !wholesaleProductsAnchor || !wholesaleProductsAnchor.parentNode) {
+          return;
+        }
+        var images = Array.isArray(row.images) && row.images.length
+          ? row.images
+          : row.image
+            ? [{ full: row.image, thumb: row.image }]
+            : [];
+        var chosen = images.length ? images[0].full : row.image || "";
+        var priceLabel = formatPrice(row.price, row.currency);
+        var title = row.title || "Product";
+        var href = row.href || SITE;
+
+        var tr = document.createElement("tr");
+        tr.className = "wholesale-product-row";
+        wholesaleProductSeq += 1;
+        tr.dataset.wholesaleId = "wp-" + wholesaleProductSeq;
+        tr.dataset.wholesaleTitle = title;
+        tr.innerHTML =
+          '<td style="padding:8px 20px 16px 20px;">' +
+          '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' +
+          "<tr>" +
+          '<td width="140" valign="top" style="padding:0 12px 0 0;">' +
+          '<a href="' +
+          escapeHtml(href) +
+          '" target="_blank">' +
+          '<img src="' +
+          escapeHtml(chosen) +
+          '" alt="' +
+          escapeHtml(title) +
+          '" width="128" style="display:block;width:128px;max-width:128px;height:auto;border:0;">' +
+          "</a>" +
+          "</td>" +
+          '<td valign="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:18px;line-height:1.45;color:#2c2416;">' +
+          '<a href="' +
+          escapeHtml(href) +
+          '" style="color:#6b3a1f;text-decoration:underline;font-weight:bold;">' +
+          escapeHtml(title) +
+          "</a>" +
+          (priceLabel
+            ? '<p style="margin:6px 0 0 0;font-size:16px;color:#6b5c45;">' +
+              escapeHtml(priceLabel) +
+              "</p>"
+            : "") +
+          "</td>" +
+          "</tr>" +
+          "</table>" +
+          "</td>";
+
+        wholesaleProductsAnchor.parentNode.insertBefore(tr, wholesaleProductsAnchor);
+        refreshWholesaleDeleteSelect();
+        searchInput.value = "";
+        setSearchOpen(false);
+        productThumbs.classList.remove("is-visible");
+        productThumbs.replaceChildren();
+        setStatus("Added: " + title);
+        window.setTimeout(function () {
+          if (status.textContent.indexOf("Added:") === 0) {
+            setStatus("");
+          }
+        }, 2000);
+      }
+
       function selectProduct(row) {
         if (!row) {
+          return;
+        }
+        if (typeSelect.value === "wholesale") {
+          appendWholesaleProduct(row);
           return;
         }
         var images = Array.isArray(row.images) && row.images.length
@@ -912,6 +1166,14 @@
       });
 
       trackingInput.addEventListener("input", updateTracking);
+
+      wholesaleDeleteSelect.addEventListener("change", function () {
+        var id = wholesaleDeleteSelect.value;
+        if (!id) {
+          return;
+        }
+        removeWholesaleProductById(id);
+      });
 
       updateGreeting();
       updateSubjectHint();
