@@ -1280,7 +1280,7 @@
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/5c16f8/8213336579/il_fullxfull.8213336579_a7e0.jpg",
       "IMAGE2": "https://i.etsystatic.com/25031074/r/il/8053a8/8165404936/il_fullxfull.8165404936_379w.jpg",
-      "IMAGE3": "https://i.etsystatic.com/25031074/r/il/524ce1/8606348169/il_fullxfull.8606348169_lrr0.jpg",
+      "IMAGE3": "https://i.etsystatic.com/25031074/r/il/aa1332/8558545234/il_fullxfull.8558545234_2crr.jpg",
       "IMAGE4": "https://i.etsystatic.com/25031074/r/il/0810f1/8213336569/il_fullxfull.8213336569_nask.jpg",
       "IMAGE5": "https://i.etsystatic.com/25031074/r/il/5eab09/8213336571/il_fullxfull.8213336571_8m4s.jpg",
       "IMAGE6": "https://i.etsystatic.com/25031074/r/il/801db7/8165404946/il_fullxfull.8165404946_p14d.jpg",
@@ -1291,7 +1291,7 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "assembly",
       "VARIATION 1 VALUES": "kit,assembled",
-      "VARIATION 1 PRICE DELTA": "0,20",
+      "VARIATION 1 PRICE DELTA": "0,25",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
@@ -1310,7 +1310,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "zig-zag-pencil",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "LINKS": []
     },
     {
       "TITLE": "Sword Through Finger Magic Trick, laser cut illusion puzzle, wooden DIY kit",
