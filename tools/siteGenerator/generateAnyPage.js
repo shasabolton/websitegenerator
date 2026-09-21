@@ -111,7 +111,7 @@ async function mergeBodyIntoFullHtml(
 
   const seo =
     typeof window.structuredData?.buildForPage === "function"
-      ? window.structuredData.buildForPage({
+      ? await window.structuredData.buildForPage({
           treePath,
           shopData,
           homePageHref,

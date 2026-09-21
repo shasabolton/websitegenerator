@@ -312,7 +312,7 @@ function resolveProductPrimaryVideoUrl(row) {
   return String(row?.VIDEO_1 ?? "").trim();
 }
 
-function buildVideoObject(row, title, description, siteOrigin) {
+async function buildVideoObject(row, title, description, siteOrigin) {
   const parseYoutubeVideoId = window.generateProductBody?.parseYoutubeVideoId;
   if (typeof parseYoutubeVideoId !== "function") {
     return null;
@@ -327,11 +327,16 @@ function buildVideoObject(row, title, description, siteOrigin) {
   const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
   const name = String(title || "").trim().slice(0, 200) || "Product video";
   const desc = truncateText(stripHtml(description || name), 5000);
+  let uploadDate = "";
+  if (typeof window.youtubeVideoMeta?.getUploadDate === "function") {
+    uploadDate = String((await window.youtubeVideoMeta.getUploadDate(videoId)) || "").trim();
+  }
   return compactObject({
     "@type": "VideoObject",
     name,
     description: desc,
     thumbnailUrl: [thumbnailUrl],
+    uploadDate: uploadDate || undefined,
     embedUrl,
     url: watchUrl,
   });
@@ -587,7 +592,7 @@ function buildHeadSeoTags({
  *   seoContext?: object,
  * }} input
  */
-function buildForPage(input) {
+async function buildForPage(input) {
   const { treePath, shopData, homePageHref = null, pageTitle, seoContext = {} } = input;
   const siteOrigin = getSiteOrigin(shopData);
   const path = normalizeTreeHref(treePath);
@@ -705,7 +710,7 @@ function buildForPage(input) {
         }),
       );
       graph.push(buildProductNode(row, seoContext.catalogProducts || [], shopData, siteOrigin, homePageHref, categoryName));
-      graph.push(buildVideoObject(row, title, description, siteOrigin));
+      graph.push(await buildVideoObject(row, title, description, siteOrigin));
       graph.push(buildBreadcrumbList(crumbs, siteOrigin, homePageHref));
       ogType = "product";
       const collectImages = window.productData?.collectProductImageUrls;

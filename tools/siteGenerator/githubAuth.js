@@ -2250,6 +2250,54 @@
     return window.generateAnyPage.generateAnyPage(treePath, options);
   }
 
+  function collectProductYoutubeVideoIds(products) {
+    const parse = window.generateProductBody?.parseYoutubeVideoId;
+    if (typeof parse !== "function") {
+      return [];
+    }
+    const ids = new Set();
+    for (const row of Array.isArray(products) ? products : []) {
+      const url = String(row?.VIDEO1 ?? row?.video01 ?? row?.VIDEO_1 ?? "").trim();
+      const id = parse(url);
+      if (id) {
+        ids.add(id);
+      }
+    }
+    return Array.from(ids);
+  }
+
+  /**
+   * Warm VideoObject.uploadDate cache (repo JSON + optional YouTube Data API).
+   * @returns {Promise<object|null>} Updated cache payload to commit, or null.
+   */
+  async function prefetchYoutubeUploadDates(products, onProgress) {
+    await ensurePreviewGeneratorsLoaded();
+    const meta = window.youtubeVideoMeta;
+    if (!meta?.ensureUploadDates) {
+      return null;
+    }
+    const ids = collectProductYoutubeVideoIds(products);
+    if (!ids.length) {
+      return null;
+    }
+    if (typeof onProgress === "function") {
+      onProgress(`Resolving YouTube upload dates (${ids.length})…`);
+    }
+    const result = await meta.ensureUploadDates(ids);
+    if (result?.errors?.length && typeof onProgress === "function") {
+      onProgress(`YouTube upload dates: ${result.errors[0]}`);
+    }
+    const dates = typeof meta.getDatesMap === "function" ? meta.getDatesMap() : {};
+    if (!dates || !Object.keys(dates).length) {
+      return null;
+    }
+    return {
+      updatedAt: new Date().toISOString(),
+      source: meta.getApiKey?.() ? "youtube-data-api" : "youtube-upload-dates-cache",
+      dates,
+    };
+  }
+
   async function generateNotFoundPageHtml(publishContext) {
     await ensurePreviewGeneratorsLoaded();
     if (typeof window.generateNotFoundBody?.generateNotFoundPage !== "function") {
@@ -2327,6 +2375,13 @@
     const outputPaths = uniqueOutputPaths(publishablePaths, homePageHref);
     const fileChanges = [];
     const generatedByPath = new Map();
+    const youtubeDatesPayload = await prefetchYoutubeUploadDates(draftProducts);
+    if (youtubeDatesPayload) {
+      fileChanges.push({
+        path: "shared-assets/config/youtubeUploadDates.json",
+        content: `${JSON.stringify(youtubeDatesPayload, null, 2)}\n`,
+      });
+    }
     for (let i = 0; i < publishablePaths.length; i += 1) {
       const treePath = publishablePaths[i];
       const relPath = treePathToOutputRelativePath(treePath, homePageHref);
@@ -2500,6 +2555,13 @@
     const homePageHref = getHomePageHrefFromFileTree(exportableTree);
     const fileChanges = [];
     const generatedByPath = new Map();
+    const youtubeDatesPayload = await prefetchYoutubeUploadDates(products, onProgress);
+    if (youtubeDatesPayload) {
+      fileChanges.push({
+        path: "shared-assets/config/youtubeUploadDates.json",
+        content: `${JSON.stringify(youtubeDatesPayload, null, 2)}\n`,
+      });
+    }
     for (let i = 0; i < treePaths.length; i += 1) {
       const treePath = treePaths[i];
       onProgress(`Generating ${i + 1}/${treePaths.length}: ${treePath}`);

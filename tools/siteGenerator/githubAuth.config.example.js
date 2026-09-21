@@ -11,4 +11,7 @@ window.githubAuthConfig = {
   accessToken: "",
   // Legacy OAuth (not used by default UI):
   clientId: "",
+  // Optional: YouTube Data API v3 key for VideoObject.uploadDate during generate/publish.
+  // Prefer env YOUTUBE_API_KEY with `node tools/fetchYoutubeUploadDates.js` for the shared cache.
+  youtubeApiKey: "",
 };
