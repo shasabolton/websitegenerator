@@ -100,7 +100,7 @@
       </select>
     </label>
     <label>
-      Orientation
+      Label
       <select id="orientationSelect">
         <option value="portrait">Portrait</option>
         <option value="landscape" selected>Landscape</option>
@@ -112,7 +112,6 @@
         <option value="1" selected>1</option>
         <option value="2">2</option>
         <option value="4">4</option>
-        <option value="6">6</option>
         <option value="8">8</option>
       </select>
     </label>
@@ -129,9 +128,9 @@
     (function () {
       var DPI = 300;
       var MARGIN_MM = 5;
-      var LOGO_URL = "shared-assets/images/branding/favicon.jpg";
+      var LOGO_URL = "design/cart%20logo.svg";
       var SITE_TEXT = "ContraptionCart.com";
-      var CREDIT_TEXT = "Designed by Shasa Bolton, Tasmania Australia";
+      var CREDIT_TEXT = "Designed in Tasmania by Shasa Bolton";
       var TITLE_FONT = "Harrington";
       var TITLE_WEIGHT = "400";
 
@@ -162,20 +161,83 @@
         return (mm / 25.4) * DPI;
       }
 
-      function getPageSizePx() {
-        var size = PAGE_MM[pageSizeSelect.value] || PAGE_MM.A4;
-        var landscape = orientationSelect.value === "landscape";
-        var wMm = landscape ? size.h : size.w;
-        var hMm = landscape ? size.w : size.h;
-        return { width: mmToPx(wMm), height: mmToPx(hMm), margin: mmToPx(MARGIN_MM) };
+      function tileGrid(count, labelLandscape) {
+        if (count <= 1) return { cols: 1, rows: 1 };
+        if (count === 2) {
+          // Stack landscape labels; place portrait labels side by side.
+          return labelLandscape ? { cols: 1, rows: 2 } : { cols: 2, rows: 1 };
+        }
+        if (count === 4) return { cols: 2, rows: 2 };
+        // 8
+        return labelLandscape ? { cols: 2, rows: 4 } : { cols: 4, rows: 2 };
       }
 
-      function tileGrid(count) {
-        if (count <= 1) return { cols: 1, rows: 1 };
-        if (count === 2) return { cols: 2, rows: 1 };
-        if (count === 4) return { cols: 2, rows: 2 };
-        if (count === 6) return { cols: 3, rows: 2 };
-        return { cols: 4, rows: 2 };
+      // Pick page orientation + label cell size so labels keep their aspect and fit with
+      // margin M and inter-tile gap 2M. Page flips to whichever orientation yields larger labels.
+      function planLayout() {
+        var size = PAGE_MM[pageSizeSelect.value] || PAGE_MM.A4;
+        var tiles = parseInt(tileSelect.value, 10) || 1;
+        var labelLandscape = orientationSelect.value === "landscape";
+        var aspect = labelLandscape ? Math.SQRT2 : 1 / Math.SQRT2;
+        var grid = tileGrid(tiles, labelLandscape);
+        var margin = mmToPx(MARGIN_MM);
+        var gap = margin * 2;
+
+        function candidate(pageWmm, pageHmm) {
+          var pageW = mmToPx(pageWmm);
+          var pageH = mmToPx(pageHmm);
+          var availW = pageW - margin * 2 - gap * (grid.cols - 1);
+          var availH = pageH - margin * 2 - gap * (grid.rows - 1);
+          if (availW <= 0 || availH <= 0) return null;
+          var cellH = Math.min(availW / (grid.cols * aspect), availH / grid.rows);
+          var cellW = cellH * aspect;
+          if (cellW <= 0 || cellH <= 0) return null;
+          var blockW = grid.cols * cellW + (grid.cols - 1) * gap;
+          var blockH = grid.rows * cellH + (grid.rows - 1) * gap;
+          return {
+            pageW: pageW,
+            pageH: pageH,
+            cellW: cellW,
+            cellH: cellH,
+            area: cellW * cellH,
+            originX: (pageW - blockW) / 2,
+            originY: (pageH - blockH) / 2
+          };
+        }
+
+        var portrait = candidate(size.w, size.h);
+        var landscape = candidate(size.h, size.w);
+        var best = portrait;
+        if (!best || (landscape && landscape.area > best.area)) {
+          best = landscape;
+        }
+        if (!best) {
+          return {
+            pageW: mmToPx(size.w),
+            pageH: mmToPx(size.h),
+            margin: margin,
+            gap: gap,
+            grid: grid,
+            cellW: 1,
+            cellH: 1,
+            originX: margin,
+            originY: margin,
+            tiles: tiles
+          };
+        }
+
+        return {
+          pageW: best.pageW,
+          pageH: best.pageH,
+          margin: margin,
+          gap: gap,
+          grid: grid,
+          cellW: best.cellW,
+          cellH: best.cellH,
+          originX: best.originX,
+          originY: best.originY,
+          tiles: tiles
+        };
       }
 
       function imageSrcForCanvas(url) {
@@ -338,40 +400,57 @@
         var logoAreaWidth = innerRight - logoAreaLeft - padding;
         var logoAreaHeight = y + h - borderWidth - logoTop;
         if (logoAreaWidth > 4 && logoAreaHeight > 4) {
-          var logoBox = Math.min(logoAreaHeight * 0.55, logoAreaWidth * 0.55);
-          var logoX = logoAreaLeft + (logoAreaWidth - logoBox) / 2;
-          var logoY = logoTop;
-          if (logoImage) {
-            drawImageContain(c, logoImage, logoX, logoY, logoBox, logoBox);
-          }
+          var textGap = Math.max(4, padding * 0.25);
+          var logoGap = Math.max(4, padding * 0.2);
+          var cx = logoAreaLeft + logoAreaWidth / 2;
 
-          var textTop = logoY + logoBox + padding * 0.35;
-          var textH = logoTop + logoAreaHeight - textTop;
-          c.fillStyle = "#2c2416";
+          // Size URL + credit to use the full column width, then place logo just above.
           c.textAlign = "center";
-          c.textBaseline = "middle";
+          c.textBaseline = "alphabetic";
+          var maxTextPx = Math.max(12, logoAreaWidth * 0.22);
           var siteSize = fitText(
             c,
             SITE_TEXT,
             logoAreaWidth,
             "Arial",
             "bold",
-            Math.max(10, textH * 0.32),
+            maxTextPx,
             8
           );
-          c.fillText(SITE_TEXT, logoAreaLeft + logoAreaWidth / 2, textTop + textH * 0.35);
-          c.fillStyle = "#6b5c45";
           var creditSize = fitText(
             c,
             CREDIT_TEXT,
             logoAreaWidth,
             "Arial",
             "",
-            Math.max(8, siteSize * 0.72),
+            Math.max(8, siteSize * 0.95),
             7
           );
+
+          var creditBaseline = logoTop + logoAreaHeight - creditSize * 0.35 - Math.max(6, padding * 0.45);
+          var siteBaseline = creditBaseline - creditSize - textGap;
+          var textBlockTop = siteBaseline - siteSize;
+          var logoBox = Math.min(
+            Math.max(8, textBlockTop - logoTop - logoGap),
+            logoAreaWidth * 0.7
+          );
+          var logoX = logoAreaLeft + (logoAreaWidth - logoBox) / 2;
+          var logoY = textBlockTop - logoGap - logoBox;
+          if (logoY < logoTop) {
+            logoBox = Math.max(8, textBlockTop - logoTop - logoGap);
+            logoX = logoAreaLeft + (logoAreaWidth - logoBox) / 2;
+            logoY = logoTop;
+          }
+          if (logoImage) {
+            drawImageContain(c, logoImage, logoX, logoY, logoBox, logoBox);
+          }
+
+          c.fillStyle = "#2c2416";
+          c.font = "bold " + siteSize + "px Arial";
+          c.fillText(SITE_TEXT, cx, siteBaseline);
+          c.fillStyle = "#6b5c45";
           c.font = creditSize + "px Arial";
-          c.fillText(CREDIT_TEXT, logoAreaLeft + logoAreaWidth / 2, textTop + textH * 0.72);
+          c.fillText(CREDIT_TEXT, cx, creditBaseline);
         }
       }
 
@@ -383,13 +462,11 @@
 
       function render() {
         var product = selectedProduct();
-        var page = getPageSizePx();
-        var tiles = parseInt(tileSelect.value, 10) || 1;
-        var grid = tileGrid(tiles);
+        var layout = planLayout();
         var token = ++renderToken;
 
-        canvas.width = Math.round(page.width);
-        canvas.height = Math.round(page.height);
+        canvas.width = Math.round(layout.pageW);
+        canvas.height = Math.round(layout.pageH);
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -411,20 +488,16 @@
           if (token !== renderToken) return;
           logoImage = loaded[3] || logoImage;
           var images = [loaded[0], loaded[1], loaded[2]];
-
-          // Outer margin M; gap between tiles = 2M so a mid-gap cut leaves M white on each side.
-          var margin = page.margin;
-          var gap = margin * 2;
-          var cellW = (canvas.width - margin * 2 - gap * (grid.cols - 1)) / grid.cols;
-          var cellH = (canvas.height - margin * 2 - gap * (grid.rows - 1)) / grid.rows;
+          var grid = layout.grid;
+          var tiles = layout.tiles;
 
           for (var row = 0; row < grid.rows; row++) {
             for (var col = 0; col < grid.cols; col++) {
               var i = row * grid.cols + col;
               if (i >= tiles) continue;
-              var x = margin + col * (cellW + gap);
-              var y = margin + row * (cellH + gap);
-              drawLabel(ctx, product, images, x, y, cellW, cellH);
+              var x = layout.originX + col * (layout.cellW + layout.gap);
+              var y = layout.originY + row * (layout.cellH + layout.gap);
+              drawLabel(ctx, product, images, x, y, layout.cellW, layout.cellH);
             }
           }
           setStatus(product.title);
