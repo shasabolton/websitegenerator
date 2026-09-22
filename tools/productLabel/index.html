@@ -82,6 +82,72 @@
       height: auto;
       background: #fff;
       box-shadow: 0 8px 28px rgba(44, 36, 22, 0.18);
+      cursor: default;
+    }
+    .image-picker {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(44, 36, 22, 0.55);
+    }
+    .image-picker.is-open {
+      display: flex;
+    }
+    .image-picker-panel {
+      width: min(560px, 100%);
+      max-height: min(80vh, 640px);
+      overflow: auto;
+      background: #faf6ee;
+      color: #2c2416;
+      border-radius: 6px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+      padding: 14px 16px 16px;
+    }
+    .image-picker-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    .image-picker-head button {
+      padding: 6px 12px;
+      border: 0;
+      border-radius: 4px;
+      background: #2c2416;
+      color: #faf6ee;
+      font: inherit;
+      cursor: pointer;
+    }
+    .image-picker-thumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .image-picker-thumb {
+      width: 72px;
+      height: 72px;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      background: #e8e2d6;
+    }
+    .image-picker-thumb:hover,
+    .image-picker-thumb.is-current {
+      border-color: #6b3a1f;
+    }
+    .image-picker-thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   </style>
 </head>
@@ -107,6 +173,13 @@
       </select>
     </label>
     <label>
+      Version
+      <select id="versionSelect">
+        <option value="kit" selected>Kit</option>
+        <option value="assembled">Assembled</option>
+      </select>
+    </label>
+    <label>
       Tile
       <select id="tileSelect">
         <option value="1" selected>1</option>
@@ -115,6 +188,7 @@
         <option value="8">8</option>
       </select>
     </label>
+    <button type="button" id="printBtn">Print</button>
     <button type="button" id="downloadBtn">Download JPEG</button>
     <span class="status" id="status"></span>
   </header>
@@ -122,6 +196,16 @@
   <main class="canvas-wrap">
     <canvas id="pageCanvas" aria-label="Product label preview"></canvas>
   </main>
+
+  <div id="imagePicker" class="image-picker" hidden>
+    <div class="image-picker-panel" role="dialog" aria-label="Choose product image">
+      <div class="image-picker-head">
+        <span id="imagePickerTitle">Replace image</span>
+        <button type="button" id="imagePickerClose">Close</button>
+      </div>
+      <div id="imagePickerThumbs" class="image-picker-thumbs"></div>
+    </div>
+  </div>
 
   <script src="tools/editData/productData.js"></script>
   <script>
@@ -143,8 +227,10 @@
       var productSelect = document.getElementById("productSelect");
       var pageSizeSelect = document.getElementById("pageSizeSelect");
       var orientationSelect = document.getElementById("orientationSelect");
+      var versionSelect = document.getElementById("versionSelect");
       var tileSelect = document.getElementById("tileSelect");
       var downloadBtn = document.getElementById("downloadBtn");
+      var printBtn = document.getElementById("printBtn");
       var statusEl = document.getElementById("status");
       var canvas = document.getElementById("pageCanvas");
       var ctx = canvas.getContext("2d");
@@ -152,6 +238,16 @@
       var catalog = [];
       var logoImage = null;
       var renderToken = 0;
+      /** @type {Record<string, string[]>} slug -> [hero, small1, small2] urls */
+      var slotImagesBySlug = {};
+      /** @type {{ slot: number, x: number, y: number, w: number, h: number }[]} */
+      var activeHitRegions = [];
+      var pendingSlot = -1;
+
+      var imagePicker = document.getElementById("imagePicker");
+      var imagePickerThumbs = document.getElementById("imagePickerThumbs");
+      var imagePickerTitle = document.getElementById("imagePickerTitle");
+      var imagePickerClose = document.getElementById("imagePickerClose");
 
       function setStatus(msg) {
         statusEl.textContent = msg || "";
@@ -320,6 +416,46 @@
         return size;
       }
 
+      function isKitVersion() {
+        return versionSelect.value === "kit";
+      }
+
+      function displayTitle(product) {
+        var base = String((product && product.title) || "Product").trim();
+        if (!isKitVersion()) return base;
+        if (/\bkit\b/i.test(base)) return base;
+        return base + " Kit";
+      }
+
+      function taglineBaseParts(product) {
+        var base = String((product && product.tagline) || "").trim();
+        base = base
+          .replace(/\s*[-–—,]?\s*DIY\s+assembly(\s+kit)?\s*$/i, "")
+          .replace(/,?\s*DIY\s+assembly(\s+kit)?\s*$/i, "")
+          .trim()
+          .replace(/[,\s]+$/g, "");
+        return base
+          .split(",")
+          .map(function (s) {
+            return s.trim();
+          })
+          .filter(Boolean);
+      }
+
+      // Always at most 2 rows. Kit: append " - DIY assembly" on the last row (shared line).
+      function taglineLines(product) {
+        var parts = taglineBaseParts(product);
+        if (parts.length > 2) {
+          parts = [parts[0], parts.slice(1).join(", ")];
+        }
+        if (!isKitVersion()) return parts;
+        if (!parts.length) return ["DIY assembly"];
+        var last = parts.length - 1;
+        if (/DIY\s+assembly/i.test(parts[last])) return parts;
+        parts[last] = parts[last] + " - DIY assembly";
+        return parts;
+      }
+
       function drawLabel(c, product, images, x, y, w, h) {
         // Match other-repo product label: thick border, title, full-width tagline bar,
         // hero square left, two small squares in a row, logo + credit under the smalls.
@@ -332,7 +468,7 @@
         c.strokeStyle = "#000000";
         c.strokeRect(x + halfBorder, y + halfBorder, w - borderWidth, h - borderWidth);
 
-        var title = product.title || "Product";
+        var title = displayTitle(product);
         var titleFontHeight = h / 9;
         c.fillStyle = "#ff0000";
         c.textAlign = "center";
@@ -348,10 +484,7 @@
         );
         c.fillText(title, x + w / 2, y + titleFontHeight);
 
-        var tagline = product.tagline || "";
-        var descriptionArray = tagline
-          ? tagline.split(",").map(function (s) { return s.trim(); }).filter(Boolean)
-          : [];
+        var descriptionArray = taglineLines(product);
         var descriptionFontHeight = h / 15;
         var descriptionBoxTop = y + titleFontHeight * 1.3;
         var descriptionBoxBottom = descriptionBoxTop;
@@ -365,9 +498,18 @@
           c.fillStyle = "#ffffff";
           c.textAlign = "center";
           c.textBaseline = "alphabetic";
-          c.font = descriptionFontHeight + "px Arial";
           var textY = descriptionBoxTop + descriptionFontHeight;
+          var tagMaxW = w - borderWidth * 2;
           for (var row = 0; row < descriptionArray.length; row++) {
+            fitText(
+              c,
+              descriptionArray[row],
+              tagMaxW,
+              "Arial",
+              "",
+              descriptionFontHeight,
+              8
+            );
             c.fillText(descriptionArray[row], x + w / 2, textY);
             textY += descriptionFontHeight;
           }
@@ -389,9 +531,14 @@
           smallImageWidth = mainImageHeight;
         }
         if (smallImageWidth < 4) smallImageWidth = 4;
+
+        var hits = [
+          { slot: 0, x: imageLeft, y: imageTop, w: mainImageWidth, h: mainImageHeight }
+        ];
         for (var i = 0; i < numSmall; i++) {
           var sx = mainImageRight + borderWidth + (smallImageWidth + borderWidth) * i;
           drawImageCover(c, images[i + 1], sx, imageTop, smallImageWidth, smallImageWidth);
+          hits.push({ slot: i + 1, x: sx, y: imageTop, w: smallImageWidth, h: smallImageWidth });
         }
 
         var padding = Math.max(10, h / 40);
@@ -452,6 +599,8 @@
           c.font = creditSize + "px Arial";
           c.fillText(CREDIT_TEXT, cx, creditBaseline);
         }
+
+        return hits;
       }
 
       function selectedProduct() {
@@ -460,10 +609,80 @@
         return catalog[idx];
       }
 
+      function slotUrlsForProduct(product) {
+        if (!product) return ["", "", ""];
+        var key = product.slug;
+        if (!slotImagesBySlug[key]) {
+          var defaults = (product.images || []).slice(0, 3);
+          while (defaults.length < 3) defaults.push("");
+          slotImagesBySlug[key] = defaults;
+        }
+        return slotImagesBySlug[key];
+      }
+
+      function canvasPointFromEvent(evt) {
+        var rect = canvas.getBoundingClientRect();
+        var scaleX = canvas.width / rect.width;
+        var scaleY = canvas.height / rect.height;
+        return {
+          x: (evt.clientX - rect.left) * scaleX,
+          y: (evt.clientY - rect.top) * scaleY
+        };
+      }
+
+      function hitTest(x, y) {
+        for (var i = 0; i < activeHitRegions.length; i++) {
+          var r = activeHitRegions[i];
+          if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) {
+            return r;
+          }
+        }
+        return null;
+      }
+
+      function closeImagePicker() {
+        pendingSlot = -1;
+        imagePicker.classList.remove("is-open");
+        imagePicker.hidden = true;
+      }
+
+      function openImagePicker(slotIndex) {
+        var product = selectedProduct();
+        if (!product) return;
+        pendingSlot = slotIndex;
+        var slots = slotUrlsForProduct(product);
+        var current = slots[slotIndex] || "";
+        var labels = ["Hero image", "Small image 1", "Small image 2"];
+        imagePickerTitle.textContent = "Replace " + (labels[slotIndex] || "image");
+        imagePickerThumbs.innerHTML = "";
+
+        (product.allImages || []).forEach(function (item) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "image-picker-thumb";
+          if (item.full === current) btn.classList.add("is-current");
+          var img = document.createElement("img");
+          img.src = item.thumb || item.full;
+          img.alt = "";
+          btn.appendChild(img);
+          btn.addEventListener("click", function () {
+            var urls = slotUrlsForProduct(product);
+            urls[pendingSlot] = item.full;
+            closeImagePicker();
+            render();
+          });
+          imagePickerThumbs.appendChild(btn);
+        });
+
+        imagePicker.hidden = false;
+        imagePicker.classList.add("is-open");
+      }
+
       function render() {
         var product = selectedProduct();
         var layout = planLayout();
         var token = ++renderToken;
+        activeHitRegions = [];
 
         canvas.width = Math.round(layout.pageW);
         canvas.height = Math.round(layout.pageH);
@@ -476,7 +695,7 @@
         }
 
         setStatus("Rendering…");
-        var urls = (product.images || []).slice(0, 3);
+        var urls = slotUrlsForProduct(product).slice(0, 3);
         while (urls.length < 3) urls.push("");
 
         Promise.all([
@@ -497,11 +716,60 @@
               if (i >= tiles) continue;
               var x = layout.originX + col * (layout.cellW + layout.gap);
               var y = layout.originY + row * (layout.cellH + layout.gap);
-              drawLabel(ctx, product, images, x, y, layout.cellW, layout.cellH);
+              var hits = drawLabel(ctx, product, images, x, y, layout.cellW, layout.cellH);
+              if (hits && hits.length) {
+                activeHitRegions = activeHitRegions.concat(hits);
+              }
             }
           }
-          setStatus(product.title);
+          setStatus(displayTitle(product) + " — click an image to change it");
         });
+      }
+
+      function printPageSizeCss() {
+        var sizeKey = pageSizeSelect.value || "A4";
+        var layout = planLayout();
+        var landscape = layout.pageW > layout.pageH;
+        return sizeKey + " " + (landscape ? "landscape" : "portrait");
+      }
+
+      function printCanvas() {
+        if (!canvas.width || !canvas.height) return;
+        var dataUrl;
+        try {
+          dataUrl = canvas.toDataURL("image/png");
+        } catch (err) {
+          setStatus("Print failed (image CORS). Try Download JPEG instead.");
+          console.error(err);
+          return;
+        }
+        var printWin = window.open("", "_blank");
+        if (!printWin) {
+          setStatus("Allow popups to print.");
+          return;
+        }
+        var printSize = printPageSizeCss();
+        var doc = printWin.document;
+        doc.open();
+        doc.title = "Print Label";
+        var style = doc.createElement("style");
+        style.textContent =
+          "@page { size: " +
+          printSize +
+          "; margin: 0; } html, body { margin: 0; padding: 0; } img { display: block; width: 100%; height: auto; }";
+        doc.head.appendChild(style);
+        var img = doc.createElement("img");
+        img.alt = "Product Label";
+        img.onload = function () {
+          printWin.focus();
+          printWin.print();
+        };
+        img.src = dataUrl;
+        doc.body.style.margin = "0";
+        doc.body.style.padding = "0";
+        doc.body.appendChild(img);
+        doc.close();
+        setStatus("Print dialog opened");
       }
 
       function downloadJpeg() {
@@ -543,16 +811,26 @@
               : [row.IMAGE1, row.IMAGE2, row.IMAGE3].map(function (u) {
                   return String(u || "").trim();
                 }).filter(Boolean);
-          var images = imagesRaw.map(function (raw) {
-            return pd && typeof pd.productImageUrlForDisplay === "function"
-              ? pd.productImageUrlForDisplay(raw, "full")
-              : raw;
+          var allImages = imagesRaw.map(function (raw) {
+            var full =
+              pd && typeof pd.productImageUrlForDisplay === "function"
+                ? pd.productImageUrlForDisplay(raw, "full")
+                : raw;
+            var thumb =
+              pd && typeof pd.productImageUrlForDisplay === "function"
+                ? pd.productImageUrlForDisplay(raw, "thumb")
+                : raw;
+            return { full: full, thumb: thumb || full };
+          });
+          var images = allImages.map(function (item) {
+            return item.full;
           });
           if (!title || images.length < 1) return;
           out.push({
             title: title,
             slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
             images: images,
+            allImages: allImages,
             tagline: String(row.TAGLINE || "").trim()
           });
         });
@@ -573,11 +851,35 @@
       }
 
       function bind() {
-        productSelect.addEventListener("change", render);
+        productSelect.addEventListener("change", function () {
+          closeImagePicker();
+          render();
+        });
         pageSizeSelect.addEventListener("change", render);
         orientationSelect.addEventListener("change", render);
+        versionSelect.addEventListener("change", render);
         tileSelect.addEventListener("change", render);
         downloadBtn.addEventListener("click", downloadJpeg);
+        printBtn.addEventListener("click", printCanvas);
+
+        canvas.addEventListener("mousemove", function (evt) {
+          var pt = canvasPointFromEvent(evt);
+          canvas.style.cursor = hitTest(pt.x, pt.y) ? "pointer" : "default";
+        });
+        canvas.addEventListener("click", function (evt) {
+          var pt = canvasPointFromEvent(evt);
+          var hit = hitTest(pt.x, pt.y);
+          if (hit) openImagePicker(hit.slot);
+        });
+        imagePickerClose.addEventListener("click", closeImagePicker);
+        imagePicker.addEventListener("click", function (evt) {
+          if (evt.target === imagePicker) closeImagePicker();
+        });
+        document.addEventListener("keydown", function (evt) {
+          if (evt.key === "Escape" && imagePicker.classList.contains("is-open")) {
+            closeImagePicker();
+          }
+        });
       }
 
       bind();
