@@ -743,33 +743,67 @@
           console.error(err);
           return;
         }
-        var printWin = window.open("", "_blank");
-        if (!printWin) {
-          setStatus("Allow popups to print.");
-          return;
-        }
+
         var printSize = printPageSizeCss();
-        var doc = printWin.document;
-        doc.open();
-        doc.title = "Print Label";
-        var style = doc.createElement("style");
-        style.textContent =
-          "@page { size: " +
-          printSize +
-          "; margin: 0; } html, body { margin: 0; padding: 0; } img { display: block; width: 100%; height: auto; }";
-        doc.head.appendChild(style);
-        var img = doc.createElement("img");
-        img.alt = "Product Label";
-        img.onload = function () {
-          printWin.focus();
-          printWin.print();
-        };
-        img.src = dataUrl;
-        doc.body.style.margin = "0";
-        doc.body.style.padding = "0";
-        doc.body.appendChild(img);
-        doc.close();
-        setStatus("Print dialog opened");
+        var existing = document.getElementById("printFrame");
+        if (existing) existing.remove();
+
+        var iframe = document.createElement("iframe");
+        iframe.id = "printFrame";
+        iframe.setAttribute("aria-hidden", "true");
+        iframe.style.cssText =
+          "position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;pointer-events:none;";
+
+        var started = false;
+        function runPrint() {
+          if (started) return;
+          started = true;
+          var doc = iframe.contentDocument;
+          var win = iframe.contentWindow;
+          if (!doc || !doc.head || !doc.body) {
+            setStatus("Print failed.");
+            return;
+          }
+
+          doc.title = "Print Label";
+          while (doc.head.firstChild) doc.head.removeChild(doc.head.firstChild);
+          while (doc.body.firstChild) doc.body.removeChild(doc.body.firstChild);
+
+          var style = doc.createElement("style");
+          style.textContent =
+            "@page { size: " +
+            printSize +
+            "; margin: 0; } html, body { margin: 0; padding: 0; } img { display: block; width: 100%; height: auto; }";
+          doc.head.appendChild(style);
+
+          doc.body.style.margin = "0";
+          doc.body.style.padding = "0";
+
+          var img = doc.createElement("img");
+          img.alt = "Product Label";
+          img.onload = function () {
+            try {
+              win.focus();
+              win.print();
+              setStatus("Print dialog opened");
+            } catch (err) {
+              setStatus("Print failed.");
+              console.error(err);
+            }
+          };
+          img.onerror = function () {
+            setStatus("Print failed to load label image.");
+          };
+          doc.body.appendChild(img);
+          img.src = dataUrl;
+        }
+
+        iframe.onload = runPrint;
+        document.body.appendChild(iframe);
+        // about:blank may already be ready before onload fires
+        if (iframe.contentDocument && iframe.contentDocument.readyState === "complete") {
+          runPrint();
+        }
       }
 
       function downloadJpeg() {
