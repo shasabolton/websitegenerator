@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Lets productData.js resolve shared-assets from the repo root. -->
+  <base href="../../" data-site-base>
+  <title>Product label</title>
+  <style>
+    @font-face {
+      font-family: "Harrington";
+      src: local("Harrington"), local("Harrington Regular");
+      font-weight: 400;
+      font-style: normal;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #e8e2d6;
+      color: #2c2416;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+    }
+    .label-tools {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 16px;
+      background: #2c2416;
+      color: #faf6ee;
+    }
+    .label-tools label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .label-tools select,
+    .label-tools button {
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: 15px;
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+    }
+    .label-tools select {
+      border: 1px solid #7a6a50;
+      background: #fff;
+      color: #2c2416;
+      min-width: 140px;
+    }
+    .label-tools select#productSelect {
+      min-width: 220px;
+      max-width: 320px;
+    }
+    .label-tools button {
+      border: 0;
+      background: #faf6ee;
+      color: #2c2416;
+      padding: 8px 14px;
+    }
+    .label-tools button:hover {
+      background: #fff;
+    }
+    .label-tools .status {
+      min-height: 1.2em;
+      color: #d9cbb3;
+      font-size: 13px;
+    }
+    .canvas-wrap {
+      padding: 24px 16px 48px;
+      display: flex;
+      justify-content: center;
+      overflow: auto;
+    }
+    #pageCanvas {
+      display: block;
+      max-width: min(100%, 960px);
+      height: auto;
+      background: #fff;
+      box-shadow: 0 8px 28px rgba(44, 36, 22, 0.18);
+    }
+  </style>
+</head>
+<body>
+  <header class="label-tools">
+    <label>
+      Product
+      <select id="productSelect"></select>
+    </label>
+    <label>
+      Page
+      <select id="pageSizeSelect">
+        <option value="A3">A3</option>
+        <option value="A4" selected>A4</option>
+        <option value="A5">A5</option>
+      </select>
+    </label>
+    <label>
+      Orientation
+      <select id="orientationSelect">
+        <option value="portrait">Portrait</option>
+        <option value="landscape" selected>Landscape</option>
+      </select>
+    </label>
+    <label>
+      Tile
+      <select id="tileSelect">
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+        <option value="4">4</option>
+        <option value="6">6</option>
+        <option value="8">8</option>
+      </select>
+    </label>
+    <button type="button" id="downloadBtn">Download JPEG</button>
+    <span class="status" id="status"></span>
+  </header>
+
+  <main class="canvas-wrap">
+    <canvas id="pageCanvas" aria-label="Product label preview"></canvas>
+  </main>
+
+  <script src="tools/editData/productData.js"></script>
+  <script>
+    (function () {
+      var DPI = 300;
+      var MARGIN_MM = 5;
+      var LOGO_URL = "shared-assets/images/branding/favicon.jpg";
+      var SITE_TEXT = "ContraptionCart.com";
+      var CREDIT_TEXT = "Designed by Shasa Bolton, Tasmania Australia";
+      var TITLE_FONT = "Harrington";
+      var TITLE_WEIGHT = "400";
+
+      var PAGE_MM = {
+        A3: { w: 297, h: 420 },
+        A4: { w: 210, h: 297 },
+        A5: { w: 148, h: 210 }
+      };
+
+      var productSelect = document.getElementById("productSelect");
+      var pageSizeSelect = document.getElementById("pageSizeSelect");
+      var orientationSelect = document.getElementById("orientationSelect");
+      var tileSelect = document.getElementById("tileSelect");
+      var downloadBtn = document.getElementById("downloadBtn");
+      var statusEl = document.getElementById("status");
+      var canvas = document.getElementById("pageCanvas");
+      var ctx = canvas.getContext("2d");
+
+      var catalog = [];
+      var logoImage = null;
+      var renderToken = 0;
+
+      function setStatus(msg) {
+        statusEl.textContent = msg || "";
+      }
+
+      function mmToPx(mm) {
+        return (mm / 25.4) * DPI;
+      }
+
+      function getPageSizePx() {
+        var size = PAGE_MM[pageSizeSelect.value] || PAGE_MM.A4;
+        var landscape = orientationSelect.value === "landscape";
+        var wMm = landscape ? size.h : size.w;
+        var hMm = landscape ? size.w : size.h;
+        return { width: mmToPx(wMm), height: mmToPx(hMm), margin: mmToPx(MARGIN_MM) };
+      }
+
+      function tileGrid(count) {
+        if (count <= 1) return { cols: 1, rows: 1 };
+        if (count === 2) return { cols: 2, rows: 1 };
+        if (count === 4) return { cols: 2, rows: 2 };
+        if (count === 6) return { cols: 3, rows: 2 };
+        return { cols: 4, rows: 2 };
+      }
+
+      function imageSrcForCanvas(url) {
+        var u = String(url || "").trim();
+        if (!u) return "";
+        if (/^https?:\/\//i.test(u)) {
+          return "https://images.weserv.nl/?url=" + encodeURIComponent(u);
+        }
+        return u;
+      }
+
+      function loadImage(url) {
+        return new Promise(function (resolve) {
+          if (!url) {
+            resolve(null);
+            return;
+          }
+          var img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = function () {
+            resolve(img);
+          };
+          img.onerror = function () {
+            if (/images\.weserv\.nl/.test(img.src) && /^https?:\/\//i.test(url)) {
+              var direct = new Image();
+              direct.crossOrigin = "anonymous";
+              direct.onload = function () {
+                resolve(direct);
+              };
+              direct.onerror = function () {
+                resolve(null);
+              };
+              direct.src = url;
+              return;
+            }
+            resolve(null);
+          };
+          img.src = imageSrcForCanvas(url);
+        });
+      }
+
+      function drawImageCover(c, img, x, y, w, h) {
+        if (!img || !img.width || !img.height || w <= 0 || h <= 0) {
+          c.fillStyle = "#e8e2d6";
+          c.fillRect(x, y, w, h);
+          return;
+        }
+        var scale = Math.max(w / img.width, h / img.height);
+        var dw = img.width * scale;
+        var dh = img.height * scale;
+        var dx = x + (w - dw) / 2;
+        var dy = y + (h - dh) / 2;
+        c.save();
+        c.beginPath();
+        c.rect(x, y, w, h);
+        c.clip();
+        c.drawImage(img, dx, dy, dw, dh);
+        c.restore();
+      }
+
+      function drawImageContain(c, img, x, y, w, h) {
+        if (!img || !img.width || !img.height || w <= 0 || h <= 0) return;
+        var scale = Math.min(w / img.width, h / img.height);
+        var dw = img.width * scale;
+        var dh = img.height * scale;
+        var dx = x + (w - dw) / 2;
+        var dy = y + (h - dh) / 2;
+        c.drawImage(img, dx, dy, dw, dh);
+      }
+
+      function fitText(c, text, maxWidth, fontFamily, weight, startPx, minPx) {
+        var size = startPx;
+        var weightPart = weight ? weight + " " : "";
+        while (size > minPx) {
+          c.font = weightPart + size + "px " + fontFamily;
+          if (c.measureText(text).width <= maxWidth) break;
+          size -= 1;
+        }
+        c.font = weightPart + size + "px " + fontFamily;
+        return size;
+      }
+
+      function drawLabel(c, product, images, x, y, w, h) {
+        // Match other-repo product label: thick border, title, full-width tagline bar,
+        // hero square left, two small squares in a row, logo + credit under the smalls.
+        var borderWidth = h / 50;
+        var halfBorder = borderWidth / 2;
+
+        c.fillStyle = "#ffffff";
+        c.fillRect(x, y, w, h);
+        c.lineWidth = borderWidth;
+        c.strokeStyle = "#000000";
+        c.strokeRect(x + halfBorder, y + halfBorder, w - borderWidth, h - borderWidth);
+
+        var title = product.title || "Product";
+        var titleFontHeight = h / 9;
+        c.fillStyle = "#ff0000";
+        c.textAlign = "center";
+        c.textBaseline = "alphabetic";
+        fitText(
+          c,
+          title,
+          w - borderWidth * 2,
+          TITLE_FONT,
+          TITLE_WEIGHT,
+          titleFontHeight,
+          10
+        );
+        c.fillText(title, x + w / 2, y + titleFontHeight);
+
+        var tagline = product.tagline || "";
+        var descriptionArray = tagline
+          ? tagline.split(",").map(function (s) { return s.trim(); }).filter(Boolean)
+          : [];
+        var descriptionFontHeight = h / 15;
+        var descriptionBoxTop = y + titleFontHeight * 1.3;
+        var descriptionBoxBottom = descriptionBoxTop;
+        if (descriptionArray.length) {
+          var descriptionBoxH =
+            descriptionArray.length * descriptionFontHeight + descriptionFontHeight * 0.3;
+          c.fillStyle = "#000000";
+          c.fillRect(x, descriptionBoxTop, w, descriptionBoxH);
+          descriptionBoxBottom = descriptionBoxTop + descriptionBoxH;
+
+          c.fillStyle = "#ffffff";
+          c.textAlign = "center";
+          c.textBaseline = "alphabetic";
+          c.font = descriptionFontHeight + "px Arial";
+          var textY = descriptionBoxTop + descriptionFontHeight;
+          for (var row = 0; row < descriptionArray.length; row++) {
+            c.fillText(descriptionArray[row], x + w / 2, textY);
+            textY += descriptionFontHeight;
+          }
+        }
+
+        var mainImageHeight = y + h - descriptionBoxBottom - borderWidth;
+        var mainImageWidth = mainImageHeight;
+        var imageLeft = x + borderWidth;
+        var imageTop = descriptionBoxBottom;
+        var innerRight = x + w - borderWidth;
+
+        drawImageCover(c, images[0], imageLeft, imageTop, mainImageWidth, mainImageHeight);
+
+        var numSmall = 2;
+        var mainImageRight = imageLeft + mainImageWidth;
+        var smallAvail = innerRight - mainImageRight;
+        var smallImageWidth = (smallAvail - borderWidth * 2) / numSmall;
+        if (smallImageWidth > mainImageHeight) {
+          smallImageWidth = mainImageHeight;
+        }
+        if (smallImageWidth < 4) smallImageWidth = 4;
+        for (var i = 0; i < numSmall; i++) {
+          var sx = mainImageRight + borderWidth + (smallImageWidth + borderWidth) * i;
+          drawImageCover(c, images[i + 1], sx, imageTop, smallImageWidth, smallImageWidth);
+        }
+
+        var padding = Math.max(10, h / 40);
+        var logoTop = imageTop + smallImageWidth + padding;
+        var logoAreaLeft = mainImageRight + padding;
+        var logoAreaWidth = innerRight - logoAreaLeft - padding;
+        var logoAreaHeight = y + h - borderWidth - logoTop;
+        if (logoAreaWidth > 4 && logoAreaHeight > 4) {
+          var logoBox = Math.min(logoAreaHeight * 0.55, logoAreaWidth * 0.55);
+          var logoX = logoAreaLeft + (logoAreaWidth - logoBox) / 2;
+          var logoY = logoTop;
+          if (logoImage) {
+            drawImageContain(c, logoImage, logoX, logoY, logoBox, logoBox);
+          }
+
+          var textTop = logoY + logoBox + padding * 0.35;
+          var textH = logoTop + logoAreaHeight - textTop;
+          c.fillStyle = "#2c2416";
+          c.textAlign = "center";
+          c.textBaseline = "middle";
+          var siteSize = fitText(
+            c,
+            SITE_TEXT,
+            logoAreaWidth,
+            "Arial",
+            "bold",
+            Math.max(10, textH * 0.32),
+            8
+          );
+          c.fillText(SITE_TEXT, logoAreaLeft + logoAreaWidth / 2, textTop + textH * 0.35);
+          c.fillStyle = "#6b5c45";
+          var creditSize = fitText(
+            c,
+            CREDIT_TEXT,
+            logoAreaWidth,
+            "Arial",
+            "",
+            Math.max(8, siteSize * 0.72),
+            7
+          );
+          c.font = creditSize + "px Arial";
+          c.fillText(CREDIT_TEXT, logoAreaLeft + logoAreaWidth / 2, textTop + textH * 0.72);
+        }
+      }
+
+      function selectedProduct() {
+        var idx = productSelect.selectedIndex;
+        if (idx < 0 || idx >= catalog.length) return null;
+        return catalog[idx];
+      }
+
+      function render() {
+        var product = selectedProduct();
+        var page = getPageSizePx();
+        var tiles = parseInt(tileSelect.value, 10) || 1;
+        var grid = tileGrid(tiles);
+        var token = ++renderToken;
+
+        canvas.width = Math.round(page.width);
+        canvas.height = Math.round(page.height);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (!product) {
+          setStatus("No product selected.");
+          return;
+        }
+
+        setStatus("Rendering…");
+        var urls = (product.images || []).slice(0, 3);
+        while (urls.length < 3) urls.push("");
+
+        Promise.all([
+          loadImage(urls[0]),
+          loadImage(urls[1]),
+          loadImage(urls[2]),
+          logoImage ? Promise.resolve(logoImage) : loadImage(LOGO_URL)
+        ]).then(function (loaded) {
+          if (token !== renderToken) return;
+          logoImage = loaded[3] || logoImage;
+          var images = [loaded[0], loaded[1], loaded[2]];
+
+          // Outer margin M; gap between tiles = 2M so a mid-gap cut leaves M white on each side.
+          var margin = page.margin;
+          var gap = margin * 2;
+          var cellW = (canvas.width - margin * 2 - gap * (grid.cols - 1)) / grid.cols;
+          var cellH = (canvas.height - margin * 2 - gap * (grid.rows - 1)) / grid.rows;
+
+          for (var row = 0; row < grid.rows; row++) {
+            for (var col = 0; col < grid.cols; col++) {
+              var i = row * grid.cols + col;
+              if (i >= tiles) continue;
+              var x = margin + col * (cellW + gap);
+              var y = margin + row * (cellH + gap);
+              drawLabel(ctx, product, images, x, y, cellW, cellH);
+            }
+          }
+          setStatus(product.title);
+        });
+      }
+
+      function downloadJpeg() {
+        var product = selectedProduct();
+        if (!product) return;
+        try {
+          var link = document.createElement("a");
+          var slug = product.slug || "label";
+          link.download = slug + "-label.jpg";
+          link.href = canvas.toDataURL("image/jpeg", 0.92);
+          link.click();
+          setStatus("Downloaded " + link.download);
+        } catch (err) {
+          setStatus("Download failed (image CORS). Try again or use local images.");
+          console.error(err);
+        }
+      }
+
+      function buildCatalog(products) {
+        var pd = window.productData;
+        var list = Array.isArray(products) ? products : [];
+        var out = [];
+        list.forEach(function (row) {
+          if (!row || row.DIGITAL === true) return;
+          if (pd && typeof pd.isProductRowDraft === "function" && pd.isProductRowDraft(row)) return;
+          if (pd && typeof pd.isProductRowHidden === "function" && pd.isProductRowHidden(row)) return;
+
+          var title =
+            pd && typeof pd.resolveProductDisplayTitle === "function"
+              ? pd.resolveProductDisplayTitle(row, "")
+              : String(row.SHORT_TITLE || row.TITLE || "").trim();
+          var slug =
+            pd && typeof pd.getProductSlugForRow === "function"
+              ? pd.getProductSlugForRow(row, list)
+              : String(row.SLUG || "").trim();
+          var imagesRaw =
+            pd && typeof pd.collectProductImageUrls === "function"
+              ? pd.collectProductImageUrls(row)
+              : [row.IMAGE1, row.IMAGE2, row.IMAGE3].map(function (u) {
+                  return String(u || "").trim();
+                }).filter(Boolean);
+          var images = imagesRaw.map(function (raw) {
+            return pd && typeof pd.productImageUrlForDisplay === "function"
+              ? pd.productImageUrlForDisplay(raw, "full")
+              : raw;
+          });
+          if (!title || images.length < 1) return;
+          out.push({
+            title: title,
+            slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+            images: images,
+            tagline: String(row.TAGLINE || "").trim()
+          });
+        });
+        out.sort(function (a, b) {
+          return a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
+        });
+        return out;
+      }
+
+      function populateProducts() {
+        productSelect.innerHTML = "";
+        catalog.forEach(function (item, i) {
+          var opt = document.createElement("option");
+          opt.value = String(i);
+          opt.textContent = item.title;
+          productSelect.appendChild(opt);
+        });
+      }
+
+      function bind() {
+        productSelect.addEventListener("change", render);
+        pageSizeSelect.addEventListener("change", render);
+        orientationSelect.addEventListener("change", render);
+        tileSelect.addEventListener("change", render);
+        downloadBtn.addEventListener("click", downloadJpeg);
+      }
+
+      bind();
+      setStatus("Loading products…");
+      loadImage(LOGO_URL).then(function (img) {
+        logoImage = img;
+      });
+
+      function ensureTitleFont() {
+        if (!document.fonts || typeof document.fonts.load !== "function") {
+          return Promise.resolve();
+        }
+        return document.fonts
+          .load(TITLE_WEIGHT + " 64px " + TITLE_FONT)
+          .catch(function () {
+            return null;
+          });
+      }
+
+      var pd = window.productData;
+      if (!pd || typeof pd.fetchProductDataJson !== "function") {
+        setStatus("productData.js failed to load.");
+        return;
+      }
+      Promise.all([ensureTitleFont(), pd.fetchProductDataJson()])
+        .then(function (results) {
+          var data = results[1];
+          catalog = buildCatalog((data && data.products) || []);
+          populateProducts();
+          if (!catalog.length) {
+            setStatus("No physical products found.");
+            return;
+          }
+          render();
+        })
+        .catch(function (err) {
+          console.error(err);
+          setStatus("Failed to load product data.");
+        });
+    })();
+  </script>
+</body>
+</html>

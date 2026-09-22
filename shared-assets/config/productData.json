@@ -7,6 +7,7 @@
     "REDIRECTS",
     "LINKS",
     "DESCRIPTION",
+    "TAGLINE",
     "PRICE",
     "CURRENCY_CODE",
     "QUANTITY",
@@ -90,7 +91,8 @@
       "VIDEO3": "",
       "SLUG": "cam-box-laser-cutter-plans-svg-dxf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Hummingbird and Flower Automaton Laser Cut plans SVG DXF",
@@ -135,7 +137,8 @@
       "VIDEO3": "",
       "SLUG": "hummingbird-and-flower-automaton-laser-cut-plans-svg-dxf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Dog and Cat Running Automata Laser Cutting plans svg dxf",
@@ -180,7 +183,8 @@
       "VIDEO3": "",
       "SLUG": "dog-and-cat-running-automata-laser-cutting-plans-svg-dxf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Hummingbird and Flower Automaton, Hand Cranked Mechanism",
@@ -225,7 +229,8 @@
       "VIDEO3": "",
       "SLUG": "hummingbird-and-flower",
       "REDIRECTS": [],
-      "LINKS": []
+      "LINKS": [],
+      "TAGLINE": "Assemble the Mechanism,Hand Cranked - Elegant Lifelike Motion"
     },
     {
       "TITLE": "Dog and Cat Running Automata kit",
@@ -269,7 +274,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "dog-and-cat-running",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": "Assemble the Mechanism,Hand Cranked - Captivating Leaping Motion"
     },
     {
       "TITLE": "Writing and Drawing automaton, Laser  Cut Mechanical Model, Science Kit",
@@ -325,7 +331,8 @@
           "text": "try the cam generator app",
           "url": "https://shasabolton.github.io/lankydoodler/"
         }
-      ]
+      ],
+      "TAGLINE": "Mechanical Writing Automaton,DIY assembly - make custom sketches in the app"
     },
     {
       "TITLE": "Fluttering Heart Automata Kit - Kinetic mechanical model - Valentines Gift",
@@ -369,7 +376,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "fluttering-heart",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": "Mimics the elegant flapping motion,of dragonflies and hummingbirds"
     },
     {
       "TITLE": "Plans for Wooden Hummingbird pole pet automata SVG DXF PDF",
@@ -414,7 +422,8 @@
       "VIDEO3": "",
       "SLUG": "plans-for-wooden-hummingbird-pole-pet-automata-svg-dxf-pdf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Wooden Hummingbird pole pet automata",
@@ -458,7 +467,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "hummingbird-pole-pet",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": "Assemble the parts,Pull the string to watch it rise up flapping"
     },
     {
       "TITLE": "Bird Zoetrope Kit, 3D Laser Cut Wooden Puzzle, Animation Machine",
@@ -504,7 +514,8 @@
       "SLUG": "bird-zoetrope",
       "REDIRECTS": [
         "shop/bird-zoetrope-3d"
-      ]
+      ],
+      "TAGLINE": "Assemble your own 3D Animation Machine"
     },
     {
       "TITLE": "Bird 3D Zoetrope laser cutter plans - SVG DXF",
@@ -549,7 +560,8 @@
       "VIDEO3": "",
       "SLUG": "bird-3d-zoetrope-laser-cutter-plans-svg-dxf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Writing automaton plans scroll saw/laser cutter - Lanky Doodler  Mechanical Model SVG,DXF,PDF",
@@ -594,7 +606,8 @@
       "VIDEO3": "",
       "SLUG": "writing-automaton-plans-scroll-saw-laser-cutter-lanky-doodler-mechanical-model-svg-dxf-pdf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "DIY Swinging Monkey Automata Kit - Fun Craft Project for Kids and Adults",
@@ -639,7 +652,8 @@
       "VIDEO3": "",
       "SLUG": "swinging-monkey",
       "REDIRECTS": [],
-      "LINKS": []
+      "LINKS": [],
+      "TAGLINE": "Assemble - Hand Crank,watch your monkey swing through the trees"
     },
     {
       "TITLE": "Whale Automata Toy Kit: Mechanical Pet, DIY Build",
@@ -683,7 +697,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "whale-pulley-pet",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Gorilla Pulley Pet Automata Plans SVG DXF-Laser cut mechanical toy",
@@ -728,7 +743,8 @@
       "VIDEO3": "",
       "SLUG": "gorilla-pulley-pet-automata-plans-svg-dxf-laser-cut-mechanical-toy",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Fluttering Heart Automaton SVG DXF PDF laser cutter files",
@@ -773,7 +789,8 @@
       "VIDEO3": "",
       "SLUG": "fluttering-heart-automaton-svg-dxf-pdf-laser-cutter-files",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Electric Origami Hummingbird Plans - Paper Automata template",
@@ -818,7 +835,8 @@
       "VIDEO3": "",
       "SLUG": "electric-origami-hummingbird-plans-paper-automata-template",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Swinging Monkey Automata Laser Cutting plans svg dxf",
@@ -863,7 +881,8 @@
       "VIDEO3": "",
       "SLUG": "swinging-monkey-automata-laser-cutting-plans-svg-dxf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Automata kit Bird Money Bank - Gear Box Pets",
@@ -907,7 +926,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "bird-bank",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Goldfish Automata Kit - Wooden Mechanical Fish",
@@ -951,7 +971,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "goldfish",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Tortoise  Automata Kit - Wooden mechanical keepsake box",
@@ -995,7 +1016,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "tortoise-tally",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Climbing Gorilla Pulley Toy Kit: Pet Automata Mechanism",
@@ -1039,7 +1061,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "gorilla-pulley-pet",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Sword Through Finger Magic Trick: Laser Cut Files (SVG DXF)",
@@ -1084,7 +1107,8 @@
       "VIDEO3": "",
       "SLUG": "sword-through-finger-magic-trick-laser-cut-files-svg-dxf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Magic Empty Box Laser Cutter Files SVG DXF",
@@ -1129,7 +1153,8 @@
       "VIDEO3": "",
       "SLUG": "magic-empty-box-laser-cutter-files-svg-dxf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Magic Pencil Box Laser Cutter Plans SVG DXF PDF",
@@ -1174,7 +1199,8 @@
       "VIDEO3": "",
       "SLUG": "magic-pencil-box-laser-cutter-plans-svg-dxf-pdf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Magic Drawer Box, Lasercut Files SVG DXF PDF, Wooden Production Box Illusion",
@@ -1219,7 +1245,8 @@
       "VIDEO3": "",
       "SLUG": "magic-drawer-box-lasercut-files-svg-dxf-pdf-wooden-production-box-illusion",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Coke Can Magic Trick Box: Self-Working Illusion, DIY or Assembled",
@@ -1266,7 +1293,8 @@
       "REDIRECTS": [
         "shop/tiltbox"
       ],
-      "LINKS": []
+      "LINKS": [],
+      "TAGLINE": "Invisible objects appear instantly,when thrown into the box - DIY assembly"
     },
     {
       "TITLE": "Magic Trick Pencil Box Kit: Wooden 3D Puzzle, STEM Toy",
@@ -1311,7 +1339,8 @@
       "VIDEO3": "",
       "SLUG": "zig-zag-pencil",
       "REDIRECTS": [],
-      "LINKS": []
+      "LINKS": [],
+      "TAGLINE": "Assemble the box,then magically break and heal a pencil"
     },
     {
       "TITLE": "Sword Through Finger Magic Trick, laser cut illusion puzzle, wooden DIY kit",
@@ -1356,7 +1385,8 @@
       "VIDEO3": "",
       "SLUG": "sword-through-finger",
       "REDIRECTS": [],
-      "LINKS": []
+      "LINKS": [],
+      "TAGLINE": "Push a wooden sword through your finger,self working - instantly repeatable"
     },
     {
       "TITLE": "Magic Drawer Illusion Box – Vanish or Appear Objects Trick",
@@ -1400,7 +1430,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "magic-drawer",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": "Make objects vanish or appear at will,DIY Assembly"
     },
     {
       "TITLE": "Magic Frame Illusion-Appearing Image and words-customizable",
@@ -1450,7 +1481,8 @@
           "text": "Try the app to generate your own words and images",
           "url": "https://shasabolton.github.io/magicFrame/"
         }
-      ]
+      ],
+      "TAGLINE": "Make words and pictures change instantly,DIY assembly"
     },
     {
       "TITLE": "Dice Tunnel Magic Trick Laser Cut Illusion DIY Kit",
@@ -1495,7 +1527,8 @@
       "VIDEO3": "",
       "SLUG": "dice-tunnel",
       "REDIRECTS": [],
-      "LINKS": []
+      "LINKS": [],
+      "TAGLINE": "The dice number changes magically as it,passes through the tunnel. DIY assembly"
     },
     {
       "TITLE": "Magic Frame-lasercut Files-Appearing Image and words-customizable-svg dxf pdf",
@@ -1540,7 +1573,8 @@
       "VIDEO3": "",
       "SLUG": "magic-frame-lasercut-files-appearing-image-and-words-customizable-svg-dxf-pdf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Dice Tunnel Magic Trick Laser Cut Files for Download - SVG - DXF - PDF - Illusion",
@@ -1585,7 +1619,8 @@
       "VIDEO3": "",
       "SLUG": "dice-tunnel-magic-trick-laser-cut-files-for-download-svg-dxf-pdf-illusion",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Key Through Coin Magic Trick: Laser Cut Plans (SVG, PDF, DXF)",
@@ -1630,7 +1665,8 @@
       "VIDEO3": "",
       "SLUG": "key-through-coin-magic-trick-laser-cut-plans-svg-pdf-dxf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Magic Empty Box Illusion - DIY Magic Trick - Make anything appear and disappear",
@@ -1674,7 +1710,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "magic-empty-box",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": "Make objects appear and vanish,from an empty box. DIY assembly"
     },
     {
       "TITLE": "Newcomb's Paradox Magic Trick Laser Cut Files, SVG DXF PDF, Coin Illusion with Secret Mechanism, Mental Magic",
@@ -1719,7 +1756,8 @@
       "VIDEO3": "",
       "SLUG": "newcomb-s-paradox-magic-trick-laser-cut-files-svg-dxf-pdf-coin-illusion-with-secret-mechanism-mental-magic",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Chicken And Egg Box Magic Trick laser cut files, svg dxf pdf, gozinta box",
@@ -1764,7 +1802,8 @@
       "VIDEO3": "",
       "SLUG": "chicken-and-egg-box-magic-trick-laser-cut-files-svg-dxf-pdf-gozinta-box",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Chicken And Egg Box Magic Trick, gozinta box, Impossible boxes, Each fits inside the other",
@@ -1809,7 +1848,8 @@
       "VIDEO3": "",
       "SLUG": "chicken-and-egg",
       "REDIRECTS": [],
-      "LINKS": []
+      "LINKS": [],
+      "TAGLINE": "Impossible boxes: each fits,inside the other - DIY Assembly"
     },
     {
       "TITLE": "Moving Head Illusion Robot Laser cut files svg dxf pdf",
@@ -1854,7 +1894,8 @@
       "VIDEO3": "",
       "SLUG": "moving-head-illusion-robot-laser-cut-files-svg-dxf-pdf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Newcomb's Paradox Magic Trick: Coin Illusion with Secret Mechanism, Mental Magic",
@@ -1898,7 +1939,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "newcombs-paradox",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Key Through Coin Magic Trick",
@@ -1942,7 +1984,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "key-through-coin",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": "Push a wooden key through a wooden coin,DIY Assembly"
     },
     {
       "TITLE": "Mini Cryptex Puzzle Box Laser Cut Files, SVG DXF PDF, Spell and Spin learning toy",
@@ -1987,7 +2030,8 @@
       "VIDEO3": "",
       "SLUG": "mini-cryptex-puzzle-box-laser-cut-files-svg-dxf-pdf-spell-and-spin-learning-toy",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Mini Cryptex Puzzle Box – Word Lock Secret Drawer, Spelling Learning Toy",
@@ -2031,7 +2075,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "mini-cryptex",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": "Spin - Spell - Solve - unlock with words,Puzzle Box - DIY Assembly Kit"
     },
     {
       "TITLE": "Mouse Maze Puzzle Box, wooden mystery Box",
@@ -2075,7 +2120,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "mouse-maze-puzzle-box",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Slide Picture Puzzle Box Plans SVG DXF PDF Davinci's Vitruvian man",
@@ -2120,7 +2166,8 @@
       "VIDEO3": "",
       "SLUG": "slide-picture-puzzle-box-plans-svg-dxf-pdf-davinci-s-vitruvian-man",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Illusionist Pendant Puzzle Box Laser Cut Files",
@@ -2165,7 +2212,8 @@
       "VIDEO3": "",
       "SLUG": "illusionist-pendant-puzzle-box-laser-cut-files",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Mouse Maze Puzzle Box Plans- SVG DXF PDF- Laser cutting files - scroll saw",
@@ -2210,7 +2258,8 @@
       "VIDEO3": "",
       "SLUG": "mouse-maze-puzzle-box-plans-svg-dxf-pdf-laser-cutting-files-scroll-saw",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Illusionist Pendant Puzzle Box Laser Cut DIY Kit",
@@ -2254,7 +2303,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "illusionist-pendant-puzzle-box",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": "Assemble the parts,Secret opening sequence"
     },
     {
       "TITLE": "Slide Picture Puzzle Box Kit Davinci's Vitruvian man",
@@ -2299,7 +2349,8 @@
       "VIDEO3": "",
       "SLUG": "slide-picture-puzzle-box",
       "REDIRECTS": [],
-      "LINKS": []
+      "LINKS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Mechanical Calculator, Math and Science Toy, Wooden Mechanism, Model Engineering Kit",
@@ -2343,7 +2394,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "mechanical-calculator",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": "A Functioning Mechanical Calculator,Made With Wooden Gears - DIY Assembly"
     },
     {
       "TITLE": "Musical Marble Tree Scroll Saw or Laser Cutter Plans PDF - SVG - DXF",
@@ -2388,7 +2440,8 @@
       "VIDEO3": "",
       "SLUG": "musical-marble-tree-scroll-saw-or-laser-cutter-plans-pdf-svg-dxf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Mechanical Calculator Laser Cut Files SVG, DXF, Math Toy, Wooden Mechanism",
@@ -2433,7 +2486,8 @@
       "VIDEO3": "",
       "SLUG": "mechanical-calculator-laser-cut-files-svg-dxf-math-toy-wooden-mechanism",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Chocolate Train Counting Squares: Educational Math Toy SVG DXF (Digital Download)",
@@ -2478,7 +2532,8 @@
       "VIDEO3": "",
       "SLUG": "chocolate-train-counting-squares-educational-math-toy-svg-dxf-digital-download",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Toddler Ride On Dog Toy Plans: Sweeping Car, DXF SVG PDF",
@@ -2523,7 +2578,8 @@
       "VIDEO3": "",
       "SLUG": "toddler-ride-on-dog-toy-plans-sweeping-car-dxf-svg-pdf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Mini Arcade Driving Game: Wind-Up Music Box, Laser Cut Wood Kit",
@@ -2567,7 +2623,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "tiny-drive",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": "Assemble the wooden kit,then steer your way through the little world"
     },
     {
       "TITLE": "Wooden Ride On Car Street Sweeper, Wheely Dog for Toddlers, Pug Toy for Babies",
@@ -2612,7 +2669,8 @@
       "VIDEO3": "",
       "SLUG": "street-sweeper",
       "REDIRECTS": [],
-      "LINKS": []
+      "LINKS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Musical Marble Tree Laser Cut Kit",
@@ -2656,7 +2714,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "marble-tree",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Woodchopper whirligig plans, laser cut files, scroll saw, svg dxf pdf",
@@ -2701,7 +2760,8 @@
       "VIDEO3": "",
       "SLUG": "woodchopper-whirligig-plans-laser-cut-files-scroll-saw-svg-dxf-pdf",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Fisherman whirligig plans - SVG DXF PDF - laser cutting - scroll saw",
@@ -2746,7 +2806,8 @@
       "VIDEO3": "",
       "SLUG": "fisherman-whirligig-plans-svg-dxf-pdf-laser-cutting-scroll-saw",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Woodchopper Whirligig Kit",
@@ -2790,7 +2851,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "woodchopper-whirligig",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Dog Whirligig, Kinetic Wind Powered Garden Sculpture, DIY Kit or Fully Assembled",
@@ -2834,7 +2896,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "dog-whirligig",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Fisherman whirligig  Kit, Wind Powered Kinetic Garden Sculpture",
@@ -2878,7 +2941,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "fisherman-whirligig",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Surfer Whirligig Kit",
@@ -2922,7 +2986,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "surfer-whirligig",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Bird Whirligig Plans DXF SVG Laser cut or Scroll saw",
@@ -2967,7 +3032,8 @@
       "VIDEO3": "",
       "SLUG": "bird-whirligig-plans-dxf-svg-laser-cut-or-scroll-saw",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Wind Powered Bird Whirligig Kit, Birch Plywood Fantail, Kinetic sculpture",
@@ -3012,7 +3078,8 @@
       "VIDEO3": "",
       "SLUG": "fantail-whirligig",
       "REDIRECTS": [],
-      "LINKS": []
+      "LINKS": [],
+      "TAGLINE": "Build your own wind powered flapping bird"
     },
     {
       "TITLE": "Whirligig Hardware Kit: Stainless Steel & Brass Parts",
@@ -3056,7 +3123,8 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "whirligig-hardware",
-      "REDIRECTS": []
+      "REDIRECTS": [],
+      "TAGLINE": ""
     },
     {
       "TITLE": "Surfer Whirligig Plans - SVG - PDF - laser cutting - scroll saw",
@@ -3101,7 +3169,8 @@
       "VIDEO3": "",
       "SLUG": "surfer-whirligig-plans-svg-pdf-laser-cutting-scroll-saw",
       "REDIRECTS": [],
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Dog whirligig laser cutting/ scroll saw Plans SVG DXF PDF",
@@ -3146,7 +3215,8 @@
       "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 PRICE DELTA": "",
       "VIDEO1": "",
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     },
     {
       "TITLE": "Electric Origami Fish Plans - paper craft automata",
@@ -3191,7 +3261,8 @@
       "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 PRICE DELTA": "",
       "VIDEO1": "",
-      "DRAFT": true
+      "DRAFT": true,
+      "TAGLINE": ""
     }
   ]
 }
