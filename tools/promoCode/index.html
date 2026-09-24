@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="../../" data-site-base>
+  <title>Promo code print</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #e8e2d6;
+      color: #2c2416;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+    }
+    .label-tools {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 16px;
+      background: #2c2416;
+      color: #faf6ee;
+    }
+    .label-tools label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .label-tools select,
+    .label-tools button {
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: 15px;
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+    }
+    .label-tools select {
+      border: 1px solid #7a6a50;
+      background: #fff;
+      color: #2c2416;
+      min-width: 220px;
+      max-width: 360px;
+    }
+    .label-tools button {
+      border: 0;
+      background: #faf6ee;
+      color: #2c2416;
+      padding: 8px 14px;
+    }
+    .label-tools button:hover {
+      background: #fff;
+    }
+    .label-tools .status {
+      min-height: 1.2em;
+      color: #d9cbb3;
+      font-size: 13px;
+    }
+    .canvas-wrap {
+      padding: 24px 16px 48px;
+      display: flex;
+      justify-content: center;
+      overflow: auto;
+    }
+    #pageCanvas {
+      display: block;
+      max-width: min(100%, 720px);
+      height: auto;
+      background: #fff;
+      box-shadow: 0 8px 28px rgba(44, 36, 22, 0.18);
+    }
+  </style>
+</head>
+<body>
+  <header class="label-tools">
+    <label>
+      Promo code
+      <select id="codeSelect"></select>
+    </label>
+    <button type="button" id="printBtn">Print</button>
+    <button type="button" id="downloadBtn">Download JPEG</button>
+    <span class="status" id="status"></span>
+  </header>
+
+  <main class="canvas-wrap">
+    <canvas id="pageCanvas" aria-label="Promo code print preview"></canvas>
+  </main>
+
+  <script>
+    (function () {
+      var DPI = 300;
+      var MARGIN_MM = 5;
+      var GAP_MM = 4;
+      var COLS = 2;
+      var ROWS = 4;
+      var PAGE_W_MM = 210;
+      var PAGE_H_MM = 297;
+      var LOGO_URL = "design/cart%20logo.svg";
+      var SITE_TEXT = "ContraptionCart.com";
+      var DISCOUNT_CODES_URL = "shared-assets/config/discountCodes.json";
+
+      var codeSelect = document.getElementById("codeSelect");
+      var downloadBtn = document.getElementById("downloadBtn");
+      var printBtn = document.getElementById("printBtn");
+      var statusEl = document.getElementById("status");
+      var canvas = document.getElementById("pageCanvas");
+      var ctx = canvas.getContext("2d");
+
+      var codes = [];
+      var logoImage = null;
+      var renderToken = 0;
+
+      function setStatus(msg) {
+        statusEl.textContent = msg || "";
+      }
+
+      function mmToPx(mm) {
+        return (mm / 25.4) * DPI;
+      }
+
+      function loadImage(url) {
+        return new Promise(function (resolve) {
+          if (!url) {
+            resolve(null);
+            return;
+          }
+          var img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = function () {
+            resolve(img);
+          };
+          img.onerror = function () {
+            resolve(null);
+          };
+          img.src = url;
+        });
+      }
+
+      function drawImageContain(c, img, x, y, w, h) {
+        if (!img || !img.width || !img.height || w <= 0 || h <= 0) return;
+        var scale = Math.min(w / img.width, h / img.height);
+        var dw = img.width * scale;
+        var dh = img.height * scale;
+        var dx = x + (w - dw) / 2;
+        var dy = y + (h - dh) / 2;
+        c.drawImage(img, dx, dy, dw, dh);
+      }
+
+      function fitText(c, text, maxWidth, fontFamily, weight, startPx, minPx) {
+        var size = startPx;
+        var weightPart = weight ? weight + " " : "";
+        while (size > minPx) {
+          c.font = weightPart + size + "px " + fontFamily;
+          if (c.measureText(text).width <= maxWidth) break;
+          size -= 1;
+        }
+        c.font = weightPart + size + "px " + fontFamily;
+        return size;
+      }
+
+      function formatOffer(entry) {
+        if (!entry) return "";
+        var value = Number(entry.value);
+        if (!Number.isFinite(value)) return "";
+        if (entry.type === "percent") {
+          return Math.round(value) + "% off";
+        }
+        if (entry.type === "fixed") {
+          return "$" + (Number.isInteger(value) ? String(value) : value.toFixed(2)) + " off";
+        }
+        return "";
+      }
+
+      function planLayout() {
+        var pageW = mmToPx(PAGE_W_MM);
+        var pageH = mmToPx(PAGE_H_MM);
+        var margin = mmToPx(MARGIN_MM);
+        var gap = mmToPx(GAP_MM);
+        var cellW = (pageW - margin * 2 - gap * (COLS - 1)) / COLS;
+        var cellH = (pageH - margin * 2 - gap * (ROWS - 1)) / ROWS;
+        return {
+          pageW: pageW,
+          pageH: pageH,
+          margin: margin,
+          gap: gap,
+          cellW: cellW,
+          cellH: cellH,
+          originX: margin,
+          originY: margin
+        };
+      }
+
+      function drawTile(c, entry, x, y, w, h) {
+        var border = Math.max(2, Math.min(w, h) / 55);
+        var half = border / 2;
+        var pad = Math.max(10, Math.min(w, h) / 18);
+        var innerX = x + border + pad;
+        var innerY = y + border + pad;
+        var innerW = w - (border + pad) * 2;
+        var innerH = h - (border + pad) * 2;
+        var code = String((entry && entry.code) || "").trim().toUpperCase();
+        var offer = formatOffer(entry);
+
+        c.fillStyle = "#ffffff";
+        c.fillRect(x, y, w, h);
+        c.lineWidth = border;
+        c.strokeStyle = "#2c2416";
+        c.strokeRect(x + half, y + half, w - border, h - border);
+
+        var logoBox = Math.min(innerW * 0.42, innerH * 0.34);
+        var logoX = innerX + (innerW - logoBox) / 2;
+        var logoY = innerY;
+        if (logoImage) {
+          drawImageContain(c, logoImage, logoX, logoY, logoBox, logoBox);
+        }
+
+        c.textAlign = "center";
+        c.textBaseline = "alphabetic";
+        var cx = innerX + innerW / 2;
+
+        var siteStart = Math.max(12, Math.min(innerW * 0.09, logoBox * 0.28));
+        var siteSize = fitText(c, SITE_TEXT, innerW, "Arial", "bold", siteStart, 9);
+        var siteBaseline = logoY + logoBox + siteSize * 1.35;
+        c.fillStyle = "#2c2416";
+        c.font = "bold " + siteSize + "px Arial";
+        c.fillText(SITE_TEXT, cx, siteBaseline);
+
+        var labelSize = fitText(
+          c,
+          "Promo code",
+          innerW,
+          "Arial",
+          "",
+          Math.max(10, siteSize * 0.85),
+          8
+        );
+        var labelBaseline = siteBaseline + labelSize * 1.55;
+        c.fillStyle = "#6b5c45";
+        c.font = labelSize + "px Arial";
+        c.fillText("Promo code", cx, labelBaseline);
+
+        var codeMaxH = Math.max(18, innerY + innerH - labelBaseline - (offer ? labelSize * 1.8 : pad));
+        var codeStart = Math.min(innerW * 0.22, codeMaxH * 0.7, 72);
+        var codeSize = fitText(c, code || "CODE", innerW, "Arial", "bold", codeStart, 12);
+        var codeBaseline = labelBaseline + codeSize * 1.35;
+        c.fillStyle = "#6b3a1f";
+        c.font = "bold " + codeSize + "px Arial";
+        c.fillText(code || "CODE", cx, codeBaseline);
+
+        if (offer) {
+          var offerSize = fitText(
+            c,
+            offer,
+            innerW,
+            "Arial",
+            "",
+            Math.max(10, siteSize * 0.95),
+            8
+          );
+          var offerBaseline = Math.min(
+            innerY + innerH - offerSize * 0.2,
+            codeBaseline + offerSize * 1.55
+          );
+          c.fillStyle = "#2c2416";
+          c.font = offerSize + "px Arial";
+          c.fillText(offer, cx, offerBaseline);
+        }
+      }
+
+      function selectedCode() {
+        var idx = codeSelect.selectedIndex;
+        if (idx < 0 || idx >= codes.length) return null;
+        return codes[idx];
+      }
+
+      function render() {
+        var entry = selectedCode();
+        var layout = planLayout();
+        var token = ++renderToken;
+
+        canvas.width = Math.round(layout.pageW);
+        canvas.height = Math.round(layout.pageH);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (!entry) {
+          setStatus("No promo code selected.");
+          return;
+        }
+
+        setStatus("Rendering…");
+        var logoReady = logoImage ? Promise.resolve(logoImage) : loadImage(LOGO_URL);
+        logoReady.then(function (img) {
+          if (token !== renderToken) return;
+          logoImage = img || logoImage;
+
+          for (var row = 0; row < ROWS; row++) {
+            for (var col = 0; col < COLS; col++) {
+              var x = layout.originX + col * (layout.cellW + layout.gap);
+              var y = layout.originY + row * (layout.cellH + layout.gap);
+              drawTile(ctx, entry, x, y, layout.cellW, layout.cellH);
+            }
+          }
+          setStatus(entry.code + " — 2×4 on A4");
+        });
+      }
+
+      function printCanvas() {
+        if (!canvas.width || !canvas.height) return;
+        var dataUrl;
+        try {
+          dataUrl = canvas.toDataURL("image/png");
+        } catch (err) {
+          setStatus("Print failed.");
+          console.error(err);
+          return;
+        }
+
+        var existing = document.getElementById("printFrame");
+        if (existing) existing.remove();
+
+        var iframe = document.createElement("iframe");
+        iframe.id = "printFrame";
+        iframe.setAttribute("aria-hidden", "true");
+        iframe.style.cssText =
+          "position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;pointer-events:none;";
+
+        var started = false;
+        function runPrint() {
+          if (started) return;
+          started = true;
+          var doc = iframe.contentDocument;
+          var win = iframe.contentWindow;
+          if (!doc || !doc.head || !doc.body) {
+            setStatus("Print failed.");
+            return;
+          }
+
+          doc.title = "Print Promo Code";
+          while (doc.head.firstChild) doc.head.removeChild(doc.head.firstChild);
+          while (doc.body.firstChild) doc.body.removeChild(doc.body.firstChild);
+
+          var style = doc.createElement("style");
+          style.textContent =
+            "@page { size: A4 portrait; margin: 0; } html, body { margin: 0; padding: 0; } img { display: block; width: 100%; height: auto; }";
+          doc.head.appendChild(style);
+
+          var img = doc.createElement("img");
+          img.alt = "Promo Code";
+          img.onload = function () {
+            try {
+              win.focus();
+              win.print();
+              setStatus("Print dialog opened");
+            } catch (err) {
+              setStatus("Print failed.");
+              console.error(err);
+            }
+          };
+          img.onerror = function () {
+            setStatus("Print failed to load image.");
+          };
+          doc.body.appendChild(img);
+          img.src = dataUrl;
+        }
+
+        iframe.onload = runPrint;
+        document.body.appendChild(iframe);
+        if (iframe.contentDocument && iframe.contentDocument.readyState === "complete") {
+          runPrint();
+        }
+      }
+
+      function downloadJpeg() {
+        var entry = selectedCode();
+        if (!entry) return;
+        try {
+          var link = document.createElement("a");
+          var slug = String(entry.code || "promo")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-");
+          link.download = slug + "-promo.jpg";
+          link.href = canvas.toDataURL("image/jpeg", 0.92);
+          link.click();
+          setStatus("Downloaded " + link.download);
+        } catch (err) {
+          setStatus("Download failed.");
+          console.error(err);
+        }
+      }
+
+      function populateCodes() {
+        codeSelect.innerHTML = "";
+        codes.forEach(function (entry, i) {
+          var opt = document.createElement("option");
+          opt.value = String(i);
+          var offer = formatOffer(entry);
+          var label = entry.code + (offer ? " — " + offer : "");
+          if (entry.active === false) label += " (inactive)";
+          opt.textContent = label;
+          codeSelect.appendChild(opt);
+        });
+      }
+
+      codeSelect.addEventListener("change", render);
+      printBtn.addEventListener("click", printCanvas);
+      downloadBtn.addEventListener("click", downloadJpeg);
+
+      setStatus("Loading promo codes…");
+      loadImage(LOGO_URL).then(function (img) {
+        logoImage = img;
+      });
+
+      fetch(DISCOUNT_CODES_URL, { cache: "no-store" })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("Failed to load discount codes (" + response.status + ")");
+          }
+          return response.json();
+        })
+        .then(function (data) {
+          var list = data && Array.isArray(data.codes) ? data.codes : [];
+          codes = list
+            .map(function (raw) {
+              if (!raw || typeof raw !== "object") return null;
+              var code = String(raw.code || "").trim().toUpperCase();
+              if (!code) return null;
+              return {
+                active: raw.active !== false,
+                code: code,
+                type: String(raw.type || "").trim().toLowerCase(),
+                value: Number(raw.value),
+                note: String(raw.note || "").trim()
+              };
+            })
+            .filter(Boolean)
+            .sort(function (a, b) {
+              if (a.active !== b.active) return a.active ? -1 : 1;
+              return a.code.localeCompare(b.code);
+            });
+
+          populateCodes();
+          if (!codes.length) {
+            setStatus("No promo codes found.");
+            return;
+          }
+          render();
+        })
+        .catch(function (err) {
+          console.error(err);
+          setStatus("Failed to load promo codes.");
+        });
+    })();
+  </script>
+</body>
+</html>
