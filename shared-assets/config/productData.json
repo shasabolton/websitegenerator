@@ -2970,7 +2970,7 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled + Painted",
-      "VARIATION 1 PRICE DELTA": "0,20",
+      "VARIATION 1 PRICE DELTA": "0,75",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
@@ -2990,7 +2990,8 @@
       "VIDEO3": "",
       "SLUG": "surfer-whirligig",
       "REDIRECTS": [],
-      "TAGLINE": "Wind powered,surfs in the garden"
+      "TAGLINE": "Wind powered,surfs in the garden",
+      "LINKS": []
     },
     {
       "TITLE": "Bird Whirligig Plans DXF SVG Laser cut or Scroll saw",
