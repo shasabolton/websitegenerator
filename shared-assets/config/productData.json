@@ -2832,7 +2832,7 @@
       "VARIATION 1 TYPE": "Custom Property",
       "VARIATION 1 NAME": "Assembly",
       "VARIATION 1 VALUES": "Kit,Assembled + Painted",
-      "VARIATION 1 PRICE DELTA": "0,20",
+      "VARIATION 1 PRICE DELTA": "0,75",
       "VARIATION 2 TYPE": "",
       "VARIATION 2 NAME": "",
       "VARIATION 2 VALUES": "",
@@ -2852,7 +2852,8 @@
       "VIDEO3": "",
       "SLUG": "woodchopper-whirligig",
       "REDIRECTS": [],
-      "TAGLINE": "Wind powered,chops when the breeze blows"
+      "TAGLINE": "Wind powered,chops when the breeze blows",
+      "LINKS": []
     },
     {
       "TITLE": "Dog Whirligig, Kinetic Wind Powered Garden Sculpture, DIY Kit or Fully Assembled",
