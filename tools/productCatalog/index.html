@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Lets productData.js resolve shared-assets from the repo root. -->
+  <base href="../../" data-site-base>
+  <title>Product catalog</title>
+  <style>
+    @font-face {
+      font-family: "Harrington";
+      src: local("Harrington"), local("Harrington Regular"),
+        url("shared-assets/fonts/HARRINGT.TTF") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #e8e2d6;
+      color: #2c2416;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+    }
+    .catalog-tools {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 16px;
+      background: #2c2416;
+      color: #faf6ee;
+    }
+    .catalog-tools label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .catalog-tools select,
+    .catalog-tools button {
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: 15px;
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+    }
+    .catalog-tools select {
+      border: 1px solid #7a6a50;
+      background: #fff;
+      color: #2c2416;
+      min-width: 100px;
+    }
+    .catalog-tools button {
+      border: 0;
+      background: #faf6ee;
+      color: #2c2416;
+      padding: 8px 14px;
+    }
+    .catalog-tools button:hover {
+      background: #fff;
+    }
+    .catalog-tools .status {
+      min-height: 1.2em;
+      color: #d9cbb3;
+      font-size: 13px;
+    }
+    .canvas-wrap {
+      padding: 24px 16px 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      overflow: auto;
+    }
+    .canvas-wrap canvas {
+      display: block;
+      width: min(100%, 820px);
+      height: auto;
+      background: #fff;
+      box-shadow: 0 8px 28px rgba(44, 36, 22, 0.18);
+      cursor: default;
+    }
+    .image-picker {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(44, 36, 22, 0.55);
+    }
+    .image-picker.is-open {
+      display: flex;
+    }
+    .image-picker-panel {
+      width: min(560px, 100%);
+      max-height: min(80vh, 640px);
+      overflow: auto;
+      background: #faf6ee;
+      color: #2c2416;
+      border-radius: 6px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+      padding: 14px 16px 16px;
+    }
+    .image-picker-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    .image-picker-head button {
+      padding: 6px 12px;
+      border: 0;
+      border-radius: 4px;
+      background: #2c2416;
+      color: #faf6ee;
+      font: inherit;
+      cursor: pointer;
+    }
+    .image-picker-thumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .image-picker-thumb {
+      width: 72px;
+      height: 72px;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      background: #e8e2d6;
+    }
+    .image-picker-thumb:hover,
+    .image-picker-thumb.is-current {
+      border-color: #6b3a1f;
+    }
+    .image-picker-thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <header class="catalog-tools">
+    <label>
+      Columns
+      <select id="columnsSelect">
+        <option value="auto" selected>Auto (fit one page)</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="12">12</option>
+      </select>
+    </label>
+    <button type="button" id="printBtn">Print</button>
+    <button type="button" id="downloadBtn">Download JPEG</button>
+    <span class="status" id="status"></span>
+  </header>
+
+  <main class="canvas-wrap" id="pages" aria-label="Product catalog preview"></main>
+
+  <div id="imagePicker" class="image-picker" hidden>
+    <div class="image-picker-panel" role="dialog" aria-label="Choose product image">
+      <div class="image-picker-head">
+        <span id="imagePickerTitle">Replace image</span>
+        <button type="button" id="imagePickerClose">Close</button>
+      </div>
+      <div id="imagePickerThumbs" class="image-picker-thumbs"></div>
+    </div>
+  </div>
+
+  <script src="tools/editData/productData.js"></script>
+  <script>
+    (function () {
+      var DPI = 300;
+      var PAGE_W_MM = 210;
+      var PAGE_H_MM = 297;
+      var LOGO_URL = "design/cart%20logo.svg";
+      var SHOP_DATA_URL = "shared-assets/config/shopData.json";
+      var SITE_TEXT = "ContraptionCart.com";
+      var TITLE_FONT = "Harrington";
+      var TITLE_WEIGHT = "400";
+      var MIN_AUTO_COLUMNS = 4;
+      var MAX_AUTO_COLUMNS = 12;
+      var MAX_NAME_LINES = 3;
+
+      var columnsSelect = document.getElementById("columnsSelect");
+      var downloadBtn = document.getElementById("downloadBtn");
+      var printBtn = document.getElementById("printBtn");
+      var statusEl = document.getElementById("status");
+      var pagesEl = document.getElementById("pages");
+      var measureCtx = document.createElement("canvas").getContext("2d");
+
+      var imagePicker = document.getElementById("imagePicker");
+      var imagePickerThumbs = document.getElementById("imagePickerThumbs");
+      var imagePickerTitle = document.getElementById("imagePickerTitle");
+      var imagePickerClose = document.getElementById("imagePickerClose");
+
+      var shopName = "Contraption Cart";
+      var creditText = "Designed in Tasmania by Shasa Bolton";
+      /** @type {{ name: string, items: object[] }[]} */
+      var sections = [];
+      var logoImage = null;
+      var renderToken = 0;
+      /** @type {HTMLCanvasElement[]} */
+      var pageCanvases = [];
+      /** @type {{ item: object, x: number, y: number, w: number, h: number }[][]} */
+      var hitRegionsByPage = [];
+      /** @type {Record<string, Promise<HTMLImageElement | null>>} */
+      var imageCache = {};
+      var pendingItem = null;
+
+      function setStatus(msg) {
+        statusEl.textContent = msg || "";
+      }
+
+      function mmToPx(mm) {
+        return (mm / 25.4) * DPI;
+      }
+
+      function imageSrcForCanvas(url) {
+        var u = String(url || "").trim();
+        if (!u) return "";
+        if (/^https?:\/\//i.test(u)) {
+          return "https://images.weserv.nl/?w=800&url=" + encodeURIComponent(u);
+        }
+        return u;
+      }
+
+      function loadImage(url) {
+        return new Promise(function (resolve) {
+          if (!url) {
+            resolve(null);
+            return;
+          }
+          var img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = function () {
+            resolve(img);
+          };
+          img.onerror = function () {
+            if (/images\.weserv\.nl/.test(img.src) && /^https?:\/\//i.test(url)) {
+              var direct = new Image();
+              direct.crossOrigin = "anonymous";
+              direct.onload = function () {
+                resolve(direct);
+              };
+              direct.onerror = function () {
+                resolve(null);
+              };
+              direct.src = url;
+              return;
+            }
+            resolve(null);
+          };
+          img.src = imageSrcForCanvas(url);
+        });
+      }
+
+      function loadImageCached(url) {
+        if (!url) return Promise.resolve(null);
+        if (!imageCache[url]) imageCache[url] = loadImage(url);
+        return imageCache[url];
+      }
+
+      function drawImageCover(c, img, x, y, w, h) {
+        if (!img || !img.width || !img.height || w <= 0 || h <= 0) {
+          c.fillStyle = "#e8e2d6";
+          c.fillRect(x, y, w, h);
+          return;
+        }
+        var scale = Math.max(w / img.width, h / img.height);
+        var dw = img.width * scale;
+        var dh = img.height * scale;
+        var dx = x + (w - dw) / 2;
+        var dy = y + (h - dh) / 2;
+        c.save();
+        c.beginPath();
+        c.rect(x, y, w, h);
+        c.clip();
+        c.drawImage(img, dx, dy, dw, dh);
+        c.restore();
+      }
+
+      function drawImageContain(c, img, x, y, w, h) {
+        if (!img || !img.width || !img.height || w <= 0 || h <= 0) return;
+        var scale = Math.min(w / img.width, h / img.height);
+        var dw = img.width * scale;
+        var dh = img.height * scale;
+        var dx = x + (w - dw) / 2;
+        var dy = y + (h - dh) / 2;
+        c.drawImage(img, dx, dy, dw, dh);
+      }
+
+      function fitText(c, text, maxWidth, fontFamily, weight, startPx, minPx) {
+        var size = startPx;
+        var weightPart = weight ? weight + " " : "";
+        while (size > minPx) {
+          c.font = weightPart + size + "px " + fontFamily;
+          if (c.measureText(text).width <= maxWidth) break;
+          size -= 1;
+        }
+        c.font = weightPart + size + "px " + fontFamily;
+        return size;
+      }
+
+      function ellipsize(c, text, maxWidth) {
+        if (c.measureText(text).width <= maxWidth) return text;
+        var s = text;
+        while (s.length > 1 && c.measureText(s + "…").width > maxWidth) {
+          s = s.slice(0, -1);
+        }
+        return s.replace(/\s+$/, "") + "…";
+      }
+
+      // Greedy word wrap using the context's current font; overflow past maxLines is ellipsized.
+      function wrapLines(c, text, maxWidth, maxLines) {
+        var words = String(text || "").split(/\s+/).filter(Boolean);
+        var lines = [];
+        var line = "";
+        for (var i = 0; i < words.length; i++) {
+          var next = line ? line + " " + words[i] : words[i];
+          if (!line || c.measureText(next).width <= maxWidth) {
+            line = next;
+          } else {
+            lines.push(line);
+            line = words[i];
+          }
+        }
+        if (line) lines.push(line);
+        if (lines.length > maxLines) {
+          var kept = lines.slice(0, maxLines);
+          kept[maxLines - 1] = lines.slice(maxLines - 1).join(" ");
+          lines = kept;
+        }
+        return lines.map(function (l) {
+          return ellipsize(c, l, maxWidth);
+        });
+      }
+
+      function pageMetrics(cols) {
+        var pageW = mmToPx(PAGE_W_MM);
+        var pageH = mmToPx(PAGE_H_MM);
+        var margin = mmToPx(9);
+        var contentW = pageW - margin * 2;
+        var headerH = mmToPx(26);
+        var ruleGap = mmToPx(2.5);
+        var ruleH = mmToPx(1.2);
+        var colGap = mmToPx(3.5);
+        var cellW = (contentW - colGap * (cols - 1)) / cols;
+        var nameFont = Math.round(Math.min(mmToPx(3.6), Math.max(mmToPx(2.3), cellW * 0.11)));
+        var nameLineH = nameFont * 1.18;
+
+        measureCtx.font = nameFont + "px Arial";
+        var maxLines = 1;
+        sections.forEach(function (section) {
+          section.items.forEach(function (item) {
+            var n = wrapLines(measureCtx, item.title, cellW, MAX_NAME_LINES).length;
+            if (n > maxLines) maxLines = n;
+          });
+        });
+
+        var nameTop = mmToPx(1.2);
+        return {
+          pageW: pageW,
+          pageH: pageH,
+          margin: margin,
+          contentW: contentW,
+          headerH: headerH,
+          ruleY: margin + headerH + ruleGap,
+          ruleH: ruleH,
+          contentTop: margin + headerH + ruleGap + ruleH + mmToPx(5),
+          contentBottom: pageH - margin - mmToPx(4),
+          headingH: mmToPx(8),
+          headingGap: mmToPx(3),
+          sectionGap: mmToPx(4),
+          cols: cols,
+          colGap: colGap,
+          cellW: cellW,
+          nameFont: nameFont,
+          nameLineH: nameLineH,
+          nameTop: nameTop,
+          maxLines: maxLines,
+          rowH: cellW + nameTop + maxLines * nameLineH,
+          rowGap: mmToPx(3)
+        };
+      }
+
+      // Flow category headings + thumbnail rows down the page, starting a new page when a row
+      // will not fit. A section continued on a new page repeats its heading.
+      function planPages(cols) {
+        var m = pageMetrics(cols);
+        var pages = [[]];
+        var y = m.contentTop;
+        var headingBlock = m.headingH + m.headingGap;
+
+        sections.forEach(function (section, sIdx) {
+          if (sIdx > 0) y += m.sectionGap - m.rowGap;
+          for (var start = 0; start < section.items.length; start += cols) {
+            var needHeading = start === 0;
+            var need = (needHeading ? headingBlock : 0) + m.rowH;
+            if (y + need > m.contentBottom && pages[pages.length - 1].length) {
+              pages.push([]);
+              y = m.contentTop;
+              needHeading = true;
+            }
+            var page = pages[pages.length - 1];
+            if (needHeading) {
+              page.push({ type: "heading", y: y, name: section.name, continued: start > 0 });
+              y += headingBlock;
+            }
+            page.push({ type: "row", y: y, items: section.items.slice(start, start + cols) });
+            y += m.rowH + m.rowGap;
+          }
+        });
+
+        return { metrics: m, pages: pages };
+      }
+
+      function chooseLayout() {
+        var value = columnsSelect.value;
+        if (value !== "auto") {
+          return planPages(parseInt(value, 10) || 6);
+        }
+        var plan = null;
+        for (var cols = MIN_AUTO_COLUMNS; cols <= MAX_AUTO_COLUMNS; cols++) {
+          plan = planPages(cols);
+          if (plan.pages.length === 1) return plan;
+        }
+        return plan;
+      }
+
+      function drawHeader(c, m) {
+        var x = m.margin;
+        var y = m.margin;
+        var h = m.headerH;
+
+        if (logoImage) {
+          drawImageContain(c, logoImage, x, y, h, h);
+        }
+
+        var textX = x + h + mmToPx(5);
+        var textW = m.contentW - h - mmToPx(5);
+        c.textAlign = "left";
+        c.textBaseline = "alphabetic";
+
+        c.fillStyle = "#ff0000";
+        var titleSize = fitText(c, shopName, textW, TITLE_FONT, TITLE_WEIGHT, Math.round(h * 0.5), 10);
+        c.fillText(shopName, textX, y + titleSize * 0.85);
+
+        c.fillStyle = "#2c2416";
+        var siteSize = fitText(c, SITE_TEXT, textW, "Arial", "bold", Math.round(h * 0.17), 8);
+        c.fillText(SITE_TEXT, textX, y + h * 0.7);
+
+        c.fillStyle = "#6b5c45";
+        fitText(c, creditText, textW, "Arial", "", Math.round(siteSize * 0.9), 8);
+        c.fillText(creditText, textX, y + h * 0.95);
+
+        c.fillStyle = "#000000";
+        c.fillRect(m.margin, m.ruleY, m.contentW, m.ruleH);
+      }
+
+      function drawHeading(c, m, op) {
+        c.fillStyle = "#000000";
+        c.fillRect(m.margin, op.y, m.contentW, m.headingH);
+        var label = op.continued ? op.name + " (continued)" : op.name;
+        c.fillStyle = "#ffffff";
+        c.textAlign = "left";
+        c.textBaseline = "alphabetic";
+        fitText(
+          c,
+          label,
+          m.contentW - mmToPx(6),
+          "Arial",
+          "bold",
+          Math.round(m.headingH * 0.6),
+          10
+        );
+        c.fillText(label, m.margin + mmToPx(3), op.y + m.headingH * 0.72);
+      }
+
+      function drawRow(c, m, op, images, hits) {
+        op.items.forEach(function (item, i) {
+          var x = m.margin + i * (m.cellW + m.colGap);
+          var y = op.y;
+          drawImageCover(c, images[item.image], x, y, m.cellW, m.cellW);
+          c.lineWidth = Math.max(1, mmToPx(0.2));
+          c.strokeStyle = "#2c2416";
+          c.strokeRect(x, y, m.cellW, m.cellW);
+          hits.push({ item: item, x: x, y: y, w: m.cellW, h: m.cellW });
+
+          c.fillStyle = "#2c2416";
+          c.textAlign = "center";
+          c.textBaseline = "alphabetic";
+          c.font = m.nameFont + "px Arial";
+          var lines = wrapLines(c, item.title, m.cellW, MAX_NAME_LINES);
+          var baseline = y + m.cellW + m.nameTop + m.nameFont;
+          lines.forEach(function (line) {
+            c.fillText(line, x + m.cellW / 2, baseline);
+            baseline += m.nameLineH;
+          });
+        });
+      }
+
+      function drawPageNumber(c, m, index, total) {
+        if (total < 2) return;
+        c.fillStyle = "#6b5c45";
+        c.textAlign = "right";
+        c.textBaseline = "alphabetic";
+        c.font = Math.round(mmToPx(2.8)) + "px Arial";
+        c.fillText("Page " + (index + 1) + " of " + total, m.margin + m.contentW, m.pageH - m.margin);
+      }
+
+      function allImageUrls() {
+        var urls = [];
+        sections.forEach(function (section) {
+          section.items.forEach(function (item) {
+            if (item.image) urls.push(item.image);
+          });
+        });
+        return urls;
+      }
+
+      function render() {
+        var token = ++renderToken;
+        var urls = allImageUrls();
+        var done = 0;
+        setStatus("Loading images (0/" + urls.length + ")…");
+
+        var loads = urls.map(function (url) {
+          return loadImageCached(url).then(function (img) {
+            done++;
+            if (token === renderToken) {
+              setStatus("Loading images (" + done + "/" + urls.length + ")…");
+            }
+            return img;
+          });
+        });
+
+        Promise.all([Promise.all(loads), logoImage ? Promise.resolve(logoImage) : loadImageCached(LOGO_URL)])
+          .then(function (results) {
+            if (token !== renderToken) return;
+            logoImage = results[1] || logoImage;
+            var images = {};
+            urls.forEach(function (url, i) {
+              images[url] = results[0][i];
+            });
+            drawPages(images);
+          });
+      }
+
+      function drawPages(images) {
+        var plan = chooseLayout();
+        var m = plan.metrics;
+        pagesEl.innerHTML = "";
+        pageCanvases = [];
+        hitRegionsByPage = [];
+
+        plan.pages.forEach(function (ops, pageIndex) {
+          var canvas = document.createElement("canvas");
+          canvas.width = Math.round(m.pageW);
+          canvas.height = Math.round(m.pageH);
+          canvas.dataset.page = String(pageIndex);
+          canvas.setAttribute("aria-label", "Catalog page " + (pageIndex + 1));
+          var c = canvas.getContext("2d");
+          c.fillStyle = "#ffffff";
+          c.fillRect(0, 0, canvas.width, canvas.height);
+
+          var hits = [];
+          drawHeader(c, m);
+          ops.forEach(function (op) {
+            if (op.type === "heading") drawHeading(c, m, op);
+            else drawRow(c, m, op, images, hits);
+          });
+          drawPageNumber(c, m, pageIndex, plan.pages.length);
+
+          pagesEl.appendChild(canvas);
+          pageCanvases.push(canvas);
+          hitRegionsByPage.push(hits);
+        });
+
+        var count = sections.reduce(function (n, s) {
+          return n + s.items.length;
+        }, 0);
+        setStatus(
+          count + " products, " + m.cols + " columns, " + plan.pages.length +
+            (plan.pages.length === 1 ? " page" : " pages") + " — click an image to change it"
+        );
+      }
+
+      function canvasPointFromEvent(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+          x: (evt.clientX - rect.left) * (canvas.width / rect.width),
+          y: (evt.clientY - rect.top) * (canvas.height / rect.height)
+        };
+      }
+
+      function hitTest(evt) {
+        var canvas = evt.target;
+        if (!canvas || canvas.tagName !== "CANVAS") return null;
+        var regions = hitRegionsByPage[parseInt(canvas.dataset.page, 10)] || [];
+        var pt = canvasPointFromEvent(canvas, evt);
+        for (var i = 0; i < regions.length; i++) {
+          var r = regions[i];
+          if (pt.x >= r.x && pt.x <= r.x + r.w && pt.y >= r.y && pt.y <= r.y + r.h) {
+            return r;
+          }
+        }
+        return null;
+      }
+
+      function closeImagePicker() {
+        pendingItem = null;
+        imagePicker.classList.remove("is-open");
+        imagePicker.hidden = true;
+      }
+
+      function openImagePicker(item) {
+        pendingItem = item;
+        imagePickerTitle.textContent = "Replace image: " + item.title;
+        imagePickerThumbs.innerHTML = "";
+
+        item.allImages.forEach(function (option) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "image-picker-thumb";
+          if (option.full === item.image) btn.classList.add("is-current");
+          var img = document.createElement("img");
+          img.src = option.thumb || option.full;
+          img.alt = "";
+          btn.appendChild(img);
+          btn.addEventListener("click", function () {
+            if (pendingItem) pendingItem.image = option.full;
+            closeImagePicker();
+            render();
+          });
+          imagePickerThumbs.appendChild(btn);
+        });
+
+        imagePicker.hidden = false;
+        imagePicker.classList.add("is-open");
+      }
+
+      function pageDataUrls(type, quality) {
+        return pageCanvases.map(function (canvas) {
+          return canvas.toDataURL(type, quality);
+        });
+      }
+
+      function printCatalog() {
+        if (!pageCanvases.length) return;
+        var dataUrls;
+        try {
+          dataUrls = pageDataUrls("image/png");
+        } catch (err) {
+          setStatus("Print failed (image CORS). Try Download JPEG instead.");
+          console.error(err);
+          return;
+        }
+
+        var existing = document.getElementById("printFrame");
+        if (existing) existing.remove();
+
+        var iframe = document.createElement("iframe");
+        iframe.id = "printFrame";
+        iframe.setAttribute("aria-hidden", "true");
+        iframe.style.cssText =
+          "position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;pointer-events:none;";
+
+        var started = false;
+        function runPrint() {
+          if (started) return;
+          started = true;
+          var doc = iframe.contentDocument;
+          var win = iframe.contentWindow;
+          if (!doc || !doc.head || !doc.body) {
+            setStatus("Print failed.");
+            return;
+          }
+
+          doc.title = "Product Catalog";
+          while (doc.head.firstChild) doc.head.removeChild(doc.head.firstChild);
+          while (doc.body.firstChild) doc.body.removeChild(doc.body.firstChild);
+
+          var style = doc.createElement("style");
+          style.textContent =
+            "@page { size: A4 portrait; margin: 0; } html, body { margin: 0; padding: 0; }" +
+            " img { display: block; width: 100%; height: auto; break-after: page; page-break-after: always; }" +
+            " img:last-child { break-after: auto; page-break-after: auto; }";
+          doc.head.appendChild(style);
+
+          var remaining = dataUrls.length;
+          var failed = false;
+          dataUrls.forEach(function (url, i) {
+            var img = doc.createElement("img");
+            img.alt = "Catalog page " + (i + 1);
+            img.onload = function () {
+              remaining--;
+              if (remaining > 0 || failed) return;
+              try {
+                win.focus();
+                win.print();
+                setStatus("Print dialog opened");
+              } catch (err) {
+                setStatus("Print failed.");
+                console.error(err);
+              }
+            };
+            img.onerror = function () {
+              failed = true;
+              setStatus("Print failed to load catalog image.");
+            };
+            doc.body.appendChild(img);
+            img.src = url;
+          });
+        }
+
+        iframe.onload = runPrint;
+        document.body.appendChild(iframe);
+        // about:blank may already be ready before onload fires
+        if (iframe.contentDocument && iframe.contentDocument.readyState === "complete") {
+          runPrint();
+        }
+      }
+
+      function downloadJpeg() {
+        if (!pageCanvases.length) return;
+        var dataUrls;
+        try {
+          dataUrls = pageDataUrls("image/jpeg", 0.92);
+        } catch (err) {
+          setStatus("Download failed (image CORS). Try again or use local images.");
+          console.error(err);
+          return;
+        }
+        var base = (window.productData && window.productData.slugify
+          ? window.productData.slugify(shopName)
+          : "product") + "-catalog";
+        // Stagger clicks so browsers don't drop multi-page downloads.
+        dataUrls.forEach(function (url, i) {
+          setTimeout(function () {
+            var link = document.createElement("a");
+            link.download = dataUrls.length === 1 ? base + ".jpg" : base + "-page-" + (i + 1) + ".jpg";
+            link.href = url;
+            link.click();
+          }, i * 400);
+        });
+        setStatus(
+          dataUrls.length === 1 ? "Downloaded " + base + ".jpg" : "Downloaded " + dataUrls.length + " pages"
+        );
+      }
+
+      function titleCase(s) {
+        return String(s || "").replace(/\b[a-z]/g, function (ch) {
+          return ch.toUpperCase();
+        });
+      }
+
+      function buildSections(products, shopData) {
+        var pd = window.productData;
+        var list = Array.isArray(products) ? products : [];
+        var categoryInfo = (shopData && shopData.categories) || {};
+        var otherName = pd.DEFAULT_PRODUCT_CATEGORY || "Other";
+        var byKey = {};
+        var order = [];
+
+        list.forEach(function (row) {
+          if (!row || row.DIGITAL === true) return;
+          if (pd.isProductRowDraft(row) || pd.isProductRowHidden(row)) return;
+
+          var title = pd.resolveProductDisplayTitle(row, "");
+          var allImages = pd.collectProductImageUrls(row).map(function (raw) {
+            var full = pd.productImageUrlForDisplay(raw, "grid");
+            return { full: full, thumb: pd.productImageUrlForDisplay(raw, "thumb") || full };
+          });
+          if (!title || !allImages.length) return;
+
+          var category = pd.resolveProductCategory(row);
+          var key = category.toLowerCase();
+          if (!byKey[key]) {
+            var info = categoryInfo[pd.slugify(category)];
+            byKey[key] = {
+              rawName: category,
+              name: (info && info.name) || titleCase(category),
+              items: []
+            };
+            order.push(key);
+          }
+          byKey[key].items.push({ title: title, image: allImages[0].full, allImages: allImages });
+        });
+
+        return order
+          .map(function (key) {
+            return byKey[key];
+          })
+          .sort(function (a, b) {
+            if (a.rawName === otherName) return 1;
+            if (b.rawName === otherName) return -1;
+            return a.name.localeCompare(b.name);
+          });
+      }
+
+      function fetchShopData() {
+        return fetch(SHOP_DATA_URL, { cache: "no-store" })
+          .then(function (res) {
+            return res.ok ? res.json() : null;
+          })
+          .catch(function () {
+            return null;
+          });
+      }
+
+      function ensureTitleFont() {
+        if (!document.fonts || typeof document.fonts.load !== "function") {
+          return Promise.resolve();
+        }
+        return document.fonts
+          .load(TITLE_WEIGHT + " 64px " + TITLE_FONT)
+          .catch(function () {
+            return null;
+          });
+      }
+
+      function bind() {
+        columnsSelect.addEventListener("change", render);
+        downloadBtn.addEventListener("click", downloadJpeg);
+        printBtn.addEventListener("click", printCatalog);
+
+        pagesEl.addEventListener("mousemove", function (evt) {
+          if (evt.target.tagName !== "CANVAS") return;
+          evt.target.style.cursor = hitTest(evt) ? "pointer" : "default";
+        });
+        pagesEl.addEventListener("click", function (evt) {
+          var hit = hitTest(evt);
+          if (hit) openImagePicker(hit.item);
+        });
+        imagePickerClose.addEventListener("click", closeImagePicker);
+        imagePicker.addEventListener("click", function (evt) {
+          if (evt.target === imagePicker) closeImagePicker();
+        });
+        document.addEventListener("keydown", function (evt) {
+          if (evt.key === "Escape" && imagePicker.classList.contains("is-open")) {
+            closeImagePicker();
+          }
+        });
+      }
+
+      bind();
+      setStatus("Loading products…");
+
+      var pd = window.productData;
+      if (!pd || typeof pd.fetchProductDataJson !== "function") {
+        setStatus("productData.js failed to load.");
+        return;
+      }
+      Promise.all([ensureTitleFont(), pd.fetchProductDataJson(), fetchShopData()])
+        .then(function (results) {
+          var data = results[1];
+          var shopData = results[2];
+          if (shopData) {
+            shopName = String(shopData.shopName || shopName).trim();
+            var owner = String(shopData.owner || "").trim();
+            if (owner) creditText = "Designed in Tasmania by " + owner;
+          }
+          sections = buildSections((data && data.products) || [], shopData);
+          if (!sections.length) {
+            setStatus("No physical products found.");
+            return;
+          }
+          render();
+        })
+        .catch(function (err) {
+          console.error(err);
+          setStatus("Failed to load product data.");
+        });
+    })();
+  </script>
+</body>
+</html>
