@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-02T21:59:03.595Z",
+  "generatedAt": "2026-10-15T23:00:19.108Z",
   "outputs": [
     "about/index.html",
     "apps/index.html",
@@ -20,6 +20,7 @@
     "magicdrawerhelp/index.html",
     "magicframehelp/index.html",
     "newcombtutorial/index.html",
+    "privacy/index.html",
     "projects/index.html",
     "returns/index.html",
     "shop/automata/index.html",
