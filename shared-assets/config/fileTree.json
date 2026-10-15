@@ -47,6 +47,11 @@
       "hide": true
     },
     {
+      "label": "Privacy policy",
+      "href": "privacy",
+      "hide": true
+    },
+    {
       "label": "laser cutting tips",
       "href": "lasercuttingtips",
       "hide": true

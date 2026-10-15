@@ -2159,6 +2159,9 @@ body.nav-scroll-lock {
 }
 
 .footer-policy-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
   margin: 16px 0 0;
   font-weight: 600;
 }
