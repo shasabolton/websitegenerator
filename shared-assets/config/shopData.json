@@ -39,11 +39,8 @@
     "etsy": "https://contraptioncart.etsy.com",
     "newsletterSignup": "#newsletter"
   },
-  "paypal": {
-    "clientId": "AVwOMA5ITLJeZWetR7yow5HnWd3U1JfYAkF3n5NfhY1PRMNRk9agUISqwIvvv6Tn-2qwNVT5BXfvGCNt",
-    "environment": "live",
-    "buyerCountry": "AU",
-    "ordersApiBase": "https://contraptioncart-paypal-orders.contraptioncart.workers.dev/api/paypal"
+  "checkout": {
+    "apiBase": "https://contraptioncart-checkout.contraptioncart.workers.dev/api/checkout"
   },
   "analytics": {
     "measurementId": "G-BEH6TSQ9VX",

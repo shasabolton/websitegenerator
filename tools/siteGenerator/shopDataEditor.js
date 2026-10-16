@@ -45,7 +45,7 @@
       about: "",
       shopFocus: [],
       websites: { primary: "", images: "", imagesRepo: "", etsy: "", newsletterSignup: "" },
-      paypal: { clientId: "", environment: "sandbox", buyerCountry: "", ordersApiBase: "" },
+      checkout: { apiBase: "" },
       analytics: { measurementId: "", trackerEndpoint: "" },
       branding: { faviconPath: "" },
       blog: { title: "Blog", description: "" },
@@ -126,7 +126,11 @@
     next.websites.imagesRepo = normalizeImagesRepoFullName(next.websites.imagesRepo);
     next.websites.etsy = String(next.websites.etsy ?? "").trim();
     next.websites.newsletterSignup = String(next.websites.newsletterSignup ?? "").trim();
-    next.paypal = { ...next.paypal, ...(input.paypal && typeof input.paypal === "object" ? input.paypal : {}) };
+    next.checkout = {
+      ...next.checkout,
+      ...(input.checkout && typeof input.checkout === "object" ? input.checkout : {}),
+    };
+    next.checkout.apiBase = String(next.checkout.apiBase ?? "").trim();
     next.analytics = {
       ...next.analytics,
       ...(input.analytics && typeof input.analytics === "object" ? input.analytics : {}),
@@ -360,11 +364,8 @@
         etsy: get("websitesEtsy"),
         newsletterSignup: get("websitesNewsletter"),
       },
-      paypal: {
-        clientId: get("paypalClientId"),
-        environment: get("paypalEnvironment") || "sandbox",
-        buyerCountry: get("paypalBuyerCountry"),
-        ordersApiBase: get("paypalOrdersApiBase"),
+      checkout: {
+        apiBase: get("checkoutApiBase"),
       },
       analytics: {
         measurementId: get("analyticsMeasurementId"),
@@ -453,10 +454,7 @@
     set("websitesImagesRepo", shop.websites?.imagesRepo);
     set("websitesEtsy", shop.websites?.etsy);
     set("websitesNewsletter", shop.websites?.newsletterSignup);
-    set("paypalClientId", shop.paypal?.clientId);
-    set("paypalEnvironment", shop.paypal?.environment || "sandbox");
-    set("paypalBuyerCountry", shop.paypal?.buyerCountry);
-    set("paypalOrdersApiBase", shop.paypal?.ordersApiBase);
+    set("checkoutApiBase", shop.checkout?.apiBase);
     set("analyticsMeasurementId", shop.analytics?.measurementId);
     set("analyticsTrackerEndpoint", shop.analytics?.trackerEndpoint);
     set("faviconPath", shop.branding?.faviconPath);
@@ -722,22 +720,11 @@
     }));
     form.appendChild(webSection);
 
-    const paySection = section("PayPal");
-    paySection.appendChild(field("Client ID", "paypalClientId"));
+    const paySection = section("Checkout (Stripe)");
     paySection.appendChild(
-      field("Environment", "paypalEnvironment", {
-        type: "select",
-        options: [
-          { value: "sandbox", label: "sandbox" },
-          { value: "live", label: "live" },
-        ],
-      }),
-    );
-    paySection.appendChild(field("Buyer country (ISO)", "paypalBuyerCountry", { placeholder: "AU" }));
-    paySection.appendChild(
-      field("Orders API base (Apple/Google Pay)", "paypalOrdersApiBase", {
-        placeholder: "/api/paypal",
-        hint: "Leave blank to use /api/paypal on this domain. Required for Apple Pay / Google Pay create+capture (Cloudflare Worker). PayPal Buttons still work without it.",
+      field("Checkout API base", "checkoutApiBase", {
+        placeholder: "https://contraptioncart-checkout.contraptioncart.workers.dev/api/checkout",
+        hint: "Stripe checkout Cloudflare Worker (cloudflare/stripe-checkout-worker). Leave blank to use /api/checkout on this domain.",
       }),
     );
     form.appendChild(paySection);

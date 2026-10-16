@@ -125,8 +125,8 @@ function buildFooterContactHtml(shopData) {
 }
 
 function buildFooterPaymentsHtml(shopData) {
-  const paypalClientId = String(shopData?.paypal?.clientId ?? "").trim();
-  if (!paypalClientId) {
+  const checkoutApiBase = String(shopData?.checkout?.apiBase ?? "").trim();
+  if (!checkoutApiBase) {
     return "";
   }
 
@@ -134,8 +134,8 @@ function buildFooterPaymentsHtml(shopData) {
       <p class="footer-heading">We accept</p>
       <ul class="accepted-payments-list accepted-payments-list--footer">
         <li class="accepted-payments-item">
-          <span class="accepted-payments-mark accepted-payments-mark--paypal">PayPal</span>
-          <span class="accepted-payments-note">Guest checkout with PayPal — no account login required.</span>
+          <span class="accepted-payments-mark accepted-payments-mark--card">Credit &amp; debit cards</span>
+          <span class="accepted-payments-note">Secure checkout by Stripe — no account needed.</span>
         </li>
         <li class="accepted-payments-item">
           <span class="accepted-payments-mark accepted-payments-mark--googlepay">Google Pay</span>

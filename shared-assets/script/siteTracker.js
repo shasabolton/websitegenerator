@@ -26,7 +26,7 @@
   const MAX_EVENTS = 300;
   const MAX_SENDS_PER_PAGE = 10;
   const MAX_ERRORS_PER_PAGE = 20;
-  // Quota protection: every request counts against the shared free Workers quota (PayPal uses it too).
+  // Quota protection: every request counts against the shared free Workers quota (the checkout worker uses it too).
   const SEND_LOG_KEY = "cc-tracker-sends";
   const MAX_SENDS_PER_MINUTE = 20;
   const MAX_SENDS_PER_DAY = 300;

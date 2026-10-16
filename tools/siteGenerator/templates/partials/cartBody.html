@@ -7,9 +7,9 @@
     <p class="cart-accepted-payments-label">Accepted payment methods</p>
     <ul class="accepted-payments-list">
       <li class="accepted-payments-item">
-        <span class="accepted-payments-mark accepted-payments-mark--paypal">PayPal</span>
+        <span class="accepted-payments-mark accepted-payments-mark--card">Credit &amp; debit cards</span>
         <span class="accepted-payments-note"
-          >Pay with PayPal. Guest checkout supported — no account login required.</span
+          >Visa, Mastercard and American Express. Secure checkout by Stripe — no account needed.</span
         >
       </li>
       <li class="accepted-payments-item">
@@ -108,25 +108,20 @@
     <p id="cart-checkout-blocked" class="cart-checkout-blocked" hidden>
       Select ship-to country and enter your email above to continue to payment.
     </p>
-    <div id="cart-paypal-section" class="cart-paypal-section" hidden>
-      <h2 class="cart-paypal-heading">Checkout</h2>
-      <p class="cart-paypal-hint">
-        Pay with Google Pay, Apple Pay, or PayPal. The <strong>Ship to</strong> choice above
-        must match the shipping country you enter at checkout so the total stays correct
-        (European Union = any EU member country; UK is under Other countries).
+    <div id="cart-checkout-section" class="cart-checkout-section" hidden>
+      <h2 class="cart-checkout-heading">Checkout</h2>
+      <p class="cart-checkout-hint">
+        You'll pay on Stripe's secure checkout page by card, Apple Pay, Google Pay or Link. Your
+        shipping address must be in the <strong>Ship to</strong> region chosen above so the total
+        stays correct (European Union = any EU member country; UK is under Other countries).
       </p>
-      <div id="googlepay-button-container" class="wallet-button-container" hidden></div>
-      <div id="applepay-button-container" class="wallet-button-container" hidden></div>
-      <div id="paypal-button-container" class="paypal-button-container"></div>
+      <button type="button" id="cart-checkout-button" class="cart-checkout-button">Checkout</button>
+      <p id="cart-checkout-error" class="cart-checkout-error" hidden role="alert"></p>
     </div>
   </div>
   <script>
     (function () {
-      var paypalClientId = __PAYPAL_CLIENT_ID_JSON__;
-      var paypalEnv = __PAYPAL_ENV_JSON__;
-      var paypalBuyerCountry = __PAYPAL_BUYER_COUNTRY_JSON__;
-      var paypalOrdersApiBase = __PAYPAL_ORDERS_API_BASE_JSON__;
-      var shopDisplayName = __SHOP_NAME_JSON__;
+      var checkoutApiBase = __CHECKOUT_API_BASE_JSON__;
       var shippingRatesConfig = { version: 0, currency: "AUD", rates: [] };
       var discountCodesConfig = { version: 0, currency: "AUD", codes: [] };
       var cartConfigLoadPromise = null;
@@ -157,25 +152,14 @@
       var importEstimateRowEl = document.getElementById("cart-import-estimate-row");
       var importEstimateEl = document.getElementById("cart-import-estimate-amount");
       var estimatedTotalEl = document.getElementById("cart-estimated-total-amount");
-      var paypalSectionEl = document.getElementById("cart-paypal-section");
-      var paypalContainerEl = document.getElementById("paypal-button-container");
-      var googlePayContainerEl = document.getElementById("googlepay-button-container");
-      var applePayContainerEl = document.getElementById("applepay-button-container");
-      var paypalButtonsInstance = null;
-      var paypalMounted = false;
-      var paypalMountInProgress = false;
-      var paypalSdkLoading = false;
-      var googlePayMounted = false;
-      var applePayMounted = false;
-      var googlePaySdkLoading = false;
-      var applePaySdkLoading = false;
-      var googlePaymentsClient = null;
+      var checkoutSectionEl = document.getElementById("cart-checkout-section");
+      var checkoutButtonEl = document.getElementById("cart-checkout-button");
+      var checkoutErrorEl = document.getElementById("cart-checkout-error");
+      var checkoutInProgress = false;
       var shipCountryListenerBound = false;
       var buyerEmailListenerBound = false;
       var SHIP_COUNTRY_STORAGE_KEY = "websitegenerator-cart-ship-country";
       var BUYER_EMAIL_STORAGE_KEY = "websitegenerator-cart-buyer-email";
-      var SHIP_MISMATCH_MSG =
-        "Ship to in shopping cart does not match PayPal shipping address. Please check both and try again.";
       var cachedProducts = null;
 
       if (!cart || !root) {
@@ -378,12 +362,6 @@
         }
       }
 
-      function resetPayPalForTotalChange() {
-        destroyPayPalButtons();
-        paypalMounted = false;
-        paypalMountInProgress = false;
-      }
-
       function applyPromoCode() {
         var raw = promoInputEl ? promoInputEl.value : "";
         if (!window.discountCodes || typeof window.discountCodes.evaluateDiscount !== "function") {
@@ -402,7 +380,6 @@
         cart.data.appliedDiscountCode = result.code;
         cart.saveToLocalStorage();
         setPromoMessage("Discount applied.", "success");
-        resetPayPalForTotalChange();
         renderCartPage();
       }
 
@@ -416,7 +393,6 @@
           promoInputEl.value = "";
         }
         setPromoMessage("", null);
-        resetPayPalForTotalChange();
         renderCartPage();
       }
 
@@ -438,44 +414,6 @@
           return 0;
         }
         return n;
-      }
-
-      /** EU member ISO codes (not UK). Cart __EU__ must match one of these at PayPal. */
-      var EU_COUNTRY_CODES = {
-        AT: 1,
-        BE: 1,
-        BG: 1,
-        HR: 1,
-        CY: 1,
-        CZ: 1,
-        DK: 1,
-        EE: 1,
-        FI: 1,
-        FR: 1,
-        DE: 1,
-        GR: 1,
-        HU: 1,
-        IE: 1,
-        IT: 1,
-        LV: 1,
-        LT: 1,
-        LU: 1,
-        MT: 1,
-        NL: 1,
-        PL: 1,
-        PT: 1,
-        RO: 1,
-        SK: 1,
-        SI: 1,
-        ES: 1,
-        SE: 1,
-      };
-
-      function isEuCountryCode(countryCode) {
-        var cc = String(countryCode || "")
-          .trim()
-          .toUpperCase();
-        return !!EU_COUNTRY_CODES[cc];
       }
 
       function isValidShipToSelection(v) {
@@ -622,26 +560,6 @@
         return v;
       }
 
-      function paypalShippingCountryMatchesCart(paypalCountryCode) {
-        var actual = String(paypalCountryCode || "")
-          .trim()
-          .toUpperCase();
-        if (!actual) {
-          return false;
-        }
-        var cartSel = getCartShipToSelection();
-        if (cartSel === "__EU__") {
-          return isEuCountryCode(actual);
-        }
-        if (cartSel === "__OTHER__") {
-          return actual !== "AU" && actual !== "NZ" && !isEuCountryCode(actual);
-        }
-        if (cartSel === "AU" || cartSel === "NZ") {
-          return actual === cartSel;
-        }
-        return false;
-      }
-
       function setShipCountryMessage(text, kind) {
         if (!shipCountryMessageEl) {
           return;
@@ -694,7 +612,7 @@
 
       /**
        * EU import charges: flat duty + ~20% VAT on (goods after discount + postage + duty).
-       * Returns postage, duty, vat, and totals for display and PayPal.
+       * Returns postage, duty, vat, and totals for display (the checkout worker recalculates the same).
        */
       function cartShipAndImportBreakdown(itemTotal, discountAmount) {
         var postage = roundMoney(cartPostageAmount());
@@ -721,7 +639,7 @@
         };
       }
 
-      /** PayPal shipping line: postage + EU duty/VAT when applicable. */
+      /** Stripe shipping line: postage + EU duty/VAT when applicable. */
       function cartShipAndImportAmount(itemTotal, discountAmount) {
         return cartShipAndImportBreakdown(itemTotal, discountAmount).shipAndImport;
       }
@@ -747,11 +665,6 @@
               sessionStorage.removeItem(SHIP_COUNTRY_STORAGE_KEY);
             }
           } catch (e2) {}
-          destroyPayPalButtons();
-          paypalMounted = false;
-          paypalMountInProgress = false;
-          googlePayMounted = false;
-          applePayMounted = false;
           renderCartPage();
         });
       }
@@ -777,990 +690,167 @@
               sessionStorage.removeItem(BUYER_EMAIL_STORAGE_KEY);
             }
           } catch (e2) {}
-          destroyPayPalButtons();
-          paypalMounted = false;
-          paypalMountInProgress = false;
-          googlePayMounted = false;
-          applePayMounted = false;
-          renderCartPage();
+          ensureCheckoutSection();
         });
       }
 
-      /**
-       * Line items for PayPal; sums match breakdown.item_total (unit prices rounded per line to cents).
-       * @returns {{ items: object[], itemTotalCents: number }}
-       */
-      function buildPayPalLineItems(cur) {
-        var raw = cart.data.items || [];
-        var items = [];
-        var itemTotalCents = 0;
-        for (var i = 0; i < raw.length; i++) {
-          var line = raw[i];
-          var qty = Math.max(1, Math.floor(Number(line.quantity)) || 1);
-          var p = Number(line.unitPrice);
-          if (!Number.isFinite(p) || p < 0) {
-            p = 0;
-          }
-          var unitCents = Math.round(p * 100);
-          itemTotalCents += unitCents * qty;
-          var title = String(line.title || "Item").trim() || "Item";
-          if (title.length > 127) {
-            title = title.slice(0, 127);
-          }
-          var row = {
-            name: title,
-            quantity: String(qty),
-            unit_amount: {
-              currency_code: cur,
-              value: (unitCents / 100).toFixed(2),
-            },
-            category: "PHYSICAL_GOODS",
-          };
-          var desc = String(line.variationSummary || "").trim();
-          if (desc.length > 127) {
-            desc = desc.slice(0, 127);
-          }
-          if (desc) {
-            row.description = desc;
-          }
-          var sku = String(line.sku || "").trim();
-          if (sku) {
-            row.sku = sku.length > 127 ? sku.slice(0, 127) : sku;
-          }
-          items.push(row);
-        }
-        return { items: items, itemTotalCents: itemTotalCents };
+      function resolveCheckoutApiBase() {
+        return String(checkoutApiBase || "").trim().replace(/\/+$/, "") || "/api/checkout";
       }
 
-      /** Money as integer cents so value === item_total - discount + shipping in PayPal validation. */
-      function orderAmountValue(itemTotal, shippingVal, discountVal, currencyCode) {
-        if (
-          window.discountCodes &&
-          typeof window.discountCodes.orderAmountWithDiscount === "function"
-        ) {
-          return window.discountCodes.orderAmountWithDiscount(
-            itemTotal,
-            shippingVal,
-            discountVal,
-            currencyCode,
-          );
+      function setCheckoutError(text) {
+        if (!checkoutErrorEl) {
+          return;
         }
-        var cur = String(currencyCode || "AUD").trim() || "AUD";
-        var itemCents = Math.round(Math.max(0, Number(itemTotal) || 0) * 100);
-        var shipCents = Math.round(Math.max(0, Number(shippingVal) || 0) * 100);
-        var totalCents = itemCents + shipCents;
-        var itemStr = (itemCents / 100).toFixed(2);
-        var shipStr = (shipCents / 100).toFixed(2);
-        var totalStr = (totalCents / 100).toFixed(2);
-        return {
-          currency_code: cur,
-          value: totalStr,
-          breakdown: {
-            item_total: { currency_code: cur, value: itemStr },
-            shipping: { currency_code: cur, value: shipStr },
-          },
-        };
+        var msg = String(text || "").trim();
+        checkoutErrorEl.hidden = !msg;
+        checkoutErrorEl.textContent = msg;
       }
 
-      function destroyPayPalButtons() {
-        if (paypalButtonsInstance && typeof paypalButtonsInstance.close === "function") {
-          try {
-            paypalButtonsInstance.close();
-          } catch (e) {}
+      function setCheckoutBusy(busy) {
+        checkoutInProgress = !!busy;
+        if (checkoutButtonEl) {
+          checkoutButtonEl.disabled = !!busy;
+          checkoutButtonEl.textContent = busy ? "Opening secure checkout\u2026" : "Checkout";
         }
-        paypalButtonsInstance = null;
-        if (paypalContainerEl) {
-          paypalContainerEl.innerHTML = "";
-        }
-        if (googlePayContainerEl) {
-          googlePayContainerEl.innerHTML = "";
-          googlePayContainerEl.hidden = true;
-        }
-        if (applePayContainerEl) {
-          applePayContainerEl.innerHTML = "";
-          applePayContainerEl.hidden = true;
-        }
-        googlePayMounted = false;
-        applePayMounted = false;
       }
 
-      function resolveOrdersApiBase() {
-        var base = String(paypalOrdersApiBase || "").trim().replace(/\/+$/, "");
-        if (base) {
-          return base;
-        }
-        return "/api/paypal";
-      }
-
-      function buildCreateOrderPayload(contact) {
-        var cur = (cart.data.currencyCode || "AUD").trim() || "AUD";
-        var built = buildPayPalLineItems(cur);
-        var itemTotal = built.itemTotalCents / 100;
-        var shipCc = getCartShipToCountryCode();
+      function checkoutTotalEstimate() {
+        var subtotal = cartSubtotal();
         var discountAmount = currentDiscountAmount();
-        var shipCost = cartShipAndImportAmount(itemTotal, discountAmount);
-        var purchaseUnit = {
-          reference_id: "cart",
-          description: discountAmount > 0 ? "Cart order (discount applied)" : "Cart order",
-          items: built.items,
-          amount: orderAmountValue(itemTotal, shipCost, discountAmount, cur),
-        };
-        var shipping = contact && contact.shipping ? contact.shipping : null;
-        var email = contact && contact.email ? String(contact.email).trim() : "";
-        if (shipping && shipping.address && shipping.address.country_code) {
-          if (email) {
-            shipping.email_address = email;
-          }
-          purchaseUnit.shipping = shipping;
-        }
-        if (email) {
-          // PayPal Activity often hides Google Pay payer.email; custom_id stays visible.
-          purchaseUnit.custom_id = email.slice(0, 127);
-          purchaseUnit.description = purchaseUnit.description + " | " + email;
-        }
-        var payload = {
-          intent: "CAPTURE",
-          purchase_units: [purchaseUnit],
-          application_context: {
-            shipping_preference:
-              purchaseUnit.shipping ? "SET_PROVIDED_ADDRESS" : "GET_FROM_FILE",
-            user_action: "PAY_NOW",
-          },
-          _meta: {
-            currency: cur,
-            itemTotal: itemTotal,
-            discountAmount: discountAmount,
-            shipCost: shipCost,
-            shipCc: shipCc,
-            hasShipping: !!purchaseUnit.shipping,
-            email: email,
-          },
-        };
-        if (email) {
-          payload.payer = { email_address: email };
-        }
-        return payload;
-      }
-
-      function paypalShippingFromGoogleAddress(addr) {
-        if (!addr) {
-          return null;
-        }
-        var country = String(addr.countryCode || "")
-          .trim()
-          .toUpperCase();
-        if (!country) {
-          return null;
-        }
-        var line1 = String(addr.address1 || "").trim();
-        var line2 = [addr.address2, addr.address3]
-          .map(function (p) {
-            return String(p || "").trim();
-          })
-          .filter(Boolean)
-          .join(", ");
-        var shipping = {
-          name: {
-            full_name: String(addr.name || "").trim() || "Customer",
-          },
-          address: {
-            address_line_1: line1 || "Address unavailable",
-            admin_area_2: String(addr.locality || "").trim() || "Unknown",
-            admin_area_1: String(addr.administrativeArea || "").trim() || "",
-            postal_code: String(addr.postalCode || "").trim() || "",
-            country_code: country,
-          },
-        };
-        if (line2) {
-          shipping.address.address_line_2 = line2;
-        }
-        return shipping;
-      }
-
-      function paypalShippingFromAppleContact(contact) {
-        if (!contact) {
-          return null;
-        }
-        var country = String(contact.countryCode || "")
-          .trim()
-          .toUpperCase();
-        if (!country) {
-          return null;
-        }
-        var lines = contact.addressLines || [];
-        var line1 = String((lines && lines[0]) || "").trim();
-        var line2 = String((lines && lines[1]) || "").trim();
-        var fullName = [contact.givenName, contact.familyName]
-          .map(function (p) {
-            return String(p || "").trim();
-          })
-          .filter(Boolean)
-          .join(" ");
-        var shipping = {
-          name: {
-            full_name: fullName || "Customer",
-          },
-          address: {
-            address_line_1: line1 || "Address unavailable",
-            admin_area_2: String(contact.locality || "").trim() || "Unknown",
-            admin_area_1: String(contact.administrativeArea || "").trim() || "",
-            postal_code: String(contact.postalCode || "").trim() || "",
-            country_code: country,
-          },
-        };
-        if (line2) {
-          shipping.address.address_line_2 = line2;
-        }
-        return shipping;
-      }
-
-      function contactFromGooglePay(paymentData) {
-        var addr = paymentData && paymentData.shippingAddress;
-        var walletEmail = (paymentData && paymentData.email) || "";
-        var cartEmail = getCartBuyerEmail();
-        return {
-          email: walletEmail || cartEmail,
-          phone: (addr && addr.phoneNumber) || "",
-          shipping: paypalShippingFromGoogleAddress(addr),
-        };
-      }
-
-      function contactFromApplePay(payment) {
-        var ship = payment && payment.shippingContact;
-        var walletEmail = (ship && ship.emailAddress) || "";
-        var cartEmail = getCartBuyerEmail();
-        return {
-          email: walletEmail || cartEmail,
-          phone: (ship && ship.phoneNumber) || "",
-          shipping: paypalShippingFromAppleContact(ship),
-        };
-      }
-
-      function createOrderOnServer(contact) {
-        var payload = buildCreateOrderPayload(contact || null);
-        var meta = payload._meta;
-        delete payload._meta;
-        paypalDebug("server createOrder start", meta);
-        if (window.siteAnalytics?.beginCheckout) {
-          window.siteAnalytics.beginCheckout(
-            cart.data.items || [],
-            Math.max(0, meta.itemTotal - meta.discountAmount) + meta.shipCost,
-          );
-        }
-        return fetch(resolveOrdersApiBase() + "/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }).then(function (res) {
-          return res.json().then(function (data) {
-            if (!res.ok || !data || !data.id) {
-              paypalDebug("server createOrder FAILED", { status: res.status, data: data });
-              throw new Error((data && (data.message || data.error)) || "Could not create order");
-            }
-            paypalDebug("server createOrder OK", { orderId: data.id });
-            return data.id;
-          });
-        });
-      }
-
-      function captureOrderOnServer(orderId) {
-        return fetch(
-          resolveOrdersApiBase() + "/orders/" + encodeURIComponent(orderId) + "/capture",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: "{}",
-          },
-        ).then(function (res) {
-          return res.json().then(function (data) {
-            if (!res.ok) {
-              paypalDebug("server capture FAILED", { status: res.status, data: data });
-              throw new Error((data && (data.message || data.error)) || "Could not capture order");
-            }
-            return data;
-          });
-        });
-      }
-
-      function showPaymentSuccessMessage() {
-        if (paymentSuccessEl) {
-          paymentSuccessEl.hidden = false;
-          paymentSuccessEl.textContent =
-            "Payment successful. Thank you! Your order is confirmed.";
-          if (typeof paymentSuccessEl.scrollIntoView === "function") {
-            paymentSuccessEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
-          }
-        }
-      }
-
-      function finishSuccessfulPayment(orderId, details) {
-        var purchaseLines = (cart.data.items || []).slice();
-        var purchasePu = details && details.purchase_units && details.purchase_units[0];
-        var purchaseAmount =
-          purchasePu && purchasePu.amount && purchasePu.amount.value;
-        if (window.siteAnalytics?.purchase) {
-          window.siteAnalytics.purchase(orderId, purchaseAmount, purchaseLines);
-        }
-        clearShipCountryError();
-        clearBuyerEmailError();
-        cart.data.items = [];
-        cart.data.appliedDiscountCode = null;
-        cart.saveToLocalStorage();
-        destroyPayPalButtons();
-        paypalMounted = false;
-        renderCartPage();
-        // In-page message — window.alert sits under Google Pay and becomes unclickable.
-        showPaymentSuccessMessage();
-      }
-
-      function shippingContactCountry(contact) {
-        if (!contact) {
-          return "";
-        }
-        return String(
-          contact.countryCode || contact.country_code || contact.country || "",
-        )
-          .trim()
-          .toUpperCase();
-      }
-
-      function loadScriptOnce(src, flagName, done) {
-        if (flagName === "google" && window.google && window.google.payments) {
-          done();
-          return;
-        }
-        if (
-          flagName === "apple" &&
-          window.customElements &&
-          window.customElements.get("apple-pay-button")
-        ) {
-          done();
-          return;
-        }
-        var existing = document.querySelector('script[src="' + src + '"]');
-        if (existing) {
-          var tries = 0;
-          var t = window.setInterval(function () {
-            tries += 1;
-            if (
-              (flagName === "google" && window.google && window.google.payments) ||
-              (flagName === "apple" &&
-                window.customElements &&
-                window.customElements.get("apple-pay-button"))
-            ) {
-              window.clearInterval(t);
-              done();
-            } else if (tries > 200) {
-              window.clearInterval(t);
-              done();
-            }
-          }, 50);
-          return;
-        }
-        if (flagName === "google") {
-          googlePaySdkLoading = true;
-        } else {
-          applePaySdkLoading = true;
-        }
-        var script = document.createElement("script");
-        script.src = src;
-        script.async = true;
-        script.onload = function () {
-          if (flagName === "google") {
-            googlePaySdkLoading = false;
-          } else {
-            applePaySdkLoading = false;
-          }
-          done();
-        };
-        script.onerror = function () {
-          if (flagName === "google") {
-            googlePaySdkLoading = false;
-          } else {
-            applePaySdkLoading = false;
-          }
-          done();
-        };
-        document.head.appendChild(script);
-      }
-
-      function cartTotalPriceString() {
-        var payload = buildCreateOrderPayload();
-        var meta = payload._meta;
-        var total = Math.max(0, meta.itemTotal - meta.discountAmount) + meta.shipCost;
-        return (Math.round(total * 100) / 100).toFixed(2);
-      }
-
-      function ensureGooglePayButton() {
-        if (
-          !window.paypal ||
-          typeof window.paypal.Googlepay !== "function" ||
-          !googlePayContainerEl ||
-          googlePayMounted
-        ) {
-          return;
-        }
-        loadScriptOnce("https://pay.google.com/gp/p/js/pay.js", "google", function () {
-          if (!window.google || !window.google.payments || !window.google.payments.api) {
-            return;
-          }
-          var googlepay = window.paypal.Googlepay();
-          googlepay
-            .config()
-            .then(function (googlePayConfig) {
-              if (!googlePayConfig || !googlePayConfig.allowedPaymentMethods) {
-                return;
-              }
-              var env = paypalEnv === "live" ? "PRODUCTION" : "TEST";
-              googlePaymentsClient = new google.payments.api.PaymentsClient({
-                environment: env,
-                paymentDataCallbacks: {
-                  onPaymentAuthorized: function (paymentData) {
-                    return processGooglePayPayment(paymentData);
-                  },
-                },
-              });
-              var readyReq = {
-                apiVersion: googlePayConfig.apiVersion || 2,
-                apiVersionMinor: googlePayConfig.apiVersionMinor || 0,
-                allowedPaymentMethods: googlePayConfig.allowedPaymentMethods,
-              };
-              return googlePaymentsClient.isReadyToPay(readyReq).then(function (response) {
-                if (!response || !response.result || googlePayMounted) {
-                  return;
-                }
-                googlePayContainerEl.innerHTML = "";
-                var button = googlePaymentsClient.createButton({
-                  onClick: onGooglePayButtonClicked,
-                  allowedPaymentMethods: googlePayConfig.allowedPaymentMethods,
-                  buttonType: "pay",
-                  buttonSizeMode: "fill",
-                });
-                googlePayContainerEl.appendChild(button);
-                googlePayContainerEl.hidden = false;
-                googlePayMounted = true;
-                googlePayContainerEl._googlePayConfig = googlePayConfig;
-              });
-            })
-            .catch(function (err) {
-              paypalDebug("Google Pay config failed", { error: paypalSerializeError(err) });
-            });
-        });
-      }
-
-      function onGooglePayButtonClicked() {
-        if (!canCheckout()) {
-          if (!hasShipCountrySelected()) {
-            window.alert("Select ship-to country above to continue to payment.");
-          } else {
-            window.alert("Enter your email above to continue to payment.");
-            highlightBuyerEmailError(true);
-            setBuyerEmailMessage("Enter a valid email address.", "error");
-          }
-          return;
-        }
-        var googlePayConfig = googlePayContainerEl && googlePayContainerEl._googlePayConfig;
-        if (!googlePaymentsClient || !googlePayConfig) {
-          return;
-        }
-        var cur = (cart.data.currencyCode || "AUD").trim() || "AUD";
-        var paymentDataRequest = {
-          apiVersion: googlePayConfig.apiVersion || 2,
-          apiVersionMinor: googlePayConfig.apiVersionMinor || 0,
-          allowedPaymentMethods: googlePayConfig.allowedPaymentMethods,
-          merchantInfo: googlePayConfig.merchantInfo,
-          transactionInfo: {
-            countryCode: googlePayConfig.countryCode || paypalBuyerCountry || "AU",
-            currencyCode: cur,
-            totalPriceStatus: "FINAL",
-            totalPrice: cartTotalPriceString(),
-          },
-          callbackIntents: ["PAYMENT_AUTHORIZATION"],
-          emailRequired: true,
-          shippingAddressRequired: true,
-          shippingAddressParameters: {
-            phoneNumberRequired: true,
-          },
-        };
-        googlePaymentsClient.loadPaymentData(paymentDataRequest).catch(function (err) {
-          if (err && err.statusCode === "CANCELED") {
-            return;
-          }
-          paypalDebug("Google Pay loadPaymentData failed", {
-            error: paypalSerializeError(err),
-          });
-          window.alert("Google Pay could not be started. Please try PayPal or try again.");
-        });
-      }
-
-      function processGooglePayPayment(paymentData) {
-        return new Promise(function (resolve) {
-          var shipCc = shippingContactCountry(
-            paymentData && paymentData.shippingAddress,
-          );
-          if (!paypalShippingCountryMatchesCart(shipCc)) {
-            setShipCountryMessage(SHIP_MISMATCH_MSG, "error");
-            highlightShipCountryError(true);
-            resolve({
-              transactionState: "ERROR",
-              error: {
-                intent: "PAYMENT_AUTHORIZATION",
-                message: SHIP_MISMATCH_MSG,
-              },
-            });
-            return;
-          }
-          createOrderOnServer(contactFromGooglePay(paymentData))
-            .then(function (orderId) {
-              var confirmPayload = {
-                orderId: orderId,
-                paymentMethodData: paymentData.paymentMethodData,
-              };
-              if (paymentData && paymentData.shippingAddress) {
-                confirmPayload.shippingAddress = paymentData.shippingAddress;
-              }
-              if (paymentData && paymentData.email) {
-                confirmPayload.email = paymentData.email;
-              }
-              if (
-                paymentData &&
-                paymentData.paymentMethodData &&
-                paymentData.paymentMethodData.info &&
-                paymentData.paymentMethodData.info.billingAddress
-              ) {
-                confirmPayload.billingAddress =
-                  paymentData.paymentMethodData.info.billingAddress;
-              }
-              paypalDebug("Google Pay confirmOrder contacts", {
-                email: confirmPayload.email || "",
-                hasShipping: !!confirmPayload.shippingAddress,
-              });
-              return window
-                .paypal.Googlepay()
-                .confirmOrder(confirmPayload)
-                .then(function (confirmResult) {
-                  var status = confirmResult && confirmResult.status;
-                  if (status === "PAYER_ACTION_REQUIRED") {
-                    return window
-                      .paypal.Googlepay()
-                      .initiatePayerAction({ orderId: orderId })
-                      .then(function () {
-                        return captureOrderOnServer(orderId);
-                      });
-                  }
-                  if (status === "APPROVED") {
-                    return captureOrderOnServer(orderId);
-                  }
-                  throw new Error("Google Pay was not approved");
-                })
-                .then(function (details) {
-                  // Tell Google Pay SUCCESS before any UI work — alert/re-render
-                  // otherwise leaves the sheet spinning forever.
-                  resolve({ transactionState: "SUCCESS" });
-                  // Wait for Google Pay sheet to dismiss before updating the page.
-                  window.setTimeout(function () {
-                    finishSuccessfulPayment(orderId, details);
-                  }, 500);
-                });
-            })
-            .catch(function (err) {
-              paypalDebug("Google Pay payment failed", {
-                error: paypalSerializeError(err),
-              });
-              resolve({
-                transactionState: "ERROR",
-                error: {
-                  intent: "PAYMENT_AUTHORIZATION",
-                  message: (err && err.message) || "TRANSACTION FAILED",
-                },
-              });
-            });
-        });
-      }
-
-      function ensureApplePayButton() {
-        if (
-          !window.paypal ||
-          typeof window.paypal.Applepay !== "function" ||
-          !applePayContainerEl ||
-          applePayMounted
-        ) {
-          return;
-        }
-        if (!window.ApplePaySession || !ApplePaySession.canMakePayments()) {
-          return;
-        }
-        loadScriptOnce(
-          "https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js",
-          "apple",
-          function () {
-            var applepay = window.paypal.Applepay();
-            applepay
-              .config()
-              .then(function (applepayConfig) {
-                if (!applepayConfig || !applepayConfig.isEligible || applePayMounted) {
-                  return;
-                }
-                applePayContainerEl.innerHTML =
-                  '<apple-pay-button id="cart-apple-pay-btn" buttonstyle="black" type="buy" locale="en-AU"></apple-pay-button>';
-                applePayContainerEl.hidden = false;
-                applePayMounted = true;
-                var btn = document.getElementById("cart-apple-pay-btn");
-                if (btn) {
-                  btn.addEventListener("click", function () {
-                    onApplePayButtonClicked(applepay, applepayConfig);
-                  });
-                }
-              })
-              .catch(function (err) {
-                paypalDebug("Apple Pay config failed", {
-                  error: paypalSerializeError(err),
-                });
-              });
-          },
+        return (
+          Math.max(0, subtotal - discountAmount) + cartShipAndImportAmount(subtotal, discountAmount)
         );
       }
 
-      function onApplePayButtonClicked(applepay, applepayConfig) {
+      function startCheckout() {
+        if (checkoutInProgress) {
+          return;
+        }
         if (!canCheckout()) {
           if (!hasShipCountrySelected()) {
-            window.alert("Select ship-to country above to continue to payment.");
-          } else {
-            window.alert("Enter your email above to continue to payment.");
+            highlightShipCountryError(true);
+            setShipCountryMessage("Select a ship-to country.", "error");
+          }
+          if (!hasBuyerEmailEntered()) {
             highlightBuyerEmailError(true);
             setBuyerEmailMessage("Enter a valid email address.", "error");
           }
           return;
         }
-        var cur = (cart.data.currencyCode || "AUD").trim() || "AUD";
-        var paymentRequest = {
-          countryCode: applepayConfig.countryCode || paypalBuyerCountry || "AU",
-          merchantCapabilities: applepayConfig.merchantCapabilities,
-          supportedNetworks: applepayConfig.supportedNetworks,
-          currencyCode: cur,
-          requiredShippingContactFields: ["name", "phone", "email", "postalAddress"],
-          requiredBillingContactFields: ["postalAddress"],
-          total: {
-            label: shopDisplayName || "Contraption Cart",
-            type: "final",
-            amount: cartTotalPriceString(),
-          },
-        };
-        var session = new ApplePaySession(4, paymentRequest);
-        session.onvalidatemerchant = function (event) {
-          applepay
-            .validateMerchant({
-              validationUrl: event.validationURL,
-              displayName: shopDisplayName || "Contraption Cart",
-            })
-            .then(function (validateResult) {
-              session.completeMerchantValidation(validateResult.merchantSession);
-            })
-            .catch(function (err) {
-              paypalDebug("Apple Pay validateMerchant failed", {
-                error: paypalSerializeError(err),
-              });
-              session.abort();
-            });
-        };
-        session.onpaymentauthorized = function (event) {
-          var shipCc = shippingContactCountry(event.payment && event.payment.shippingContact);
-          if (!paypalShippingCountryMatchesCart(shipCc)) {
-            setShipCountryMessage(SHIP_MISMATCH_MSG, "error");
-            highlightShipCountryError(true);
-            session.completePayment(ApplePaySession.STATUS_FAILURE);
-            return;
-          }
-          createOrderOnServer(contactFromApplePay(event.payment))
-            .then(function (orderId) {
-              var confirmPayload = {
-                orderId: orderId,
-                token: event.payment.token,
-                billingContact: event.payment.billingContact,
-              };
-              if (event.payment && event.payment.shippingContact) {
-                confirmPayload.shippingContact = event.payment.shippingContact;
-              }
-              paypalDebug("Apple Pay confirmOrder contacts", {
-                email:
-                  (event.payment.shippingContact &&
-                    event.payment.shippingContact.emailAddress) ||
-                  "",
-                hasShipping: !!confirmPayload.shippingContact,
-              });
-              return applepay
-                .confirmOrder(confirmPayload)
-                .then(function () {
-                  return captureOrderOnServer(orderId).then(function (details) {
-                    session.completePayment(ApplePaySession.STATUS_SUCCESS);
-                    window.setTimeout(function () {
-                      finishSuccessfulPayment(orderId, details);
-                    }, 0);
-                  });
-                });
-            })
-            .catch(function (err) {
-              paypalDebug("Apple Pay payment failed", {
-                error: paypalSerializeError(err),
-              });
-              session.completePayment(ApplePaySession.STATUS_FAILURE);
-            });
-        };
-        session.begin();
-      }
-
-      /** Logs one JSON line prefixed with [PayPal debug] — copy from DevTools Console to share. */
-      function paypalDebug(tag, payload) {
-        var line;
-        try {
-          line = "[PayPal debug] " + tag + ": " + JSON.stringify(payload, null, 2);
-        } catch (e) {
-          line = "[PayPal debug] " + tag + ": (payload not serializable)";
-        }
-        console.log(line);
-      }
-
-      function paypalSerializeError(err) {
-        if (err == null) {
-          return null;
-        }
-        var o = {
-          message: err.message,
-          name: err.name,
-        };
-        if (typeof err.statusCode !== "undefined") {
-          o.statusCode = err.statusCode;
-        }
-        if (err.details != null) {
-          try {
-            o.details = JSON.parse(JSON.stringify(err.details));
-          } catch (e) {
-            o.details = String(err.details);
-          }
-        }
-        try {
-          if (typeof err.toString === "function") {
-            o.string = err.toString();
-          }
-        } catch (e2) {}
-        return o;
-      }
-
-      /**
-       * Always load from www.paypal.com (Per PayPal docs); client-id selects sandbox vs live.
-       * commit=true with PAY_NOW matches a fixed total from createOrder (no order.patch).
-       */
-      function buildPayPalSdkUrl(clientId, currency) {
-        var isLive = paypalEnv === "live";
-        var parts = [
-          "client-id=" + encodeURIComponent(clientId),
-          "currency=" + encodeURIComponent(currency),
-          "intent=capture",
-          "components=buttons,applepay,googlepay",
-          "commit=true",
-        ];
-        if (!isLive && paypalBuyerCountry && /^[A-Z]{2}$/.test(paypalBuyerCountry)) {
-          parts.push("buyer-country=" + encodeURIComponent(paypalBuyerCountry));
-        }
-        return "https://www.paypal.com/sdk/js?" + parts.join("&");
-      }
-
-      function loadPayPalSdk(clientId, currency, done) {
-        if (window.paypal) {
-          done();
-          return;
-        }
-        if (paypalSdkLoading) {
-          var tries = 0;
-          var t = window.setInterval(function () {
-            tries += 1;
-            if (window.paypal) {
-              window.clearInterval(t);
-              done();
-            } else if (tries > 200) {
-              window.clearInterval(t);
-              done();
-            }
-          }, 50);
-          return;
-        }
-        paypalSdkLoading = true;
-        var script = document.createElement("script");
-        script.src = buildPayPalSdkUrl(clientId, currency);
-        script.onload = function () {
-          paypalSdkLoading = false;
-          done();
-        };
-        script.onerror = function () {
-          paypalSdkLoading = false;
-          done();
-        };
-        document.head.appendChild(script);
-      }
-
-      function ensurePayPalButtons() {
-        if (!paypalClientId || !paypalSectionEl || !paypalContainerEl) {
-          return;
-        }
-        var items = cart.data.items || [];
-        if (items.length === 0) {
-          destroyPayPalButtons();
-          paypalMounted = false;
-          paypalMountInProgress = false;
-          paypalSectionEl.hidden = true;
-          if (checkoutBlockedEl) {
-            checkoutBlockedEl.hidden = true;
-          }
-          return;
-        }
-        if (!canCheckout()) {
-          destroyPayPalButtons();
-          paypalMounted = false;
-          paypalMountInProgress = false;
-          paypalSectionEl.hidden = true;
-          if (checkoutBlockedEl) {
-            checkoutBlockedEl.hidden = false;
-          }
-          return;
-        }
-        if (checkoutBlockedEl) {
-          checkoutBlockedEl.hidden = true;
-        }
-        paypalSectionEl.hidden = false;
-        if (paypalMounted || paypalMountInProgress) {
-          return;
-        }
-        paypalMountInProgress = true;
-        var currency = (cart.data.currencyCode || "AUD").trim() || "AUD";
-        loadPayPalSdk(paypalClientId, currency, function () {
-          paypalMountInProgress = false;
-          if (!window.paypal || !(cart.data.items || []).length) {
-            return;
-          }
-          paypalButtonsInstance = window.paypal.Buttons({
-            onShippingAddressChange: function (data, actions) {
-              var cc = data && data.shippingAddress && data.shippingAddress.countryCode;
-              if (!paypalShippingCountryMatchesCart(cc)) {
-                return actions.reject(data.errors.COUNTRY_ERROR);
-              }
-            },
-            createOrder: function (data, actions) {
-              if (!canCheckout()) {
-                return Promise.reject(new Error("Ship to country or email not set"));
-              }
-              var cur = (cart.data.currencyCode || "AUD").trim() || "AUD";
-              var built = buildPayPalLineItems(cur);
-              var itemTotal = built.itemTotalCents / 100;
-              var shipCc = getCartShipToCountryCode();
-              var discountAmount = currentDiscountAmount();
-              var shipCost = cartShipAndImportAmount(itemTotal, discountAmount);
-              var buyerEmail = getCartBuyerEmail();
-              var unit = {
-                reference_id: "cart",
-                description: discountAmount > 0 ? "Cart order (discount applied)" : "Cart order",
-                items: built.items,
-                amount: orderAmountValue(itemTotal, shipCost, discountAmount, cur),
-              };
-              if (buyerEmail) {
-                unit.custom_id = buyerEmail.slice(0, 127);
-                unit.description = unit.description + " | " + buyerEmail;
-              }
-              paypalDebug("createOrder start", {
-                currency: cur,
-                itemTotal: itemTotal,
-                discountAmount: discountAmount,
-                shipCountryResolved: shipCc,
-                shipCost: shipCost,
-                weightGrams: cartWeightGrams(),
-                lineCount: (cart.data.items || []).length,
-                paypalItemLines: built.items.length,
-                buyerEmail: buyerEmail,
-              });
-              if (window.siteAnalytics?.beginCheckout) {
-                window.siteAnalytics.beginCheckout(
-                  cart.data.items || [],
-                  Math.max(0, itemTotal - discountAmount) + shipCost,
-                );
-              }
-              var orderBody = {
-                purchase_units: [unit],
-                application_context: {
-                  shipping_preference: "GET_FROM_FILE",
-                  user_action: "PAY_NOW",
-                },
-              };
-              if (buyerEmail) {
-                orderBody.payer = { email_address: buyerEmail };
-              }
-              return actions.order
-                .create(orderBody)
-                .then(function (orderId) {
-                  paypalDebug("createOrder OK", { orderId: orderId });
-                  return orderId;
-                })
-                .catch(function (err) {
-                  paypalDebug("createOrder FAILED", { error: paypalSerializeError(err) });
-                  throw err;
-                });
-            },
-            onApprove: function (data, actions) {
-              paypalDebug("onApprove start", { orderID: data.orderID });
-              return actions.order
-                .get()
-                .then(function (order) {
-                  var pu = order && order.purchase_units && order.purchase_units[0];
-                  var shipAddr = pu && pu.shipping && pu.shipping.address;
-                  var cc = shipAddr && shipAddr.country_code;
-                  paypalDebug("onApprove order shipping", { country_code: cc });
-                  if (!paypalShippingCountryMatchesCart(cc)) {
-                    setShipCountryMessage(SHIP_MISMATCH_MSG, "error");
-                    highlightShipCountryError(true);
-                    if (shipCountryEl && typeof shipCountryEl.scrollIntoView === "function") {
-                      shipCountryEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
-                    }
-                    return Promise.reject(new Error("shipping_country_mismatch"));
-                  }
-                  return actions.order.capture().then(function (details) {
-                    paypalDebug("onApprove capture OK", {
-                      status: details && details.status,
-                      payerEmail: details && details.payer && details.payer.email_address,
-                    });
-                    finishSuccessfulPayment(data.orderID, details);
-                  });
-                })
-                .catch(function (err) {
-                  if (err && err.message === "shipping_country_mismatch") {
-                    return;
-                  }
-                  paypalDebug("onApprove FAILED", { error: paypalSerializeError(err) });
-                  throw err;
-                });
-            },
-            onError: function (err) {
-              paypalDebug("Buttons onError", { error: paypalSerializeError(err) });
-              console.error("PayPal error", err);
-              window.alert("Payment could not be completed. Please try again.");
-            },
-          });
-          try {
-            var renderResult = paypalButtonsInstance.render(paypalContainerEl);
-            if (renderResult && typeof renderResult.then === "function") {
-              renderResult.then(function () {
-                paypalMounted = true;
-                ensureGooglePayButton();
-                ensureApplePayButton();
-              });
-            } else {
-              paypalMounted = true;
-              ensureGooglePayButton();
-              ensureApplePayButton();
-            }
-          } catch (e) {
-            console.error("PayPal render failed", e);
-            ensureGooglePayButton();
-            ensureApplePayButton();
-          }
+        var items = (cart.data.items || []).map(function (line) {
+          return {
+            sku: String(line.sku || "").trim(),
+            lineId: String(line.lineId || "").trim(),
+            quantity: Math.max(1, Math.floor(Number(line.quantity)) || 1),
+          };
         });
+        if (window.siteAnalytics?.beginCheckout) {
+          window.siteAnalytics.beginCheckout(cart.data.items || [], checkoutTotalEstimate());
+        }
+        setCheckoutError("");
+        setCheckoutBusy(true);
+        fetch(resolveCheckoutApiBase() + "/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items: items,
+            shipTo: getCartShipToSelection(),
+            email: getCartBuyerEmail(),
+            discountCode: getAppliedDiscountCode(),
+          }),
+        })
+          .then(function (res) {
+            return res
+              .json()
+              .catch(function () {
+                return {};
+              })
+              .then(function (data) {
+                if (!res.ok || !data || !data.url) {
+                  throw new Error(
+                    (data && data.error) || "Checkout could not be started. Please try again.",
+                  );
+                }
+                window.location.assign(data.url);
+              });
+          })
+          .catch(function (err) {
+            setCheckoutBusy(false);
+            setCheckoutError(
+              (err && err.message) || "Checkout could not be started. Please try again.",
+            );
+          });
+      }
+
+      function showPaymentSuccessMessage(orderRef) {
+        if (!paymentSuccessEl) {
+          return;
+        }
+        paymentSuccessEl.hidden = false;
+        paymentSuccessEl.textContent =
+          "Payment successful. Thank you! Your order" +
+          (orderRef ? " " + orderRef : "") +
+          " is confirmed.";
+        if (typeof paymentSuccessEl.scrollIntoView === "function") {
+          paymentSuccessEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      }
+
+      /** Handles ?checkout=success|cancelled when Stripe sends the buyer back to the cart. */
+      function handleCheckoutReturn() {
+        var params = new URLSearchParams(window.location.search);
+        var state = params.get("checkout");
+        if (!state) {
+          return;
+        }
+        var sessionId = params.get("session_id") || "";
+        window.history.replaceState(null, "", window.location.pathname + window.location.hash);
+        if (state === "cancelled") {
+          setCheckoutError("Checkout was cancelled. Your cart is still here when you're ready.");
+          return;
+        }
+        if (state !== "success") {
+          return;
+        }
+        var purchaseLines = (cart.data.items || []).slice();
+        cart.data.items = [];
+        cart.data.appliedDiscountCode = null;
+        cart.saveToLocalStorage();
+        showPaymentSuccessMessage("");
+        if (!sessionId) {
+          return;
+        }
+        fetch(resolveCheckoutApiBase() + "/session?id=" + encodeURIComponent(sessionId))
+          .then(function (res) {
+            return res.ok ? res.json() : null;
+          })
+          .then(function (data) {
+            if (!data) {
+              return;
+            }
+            showPaymentSuccessMessage(data.orderRef || "");
+            if (window.siteAnalytics?.purchase) {
+              window.siteAnalytics.purchase(
+                data.orderRef || sessionId,
+                data.amountTotal,
+                purchaseLines,
+              );
+            }
+          })
+          .catch(function () {});
+      }
+
+      function ensureCheckoutSection() {
+        if (!checkoutSectionEl) {
+          return;
+        }
+        var hasItems = (cart.data.items || []).length > 0;
+        var ready = hasItems && canCheckout();
+        checkoutSectionEl.hidden = !ready;
+        if (checkoutBlockedEl) {
+          checkoutBlockedEl.hidden = !hasItems || ready;
+        }
       }
 
       function renderCartPageInner() {
@@ -1781,17 +871,7 @@
           if (summaryEl) {
             summaryEl.hidden = true;
           }
-          destroyPayPalButtons();
-          paypalMounted = false;
-          paypalMountInProgress = false;
-          googlePayMounted = false;
-          applePayMounted = false;
-          if (paypalSectionEl) {
-            paypalSectionEl.hidden = true;
-          }
-          if (checkoutBlockedEl) {
-            checkoutBlockedEl.hidden = true;
-          }
+          ensureCheckoutSection();
           return;
         }
         if (paymentSuccessEl) {
@@ -1932,7 +1012,7 @@
               )
             : "\u2014";
         }
-        ensurePayPalButtons();
+        ensureCheckoutSection();
       }
 
       function renderCartPage() {
@@ -1977,6 +1057,11 @@
         if (t.closest("#cart-discount-remove")) {
           e.preventDefault();
           removePromoCode();
+          return;
+        }
+        if (t.closest("#cart-checkout-button")) {
+          e.preventDefault();
+          startCheckout();
           return;
         }
         var lineEl = t.closest(".cart-line");
@@ -2036,6 +1121,14 @@
         }
       });
 
+      // Back button from Stripe restores this page from bfcache with the button still busy.
+      window.addEventListener("pageshow", function (e) {
+        if (e.persisted) {
+          setCheckoutBusy(false);
+        }
+      });
+
+      handleCheckoutReturn();
       renderCartPage();
       window.addEventListener("displaycurrencychange", renderCartPage);
       window.addEventListener("displaycurrencyready", renderCartPage);

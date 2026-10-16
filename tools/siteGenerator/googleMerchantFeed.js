@@ -137,11 +137,11 @@
   }
 
   function resolveBuyerCountry(shopData) {
-    const fromPaypal = String(shopData?.paypal?.buyerCountry || "")
+    const fromReturns = String(shopData?.returnPolicy?.returnPolicyCountry || "")
       .trim()
       .toUpperCase();
-    if (/^[A-Z]{2}$/.test(fromPaypal)) {
-      return fromPaypal;
+    if (/^[A-Z]{2}$/.test(fromReturns)) {
+      return fromReturns;
     }
     return "AU";
   }

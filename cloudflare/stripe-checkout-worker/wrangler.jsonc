@@ -1,0 +1,19 @@
+{
+  "name": "contraptioncart-checkout",
+  "main": "worker.js",
+  "compatibility_date": "2026-08-19",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "ratelimits": [
+    { "name": "CHECKOUT_LIMITER", "namespace_id": "3001", "simple": { "limit": 20, "period": 60 } }
+  ],
+  // Secrets: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY (npx wrangler secret put NAME)
+  "vars": {
+    "SITE_ORIGIN": "https://www.contraptioncart.com",
+    "NOTIFY_TO": "shasabolton@gmail.com",
+    "FROM_EMAIL": "Contraption Cart <onboarding@resend.dev>"
+  }
+}

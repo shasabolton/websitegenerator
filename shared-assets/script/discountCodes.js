@@ -1,6 +1,8 @@
 /**
  * Client-side discount code evaluation for the shopping cart.
  * Config shape: shared-assets/config/discountCodes.json
+ * Keep rules in sync with evaluateDiscount in cloudflare/stripe-checkout-worker/worker.js,
+ * which recalculates the charged amount.
  */
 (function initDiscountCodes() {
   if (window.discountCodes) {
@@ -184,50 +186,9 @@
     };
   }
 
-  /**
-   * PayPal amount object: total = item_total - discount + shipping.
-   * @param {number} itemTotal
-   * @param {number} shippingVal
-   * @param {number} discountVal
-   * @param {string} currencyCode
-   */
-  function orderAmountWithDiscount(itemTotal, shippingVal, discountVal, currencyCode) {
-    const cur = String(currencyCode || "AUD").trim() || "AUD";
-    let itemCents = Math.round(Math.max(0, Number(itemTotal) || 0) * 100);
-    let discountCents = Math.round(Math.max(0, Number(discountVal) || 0) * 100);
-    const shipCents = Math.round(Math.max(0, Number(shippingVal) || 0) * 100);
-    if (discountCents > itemCents) {
-      discountCents = itemCents;
-    }
-    let totalCents = itemCents - discountCents + shipCents;
-    if (totalCents < 0) {
-      totalCents = 0;
-    }
-    const itemStr = (itemCents / 100).toFixed(2);
-    const shipStr = (shipCents / 100).toFixed(2);
-    const totalStr = (totalCents / 100).toFixed(2);
-    /** @type {{ currency_code: string, value: string, breakdown: Record<string, { currency_code: string, value: string }> }} */
-    const amount = {
-      currency_code: cur,
-      value: totalStr,
-      breakdown: {
-        item_total: { currency_code: cur, value: itemStr },
-        shipping: { currency_code: cur, value: shipStr },
-      },
-    };
-    if (discountCents > 0) {
-      amount.breakdown.discount = {
-        currency_code: cur,
-        value: (discountCents / 100).toFixed(2),
-      };
-    }
-    return amount;
-  }
-
   window.discountCodes = {
     normalizeCode,
     findCodeDefinition,
     evaluateDiscount,
-    orderAmountWithDiscount,
   };
 })();

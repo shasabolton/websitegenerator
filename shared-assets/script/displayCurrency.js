@@ -1,5 +1,5 @@
 /**
- * Display-only currency conversion (catalog prices stay in AUD; PayPal checkout unchanged).
+ * Display-only currency conversion (catalog prices stay in AUD; Stripe checkout charges AUD).
  * Rates from Frankfurter (ECB); cached in localStorage for 24h.
  */
 (function initDisplayCurrency() {

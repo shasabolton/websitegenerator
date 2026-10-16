@@ -18,19 +18,9 @@ async function buildCartBody(ctx) {
   const cartTemplate = await fetchText("./templates/partials/cartBody.html");
   const categories = window.productData.getProductsByCategory(products);
   const shopNameEsc = escapeHtml(shopData?.shopName || "Shop");
-  const paypalClientId = String(shopData?.paypal?.clientId ?? "").trim();
-  const paypalEnvironment = String(shopData?.paypal?.environment ?? "sandbox")
-    .trim()
-    .toLowerCase();
-  const paypalBuyerCountry = String(shopData?.paypal?.buyerCountry ?? "AU").trim().toUpperCase();
-  const paypalOrdersApiBase = String(shopData?.paypal?.ordersApiBase ?? "").trim();
-  const shopName = String(shopData?.shopName ?? "Contraption Cart").trim() || "Contraption Cart";
+  const checkoutApiBase = String(shopData?.checkout?.apiBase ?? "").trim();
   const bodyHtml = applyTemplate(cartTemplate, {
-    PAYPAL_CLIENT_ID_JSON: JSON.stringify(paypalClientId),
-    PAYPAL_ENV_JSON: JSON.stringify(paypalEnvironment === "live" ? "live" : "sandbox"),
-    PAYPAL_BUYER_COUNTRY_JSON: JSON.stringify(/^[A-Z]{2}$/.test(paypalBuyerCountry) ? paypalBuyerCountry : "AU"),
-    PAYPAL_ORDERS_API_BASE_JSON: JSON.stringify(paypalOrdersApiBase),
-    SHOP_NAME_JSON: JSON.stringify(shopName),
+    CHECKOUT_API_BASE_JSON: JSON.stringify(checkoutApiBase),
   });
   const truncateText = window.structuredData?.truncateText;
   const metaDescription =

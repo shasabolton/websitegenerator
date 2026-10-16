@@ -28,7 +28,7 @@ not your Cloudflare login. Change it any time by running `secret put` again.
 
 ## Limits
 
-Shares the account's free daily Workers quota with the PayPal and newsletter workers. The site
+Shares the account's free daily Workers quota with the Stripe checkout and newsletter workers. The site
 sends one request when a visitor leaves a page (again if they switch tabs and come back, capped
 at 10 per page), so normal traffic uses a tiny fraction of it. Data older
 than 400 days is deleted daily by the cron trigger.

@@ -1,6 +1,6 @@
 # Newsletter signup worker
 
-Accepts footer subscribe posts, checks Cloudflare Turnstile, then emails the shop owner via Resend. This is a **separate Worker** from PayPal so signup spam cannot consume the payment Worker’s request quota.
+Accepts footer subscribe posts, checks Cloudflare Turnstile, then emails the shop owner via Resend. This is a **separate Worker** from Stripe checkout so signup spam cannot consume the payment Worker’s request quota.
 
 Until you add your own domain in Resend, mail is sent from `onboarding@resend.dev` to `NOTIFY_TO`. Sign up for Resend with that same Gmail address.
 
