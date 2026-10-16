@@ -253,7 +253,7 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 <p>Contraption Cart is a small business run by Shasa Bolton in Sheffield, Tasmania, Australia. In this policy, "I" and "me" mean Contraption Cart. I handle personal information in line with the Australian Privacy Principles.</p>
 <h2>Information I collect</h2>
 <ul>
-  <li><strong>Orders.</strong> When you buy something, I receive your name, email address, shipping address and order details so I can send your order. Payments are processed by PayPal (including Google Pay and Apple Pay through PayPal). I never see or store your card or bank details.</li>
+  <li><strong>Orders.</strong> When you buy something, I receive your name, email address, shipping address and order details so I can send your order. Payments are processed by Stripe (including card, Apple Pay, Google Pay and Link payments). I never see or store your card or bank details.</li>
   <li><strong>Newsletter.</strong> If you subscribe, I store your name and email address so I can send you new designs, discounts and articles.</li>
   <li><strong>Emails.</strong> If you email me, I keep your message and email address so I can reply and help with your order.</li>
   <li><strong>Website usage.</strong> I use Google Analytics to understand how visitors use the site, such as which pages are viewed and roughly where visitors are located. Google Analytics uses cookies and similar technologies. It does not tell me who you are.</li>
@@ -272,9 +272,10 @@ window.siteCart = new ShoppingCart("Contraption Cart");
 <h2>Services I use</h2>
 <p>I share information only with the services needed to run the shop:</p>
 <ul>
-  <li><strong>PayPal</strong> for payments. See the <a href="https://www.paypal.com/au/legalhub/privacy-full" target="_blank" rel="noopener noreferrer">PayPal privacy statement</a>.</li>
+  <li><strong>Stripe</strong> for payments. See the <a href="https://stripe.com/au/privacy" target="_blank" rel="noopener noreferrer">Stripe privacy policy</a>.</li>
+  <li><strong>Resend</strong> to email me your order details and newsletter sign-ups.</li>
   <li><strong>Google</strong> for Analytics and Ads. See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google's privacy policy</a> and <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">how Google uses information from sites that use its services</a>.</li>
-  <li><strong>Cloudflare</strong> for hosting parts of the site, the newsletter sign-up, spam protection (Turnstile) and storing my visitor statistics.</li>
+  <li><strong>Cloudflare</strong> for hosting parts of the site, checkout, the newsletter sign-up, spam protection (Turnstile) and storing my visitor statistics.</li>
   <li><strong>Postal and courier services</strong> to deliver your order.</li>
   <li><strong>Etsy</strong> handles orders placed on my Etsy shop under Etsy's own privacy policy.</li>
 </ul>
@@ -360,8 +361,8 @@ window.siteCart = new ShoppingCart("Contraption Cart");
       <p class="footer-heading">We accept</p>
       <ul class="accepted-payments-list accepted-payments-list--footer">
         <li class="accepted-payments-item">
-          <span class="accepted-payments-mark accepted-payments-mark--paypal">PayPal</span>
-          <span class="accepted-payments-note">Guest checkout with PayPal — no account login required.</span>
+          <span class="accepted-payments-mark accepted-payments-mark--card">Credit &amp; debit cards</span>
+          <span class="accepted-payments-note">Secure checkout by Stripe — no account needed.</span>
         </li>
         <li class="accepted-payments-item">
           <span class="accepted-payments-mark accepted-payments-mark--googlepay">Google Pay</span>
