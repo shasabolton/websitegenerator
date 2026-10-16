@@ -22,6 +22,9 @@ not your Cloudflare login. Change it any time by running `secret put` again.
 - `POST /api/track` — one page visit (sent by the site when a visitor leaves a page)
 - `GET /api/track/login` — checks the dashboard password (`Authorization: Bearer <password>`)
 - `GET /api/track/visits?from=<ms>&to=<ms>` — sessions with their pages and events
+- `GET /api/track/ad-clicks/pending` — Google Ads click IDs not yet looked up (password required)
+- `POST /api/track/ad-clicks` — saves campaign / ad group / keyword per click ID (password
+  required); filled in by `contraption-ads/enrich_visits.py`
 
 ## Limits
 

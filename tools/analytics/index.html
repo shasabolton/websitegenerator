@@ -1092,10 +1092,15 @@
               rows.push(`<tr><td class="muted">+${formatDuration(e.t)}</td><td>${escapeHtml(EVENT_TYPES[e.type] || e.type)}</td><td>${escapeHtml(e.label || "")}</td><td class="muted">${escapeHtml(e.detail || "")}</td></tr>`);
             }
           }
+          const ad = session.adClick || {};
           const kv = [
             ["Landing URL", session.landingUrl],
             ["Came from", session.referrer || "(no referrer)"],
             ["Google Ads click ID", p.gclid || p.gbraid || p.wbraid],
+            ["Ad campaign", ad.campaign],
+            ["Ad group", ad.adGroup],
+            ["Ad keyword", ad.keyword ? `${ad.keyword}${ad.matchType ? ` (${ad.matchType})` : ""}` : ""],
+            ["Ad shown on", ad.network],
             ["Keyword (utm_term)", p.utm_term],
             ["Campaign (utm_campaign)", p.utm_campaign],
             ["Location", [session.city, session.region, session.country].filter(Boolean).join(", ")],
@@ -1131,7 +1136,10 @@
           if (stats.isBot) {
             classes.push("is-bot");
           }
-          const keyword = p.utm_term ? `<div class="keyword">“${escapeHtml(p.utm_term)}”</div>` : "";
+          const ad = session.adClick;
+          const term = p.utm_term || ad?.keyword;
+          const keyword = term ? `<div class="keyword">“${escapeHtml(term)}”</div>` : "";
+          const adLine = ad ? `<div class="muted">${escapeHtml([ad.campaign, ad.adGroup, ad.network].filter(Boolean).join(" · "))}</div>` : "";
           const where = [session.city, session.country].filter(Boolean).join(", ");
           const returning = session.priorSessions > 0 ? `${ordinal(session.priorSessions + 1)} visit` : "New visitor";
           const flags = [
@@ -1148,6 +1156,7 @@
               <div class="visit-meta" data-toggle="${escapeHtml(session.id)}" title="Click for full details">
                 <div><span class="visit-time">${formatClock(session.startedAt)}</span> <span class="badge ${source.css}">${escapeHtml(source.label)}</span></div>
                 ${keyword}
+                ${adLine}
                 <div class="muted">${escapeHtml(where || "Unknown location")} · ${escapeHtml(session.device || "")}</div>
                 <div class="muted">${returning} · ${session.pages.length} page${session.pages.length === 1 ? "" : "s"} · ${formatDuration(stats.activeMs)}</div>
                 <div>${flags}</div>

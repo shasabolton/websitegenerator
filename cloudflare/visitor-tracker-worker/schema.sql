@@ -35,3 +35,21 @@ CREATE TABLE IF NOT EXISTS pages (
 
 CREATE INDEX IF NOT EXISTS pages_session_id ON pages (session_id);
 CREATE INDEX IF NOT EXISTS pages_started_at ON pages (started_at);
+
+CREATE INDEX IF NOT EXISTS sessions_gclid ON sessions (gclid);
+
+-- Filled in by contraption-ads/enrich_visits.py from the Google Ads click report.
+CREATE TABLE IF NOT EXISTS ad_clicks (
+  gclid TEXT PRIMARY KEY,
+  found INTEGER NOT NULL DEFAULT 1,
+  click_date TEXT,
+  campaign_id TEXT,
+  campaign TEXT,
+  ad_group_id TEXT,
+  ad_group TEXT,
+  keyword TEXT,
+  match_type TEXT,
+  device TEXT,
+  network TEXT,
+  updated_at INTEGER NOT NULL
+);

@@ -325,7 +325,10 @@ async function handleVisits(request, env) {
   const from = int(url.searchParams.get("from") || to - 7 * 86_400_000, to - MAX_RANGE_MS, to);
 
   const sessionsResult = await env.DB.prepare(
-    `SELECT * FROM sessions WHERE started_at BETWEEN ? AND ? ORDER BY started_at DESC LIMIT ?`,
+    `SELECT s.*, a.found AS ad_found, a.campaign AS ad_campaign, a.ad_group AS ad_ad_group, a.keyword AS ad_keyword,
+            a.match_type AS ad_match_type, a.network AS ad_network
+     FROM sessions s LEFT JOIN ad_clicks a ON a.gclid = s.gclid
+     WHERE s.started_at BETWEEN ? AND ? ORDER BY s.started_at DESC LIMIT ?`,
   )
     .bind(from, to, MAX_SESSIONS_PER_QUERY)
     .all();
@@ -385,6 +388,16 @@ async function handleVisits(request, env) {
       referrer: s.referrer,
       landingUrl: s.landing_url,
       gclid: s.gclid,
+      adClick:
+        s.ad_found === 1
+          ? {
+              campaign: s.ad_campaign,
+              adGroup: s.ad_ad_group,
+              keyword: s.ad_keyword,
+              matchType: s.ad_match_type,
+              network: s.ad_network,
+            }
+          : null,
       params: parseJsonColumn(s.params, {}),
       device: s.device,
       screen: s.screen,
@@ -394,6 +407,72 @@ async function handleVisits(request, env) {
       pages: pagesBySession.get(s.id) || [],
     })),
   });
+}
+
+async function handlePendingGclids(request, env) {
+  if (!(await authorized(request, env))) {
+    return jsonResponse(401, { error: "Wrong password" });
+  }
+  const result = await env.DB.prepare(
+    `SELECT s.gclid, MIN(s.started_at) AS started_at
+     FROM sessions s LEFT JOIN ad_clicks a ON a.gclid = s.gclid
+     WHERE s.gclid IS NOT NULL AND a.gclid IS NULL AND s.started_at > ?
+     GROUP BY s.gclid ORDER BY started_at DESC LIMIT 5000`,
+  )
+    .bind(Date.now() - MAX_RANGE_MS)
+    .all();
+  return jsonResponse(200, {
+    gclids: (result.results || []).map((r) => ({ gclid: r.gclid, startedAt: r.started_at })),
+  });
+}
+
+async function handleSaveAdClicks(request, env) {
+  if (!(await authorized(request, env))) {
+    return jsonResponse(401, { error: "Wrong password" });
+  }
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonResponse(400, { error: "Invalid JSON" });
+  }
+  const rows = Array.isArray(body?.clicks) ? body.clicks.slice(0, 5000) : [];
+  const now = Date.now();
+  const statements = [];
+  for (const r of rows) {
+    const gclid = str(r?.gclid, 300);
+    if (!gclid) {
+      continue;
+    }
+    statements.push(
+      env.DB.prepare(
+        `INSERT INTO ad_clicks (gclid, found, click_date, campaign_id, campaign, ad_group_id, ad_group, keyword, match_type, device, network, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(gclid) DO UPDATE SET
+           found = excluded.found, click_date = excluded.click_date, campaign_id = excluded.campaign_id,
+           campaign = excluded.campaign, ad_group_id = excluded.ad_group_id, ad_group = excluded.ad_group,
+           keyword = excluded.keyword, match_type = excluded.match_type, device = excluded.device,
+           network = excluded.network, updated_at = excluded.updated_at`,
+      ).bind(
+        gclid,
+        r.found === false ? 0 : 1,
+        str(r.clickDate, 10),
+        str(r.campaignId, 30),
+        str(r.campaign, 200),
+        str(r.adGroupId, 30),
+        str(r.adGroup, 200),
+        str(r.keyword, 200),
+        str(r.matchType, 20),
+        str(r.device, 20),
+        str(r.network, 30),
+        now,
+      ),
+    );
+  }
+  for (let i = 0; i < statements.length; i += 100) {
+    await env.DB.batch(statements.slice(i, i + 100));
+  }
+  return jsonResponse(200, { saved: statements.length });
 }
 
 export default {
@@ -413,6 +492,12 @@ export default {
     if (request.method === "GET" && path === "/api/track/visits") {
       return handleVisits(request, env);
     }
+    if (request.method === "GET" && path === "/api/track/ad-clicks/pending") {
+      return handlePendingGclids(request, env);
+    }
+    if (request.method === "POST" && path === "/api/track/ad-clicks") {
+      return handleSaveAdClicks(request, env);
+    }
     if (request.method === "GET" && path === "/api/track/login") {
       return (await authorized(request, env))
         ? jsonResponse(200, { ok: true })
@@ -426,6 +511,7 @@ export default {
     await env.DB.batch([
       env.DB.prepare(`DELETE FROM pages WHERE started_at < ?`).bind(cutoff),
       env.DB.prepare(`DELETE FROM sessions WHERE started_at < ?`).bind(cutoff),
+      env.DB.prepare(`DELETE FROM ad_clicks WHERE updated_at < ?`).bind(cutoff),
     ]);
   },
 };
