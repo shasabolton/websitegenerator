@@ -7,6 +7,7 @@
  *   RESEND_API_KEY          re_... (same Resend account as the newsletter worker)
  * Vars (wrangler.jsonc):
  *   SITE_ORIGIN   https://www.contraptioncart.com (prices/config are read from here)
+ *   SHOP_DISPLAY_NAME  name shown on the Stripe Checkout page (the Stripe account is shared)
  *   NOTIFY_TO     order notification recipient
  *   FROM_EMAIL    Resend sender
  *
@@ -419,6 +420,7 @@ async function createCheckoutSession(env, order) {
   return stripeRequest(env, "POST", "/checkout/sessions", {
     mode: "payment",
     submit_type: "pay",
+    branding_settings: { display_name: String(env.SHOP_DISPLAY_NAME || "Contraption Cart") },
     client_reference_id: orderRef,
     customer_email: order.email,
     customer_creation: "if_required",

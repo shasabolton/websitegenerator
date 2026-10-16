@@ -13,6 +13,7 @@
   // Secrets: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY (npx wrangler secret put NAME)
   "vars": {
     "SITE_ORIGIN": "https://www.contraptioncart.com",
+    "SHOP_DISPLAY_NAME": "Contraption Cart",
     "NOTIFY_TO": "shasabolton@gmail.com",
     "FROM_EMAIL": "Contraption Cart <onboarding@resend.dev>"
   }
