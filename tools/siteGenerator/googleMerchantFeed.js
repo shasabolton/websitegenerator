@@ -159,7 +159,12 @@
     return "";
   }
 
+  /** The long (Etsy-style) TITLE gives Shopping ads more words to match searches on; the site shows SHORT_TITLE. */
   function resolveTitle(row) {
+    const longTitle = String(row?.TITLE ?? "").trim();
+    if (longTitle) {
+      return longTitle;
+    }
     const pd = getProductDataApi();
     if (typeof pd?.resolveProductDisplayTitle === "function") {
       return pd.resolveProductDisplayTitle(row, "");
