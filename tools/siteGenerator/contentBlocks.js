@@ -196,7 +196,7 @@ function resolveVideoEmbed(block, parseYoutubeVideoId) {
     throw new Error("Video block requires a valid YouTube videoId or url.");
   }
   const title = escapeHtml(String(block.title || block.caption || "Video").trim() || "Video");
-  const embedSrc = escapeHtml(`https://www.youtube.com/embed/${videoId}?rel=0`);
+  const embedSrc = escapeHtml(`https://www.youtube.com/embed/${videoId}?rel=0&enablejsapi=1`);
   const caption = String(block.caption || "").trim();
   const captionHtml = caption
     ? `<figcaption class="content-video-caption">${escapeHtml(caption)}</figcaption>`

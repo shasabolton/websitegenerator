@@ -98,7 +98,7 @@
       const id = parseYoutubeVideoId(rawUrl);
       if (id) {
         youtubeIndex += 1;
-        const embedSrc = escapeHtml(`https://www.youtube.com/embed/${id}?rel=0`);
+        const embedSrc = escapeHtml(`https://www.youtube.com/embed/${id}?rel=0&enablejsapi=1`);
         const label =
           youtubeCount > 1
             ? `${altBase} — instruction video ${youtubeIndex}`

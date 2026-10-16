@@ -100,6 +100,7 @@ async function mergeBodyIntoFullHtml(
     siteSearchScriptPath,
     siteAnalyticsScriptPath,
     ga4HeadHtml,
+    siteTrackerScriptHtml,
   } = await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig, {
     categoryNames,
     homePageHref,
@@ -140,6 +141,7 @@ async function mergeBodyIntoFullHtml(
     BODY_CONTENT: bodyHtml,
     FOOTER: footerHtml,
     EXTRA_DEFER_SCRIPTS: extraDeferScripts || "",
+    SITE_TRACKER_SCRIPT: siteTrackerScriptHtml || "",
   });
 }
 

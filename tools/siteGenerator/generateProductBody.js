@@ -249,7 +249,7 @@ function buildCarouselSlidesHtml(items, productTitleRaw) {
 </figure>`;
       }
       const videoTitle = escapeHtml(`${altBase} — product video`);
-      const embedSrc = escapeHtml(`${item.embedUrl}?rel=0`);
+      const embedSrc = escapeHtml(`${item.embedUrl}?rel=0&enablejsapi=1`);
       return `<figure class="image-carousel-slide image-carousel-slide--video${active}" data-carousel-index="${index}" data-carousel-slide-kind="video" ${hidden}>
   <div class="image-carousel-video-wrap">
     <iframe class="image-carousel-embed" title="${videoTitle}" width="560" height="315" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy" data-embed-src="${embedSrc}"></iframe>

@@ -197,6 +197,17 @@ function buildSiteAnalyticsScriptPath() {
   return "shared-assets/script/siteAnalytics.js";
 }
 
+function buildSiteTrackerScriptHtml(shopData) {
+  const endpoint = String(shopData?.analytics?.trackerEndpoint ?? "").trim();
+  const primaryHost = buildGoogleSiteSearchHostname(shopData).toLowerCase();
+  if (!/^https:\/\//i.test(endpoint) || !primaryHost) {
+    return "";
+  }
+  const bareHost = primaryHost.replace(/^www\./, "");
+  const hosts = [...new Set([primaryHost, bareHost, `www.${bareHost}`])].join(",");
+  return `<script src="shared-assets/script/siteTracker.js" data-endpoint="${escapeHtml(endpoint)}" data-hosts="${escapeHtml(hosts)}" defer></script>`;
+}
+
 function buildGa4HeadHtml(shopData) {
   const id = String(shopData?.analytics?.measurementId ?? "").trim();
   if (!id || !/^G-[A-Z0-9]+$/i.test(id)) {
@@ -232,6 +243,7 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
   const siteSearchScriptPath = escapeHtml(buildSiteSearchScriptPath());
   const siteAnalyticsScriptPath = escapeHtml(buildSiteAnalyticsScriptPath());
   const ga4HeadHtml = buildGa4HeadHtml(shopData);
+  const siteTrackerScriptHtml = buildSiteTrackerScriptHtml(shopData);
 
   const headerHtml = applyTemplate(headerTemplate, {
     SHOP_NAME: shopName,
@@ -273,6 +285,7 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
     siteSearchScriptPath,
     siteAnalyticsScriptPath,
     ga4HeadHtml,
+    siteTrackerScriptHtml,
   };
 }
 
@@ -289,5 +302,6 @@ window.generateHeaderAndFooter = {
   buildSiteSearchScriptPath,
   buildSiteAnalyticsScriptPath,
   buildGa4HeadHtml,
+  buildSiteTrackerScriptHtml,
   generateHeaderAndFooter,
 };

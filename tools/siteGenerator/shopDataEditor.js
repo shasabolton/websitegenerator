@@ -46,7 +46,7 @@
       shopFocus: [],
       websites: { primary: "", images: "", imagesRepo: "", etsy: "", newsletterSignup: "" },
       paypal: { clientId: "", environment: "sandbox", buyerCountry: "", ordersApiBase: "" },
-      analytics: { measurementId: "" },
+      analytics: { measurementId: "", trackerEndpoint: "" },
       branding: { faviconPath: "" },
       blog: { title: "Blog", description: "" },
       newsletter: { label: "", signupApiUrl: "", turnstileSiteKey: "" },
@@ -132,6 +132,7 @@
       ...(input.analytics && typeof input.analytics === "object" ? input.analytics : {}),
     };
     next.analytics.measurementId = String(next.analytics.measurementId ?? "").trim();
+    next.analytics.trackerEndpoint = String(next.analytics.trackerEndpoint ?? "").trim();
     next.branding = {
       ...next.branding,
       ...(input.branding && typeof input.branding === "object" ? input.branding : {}),
@@ -367,6 +368,7 @@
       },
       analytics: {
         measurementId: get("analyticsMeasurementId"),
+        trackerEndpoint: get("analyticsTrackerEndpoint"),
       },
       branding: {
         faviconPath: get("faviconPath"),
@@ -456,6 +458,7 @@
     set("paypalBuyerCountry", shop.paypal?.buyerCountry);
     set("paypalOrdersApiBase", shop.paypal?.ordersApiBase);
     set("analyticsMeasurementId", shop.analytics?.measurementId);
+    set("analyticsTrackerEndpoint", shop.analytics?.trackerEndpoint);
     set("faviconPath", shop.branding?.faviconPath);
     set("blogTitle", shop.blog?.title);
     set("blogDescription", shop.blog?.description);
@@ -739,11 +742,17 @@
     );
     form.appendChild(paySection);
 
-    const analyticsSection = section("Google Analytics (GA4)");
+    const analyticsSection = section("Analytics");
     analyticsSection.appendChild(
-      field("Measurement ID", "analyticsMeasurementId", {
+      field("GA4 Measurement ID", "analyticsMeasurementId", {
         placeholder: "G-XXXXXXXXXX",
         hint: "From GA4 Admin → Data streams → your web stream. Leave blank to disable analytics on generated pages.",
+      }),
+    );
+    analyticsSection.appendChild(
+      field("Visitor tracker endpoint", "analyticsTrackerEndpoint", {
+        placeholder: "https://contraptioncart-tracker.contraptioncart.workers.dev/api/track",
+        hint: "Cloudflare Worker that records visitor journeys for Tools → Analytics. Leave blank to disable tracking.",
       }),
     );
     form.appendChild(analyticsSection);

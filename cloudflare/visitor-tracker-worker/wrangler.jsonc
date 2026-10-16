@@ -1,0 +1,29 @@
+{
+  "name": "contraptioncart-tracker",
+  "main": "worker.js",
+  "compatibility_date": "2026-08-19",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.1
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "contraptioncart-tracker",
+      "database_id": "ba705eff-1bde-4451-8003-13940d858019"
+    }
+  ],
+  "ratelimits": [
+    { "name": "VISITOR_LIMITER", "namespace_id": "2001", "simple": { "limit": 30, "period": 60 } },
+    { "name": "IP_LIMITER", "namespace_id": "2002", "simple": { "limit": 120, "period": 60 } },
+    { "name": "GLOBAL_LIMITER", "namespace_id": "2003", "simple": { "limit": 600, "period": 60 } },
+    { "name": "LOGIN_LIMITER", "namespace_id": "2004", "simple": { "limit": 10, "period": 60 } }
+  ],
+  "triggers": {
+    "crons": ["0 17 * * *"]
+  },
+  "vars": {
+    "TRACK_HOSTNAMES": "www.contraptioncart.com,contraptioncart.com"
+  }
+}
