@@ -40,6 +40,16 @@
       "skus": [
         "Illusionist Pendant"
       ]
+    },
+    {
+      "active": true,
+      "code": "ESTER",
+      "type": "percent",
+      "value": 50,
+      "skus": [
+        "Mini Cryptex"
+      ],
+      "minQuantity": 1
     }
   ]
 }
