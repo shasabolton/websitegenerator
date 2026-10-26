@@ -42,7 +42,7 @@
       ]
     },
     {
-      "active": true,
+      "active": false,
       "code": "ESTER",
       "type": "percent",
       "value": 50,
