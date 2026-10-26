@@ -28,7 +28,7 @@ const WEBHOOK_TOLERANCE_SECONDS = 300;
 const CHECKOUT_SOURCE = "contraptioncart";
 
 const EU_COUNTRY_CODES = [
-  "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE",
+  "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "GR", "HU", "IE",
   "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE",
 ];
 
@@ -52,14 +52,17 @@ const STRIPE_SHIPPING_COUNTRIES = [
 ];
 
 const SHIP_TO = {
+  __PICKUP__: { label: "Pickup", postageCountry: "", countries: [], pickup: true },
   AU: { label: "Australia", postageCountry: "AU", countries: ["AU"] },
   NZ: { label: "New Zealand", postageCountry: "NZ", countries: ["NZ"] },
-  __EU__: { label: "European Union", postageCountry: "DE", countries: EU_COUNTRY_CODES },
+  DE: { label: "Germany", postageCountry: "DE", countries: ["DE"] },
+  __EU__: { label: "European Union", postageCountry: "FR", countries: EU_COUNTRY_CODES },
+  GB: { label: "United Kingdom", postageCountry: "GB", countries: ["GB"] },
   __OTHER__: {
     label: "Other countries",
     postageCountry: "US",
     countries: STRIPE_SHIPPING_COUNTRIES.filter(
-      (cc) => cc !== "AU" && cc !== "NZ" && !EU_COUNTRY_CODES.includes(cc),
+      (cc) => cc !== "AU" && cc !== "NZ" && cc !== "DE" && cc !== "GB" && !EU_COUNTRY_CODES.includes(cc),
     ),
   },
 };
@@ -294,17 +297,12 @@ async function priceCart(env, payload) {
   const grams = Math.ceil(lines.reduce((sum, l) => sum + l.unitWeightKg * l.quantity, 0) * 1000);
   const discount = evaluateDiscount(discountConfig, payload.discountCode, lines);
   const discountCents = discount ? discount.amountCents : 0;
-  const postage = postageCents(shippingRates, shipToDef.postageCountry, grams);
+  const postage = shipToDef.pickup ? 0 : postageCents(shippingRates, shipToDef.postageCountry, grams);
 
-  let dutyCents = 0;
-  let vatCents = 0;
-  if (shipTo === "__EU__") {
-    const eu = shippingRates?.euImport || {};
-    const dutyAud = Number.isFinite(Number(eu.dutyAud)) && Number(eu.dutyAud) >= 0 ? Number(eu.dutyAud) : 5;
-    const vatRate = Number.isFinite(Number(eu.vatRate)) && Number(eu.vatRate) >= 0 ? Number(eu.vatRate) : 0.2;
-    dutyCents = Math.round(dutyAud * 100);
-    vatCents = Math.round(vatRate * (itemTotalCents - discountCents + postage + dutyCents));
-  }
+  const imports =
+    shipTo === "DE"
+      ? germanyImportCents(shippingRates, itemTotalCents - discountCents, postage, lines.length)
+      : { dutyCents: 0, handlingCents: 0, postalFeeCents: 0, vatCents: 0 };
 
   return {
     shipTo,
@@ -317,10 +315,40 @@ async function priceCart(env, payload) {
     discount,
     discountCents,
     postageCents: postage,
-    dutyCents,
-    vatCents,
-    totalCents: itemTotalCents - discountCents + postage + dutyCents + vatCents,
+    dutyCents: imports.dutyCents,
+    handlingCents: imports.handlingCents,
+    postalFeeCents: imports.postalFeeCents,
+    vatCents: imports.vatCents,
+    totalCents:
+      itemTotalCents -
+      discountCents +
+      postage +
+      imports.dutyCents +
+      imports.handlingCents +
+      imports.postalFeeCents +
+      imports.vatCents,
   };
+}
+
+/** Germany prepaid import charges. Same-SKU quantity is one item. Amounts are AUD cents. */
+function germanyImportCents(shippingRates, goodsCents, postageCentsAmount, itemCount) {
+  const cfg = shippingRates?.germanyImport || {};
+  const nonNeg = (value, fallback) => {
+    const n = Number(value);
+    return Number.isFinite(n) && n >= 0 ? n : fallback;
+  };
+  const rate = Number(cfg.eurToAud);
+  const eurToAud = Number.isFinite(rate) && rate > 0 ? rate : 1.5927;
+  const count = Math.max(0, Math.floor(Number(itemCount)) || 0);
+  const today = new Date().toISOString().slice(0, 10);
+  const handlingFrom = String(cfg.handlingFrom || "2026-11-01");
+  const handlingEurPer = today >= handlingFrom ? nonNeg(cfg.handlingEurPerItem, 2) : 0;
+  const audCents = (eur) => Math.round(eur * eurToAud * 100);
+  const dutyCents = audCents(nonNeg(cfg.dutyEurPerItem, 3) * count);
+  const handlingCents = audCents(handlingEurPer * count);
+  const postalFeeCents = audCents(nonNeg(cfg.postalFeeEur, 0.5));
+  const vatCents = Math.round(nonNeg(cfg.vatRate, 0.19) * (goodsCents + postageCentsAmount + dutyCents));
+  return { dutyCents, handlingCents, postalFeeCents, vatCents };
 }
 
 // ---------------------------------------------------------------------------
@@ -396,10 +424,11 @@ async function createCheckoutSession(env, order) {
     discounts = [{ coupon: coupon.id }];
   }
 
-  const importCents = order.dutyCents + order.vatCents;
-  const shippingName =
-    importCents > 0
-      ? `Postage to ${order.shipToDef.label} + EU duty & VAT`
+  const importCents = order.dutyCents + order.handlingCents + order.postalFeeCents + order.vatCents;
+  const shippingName = order.shipToDef.pickup
+    ? "Pickup"
+    : importCents > 0
+      ? `Postage to ${order.shipToDef.label} + import charges`
       : `Postage to ${order.shipToDef.label}`;
 
   const metadata = {
@@ -412,8 +441,10 @@ async function createCheckoutSession(env, order) {
     discount_code: order.discount?.code || "",
     discount_cents: order.discountCents,
     postage_cents: order.postageCents,
-    eu_duty_cents: order.dutyCents,
-    eu_vat_cents: order.vatCents,
+    de_duty_cents: order.dutyCents,
+    de_handling_cents: order.handlingCents,
+    de_postal_fee_cents: order.postalFeeCents,
+    de_vat_cents: order.vatCents,
     weight_grams: order.grams,
   };
 
@@ -426,7 +457,9 @@ async function createCheckoutSession(env, order) {
     customer_creation: "if_required",
     billing_address_collection: "auto",
     phone_number_collection: { enabled: true },
-    shipping_address_collection: { allowed_countries: order.shipToDef.countries },
+    ...(order.shipToDef.pickup
+      ? {}
+      : { shipping_address_collection: { allowed_countries: order.shipToDef.countries } }),
     shipping_options: [
       {
         shipping_rate_data: {
@@ -522,6 +555,9 @@ function addressLines(address) {
 
 function shippingCountryMatches(shipTo, countryCode) {
   const def = SHIP_TO[shipTo];
+  if (def?.pickup) {
+    return true;
+  }
   return Boolean(def && countryCode && def.countries.includes(countryCode));
 }
 
@@ -546,7 +582,8 @@ function buildOrderEmail(session) {
   const customer = session.customer_details || {};
   const shipping = session.collected_information?.shipping_details || session.shipping_details || null;
   const shipCountry = String(shipping?.address?.country || "").toUpperCase();
-  const countryOk = shippingCountryMatches(meta.ship_to, shipCountry);
+  const isPickup = Boolean(SHIP_TO[meta.ship_to]?.pickup);
+  const countryOk = isPickup || shippingCountryMatches(meta.ship_to, shipCountry);
   const orderRef = meta.order_ref || session.client_reference_id || session.id;
   const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id;
   const dashboardUrl = paymentIntentId
@@ -568,20 +605,24 @@ function buildOrderEmail(session) {
   const totals = [
     ["Items subtotal", money(meta.item_total_cents ?? session.amount_subtotal, cur)],
     Number(meta.discount_cents) > 0 ? [`Discount (${meta.discount_code})`, `−${money(meta.discount_cents, cur)}`] : null,
-    ["Postage", money(meta.postage_cents, cur)],
-    Number(meta.eu_duty_cents) > 0 ? ["EU duty", money(meta.eu_duty_cents, cur)] : null,
-    Number(meta.eu_vat_cents) > 0 ? ["EU VAT", money(meta.eu_vat_cents, cur)] : null,
+    [isPickup ? "Pickup" : "Postage", money(meta.postage_cents, cur)],
+    Number(meta.de_duty_cents) > 0 ? ["Germany duty", money(meta.de_duty_cents, cur)] : null,
+    Number(meta.de_handling_cents) > 0 ? ["Germany handling", money(meta.de_handling_cents, cur)] : null,
+    Number(meta.de_postal_fee_cents) > 0 ? ["Germany postal fee", money(meta.de_postal_fee_cents, cur)] : null,
+    Number(meta.de_vat_cents) > 0 ? ["Germany VAT", money(meta.de_vat_cents, cur)] : null,
     ["Total paid", money(session.amount_total, cur)],
   ].filter(Boolean);
 
   const shipAddress = addressLines(shipping?.address);
   const billAddress = addressLines(customer.address);
-  const countryCheck = countryOk
-    ? `OK (${shipCountry} is in "${meta.ship_to_label}")`
-    : `MISMATCH: cart said "${meta.ship_to_label || meta.ship_to}", address country is ${shipCountry || "missing"}`;
+  const countryCheck = isPickup
+    ? "Pickup (no shipping address)"
+    : countryOk
+      ? `OK (${shipCountry} is in "${meta.ship_to_label}")`
+      : `MISMATCH: cart said "${meta.ship_to_label || meta.ship_to}", address country is ${shipCountry || "missing"}`;
   const method = paymentMethodLabel(session);
 
-  const subject = `${countryOk ? "" : "[CHECK COUNTRY] "}New order ${orderRef}: ${shipping?.name || customer.name || buyerEmail} (${shipCountry || "?"}) ${money(session.amount_total, cur)}`;
+  const subject = `${countryOk ? "" : "[CHECK COUNTRY] "}New order ${orderRef}: ${shipping?.name || customer.name || buyerEmail} (${isPickup ? "Pickup" : shipCountry || "?"}) ${money(session.amount_total, cur)}`;
 
   const text = [
     `New order ${orderRef}`,

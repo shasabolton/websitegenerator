@@ -1796,6 +1796,13 @@ body.nav-scroll-lock {
   color: #111827;
 }
 
+.cart-landed-cost-note {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #374151;
+}
+
 .cart-checkout-hint {
   margin: 0 0 12px;
   font-size: 0.9rem;

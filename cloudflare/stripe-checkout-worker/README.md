@@ -3,9 +3,9 @@
 Creates Stripe Checkout sessions for the cart page and emails the shop owner when an order is paid.
 
 - **Prices are recalculated here** from the live `productData.json`, `shippingRates.json` and `discountCodes.json` on `SITE_ORIGIN`, so the browser cannot change the total.
-- **Ship-to check**: Stripe only lets the buyer enter a shipping address in the countries that match the cart's "Ship to" choice (Australia / New Zealand / EU members / everything else).
+- **Ship-to check**: Stripe only lets the buyer enter a shipping address in the countries that match the cart's "Ship to" choice (Australia / New Zealand / Germany / other EU members / United Kingdom / everything else). Pickup has no postage and does not collect a shipping address.
 - **Email**: the cart email is pre-filled and locked on the Stripe page; phone number is collected.
-- **Order email** (via Resend): order reference, customer name/email/phone, shipping address, ship-to selection + country check, items with SKU and options, discount, postage, EU duty/VAT, total, payment method and a link to the payment in Stripe.
+- **Order email** (via Resend): order reference, customer name/email/phone, shipping address, ship-to selection + country check, items with SKU and options, discount, postage, Germany import charges when that destination is selected, total, payment method and a link to the payment in Stripe.
 - Payment methods come from the Stripe Dashboard (Settings → Payment methods): cards, Apple Pay, Google Pay, Link, Afterpay, Zip etc. No code change needed to turn them on or off.
 
 ## Setup

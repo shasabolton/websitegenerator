@@ -1,10 +1,14 @@
 {
   "version": 2,
-  "notes": "Cart maps ISO country to a zone: AU and NZ have dedicated tiers; EU (__EU__) and Other (__OTHER__) use the default international postage zone. EU checkout adds euImport duty + VAT on (goods after discount + postage + duty).",
+  "notes": "Cart maps ISO country to a zone: AU and NZ have dedicated tiers; Germany, other EU, UK, and Other use the default international postage zone. Only Germany prepays import charges (duty, handling, postal fee, VAT). eurToAud is the ECB reference rate from 26 Oct 2026 (AUD per 1 EUR); update it when the rate moves. handlingEurPerItem applies from handlingFrom.",
   "currency": "AUD",
-  "euImport": {
-    "dutyAud": 5,
-    "vatRate": 0.2
+  "germanyImport": {
+    "vatRate": 0.19,
+    "dutyEurPerItem": 3,
+    "handlingEurPerItem": 2,
+    "handlingFrom": "2026-11-01",
+    "postalFeeEur": 0.5,
+    "eurToAud": 1.5927
   },
   "rates": [
     {
