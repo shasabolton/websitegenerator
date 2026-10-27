@@ -1847,7 +1847,9 @@
       "HIDE": false,
       "VIDEO3": "",
       "SLUG": "chicken-and-egg",
-      "REDIRECTS": [],
+      "REDIRECTS": [
+        "blog/chicken-and-egg-magic-trick"
+      ],
       "LINKS": [],
       "TAGLINE": "Impossible boxes: each fits,inside the other"
     },
