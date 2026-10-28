@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-27T22:17:47.993Z",
+  "generatedAt": "2026-10-28T00:42:01.017Z",
   "outputs": [
     "about/index.html",
     "apps/index.html",
@@ -45,11 +45,14 @@
     "shop/magic-empty-box/index.html",
     "shop/magic-frame/index.html",
     "shop/magic-tricks/index.html",
+    "shop/magnetic-marble-run-for-fridge-or-whiteboard-laser-cut-files-svg-dxf-pdf/index.html",
+    "shop/magnetic-marble-run-kit-for-fridge-or-whiteboard-configurable-wooden-track/index.html",
     "shop/marble-tree/index.html",
     "shop/mechanical-calculator/index.html",
     "shop/mini-cryptex/index.html",
     "shop/mouse-maze-puzzle-box/index.html",
     "shop/newcombs-paradox/index.html",
+    "shop/other/index.html",
     "shop/puzzle-boxes/index.html",
     "shop/slide-picture-puzzle-box/index.html",
     "shop/street-sweeper/index.html",
