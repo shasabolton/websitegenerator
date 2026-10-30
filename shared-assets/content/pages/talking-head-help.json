@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "slug": "talking-head-help",
+  "pageType": "page",
+  "draft": false,
+  "meta": {
+    "title": "talking head help",
+    "description": "Assembly and use instructions for the talking head animatronic"
+  },
+  "blocks": [
+    {
+      "type": "title",
+      "text": "Talking Head Help Page"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "Coming soon - An animatronic talking head kit.",
+      "clearFloat": ""
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": ""
+    }
+  ]
+}
