@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-30T00:04:59.509Z",
+  "generatedAt": "2026-10-30T03:53:30.195Z",
   "outputs": [
     "about/index.html",
     "apps/index.html",
@@ -67,6 +67,7 @@
     "shop/whirligigs/index.html",
     "shop/woodchopper-whirligig/index.html",
     "shop/zig-zag-pencil/index.html",
+    "talking-head-help/index.html",
     "tiltboxhelp/index.html"
   ]
 }
