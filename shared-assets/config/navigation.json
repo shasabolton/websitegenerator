@@ -27,6 +27,10 @@
     {
       "label": "Instructions",
       "href": "instructions"
+    },
+    {
+      "label": "talking head help",
+      "href": "talking-head-help"
     }
   ]
 }
