@@ -13,7 +13,33 @@
     },
     {
       "type": "subtitle",
-      "text": "Mechanical wooden kits, automata, magic tricks and puzzle boxes"
+      "text": "Visit our moving sculpture gallery"
+    },
+    {
+      "type": "text",
+      "format": "markdown",
+      "content": "Visit the Contraption Cart shopfront and interactive gallery in Sheffield, Tasmania. Explore moving sculptures, automata, marble runs, robots and animatronics, and try your hand at opening a puzzle box or ask to see a magic trick. Browse the shop for model engineering kits, mechanical toys, magic tricks and puzzle boxes to take home. Contraption Cart is the work of Tasmanian designer Shasa Bolton, creating original mechanical curiosities, interactive machines and custom animatronics. Visit in person or explore our online store.\n \n2/66 Main st\nSheffield\nTasmania",
+      "clearFloat": ""
+    },
+    {
+      "type": "image",
+      "src": "https://images.contraptioncart.com/Shopfront/sculpture%20gallery.jpg",
+      "alt": "moving sculpture gallery",
+      "caption": "",
+      "width": "100",
+      "align": "left"
+    },
+    {
+      "type": "image",
+      "src": "https://images.contraptioncart.com/Shopfront/20261017_134608.jpg",
+      "alt": "",
+      "caption": "",
+      "width": "100",
+      "align": "left"
+    },
+    {
+      "type": "subtitle",
+      "text": "Meet the Maker"
     },
     {
       "type": "image",
@@ -41,6 +67,11 @@
           "text": "explore projects"
         }
       ]
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": ""
     }
   ]
 }
