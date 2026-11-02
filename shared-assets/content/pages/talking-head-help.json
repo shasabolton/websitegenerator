@@ -19,9 +19,44 @@
       "clearFloat": ""
     },
     {
+      "type": "subtitle",
+      "text": "Mechanics"
+    },
+    {
       "type": "text",
       "format": "plain",
-      "content": ""
+      "content": "Simple precision laser cut parts with standard 9g micro servo motors that interface directly with the mechanism via screws on the servo arms that move within slots directly behind the facial features.",
+      "clearFloat": ""
+    },
+    {
+      "type": "subtitle",
+      "text": "Controller"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "One plug and play controler powered by a 5V phone charger you already own. The servo motors plug directly into this controler board avoiding messy power distribution and signal harnesses. Comes loaded with firmware and ready to use.",
+      "clearFloat": ""
+    },
+    {
+      "type": "subtitle",
+      "text": "Software"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "One web app that can run on your smart phone. This sends voice synced servo comands over bluetooth to the controler. Your phone provides the speakers, microphone, camera and AI that allow your animatronic to interact and have novel inteligent conversations with you. Use the preset characters or create your own within the app. Upload or reccord custom audio, write text to speak or ai prompts to send, and set triggers that determine when these will run.You may also use your own controller with the app by uploading the firmware from the apps help page.",
+      "clearFloat": ""
+    },
+    {
+      "type": "subtitle",
+      "text": "AI"
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "The app uses ai to hear you talk to it and return novel spoken voice replies. You may like to simply upload your own audio files for it to speak, but if you want your character to have intelegent interactions you will need to use the ai provided within the app. There is no subscription but a simple pay as you go model. Top up as little as $2 a time to access many minutes of ai use.",
+      "clearFloat": ""
     }
   ]
 }
