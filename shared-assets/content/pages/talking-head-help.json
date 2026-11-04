@@ -14,9 +14,20 @@
     },
     {
       "type": "text",
-      "format": "plain",
-      "content": "Coming soon - An animatronic talking head kit.",
+      "format": "markdown",
+      "content": "**Build an animatronic that doesn't just talk – it talks back!**\nThis easy-to-build animatronic kit combines traditional mechanical movement with the exciting possibilities of artificial intelligence.\nAssemble the mechanism > add the electronics > launch the web app > and start talking to your character.\n\n**Mechanics:** 100% laser cut wooden parts.\n\n**Motors:** Three 9g micro servos (180deg) with their included standard arms and screws. \n\n**Controller: ** One plug and play bluetooth circuitboard powered by your own 5V usb 2-3 Amp phone charger. The servo motors plug directly into this board. No messy wiring or soldering required.\n\n**Software:** One web app that controlles your character and sends motor commands over bluetooth: No coding required. The app uses the speaker, microphone and camera on your phone. Sit the phone behind the characters forhead for real time conversation. To speak to the character, hold down the onscreen button or lean in close. This means it only listens when you want it to. Use the preset characters in the app, or create your own personalities and audio files. There are three ways to get audio into a custom character. 1) Upload an mp3 file. 2) Write text that the app speaks back in your chosen voice. You can save this as an audio for later or have it regenerated each time your character talks. 3) Write an ai prompt that returns new novel responses each time your character is turned on. The app is free to use for basic audio playback. For ai conversation, there is no subscription required, just a pay as you go system that gives you access to ai tokens. This can be as little as $2, allowing you many minutes of conversation or audio generation. ",
       "clearFloat": ""
+    },
+    {
+      "type": "subtitle",
+      "text": "Quick Demo"
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtube.com/shorts/7t8FQXwwb-Q?si=xTismvZL__zus7xA",
+      "title": "",
+      "caption": "Quick Demo"
     },
     {
       "type": "subtitle",
@@ -25,18 +36,32 @@
     {
       "type": "text",
       "format": "plain",
-      "content": "Simple precision laser cut parts with standard 9g micro servo motors that interface directly with the mechanism via screws on the servo arms that move within slots directly behind the facial features.",
+      "content": "The mechanics are designed to be made by anyone with access to a laser cutter. They are 100% laser cut wood, that is glued or pressed togther. Follow along with the video below to build the mechanical part of your animatronic.",
       "clearFloat": ""
     },
     {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/ATwWqfOTFtk?si=ATCddGGGNh6fcGV8",
+      "title": "Mechanism Assembly",
+      "caption": ""
+    },
+    {
       "type": "subtitle",
-      "text": "Controller"
+      "text": "Electronics"
     },
     {
       "type": "text",
       "format": "plain",
-      "content": "One plug and play controler powered by a 5V phone charger you already own. The servo motors plug directly into this controler board avoiding messy power distribution and signal harnesses. Comes loaded with firmware and ready to use.",
+      "content": "The key idea was to keep this animatonic simple while still making it powerful. We all carry sophisticated hardware around in our pocket. So rather than adding an onboard speaker, microphone, camera, touchscreen and ai intelegence, this robot just uses the smart phone of whoever is in front of it. Scan the QR code on the characters forhead to launch the web app. This sends real time voice synced servo comands over bluetooth or wifi to the onboard controler while your phone speaker plays the audio. Follow along with the video below to add the motors and controller to your animatronic.",
       "clearFloat": ""
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/B7spQgGHWr4?si=fyK6DgDGgjCY6JRF",
+      "title": "",
+      "caption": ""
     },
     {
       "type": "subtitle",
@@ -45,7 +70,7 @@
     {
       "type": "text",
       "format": "plain",
-      "content": "One web app that can run on your smart phone. This sends voice synced servo comands over bluetooth to the controler. Your phone provides the speakers, microphone, camera and AI that allow your animatronic to interact and have novel inteligent conversations with you. Use the preset characters or create your own within the app. Upload or reccord custom audio, write text to speak or ai prompts to send, and set triggers that determine when these will run.You may also use your own controller with the app by uploading the firmware from the apps help page.",
+      "content": "The bains of the robot are in a web app launched by the QR code on its forehead. Use the preset characters or create your own within the app. These can be as simple as audio files you upload, or as complex as ai prompts telling your character about games and conversations your want to have. You can set triggers that determine when these audio files or prompts will run. Refer to the help section inside the app for guidance on creating your own personalities.",
       "clearFloat": ""
     },
     {
