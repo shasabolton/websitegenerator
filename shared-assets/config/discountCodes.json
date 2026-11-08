@@ -4,6 +4,13 @@
   "notes": "Each code may target the whole shop (omit skus) or specific product SKUs. minSubtotal and minQuantity apply to eligible lines only. Set active: false to disable without deleting.",
   "codes": [
     {
+      "active": true,
+      "code": "XMAS",
+      "type": "percent",
+      "value": 20,
+      "note": "20% off all items"
+    },
+    {
       "active": false,
       "code": "NEWDESIGN",
       "type": "percent",

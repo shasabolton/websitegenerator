@@ -113,28 +113,40 @@
     .email-tools-product.is-visible {
       display: block;
     }
-    .email-tools-tracking {
+    .email-tools label.email-tools-tracking {
       display: none;
       align-items: center;
       gap: 8px;
     }
-    .email-tools-tracking.is-visible {
+    .email-tools label.email-tools-tracking.is-visible {
       display: flex;
     }
     .email-tools-tracking input {
       width: 200px;
     }
-    .email-tools-delete {
+    .email-tools label.email-tools-delete {
       display: none;
       align-items: center;
       gap: 8px;
     }
-    .email-tools-delete.is-visible {
+    .email-tools label.email-tools-delete.is-visible {
       display: flex;
     }
     .email-tools-delete select {
       min-width: 220px;
       max-width: 360px;
+    }
+    .email-tools label.email-tools-promo {
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .email-tools label.email-tools-promo.is-visible {
+      display: flex;
+    }
+    .email-tools-promo select {
+      min-width: 220px;
+      max-width: 420px;
     }
     .email-product-search-form {
       display: flex;
@@ -223,6 +235,7 @@
         <option value="welcome">Welcome to the list</option>
         <option value="first-kit">First kit order</option>
         <option value="wholesale">Wholesale</option>
+        <option value="promo">Share a promo code</option>
       </select>
     </label>
     <label>
@@ -250,6 +263,18 @@
       Delete
       <select id="wholesale-delete-select">
         <option value="">No products yet</option>
+      </select>
+    </label>
+    <label class="email-tools-promo" id="promo-add-picker">
+      Promo code
+      <select id="promo-add-select">
+        <option value="">Loading codes…</option>
+      </select>
+    </label>
+    <label class="email-tools-promo" id="promo-delete-picker">
+      Remove
+      <select id="promo-delete-select">
+        <option value="">No codes yet</option>
       </select>
     </label>
     <button type="button" id="copy-email">Copy to clipboard</button>
@@ -531,6 +556,69 @@
     </table>
   </div>
 
+  <!-- Share a promo code -->
+  <div class="email-template" data-email="promo" data-subject="A discount code from Contraption Cart">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#e8e2d6;">
+      <tr>
+        <td align="center" style="padding:0;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background-color:#faf6ee;border:1px solid #d9cbb3;">
+            <tr>
+              <td align="center" style="padding:24px 20px 4px 20px;font-family:Arial,Helvetica,sans-serif;color:#2c2416;">
+                <a href="https://www.contraptioncart.com" target="_blank" style="text-decoration:none;">
+                  <img src="https://www.contraptioncart.com/shared-assets/images/branding/favicon.jpg" alt="Contraption Cart" width="72" height="72" style="display:block;width:72px;height:72px;border:0;margin:0 auto 12px auto;">
+                </a>
+                <p style="margin:0;font-size:15px;letter-spacing:0.12em;text-transform:uppercase;color:#7a6a50;">Contraption Cart</p>
+                <h1 style="margin:8px 0 0 0;font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.3;font-weight:normal;color:#2c2416;">A code for the shop</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 20px 8px 20px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
+                <p style="margin:0 0 14px 0;" class="greeting">Hi,</p>
+                <p style="margin:0;" id="promo-code-lead">I wanted to send you a discount code for Contraption Cart. Enter it at checkout and the discount comes off before you pay.</p>
+              </td>
+            </tr>
+            <!-- Promo codes are inserted as <tr> rows before this anchor -->
+            <tr id="promo-codes-anchor" style="display:none;">
+              <td></td>
+            </tr>
+            <tr>
+              <td style="padding:8px 20px 16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
+                <p style="margin:0;" id="promo-code-follow">The code works on contraptioncart.com for the items described above. If you get stuck, just reply — it comes straight to me.</p>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding:8px 20px 24px 20px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td align="center" bgcolor="#6b3a1f" style="background-color:#6b3a1f;padding:12px 22px;">
+                      <a href="https://www.contraptioncart.com" style="font-family:Arial,Helvetica,sans-serif;font-size:20px;color:#faf6ee;text-decoration:none;">Browse the shop</a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 20px 16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.6;color:#2c2416;">
+                <p style="margin:0;">Shasa<br>
+                Contraption Cart<br>
+                <a href="https://www.contraptioncart.com" style="color:#6b3a1f;text-decoration:underline;">contraptioncart.com</a></p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 20px 24px 20px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#6b5c45;">
+                <p style="margin:0;">
+                  <a href="https://www.instagram.com/contraptioncart" style="color:#6b3a1f;text-decoration:underline;">Instagram</a>
+                  &nbsp;&middot;&nbsp;
+                  <a href="https://www.facebook.com/contraptioncart/" style="color:#6b3a1f;text-decoration:underline;">Facebook</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+
   <!-- Catalog helpers only (titles, slugs, images). Header siteSearch.js is left untouched. -->
   <script src="tools/editData/productData.js"></script>
   <script>
@@ -562,6 +650,17 @@
       var wholesaleProductsAnchor = document.getElementById("wholesale-products-anchor");
       var wholesaleDeletePicker = document.getElementById("wholesale-delete-picker");
       var wholesaleDeleteSelect = document.getElementById("wholesale-delete-select");
+      var promoAddPicker = document.getElementById("promo-add-picker");
+      var promoAddSelect = document.getElementById("promo-add-select");
+      var promoDeletePicker = document.getElementById("promo-delete-picker");
+      var promoDeleteSelect = document.getElementById("promo-delete-select");
+      var promoCodesAnchor = document.getElementById("promo-codes-anchor");
+      var promoLead = document.getElementById("promo-code-lead");
+      var promoFollow = document.getElementById("promo-code-follow");
+      var promoTemplate = document.querySelector('.email-template[data-email="promo"]');
+      var DISCOUNT_CODES_URL = "shared-assets/config/discountCodes.json";
+      var promoCodes = [];
+      var promoCodeSeq = 0;
       var SEARCH_PLACEHOLDER_FIRST_KIT = "Search the kit they bought…";
       var SEARCH_PLACEHOLDER_WHOLESALE = "Search a product to add…";
       var wholesaleProductSeq = 0;
@@ -628,9 +727,12 @@
         var showProduct = type === "first-kit" || type === "wholesale";
         var showTracking = type === "first-kit";
         var showDelete = type === "wholesale";
+        var showPromo = type === "promo";
         productPicker.classList.toggle("is-visible", showProduct);
         trackingPicker.classList.toggle("is-visible", showTracking);
         wholesaleDeletePicker.classList.toggle("is-visible", showDelete);
+        promoAddPicker.classList.toggle("is-visible", showPromo);
+        promoDeletePicker.classList.toggle("is-visible", showPromo);
         searchInput.placeholder =
           type === "wholesale" ? SEARCH_PLACEHOLDER_WHOLESALE : SEARCH_PLACEHOLDER_FIRST_KIT;
         if (showDelete) {
@@ -723,6 +825,11 @@
           searchInput.focus();
           return;
         }
+        if (typeSelect.value === "promo" && !promoCodeRows().length) {
+          setStatus("Add a promo code first");
+          promoAddSelect.focus();
+          return;
+        }
 
         updateTracking();
 
@@ -746,6 +853,16 @@
           anchorParent.removeChild(wholesaleProductsAnchor);
         }
 
+        var removedPromoAnchor = null;
+        var promoAnchorParent = null;
+        var promoAnchorNext = null;
+        if (typeSelect.value === "promo" && promoCodesAnchor) {
+          promoAnchorParent = promoCodesAnchor.parentNode;
+          promoAnchorNext = promoCodesAnchor.nextSibling;
+          removedPromoAnchor = promoCodesAnchor;
+          promoAnchorParent.removeChild(promoCodesAnchor);
+        }
+
         var selection = window.getSelection();
         var range = document.createRange();
         range.selectNodeContents(emailContent);
@@ -766,6 +883,9 @@
         }
         if (removedAnchor && anchorParent) {
           anchorParent.insertBefore(removedAnchor, anchorNext);
+        }
+        if (removedPromoAnchor && promoAnchorParent) {
+          promoAnchorParent.insertBefore(removedPromoAnchor, promoAnchorNext);
         }
 
         setStatus(ok ? "Copied — paste into Gmail" : "Copy failed — select the email and copy manually");
@@ -1165,7 +1285,273 @@
         }
       });
 
+      function formatOffer(entry) {
+        var value = Number(entry && entry.value);
+        if (!Number.isFinite(value)) {
+          return "";
+        }
+        if (entry.type === "percent") {
+          return (Number.isInteger(value) ? String(value) : value.toFixed(2)) + "% off";
+        }
+        if (entry.type === "fixed") {
+          var amount = Number.isInteger(value) ? String(value) : value.toFixed(2);
+          return "$" + amount + " off";
+        }
+        return "";
+      }
+
+      function formatScope(entry) {
+        var skus = Array.isArray(entry.skus) ? entry.skus.filter(Boolean) : [];
+        if (!skus.length) {
+          return "everything in the shop";
+        }
+        if (skus.length === 1) {
+          return skus[0];
+        }
+        if (skus.length === 2) {
+          return skus[0] + " and " + skus[1];
+        }
+        return skus.slice(0, -1).join(", ") + ", and " + skus[skus.length - 1];
+      }
+
+      function formatConditions(entry) {
+        var parts = [];
+        var minQuantity = Number(entry.minQuantity);
+        if (Number.isFinite(minQuantity) && minQuantity > 1) {
+          parts.push("when you order " + Math.floor(minQuantity) + " or more");
+        }
+        var minSubtotal = Number(entry.minSubtotal);
+        if (Number.isFinite(minSubtotal) && minSubtotal > 0) {
+          var amount = Number.isInteger(minSubtotal) ? String(minSubtotal) : minSubtotal.toFixed(2);
+          parts.push("on $" + amount + " or more of eligible items");
+        }
+        return parts;
+      }
+
+      function describePromo(entry) {
+        var offer = formatOffer(entry);
+        var scope = formatScope(entry);
+        var line = offer ? offer + " " + scope : scope;
+        var conditions = formatConditions(entry);
+        if (conditions.length) {
+          line += ", " + conditions.join(", ");
+        }
+        return line;
+      }
+
+      function promoCodeRows() {
+        return Array.prototype.slice.call(document.querySelectorAll(".promo-code-row"));
+      }
+
+      function updatePromoCopy() {
+        var count = promoCodeRows().length;
+        if (promoLead) {
+          promoLead.textContent =
+            count > 1
+              ? "I wanted to send you a few discount codes for Contraption Cart. Use one of them at checkout — only one code applies per order."
+              : "I wanted to send you a discount code for Contraption Cart. Enter it at checkout and the discount comes off before you pay.";
+        }
+        if (promoFollow) {
+          promoFollow.textContent =
+            count > 1
+              ? "Each code works on contraptioncart.com for the items described with it. If you get stuck, just reply — it comes straight to me."
+              : "The code works on contraptioncart.com for the items described above. If you get stuck, just reply — it comes straight to me.";
+        }
+        if (promoTemplate) {
+          if (count === 1) {
+            var only = promoCodeRows()[0];
+            promoTemplate.setAttribute(
+              "data-subject",
+              (only.dataset.promoCode || "A discount code") +
+                (only.dataset.promoOffer ? " — " + only.dataset.promoOffer : "") +
+                " at Contraption Cart"
+            );
+          } else if (count > 1) {
+            promoTemplate.setAttribute("data-subject", "Discount codes from Contraption Cart");
+          } else {
+            promoTemplate.setAttribute("data-subject", "A discount code from Contraption Cart");
+          }
+        }
+        updateSubjectHint();
+      }
+
+      function refreshPromoDeleteSelect() {
+        var rows = promoCodeRows();
+        promoDeleteSelect.replaceChildren();
+        if (!rows.length) {
+          var empty = document.createElement("option");
+          empty.value = "";
+          empty.textContent = "No codes yet";
+          promoDeleteSelect.appendChild(empty);
+          promoDeleteSelect.disabled = true;
+          updatePromoCopy();
+          return;
+        }
+        var placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "Choose a code to remove…";
+        promoDeleteSelect.appendChild(placeholder);
+        rows.forEach(function (row) {
+          var option = document.createElement("option");
+          option.value = row.dataset.promoId || "";
+          option.textContent = row.dataset.promoCode || "Code";
+          promoDeleteSelect.appendChild(option);
+        });
+        promoDeleteSelect.disabled = false;
+        promoDeleteSelect.value = "";
+        updatePromoCopy();
+      }
+
+      function appendPromoCode(entry) {
+        if (!entry || !promoCodesAnchor || !promoCodesAnchor.parentNode) {
+          return;
+        }
+        var existing = promoCodeRows().some(function (row) {
+          return row.dataset.promoCode === entry.code;
+        });
+        if (existing) {
+          setStatus("Already in the email: " + entry.code);
+          return;
+        }
+        var description = describePromo(entry);
+        var tr = document.createElement("tr");
+        tr.className = "promo-code-row";
+        promoCodeSeq += 1;
+        tr.dataset.promoId = "pc-" + promoCodeSeq;
+        tr.dataset.promoCode = entry.code;
+        tr.dataset.promoOffer = formatOffer(entry);
+        tr.innerHTML =
+          '<td style="padding:8px 20px 8px 20px;">' +
+          '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f3eadc;border:1px dashed #6b3a1f;">' +
+          "<tr>" +
+          '<td align="center" style="padding:16px 18px;font-family:Arial,Helvetica,sans-serif;color:#2c2416;">' +
+          '<p style="margin:0;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;color:#7a6a50;">Code</p>' +
+          '<p style="margin:6px 0 0 0;font-family:Georgia,\'Times New Roman\',serif;font-size:28px;line-height:1.2;letter-spacing:0.08em;">' +
+          escapeHtml(entry.code) +
+          "</p>" +
+          '<p style="margin:8px 0 0 0;font-size:18px;line-height:1.45;">' +
+          escapeHtml(description) +
+          "</p>" +
+          "</td>" +
+          "</tr>" +
+          "</table>" +
+          "</td>";
+        promoCodesAnchor.parentNode.insertBefore(tr, promoCodesAnchor);
+        refreshPromoDeleteSelect();
+        setStatus("Added: " + entry.code);
+        window.setTimeout(function () {
+          if (status.textContent.indexOf("Added:") === 0) {
+            setStatus("");
+          }
+        }, 2000);
+      }
+
+      function removePromoCodeById(id) {
+        if (!id) {
+          return;
+        }
+        var rows = promoCodeRows();
+        for (var i = 0; i < rows.length; i++) {
+          if (rows[i].dataset.promoId === id) {
+            var code = rows[i].dataset.promoCode || "Code";
+            rows[i].remove();
+            refreshPromoDeleteSelect();
+            setStatus("Removed: " + code);
+            window.setTimeout(function () {
+              if (status.textContent.indexOf("Removed:") === 0) {
+                setStatus("");
+              }
+            }, 2000);
+            return;
+          }
+        }
+      }
+
+      function populatePromoSelect() {
+        promoAddSelect.replaceChildren();
+        var placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = promoCodes.length ? "Choose a code to add…" : "No active codes";
+        promoAddSelect.appendChild(placeholder);
+        promoCodes.forEach(function (entry, index) {
+          var option = document.createElement("option");
+          option.value = String(index);
+          var offer = formatOffer(entry);
+          option.textContent = entry.code + (offer ? " — " + offer : "");
+          promoAddSelect.appendChild(option);
+        });
+        promoAddSelect.disabled = !promoCodes.length;
+      }
+
+      function loadPromoCodes() {
+        fetch(DISCOUNT_CODES_URL, { cache: "no-store" })
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error("Failed to load discount codes (" + response.status + ")");
+            }
+            return response.json();
+          })
+          .then(function (data) {
+            var list = data && Array.isArray(data.codes) ? data.codes : [];
+            promoCodes = list
+              .map(function (raw) {
+                if (!raw || typeof raw !== "object" || raw.active === false) {
+                  return null;
+                }
+                var code = String(raw.code || "").trim().toUpperCase();
+                if (!code) {
+                  return null;
+                }
+                var type = String(raw.type || "").trim().toLowerCase();
+                if (type !== "percent" && type !== "fixed") {
+                  return null;
+                }
+                var skus = Array.isArray(raw.skus)
+                  ? raw.skus.map(function (sku) {
+                      return String(sku || "").trim();
+                    }).filter(Boolean)
+                  : [];
+                return {
+                  code: code,
+                  type: type,
+                  value: Number(raw.value),
+                  skus: skus,
+                  minQuantity: Number(raw.minQuantity),
+                  minSubtotal: Number(raw.minSubtotal),
+                  note: String(raw.note || "").trim(),
+                };
+              })
+              .filter(Boolean)
+              .sort(function (a, b) {
+                return a.code.localeCompare(b.code);
+              });
+            populatePromoSelect();
+          })
+          .catch(function () {
+            promoCodes = [];
+            populatePromoSelect();
+            promoAddSelect.options[0].textContent = "Couldn't load codes";
+          });
+      }
+
       trackingInput.addEventListener("input", updateTracking);
+
+      promoAddSelect.addEventListener("change", function () {
+        var index = Number(promoAddSelect.value);
+        promoAddSelect.value = "";
+        if (!Number.isFinite(index) || !promoCodes[index]) {
+          return;
+        }
+        appendPromoCode(promoCodes[index]);
+      });
+
+      promoDeleteSelect.addEventListener("change", function () {
+        var id = promoDeleteSelect.value;
+        if (!id) {
+          return;
+        }
+        removePromoCodeById(id);
+      });
 
       wholesaleDeleteSelect.addEventListener("change", function () {
         var id = wholesaleDeleteSelect.value;
@@ -1179,6 +1565,8 @@
       updateSubjectHint();
       updateFirstKitToolsVisibility();
       updateTracking();
+      refreshPromoDeleteSelect();
+      loadPromoCodes();
     })();
   </script>
 </body>
