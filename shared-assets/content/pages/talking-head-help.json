@@ -65,13 +65,20 @@
     },
     {
       "type": "subtitle",
-      "text": "Software"
+      "text": "Software (Web App)"
     },
     {
       "type": "text",
       "format": "plain",
-      "content": "The bains of the robot are in a web app launched by the QR code on its forehead. Use the preset characters or create your own within the app. These can be as simple as audio files you upload, or as complex as ai prompts telling your character about games and conversations your want to have. You can set triggers that determine when these audio files or prompts will run. Refer to the help section inside the app for guidance on creating your own personalities.",
+      "content": "The brains of the robot are in a web app launched by the QR code on its forehead. Use the preset characters or create your own within the app. These can be as simple as audio files you upload, or as complex as ai prompts telling your character about games and conversations you want it to have. You can set triggers that determine when these audio files or prompts will run. Refer to the help section inside the app for guidance on creating your own personalities.\nWatch the tutorial video below for a full run through of making a custom character.",
       "clearFloat": ""
+    },
+    {
+      "type": "video",
+      "videoId": "",
+      "url": "https://youtu.be/RhkdehfG2rE",
+      "title": "",
+      "caption": "Custom Character Tutorial"
     },
     {
       "type": "subtitle",
@@ -80,8 +87,37 @@
     {
       "type": "text",
       "format": "plain",
-      "content": "The app uses ai to hear you talk to it and return novel spoken voice replies. You may like to simply upload your own audio files for it to speak, but if you want your character to have intelegent interactions you will need to use the ai provided within the app. There is no subscription but a simple pay as you go model. Top up as little as $2 a time to access many minutes of ai use.",
+      "content": "The app uses ai to hear you talk to it and return novel spoken voice replies. You may like to simply upload your own audio files for it to speak, but if you want your character to have intelegent interactions you will need to use the ai provided within the app. Live AI conversation is pay as you go, with no subscription. Credit starts at $2 which can give 20 minutes to an hour or conversation.",
       "clearFloat": ""
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": ""
+    },
+    {
+      "type": "buttons",
+      "buttons": [
+        {
+          "url": "www.contraptioncart.etsy.com",
+          "text": "download the plans"
+        },
+        {
+          "url": "www.contraptioncart.etsy.com",
+          "text": "Buy the Kit"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": "**Order a Custom Animatronic Character:** Contact us at the email below to have your own face and character interactions designed and built for you.",
+      "clearFloat": ""
+    },
+    {
+      "type": "text",
+      "format": "plain",
+      "content": ""
     }
   ]
 }
