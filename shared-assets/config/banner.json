@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "enabled": false,
-  "code": "",
-  "theme": "brass",
-  "message": "",
+  "enabled": true,
+  "code": "XMAS",
+  "theme": "christmas",
+  "message": "20% off everything. Use code XMAS at checkout.",
   "endsAt": ""
 }
