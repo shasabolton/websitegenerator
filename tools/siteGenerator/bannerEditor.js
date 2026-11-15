@@ -43,9 +43,14 @@
     let endsAt = "";
     const endsRaw = String(input.endsAt ?? "").trim();
     if (endsRaw) {
-      const ends = Date.parse(endsRaw);
-      if (Number.isFinite(ends)) {
-        endsAt = new Date(ends).toISOString();
+      const fromLocal = fromDatetimeLocalValue(endsRaw);
+      if (fromLocal) {
+        endsAt = fromLocal;
+      } else {
+        const ends = Date.parse(endsRaw);
+        if (Number.isFinite(ends)) {
+          endsAt = new Date(ends).toISOString();
+        }
       }
     }
     const enabled = input.enabled === true && Boolean(code) && Boolean(message);
@@ -130,26 +135,41 @@
     return `Sale banner · ${banner.code} · ${themeLabel(banner.theme)}`;
   }
 
+  function pad2(n) {
+    return String(n).padStart(2, "0");
+  }
+
   function toDatetimeLocalValue(iso) {
     const ms = Date.parse(iso);
     if (!Number.isFinite(ms)) {
       return "";
     }
     const date = new Date(ms);
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}T${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
   }
 
+  /**
+   * datetime-local has no timezone. Parse the parts as local time.
+   * Date.parse of that string is not reliable across browsers.
+   */
   function fromDatetimeLocalValue(value) {
     const raw = String(value || "").trim();
-    if (!raw) {
+    const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/);
+    if (!match) {
       return "";
     }
-    const ms = new Date(raw).getTime();
-    if (!Number.isFinite(ms)) {
+    const date = new Date(
+      Number(match[1]),
+      Number(match[2]) - 1,
+      Number(match[3]),
+      Number(match[4]),
+      Number(match[5]),
+      Number(match[6] || 0),
+    );
+    if (Number.isNaN(date.getTime())) {
       return "";
     }
-    return new Date(ms).toISOString();
+    return date.toISOString();
   }
 
   function activeCodes(discountData) {
@@ -310,6 +330,13 @@
       codeSelect.value = selected;
     }
 
+    function applyEndValue() {
+      const next = toDatetimeLocalValue(banner?.endsAt);
+      if (endsInput.value !== next) {
+        endsInput.value = next;
+      }
+    }
+
     function applyBanner(next) {
       banner = normalizeBanner(next);
       fillCodeOptions(codes, banner.enabled ? banner.code : "");
@@ -318,7 +345,7 @@
       const entry = codes.find((item) => item.code === banner.code);
       const suggestion = suggestMessage(entry);
       messageInput.dataset.autofill = banner.message && banner.message === suggestion ? suggestion : "";
-      endsInput.value = toDatetimeLocalValue(banner.endsAt);
+      applyEndValue();
       summary.textContent = summaryText(banner);
     }
 
@@ -340,8 +367,6 @@
         ? `Sale banner · ${codeSelect.value} · ${themeLabel(themeSelect.value)}`
         : "Sale banner · off";
     });
-
-    applyBanner(banner);
 
     const footer = document.createElement("div");
     footer.className = "banner-editor-footer";
@@ -365,6 +390,10 @@
     footer.appendChild(status);
     form.appendChild(footer);
     body.appendChild(form);
+    applyBanner(banner);
+    endsInput.addEventListener("change", () => {
+      banner = normalizeBanner({ ...banner, endsAt: fromDatetimeLocalValue(endsInput.value) });
+    });
 
     function setStatus(message, kind) {
       status.textContent = message || "";
@@ -419,6 +448,8 @@
       if (!details.open) {
         return;
       }
+      applyEndValue();
+      requestAnimationFrame(() => applyEndValue());
       reloadCodes().catch(() => {
         /* Keep the codes already shown. */
       });

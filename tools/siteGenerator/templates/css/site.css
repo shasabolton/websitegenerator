@@ -77,8 +77,8 @@ a:hover {
 }
 
 .site-banner--christmas {
-  background: #123524;
-  color: #f3e6b8;
+  background: #b11116;
+  color: #ffffff;
 }
 
 .site-banner--christmas::before {
@@ -87,9 +87,9 @@ a:hover {
   inset: 0;
   pointer-events: none;
   background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.9) 1.2px, transparent 1.7px),
-    radial-gradient(circle, rgba(255, 255, 255, 0.5) 1px, transparent 1.5px),
-    radial-gradient(circle, rgba(243, 230, 184, 0.85) 1.1px, transparent 1.6px);
+    radial-gradient(circle, rgba(255, 255, 255, 0.95) 1.3px, transparent 1.8px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.7) 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.85) 1.2px, transparent 1.7px);
   background-repeat: no-repeat;
   background-position: 18% -16px, 52% -30px, 80% -12px;
   animation: site-banner-snow 22s linear infinite;

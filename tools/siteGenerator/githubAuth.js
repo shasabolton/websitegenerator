@@ -1076,7 +1076,7 @@
         merged = payload;
       }
     }
-    return putFileContent(
+    const result = await putFileContent(
       parsed.owner,
       parsed.repo,
       BANNER_PATH,
@@ -1085,6 +1085,8 @@
       branch,
       meta?.sha || null,
     );
+    await bumpDeployVersionOnRepo(parsed.owner, parsed.repo, branch);
+    return result;
   }
 
   async function githubApi(path, options, token) {
