@@ -99,6 +99,7 @@ async function mergeBodyIntoFullHtml(
     displayCurrencyScriptPath,
     siteSearchScriptPath,
     siteAnalyticsScriptPath,
+    siteBannerScriptPath,
     ga4HeadHtml,
     siteTrackerScriptHtml,
   } = await window.generateHeaderAndFooter.generateHeaderAndFooter(shopData, navigationConfig, {
@@ -135,6 +136,7 @@ async function mergeBodyIntoFullHtml(
     DISPLAY_CURRENCY_SCRIPT_PATH: displayCurrencyScriptPath,
     SITE_SEARCH_SCRIPT_PATH: siteSearchScriptPath,
     SITE_ANALYTICS_SCRIPT_PATH: siteAnalyticsScriptPath,
+    SITE_BANNER_SCRIPT_PATH: siteBannerScriptPath,
     SITE_CART_INIT_SCRIPT: siteCartInitScript,
     SET_BASE_SCRIPT: wrapInlineScript(setBaseSource),
     HEADER: headerHtml,

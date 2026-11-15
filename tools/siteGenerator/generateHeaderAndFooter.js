@@ -197,6 +197,10 @@ function buildSiteAnalyticsScriptPath() {
   return "shared-assets/script/siteAnalytics.js";
 }
 
+function buildSiteBannerScriptPath() {
+  return "shared-assets/script/siteBanner.js";
+}
+
 function buildSiteTrackerScriptHtml(shopData) {
   const endpoint = String(shopData?.analytics?.trackerEndpoint ?? "").trim();
   const primaryHost = buildGoogleSiteSearchHostname(shopData).toLowerCase();
@@ -242,6 +246,7 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
   const displayCurrencyScriptPath = escapeHtml(buildDisplayCurrencyScriptPath());
   const siteSearchScriptPath = escapeHtml(buildSiteSearchScriptPath());
   const siteAnalyticsScriptPath = escapeHtml(buildSiteAnalyticsScriptPath());
+  const siteBannerScriptPath = escapeHtml(buildSiteBannerScriptPath());
   const ga4HeadHtml = buildGa4HeadHtml(shopData);
   const siteTrackerScriptHtml = buildSiteTrackerScriptHtml(shopData);
 
@@ -284,6 +289,7 @@ async function generateHeaderAndFooter(shopData, navigationConfig, options = {})
     displayCurrencyScriptPath,
     siteSearchScriptPath,
     siteAnalyticsScriptPath,
+    siteBannerScriptPath,
     ga4HeadHtml,
     siteTrackerScriptHtml,
   };
@@ -301,6 +307,7 @@ window.generateHeaderAndFooter = {
   buildDisplayCurrencyScriptPath,
   buildSiteSearchScriptPath,
   buildSiteAnalyticsScriptPath,
+  buildSiteBannerScriptPath,
   buildGa4HeadHtml,
   buildSiteTrackerScriptHtml,
   generateHeaderAndFooter,

@@ -27,6 +27,7 @@
   const PRODUCT_DATA_PATH = "shared-assets/config/productData.json";
   const SHOP_DATA_PATH = "shared-assets/config/shopData.json";
   const DISCOUNT_CODES_PATH = "shared-assets/config/discountCodes.json";
+  const BANNER_PATH = "shared-assets/config/banner.json";
   const MANIFEST_PATH = ".generated/manifest.json";
   const REDIRECTS_PATH = "shared-assets/config/redirects.json";
   const SITEMAP_PATH = "sitemap.xml";
@@ -1047,6 +1048,43 @@
       fileData.meta?.sha || null,
     );
     return fileTreeResult;
+  }
+
+  async function pushBanner(bannerJson) {
+    const fullName = getSelectedRepo();
+    const parsed = parseRepoFullName(fullName);
+    if (!parsed) {
+      throw new Error("Select a GitHub repository on the site generator picker page.");
+    }
+    const branch = getBranch();
+    const normalize =
+      typeof window.bannerEditor?.normalizeBanner === "function"
+        ? window.bannerEditor.normalizeBanner
+        : (data) => data;
+    const format =
+      typeof window.bannerEditor?.formatBannerJsonText === "function"
+        ? window.bannerEditor.formatBannerJsonText
+        : (data) => `${JSON.stringify(data, null, 2)}\n`;
+    const payload = normalize(bannerJson && typeof bannerJson === "object" ? bannerJson : {});
+    const meta = await getFileMeta(parsed.owner, parsed.repo, BANNER_PATH, branch);
+    let merged = payload;
+    if (meta?.content) {
+      try {
+        const remote = JSON.parse(base64ToUtf8(meta.content));
+        merged = normalize({ ...(remote && typeof remote === "object" ? remote : {}), ...payload });
+      } catch {
+        merged = payload;
+      }
+    }
+    return putFileContent(
+      parsed.owner,
+      parsed.repo,
+      BANNER_PATH,
+      "Update sale banner",
+      format(merged),
+      branch,
+      meta?.sha || null,
+    );
   }
 
   async function githubApi(path, options, token) {
@@ -3433,6 +3471,7 @@ ${publishBtn}
     pushFileTree,
     pushShopData,
     pushDiscountCodes,
+    pushBanner,
     syncNavigationFromFileTree,
     pushProductRow,
     pushProductOrder,

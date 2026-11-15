@@ -214,6 +214,10 @@ window.addEventListener("load", () => {
     window.discountCodesEditor.initDiscountCodesEditor({ rootId: "discount-codes-editor-root" });
   }
 
+  if (window.bannerEditor?.initBannerEditor) {
+    window.bannerEditor.initBannerEditor({ rootId: "banner-editor-root" });
+  }
+
   if (window.imagesBrowser?.initImagesBrowser) {
     window.imagesBrowser.initImagesBrowser({ rootId: "images-browser-root" });
   }

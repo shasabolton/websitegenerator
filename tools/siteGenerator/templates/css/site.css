@@ -27,6 +27,136 @@ a:hover {
   color: #1e40af;
 }
 
+.site-banner {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  height: 68px;
+  padding: 0 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+.site-banner:not([hidden]) {
+  display: flex;
+}
+
+.site-banner-text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.site-banner--brass {
+  background: #d4cf45;
+  color: #1f1608;
+}
+
+.site-banner--brass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 58%
+  );
+  transform: translateX(-130%);
+  animation: site-banner-sheen 16s ease-in-out infinite;
+}
+
+.site-banner--christmas {
+  background: #123524;
+  color: #f3e6b8;
+}
+
+.site-banner--christmas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.9) 1.2px, transparent 1.7px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.5) 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(243, 230, 184, 0.85) 1.1px, transparent 1.6px);
+  background-repeat: no-repeat;
+  background-position: 18% -16px, 52% -30px, 80% -12px;
+  animation: site-banner-snow 22s linear infinite;
+}
+
+.site-banner--halloween {
+  background: #241424;
+  color: #f3c56b;
+}
+
+.site-banner--halloween::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 18% 50%, rgba(234, 88, 12, 0.45), transparent 58%);
+  animation: site-banner-ember 8s ease-in-out infinite;
+}
+
+@keyframes site-banner-sheen {
+  0%,
+  72% {
+    transform: translateX(-130%);
+  }
+  100% {
+    transform: translateX(130%);
+  }
+}
+
+@keyframes site-banner-snow {
+  from {
+    background-position: 18% -16px, 52% -30px, 80% -12px;
+  }
+  to {
+    background-position: 18% 84px, 52% 84px, 80% 84px;
+  }
+}
+
+@keyframes site-banner-ember {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@media (max-width: 767px) {
+  .site-banner {
+    height: 40px;
+    padding: 0 12px;
+  }
+
+  .site-banner-text {
+    font-size: 0.92rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-banner--brass::after,
+  .site-banner--christmas::before,
+  .site-banner--halloween::before {
+    animation: none;
+  }
+}
+
 .site-header {
   background: #000;
   color: #f8fafc;

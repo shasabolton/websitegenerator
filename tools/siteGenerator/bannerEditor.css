@@ -1,0 +1,147 @@
+.banner-editor-panel {
+  margin-bottom: 20px;
+}
+
+.banner-editor-details {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.banner-editor-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.banner-editor-summary::-webkit-details-marker {
+  display: none;
+}
+
+.banner-editor-summary::before {
+  content: "▸";
+  font-size: 12px;
+  color: #6b7280;
+  transition: transform 0.15s ease;
+}
+
+.banner-editor-details[open] > .banner-editor-summary::before {
+  transform: rotate(90deg);
+}
+
+.banner-editor-body {
+  padding: 0 14px 14px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.banner-editor-intro,
+.banner-editor-loading {
+  margin: 12px 0;
+  color: #4b5563;
+  line-height: 1.45;
+  font-size: 14px;
+}
+
+.banner-editor-error {
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+.banner-editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.banner-editor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.banner-editor-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.banner-editor-field input,
+.banner-editor-field select {
+  font-size: 14px;
+  padding: 7px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  max-width: 40rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.banner-editor-hint {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.banner-editor-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding-top: 14px;
+}
+
+.banner-editor-btn {
+  font-size: 14px;
+  padding: 7px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+}
+
+.banner-editor-btn:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.banner-editor-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.banner-editor-btn--primary {
+  background: #111827;
+  border-color: #111827;
+  color: #fff;
+}
+
+.banner-editor-btn--primary:hover:not(:disabled) {
+  background: #1f2937;
+}
+
+.banner-editor-btn--muted {
+  color: #6b7280;
+}
+
+.banner-editor-status {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.banner-editor-status--ok {
+  color: #047857;
+}
+
+.banner-editor-status--error {
+  color: #b91c1c;
+}
