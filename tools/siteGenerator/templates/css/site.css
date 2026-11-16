@@ -31,10 +31,11 @@ a:hover {
   display: none;
   align-items: center;
   justify-content: center;
-  height: 68px;
-  padding: 0 24px;
+  height: auto;
+  padding: 16px 24px;
   overflow: hidden;
   position: relative;
+  text-align: center;
 }
 
 .site-banner:not([hidden]) {
@@ -45,15 +46,16 @@ a:hover {
   position: relative;
   z-index: 1;
   margin: 0;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
   font-size: 1.15rem;
   font-weight: 600;
   letter-spacing: 0.01em;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.35;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .site-banner--brass {
@@ -140,8 +142,8 @@ a:hover {
 
 @media (max-width: 767px) {
   .site-banner {
-    height: 40px;
-    padding: 0 12px;
+    height: auto;
+    padding: 10px 12px;
   }
 
   .site-banner-text {
