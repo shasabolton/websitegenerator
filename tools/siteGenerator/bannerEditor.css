@@ -49,6 +49,33 @@
   font-size: 14px;
 }
 
+.banner-editor-preview-wrap {
+  margin: 4px -14px 8px;
+}
+
+.banner-editor-body .banner-editor-preview-label,
+.banner-editor-body .banner-editor-preview-note {
+  margin: 0 14px 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.banner-editor-body .banner-editor-preview-note {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.banner-editor-preview {
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+.banner-editor-body .banner-editor-preview .site-banner-text.banner-editor-preview-text--placeholder {
+  opacity: 0.72;
+}
+
 .banner-editor-error {
   color: #b91c1c;
   font-size: 14px;

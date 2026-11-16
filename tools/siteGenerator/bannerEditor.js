@@ -264,8 +264,33 @@
     const intro = document.createElement("p");
     intro.className = "banner-editor-intro";
     intro.textContent =
-      "Choose an active promo code to show one line above the header, about as tall as the logo. Save here, then regenerate the site once so every page has the banner slot. After that, banner edits go live without regenerating pages.";
+      "Choose an active promo code to show a banner above the header. The text stays centered, wraps onto extra lines, and the bar grows to fit. Save here, then regenerate the site once so every page has the banner slot. After that, banner edits go live without regenerating pages.";
     body.appendChild(intro);
+
+    const previewWrap = document.createElement("div");
+    previewWrap.className = "banner-editor-preview-wrap";
+
+    const previewLabel = document.createElement("p");
+    previewLabel.className = "banner-editor-preview-label";
+    previewLabel.textContent = "Preview";
+
+    const preview = document.createElement("div");
+    preview.className = "site-banner banner-editor-preview";
+    preview.setAttribute("aria-hidden", "true");
+
+    const previewText = document.createElement("div");
+    previewText.className = "site-banner-text";
+    preview.appendChild(previewText);
+
+    const previewNote = document.createElement("p");
+    previewNote.className = "banner-editor-preview-note";
+    previewNote.hidden = true;
+    previewNote.textContent = "Hidden on the site until you choose a promo code.";
+
+    previewWrap.appendChild(previewLabel);
+    previewWrap.appendChild(preview);
+    previewWrap.appendChild(previewNote);
+    body.appendChild(previewWrap);
 
     const form = document.createElement("form");
     form.className = "banner-editor-form";
@@ -283,7 +308,7 @@
       field("Message", "bannerMessage", {
         maxLength: MESSAGE_MAX,
         placeholder: "20% off everything until Sunday 22 November. Use code XMAS at checkout.",
-        hint: "One line. Prefilled from the code, and you can rewrite it.",
+        hint: "Prefilled from the code, and you can rewrite it. It stays centered and wraps onto the next line.",
       }),
     );
     form.appendChild(
@@ -347,6 +372,22 @@
       messageInput.dataset.autofill = banner.message && banner.message === suggestion ? suggestion : "";
       applyEndValue();
       summary.textContent = summaryText(banner);
+      updatePreview();
+    }
+
+    function updatePreview() {
+      const themeRaw = String(themeSelect.value || "")
+        .trim()
+        .toLowerCase();
+      const theme = THEMES.some((item) => item.value === themeRaw) ? themeRaw : "brass";
+      preview.className = `site-banner site-banner--${theme} banner-editor-preview`;
+      const message = String(messageInput.value || "")
+        .replace(/\s+/g, " ")
+        .trim();
+      const showingPlaceholder = !message;
+      previewText.textContent = showingPlaceholder ? "Your banner message will appear here." : message;
+      previewText.classList.toggle("banner-editor-preview-text--placeholder", showingPlaceholder);
+      previewNote.hidden = Boolean(String(codeSelect.value || "").trim());
     }
 
     codeSelect.addEventListener("change", () => {
@@ -360,13 +401,17 @@
       summary.textContent = codeSelect.value
         ? `Sale banner · ${codeSelect.value} · ${themeLabel(themeSelect.value)}`
         : "Sale banner · off";
+      updatePreview();
     });
 
     themeSelect.addEventListener("change", () => {
       summary.textContent = codeSelect.value
         ? `Sale banner · ${codeSelect.value} · ${themeLabel(themeSelect.value)}`
         : "Sale banner · off";
+      updatePreview();
     });
+
+    messageInput.addEventListener("input", updatePreview);
 
     const footer = document.createElement("div");
     footer.className = "banner-editor-footer";
@@ -418,7 +463,7 @@
         throw new Error("Choose an active promo code, or select Off.");
       }
       if (code && !message) {
-        throw new Error("Write the one-line banner message.");
+        throw new Error("Write the banner message.");
       }
       if (message.length > MESSAGE_MAX) {
         throw new Error(`Banner message must be ${MESSAGE_MAX} characters or fewer.`);
