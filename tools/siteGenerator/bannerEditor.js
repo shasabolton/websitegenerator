@@ -132,20 +132,72 @@
     if (!banner?.enabled || !banner.code) {
       return "Sale banner · off";
     }
-    return `Sale banner · ${banner.code} · ${themeLabel(banner.theme)}`;
+    return `Sale banner · ${banner.code} · ${themeLabel(banner.theme)}${endSummary(banner.endsAt)}`;
+  }
+
+  function endSummary(iso) {
+    const ms = Date.parse(iso || "");
+    if (!Number.isFinite(ms)) {
+      return "";
+    }
+    const label = new Date(ms).toLocaleString(undefined, {
+      day: "numeric",
+      month: "short",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    return ` · until ${label}`;
   }
 
   function pad2(n) {
     return String(n).padStart(2, "0");
   }
 
-  function toDatetimeLocalValue(iso) {
-    const ms = Date.parse(iso);
+  function toDateInputValue(iso) {
+    const ms = Date.parse(iso || "");
     if (!Number.isFinite(ms)) {
       return "";
     }
     const date = new Date(ms);
-    return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}T${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+    return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+  }
+
+  function toTimeInputValue(iso) {
+    const ms = Date.parse(iso || "");
+    if (!Number.isFinite(ms)) {
+      return "";
+    }
+    const date = new Date(ms);
+    return `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+  }
+
+  /**
+   * A date alone ends at 11:59 pm local time, so choosing the day is enough.
+   * datetime-local stays empty until both parts are filled, which dropped the save.
+   */
+  function fromDateAndTime(dateValue, timeValue) {
+    const dateRaw = String(dateValue || "").trim();
+    const dateMatch = dateRaw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!dateMatch) {
+      return "";
+    }
+    const timeRaw = String(timeValue || "").trim();
+    const timeMatch = timeRaw.match(/^(\d{2}):(\d{2})$/);
+    const hours = timeMatch ? Number(timeMatch[1]) : 23;
+    const minutes = timeMatch ? Number(timeMatch[2]) : 59;
+    const seconds = timeMatch ? 0 : 59;
+    const date = new Date(
+      Number(dateMatch[1]),
+      Number(dateMatch[2]) - 1,
+      Number(dateMatch[3]),
+      hours,
+      minutes,
+      seconds,
+    );
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+    return date.toISOString();
   }
 
   /**
@@ -312,9 +364,15 @@
       }),
     );
     form.appendChild(
-      field("End", "bannerEnds", {
-        inputType: "datetime-local",
-        hint: `Optional. Hides the banner after this time (${timeZone}). The promo code stays active until you turn it off under Discount codes.`,
+      field("End date", "bannerEnds", {
+        inputType: "date",
+        hint: "Optional. Hides the banner after this day. The promo code stays active until you turn it off under Discount codes.",
+      }),
+    );
+    form.appendChild(
+      field("End time", "bannerEndsTime", {
+        inputType: "time",
+        hint: `Optional. Blank means 11:59 pm (${timeZone}).`,
       }),
     );
 
@@ -328,7 +386,8 @@
 
     const codeSelect = form.querySelector('[name="bannerCode"]');
     const messageInput = form.querySelector('[name="bannerMessage"]');
-    const endsInput = form.querySelector('[name="bannerEnds"]');
+    const dateInput = form.querySelector('[name="bannerEnds"]');
+    const timeInput = form.querySelector('[name="bannerEndsTime"]');
 
     function fillCodeOptions(nextCodes, selectedCode) {
       codes = nextCodes;
@@ -356,10 +415,38 @@
     }
 
     function applyEndValue() {
-      const next = toDatetimeLocalValue(banner?.endsAt);
-      if (endsInput.value !== next) {
-        endsInput.value = next;
+      const dateNext = toDateInputValue(banner?.endsAt);
+      const timeNext = toTimeInputValue(banner?.endsAt);
+      if (dateNext && dateInput.value !== dateNext) {
+        dateInput.value = dateNext;
       }
+      if (timeNext && timeInput.value !== timeNext) {
+        timeInput.value = timeNext;
+      }
+    }
+
+    function formSummary() {
+      const code = String(codeSelect.value || "").trim();
+      if (!code) {
+        return "Sale banner · off";
+      }
+      return `Sale banner · ${code} · ${themeLabel(themeSelect.value)}${endSummary(banner?.endsAt)}`;
+    }
+
+    function syncEndFromInputs(event) {
+      const dateRaw = String(dateInput.value || "").trim();
+      if (!dateRaw) {
+        banner = { ...banner, endsAt: "" };
+        if (event?.target === dateInput && timeInput.value) {
+          timeInput.value = "";
+        }
+      } else {
+        if (!String(timeInput.value || "").trim()) {
+          timeInput.value = "23:59";
+        }
+        banner = { ...banner, endsAt: fromDateAndTime(dateInput.value, timeInput.value) };
+      }
+      summary.textContent = formSummary();
     }
 
     function applyBanner(next) {
@@ -398,18 +485,19 @@
         messageInput.value = suggestion;
         messageInput.dataset.autofill = suggestion;
       }
-      summary.textContent = codeSelect.value
-        ? `Sale banner · ${codeSelect.value} · ${themeLabel(themeSelect.value)}`
-        : "Sale banner · off";
+      summary.textContent = formSummary();
       updatePreview();
     });
 
     themeSelect.addEventListener("change", () => {
-      summary.textContent = codeSelect.value
-        ? `Sale banner · ${codeSelect.value} · ${themeLabel(themeSelect.value)}`
-        : "Sale banner · off";
+      summary.textContent = formSummary();
       updatePreview();
     });
+
+    dateInput.addEventListener("input", syncEndFromInputs);
+    dateInput.addEventListener("change", syncEndFromInputs);
+    timeInput.addEventListener("input", syncEndFromInputs);
+    timeInput.addEventListener("change", syncEndFromInputs);
 
     messageInput.addEventListener("input", updatePreview);
 
@@ -436,9 +524,6 @@
     form.appendChild(footer);
     body.appendChild(form);
     applyBanner(banner);
-    endsInput.addEventListener("change", () => {
-      banner = normalizeBanner({ ...banner, endsAt: fromDatetimeLocalValue(endsInput.value) });
-    });
 
     function setStatus(message, kind) {
       status.textContent = message || "";
@@ -457,8 +542,8 @@
       const message = String(messageInput.value || "")
         .replace(/\s+/g, " ")
         .trim();
-      const endsRaw = String(endsInput.value || "").trim();
-      const endsAt = fromDatetimeLocalValue(endsRaw);
+      const dateRaw = String(dateInput.value || "").trim();
+      const endsAt = dateRaw ? fromDateAndTime(dateRaw, timeInput.value) : banner?.endsAt || "";
       if (code && !codes.some((entry) => entry.code === code)) {
         throw new Error("Choose an active promo code, or select Off.");
       }
@@ -468,8 +553,8 @@
       if (message.length > MESSAGE_MAX) {
         throw new Error(`Banner message must be ${MESSAGE_MAX} characters or fewer.`);
       }
-      if (endsRaw && !endsAt) {
-        throw new Error("End time is not a valid date.");
+      if (dateRaw && !endsAt) {
+        throw new Error("End date is not a valid date.");
       }
       return normalizeBanner({
         enabled: Boolean(code),
