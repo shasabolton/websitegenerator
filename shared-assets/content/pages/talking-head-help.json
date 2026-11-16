@@ -91,9 +91,14 @@
       "clearFloat": ""
     },
     {
+      "type": "title",
+      "text": "FAQ"
+    },
+    {
       "type": "text",
       "format": "plain",
-      "content": ""
+      "content": "For answers to frequently askes questions, visit the help section of the talking head web app below. ",
+      "clearFloat": ""
     },
     {
       "type": "buttons",
