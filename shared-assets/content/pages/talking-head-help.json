@@ -53,7 +53,7 @@
     {
       "type": "text",
       "format": "plain",
-      "content": "The key idea was to keep this animatonic simple while still making it powerful. We all carry sophisticated hardware around in our pocket. So rather than adding an onboard speaker, microphone, camera, touchscreen and ai intelegence, this robot just uses the smart phone of whoever is in front of it. Scan the QR code on the characters forhead to launch the web app. This sends real time voice synced servo comands over bluetooth or wifi to the onboard controler while your phone speaker plays the audio. Follow along with the video below to add the motors and controller to your animatronic.",
+      "content": "The design requires three 180 degree micro servos, an esp32 contoller and a 5V USB power supply. The key idea was to keep this animatonic simple while still making it powerful. We all carry sophisticated hardware around in our pocket. So rather than adding an onboard speaker, microphone, camera, touchscreen and ai intelegence, this robot just uses the smart phone of whoever is in front of it. Scan the QR code on the characters forhead to launch the web app. This sends real time voice synced servo comands over bluetooth or wifi to the onboard ESP32 controler while your phone speaker plays the audio. Follow along with the video below to add the motors and controller to your animatronic. Our controller board includes power distribution to the servos. You may use your own ESP32 controller, but you will need to wire your own servo power distribution on pins 1,2 and 3 and flash our firmware if you want to use it with the talking head app. The firmware can be flashed or downloaded from within the talking head web app.",
       "clearFloat": ""
     },
     {
@@ -87,7 +87,7 @@
     {
       "type": "text",
       "format": "plain",
-      "content": "The app uses ai to hear you talk to it and return novel spoken voice replies. You may like to simply upload your own audio files for it to speak, but if you want your character to have intelegent interactions you will need to use the ai provided within the app. Live AI conversation is pay as you go, with no subscription. Credit starts at $2 which can give 20 minutes to an hour or conversation.",
+      "content": "The app uses ai to hear you talk to it and return novel spoken voice replies. You may like to simply upload your own audio files for it to speak, but if you want your character to have intelegent interactions you will need to use the ai provided within the app. Live AI conversation is pay as you go, with no subscription. Credit starts at $2 which can give 20 minutes to an hour or conversation. If you use the ai to create permanent audio files, then credit is no-longer required to play them after they are generated.",
       "clearFloat": ""
     },
     {
