@@ -4,7 +4,7 @@
   "pageType": "page",
   "draft": false,
   "meta": {
-    "title": "talking head help",
+    "title": "Talking Head Help",
     "description": "Assembly and use instructions for the talking head animatronic"
   },
   "blocks": [
@@ -26,7 +26,7 @@
     {
       "type": "text",
       "format": "markdown",
-      "content": "**Build an animatronic that doesn't just talk – it talks back!**\nThis easy-to-build animatronic kit combines traditional mechanical movement with the exciting possibilities of artificial intelligence.\nAssemble the mechanism > add the electronics > launch the web app > and start talking to your character.\n\n**Mechanics:** 100% laser cut wooden parts.\n\n**Motors:** Three 9g micro servos (180deg) with their included standard arms and screws. \n\n**Controller: ** One plug and play bluetooth circuitboard powered by your own 5V usb 2-3 Amp phone charger. The servo motors plug directly into this board. No messy wiring or soldering required.\n\n**Software:** One web app that controlles your character and sends motor commands over bluetooth: No coding required. The app uses the speaker, microphone and camera on your phone. Sit the phone behind the characters forhead for real time conversation. To speak to the character, hold down the onscreen button or lean in close. This means it only listens when you want it to. Use the preset characters in the app, or create your own personalities and audio files. There are three ways to get audio into a custom character. 1) Upload an mp3 file. 2) Write text that the app speaks back in your chosen voice. You can save this as an audio for later or have it regenerated each time your character talks. 3) Write an ai prompt that returns new novel responses each time your character is turned on. The app is free to use for basic audio playback. For ai conversation, there is no subscription required, just a pay as you go system that gives you access to ai tokens. This can be as little as $2, allowing you many minutes of conversation or audio generation. ",
+      "content": "**Build an animatronic that doesn't just talk – it talks back!**\nThis easy-to-build animatronic kit combines traditional mechanical movement with the exciting possibilities of artificial intelligence.\nAssemble the mechanism > add the electronics > launch the web app > and start talking to your character.\n\n**Mechanics:** 100% laser-cut wooden parts.\n\n**Motors:** Three 9g micro servos (180°) with their included standard arms and screws.\n\n**Controller:** One plug-and-play Bluetooth circuit board, powered by your own 5V USB 2–3 amp phone charger. The servo motors plug directly into this board. No messy wiring or soldering required.\n\n**Software:** One web app that controls your character and sends motor commands over Bluetooth. No coding required. The app uses the speaker, microphone, and camera on your phone. Sit the phone behind the character's forehead for real-time conversation. To speak to the character, hold down the on-screen button or lean in close. This means it only listens when you want it to. Use the preset characters in the app, or create your own personalities and audio files. There are three ways to get audio into a custom character. 1) Upload an MP3 file. 2) Write text that the app speaks back in your chosen voice. You can save this as an audio file for later, or have it regenerated each time your character talks. 3) Write an AI prompt that returns a novel response each time your character is turned on. The app is free to use for basic audio playback. For AI conversation, there is no subscription required, just a pay-as-you-go system that gives you access to AI tokens. This can be as little as $2, allowing you many minutes of conversation or audio generation.",
       "clearFloat": ""
     },
     {
@@ -36,7 +36,7 @@
     {
       "type": "text",
       "format": "plain",
-      "content": "The mechanics are designed to be made by anyone with access to a laser cutter. They are 100% laser cut wood, that is glued or pressed togther. Follow along with the video below to build the mechanical part of your animatronic.",
+      "content": "The mechanics are designed to be made by anyone with access to a laser cutter. They are 100% laser-cut wood that is glued or pressed together. Follow along with the video below to build the mechanical part of your animatronic.",
       "clearFloat": ""
     },
     {
@@ -53,7 +53,7 @@
     {
       "type": "text",
       "format": "plain",
-      "content": "The design requires three 180 degree micro servos, an esp32 contoller and a 5V USB power supply. The key idea was to keep this animatonic simple while still making it powerful. We all carry sophisticated hardware around in our pocket. So rather than adding the onboard speaker, microphone, camera, touchscreen and ai intelegence to the robot, it just uses them dierectly from the smart phone of whoever is in front of it. Scan the QR code on the characters forhead to launch the web app. This sends real time voice synced servo comands over bluetooth or wifi to the onboard ESP32 controler while your phone speaker plays the audio. Follow along with the video below to add the motors and controller to your animatronic. Our controller board includes power distribution to the servos. You may use your own ESP32 controller, but you will need to wire your own servo power distribution on pins 1,2 and 3 and flash our firmware if you want to use it with the talking head app. The firmware can be flashed or downloaded from within the talking head web app.",
+      "content": "The design requires three 180-degree micro servos, an ESP32 controller, and a 5V USB power supply. The key idea was to keep this animatronic simple while still making it powerful. We all carry sophisticated hardware around in our pockets. So rather than adding an onboard speaker, microphone, camera, touchscreen, and AI to the robot, it just uses them directly from the smartphone of whoever is in front of it. Scan the QR code on the character's forehead to launch the web app. This sends real-time, voice-synced servo commands over Bluetooth or Wi-Fi to the onboard ESP32 controller while your phone's speaker plays the audio. Follow along with the video below to add the motors and controller to your animatronic. Our controller board includes power distribution to the servos. You may use your own ESP32 controller, but you will need to wire your own servo power distribution on pins 1, 2, and 3, then flash our firmware if you want to use it with the talking head app. The firmware can be flashed or downloaded from within the talking head web app.",
       "clearFloat": ""
     },
     {
@@ -70,7 +70,7 @@
     {
       "type": "text",
       "format": "plain",
-      "content": "The brains of the robot are in a web app launched by the QR code on its forehead. Use the preset characters or create your own within the app. These can be as simple as audio files you upload, or as complex as ai prompts telling your character about games and conversations you want it to have. You can set triggers that determine when these audio files or prompts will run. Refer to the help section inside the app for guidance on creating your own personalities.\nWatch the tutorial video below for a full run through of making a custom character.",
+      "content": "The brains of the robot are in a web app launched by the QR code on its forehead. Use the preset characters, or create your own within the app. These can be as simple as audio files you upload, or as complex as AI prompts telling your character about the games and conversations you want it to have. You can set triggers that determine when these audio files or prompts will run. Refer to the help section inside the app for guidance on creating your own personalities.\nWatch the tutorial video below for a full run-through of making a custom character.",
       "clearFloat": ""
     },
     {
@@ -87,7 +87,7 @@
     {
       "type": "text",
       "format": "plain",
-      "content": "The app uses ai to hear you talk to it and return novel spoken voice replies. You may like to simply upload your own audio files for it to speak, but if you want your character to have intelegent interactions you will need to use the ai provided within the app. Live AI conversation is pay as you go, with no subscription. Credit starts at $2 which can give 20 minutes to an hour or conversation. If you use the ai to create permanent audio files, then credit is no-longer required to play them after they are generated.",
+      "content": "The app uses AI to hear you talk to it and return novel spoken replies. You may like to simply upload your own audio files for it to speak, but if you want your character to have intelligent interactions, you will need to use the AI provided within the app. Live AI conversation is pay-as-you-go, with no subscription. Credit starts at $2, which can give 20 minutes to an hour of conversation. If you use the AI to create permanent audio files, credit is no longer required to play them after they are generated.",
       "clearFloat": ""
     },
     {
@@ -97,23 +97,23 @@
     {
       "type": "text",
       "format": "plain",
-      "content": "For answers to frequently askes questions, visit the help section of the talking head web app below. ",
+      "content": "For answers to frequently asked questions, visit the help section of the talking head web app below.",
       "clearFloat": ""
     },
     {
       "type": "buttons",
       "buttons": [
         {
-          "url": "www.contraptioncart.etsy.com",
-          "text": "download the plans"
+          "url": "https://contraptioncart.etsy.com",
+          "text": "Download the Plans"
         },
         {
-          "url": "www.contraptioncart.etsy.com",
+          "url": "https://contraptioncart.etsy.com",
           "text": "Buy the Kit"
         },
         {
           "url": "http://tiny.cc/lexbot",
-          "text": "open the Talking Head App"
+          "text": "Open the Talking Head App"
         }
       ]
     },
