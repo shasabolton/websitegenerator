@@ -54,18 +54,37 @@
   color: #ffffff;
 }
 
-.site-banner--christmas::before {
+.site-banner--christmas::before,
+.site-banner--christmas::after {
   content: "";
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: -120px;
+  height: calc(100% + 120px);
   pointer-events: none;
+  background-repeat: repeat;
+  animation-name: site-banner-snow;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.site-banner--christmas::before {
   background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.95) 1.3px, transparent 1.8px),
-    radial-gradient(circle, rgba(255, 255, 255, 0.7) 1px, transparent 1.5px),
-    radial-gradient(circle, rgba(255, 255, 255, 0.85) 1.2px, transparent 1.7px);
-  background-repeat: no-repeat;
-  background-position: 18% -16px, 52% -30px, 80% -12px;
-  animation: site-banner-snow 22s linear infinite;
+    radial-gradient(circle at 8% 20%, rgba(255, 255, 255, 0.95) 2.4px, transparent 3.1px),
+    radial-gradient(circle at 46% 68%, rgba(255, 255, 255, 0.82) 1.7px, transparent 2.4px),
+    radial-gradient(circle at 78% 36%, rgba(255, 255, 255, 0.95) 2.1px, transparent 2.8px);
+  background-size: 210px 120px;
+  animation-duration: 11s;
+}
+
+.site-banner--christmas::after {
+  background-image:
+    radial-gradient(circle at 22% 78%, rgba(255, 255, 255, 0.75) 1.5px, transparent 2.2px),
+    radial-gradient(circle at 58% 14%, rgba(255, 255, 255, 0.95) 2.6px, transparent 3.3px),
+    radial-gradient(circle at 88% 52%, rgba(255, 255, 255, 0.8) 1.8px, transparent 2.5px);
+  background-size: 260px 120px;
+  animation-duration: 17s;
 }
 
 .site-banner--halloween {
@@ -94,10 +113,10 @@
 
 @keyframes site-banner-snow {
   from {
-    background-position: 18% -16px, 52% -30px, 80% -12px;
+    transform: translate3d(0, 0, 0);
   }
   to {
-    background-position: 18% 84px, 52% 84px, 80% 84px;
+    transform: translate3d(0, 120px, 0);
   }
 }
 
@@ -120,11 +139,20 @@
   .site-banner-text {
     font-size: 0.92rem;
   }
+
+  .site-banner--christmas::before {
+    background-size: 120px 120px;
+  }
+
+  .site-banner--christmas::after {
+    background-size: 150px 120px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .site-banner--brass::after,
   .site-banner--christmas::before,
+  .site-banner--christmas::after,
   .site-banner--halloween::before {
     animation: none;
   }
