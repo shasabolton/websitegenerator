@@ -2,6 +2,17 @@
   const IMAGE_EXT = /\.(avif|bmp|gif|ico|jpe?g|png|svg|webp)$/i;
   const RASTER_IMAGE_EXT = /\.(avif|bmp|gif|ico|jpe?g|png|webp)$/i;
   const WEBP_QUALITY = 0.85;
+  const JPEG_QUALITY = 0.92;
+  const SIZE_VARIANT_RE = /^il_(75x75|570xN|fullxfull)\.(.+)$/i;
+  const SIZE_OUTPUTS = [
+    { kind: "75", prefix: "il_75x75", maxWidth: 75 },
+    { kind: "570", prefix: "il_570xN", maxWidth: 570 },
+    { kind: "full", prefix: "il_fullxfull", maxWidth: null },
+  ];
+  const SIZE_FORMATS = [
+    { ext: "webp", mime: "image/webp", quality: WEBP_QUALITY },
+    { ext: "jpg", mime: "image/jpeg", quality: JPEG_QUALITY },
+  ];
 
   let reloadTreeCallback = null;
   let previewState = null;
@@ -212,8 +223,7 @@
     });
   }
 
-  async function loadImageForCanvas(entry, ctx) {
-    const blob = ensureTypedImageBlob(await fetchImageBlob(entry, ctx), entry);
+  async function decodeImageBlob(blob) {
     if (typeof createImageBitmap === "function") {
       try {
         return await createImageBitmap(blob, { imageOrientation: "from-image" });
@@ -233,6 +243,11 @@
     } finally {
       URL.revokeObjectURL(objectUrl);
     }
+  }
+
+  async function loadImageForCanvas(entry, ctx) {
+    const blob = ensureTypedImageBlob(await fetchImageBlob(entry, ctx), entry);
+    return decodeImageBlob(blob);
   }
 
   function releaseCanvasSource(source) {
@@ -318,7 +333,7 @@
 <figure class="images-browser-preview-frame">
   <div class="images-browser-preview-toolbar">
     <button type="button" class="images-browser-preview-edit" data-images-edit-image hidden>Edit</button>
-    <button type="button" class="images-browser-preview-generate" data-images-generate-webp hidden>Generate WebP sizes</button>
+    <button type="button" class="images-browser-preview-generate" data-images-generate-webp hidden>Generate sizes</button>
     <button type="button" class="images-browser-preview-close" data-images-preview-close>Close</button>
   </div>
   <img class="images-browser-preview-image" data-images-preview-image alt="" />
@@ -335,7 +350,7 @@
 
     previewOverlay.querySelector("[data-images-generate-webp]")?.addEventListener("click", (event) => {
       event.stopPropagation();
-      generateAndPushWebpVariants(previewOverlay).catch((err) => {
+      generateAndPushImageVariants(previewOverlay).catch((err) => {
         setGenerateStatus(previewOverlay, err?.message || String(err), "error");
       });
     });
@@ -435,11 +450,11 @@
     caption.textContent = String(url || title || "").trim();
     setGenerateStatus(overlay, "", null);
     if (genBtn) {
-      const canGenerate = Boolean(previewState && isRasterImageFile(entry) && supportsWebpEncoding());
+      const canGenerate = Boolean(previewState && isRasterImageFile(entry));
       genBtn.hidden = !canGenerate;
       genBtn.title = canGenerate
-        ? "Move original into a folder named after the image, then add il_75x75, il_570xN, and il_fullxfull WebP variants (one commit)"
-        : "WebP generation is not available for this file";
+        ? "Add missing il_75x75, il_570xN, and il_fullxfull WebP and JPEG files from the original or full-size image"
+        : "Size generation is not available for this file";
     }
     if (editBtn) {
       const canEdit = Boolean(previewState && isRasterImageFile(entry) && window.imageEditor?.openImageEditor);
@@ -523,111 +538,208 @@
     return canvas.toDataURL("image/webp").startsWith("data:image/webp");
   }
 
-  function buildImageSetPaths(sourcePath) {
+  function stripExtension(fileName) {
+    const base = String(fileName || "")
+      .trim()
+      .split("/")
+      .pop();
+    return base.replace(/\.[^.]+$/, "") || "image";
+  }
+
+  function parseSizeVariantName(fileName) {
+    const match = stripExtension(fileName).match(SIZE_VARIANT_RE);
+    if (!match) {
+      return null;
+    }
+    const token = match[1].toLowerCase();
+    let kind = null;
+    if (token === "75x75") {
+      kind = "75";
+    } else if (token === "570xn") {
+      kind = "570";
+    } else if (token === "fullxfull") {
+      kind = "full";
+    }
+    if (!kind || !match[2]) {
+      return null;
+    }
+    return { kind, setName: match[2] };
+  }
+
+  function resolveImageSet(sourcePath) {
     const normalized = String(sourcePath || "")
       .trim()
       .replace(/^\/+/, "");
     const parts = normalized.split("/").filter(Boolean);
     const fileName = parts.pop() || "image";
     const dir = parts.join("/");
-    const baseName = fileName.replace(/\.[^.]+$/, "") || "image";
     const parentFolder = parts.length ? parts[parts.length - 1] : "";
-    const alreadyInSetFolder = parentFolder === baseName;
-
-    const imageDir = alreadyInSetFolder ? dir : dir ? `${dir}/${baseName}` : baseName;
-    const originalPath = `${imageDir}/${fileName}`;
-    const deleteSourcePath = alreadyInSetFolder ? null : normalized;
-
+    const variant = parseSizeVariantName(fileName);
+    const setName = variant ? variant.setName : stripExtension(fileName);
+    const alreadyInSetFolder = parentFolder === setName;
+    const imageDir = alreadyInSetFolder ? dir : dir ? `${dir}/${setName}` : setName;
     return {
+      normalized,
+      fileName,
       imageDir,
-      originalPath,
-      deleteSourcePath,
-      variants: [
-        { path: `${imageDir}/il_75x75.${baseName}.webp`, maxWidth: 75 },
-        { path: `${imageDir}/il_570xN.${baseName}.webp`, maxWidth: 570 },
-        { path: `${imageDir}/il_fullxfull.${baseName}.webp`, maxWidth: null },
-      ],
+      setName,
+      alreadyInSetFolder,
+      clickedKind: variant ? variant.kind : "original",
     };
   }
 
-  async function loadBitmapFromImage(img) {
-    if (typeof createImageBitmap === "function") {
-      try {
-        return await createImageBitmap(img, { imageOrientation: "from-image" });
-      } catch {
-        /* fall through */
-      }
-    }
-    return img;
+  function sameSetName(fileName, setName) {
+    const variant = parseSizeVariantName(fileName);
+    const base = variant ? variant.setName : stripExtension(fileName);
+    return base.toLowerCase() === String(setName || "").toLowerCase();
   }
 
-  async function imageToWebpBytes(source, maxWidth) {
-    const isBitmap = typeof ImageBitmap !== "undefined" && source instanceof ImageBitmap;
-    let bitmap = source;
-    let closeBitmap = false;
-    if (!isBitmap) {
-      bitmap = await loadBitmapFromImage(source);
-      closeBitmap = bitmap !== source && typeof bitmap.close === "function";
+  function originalRank(fileName) {
+    const lower = String(fileName || "").toLowerCase();
+    if (lower.endsWith(".png")) {
+      return 0;
     }
-    try {
-      const naturalWidth = bitmap.width ?? source.naturalWidth;
-      const naturalHeight = bitmap.height ?? source.naturalHeight;
-      if (!naturalWidth || !naturalHeight) {
-        throw new Error("Image has no dimensions.");
-      }
-      const targetWidth = maxWidth ? Math.min(maxWidth, naturalWidth) : naturalWidth;
-      const targetHeight = Math.max(1, Math.round(naturalHeight * (targetWidth / naturalWidth)));
-      const canvas = document.createElement("canvas");
-      canvas.width = targetWidth;
-      canvas.height = targetHeight;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        throw new Error("Canvas is not available.");
-      }
-      ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
-      const blob = await new Promise((resolve, reject) => {
-        canvas.toBlob(
-          (result) => {
-            if (result) {
-              resolve(result);
-            } else {
-              reject(new Error("WebP encoding failed. Try a different browser."));
-            }
-          },
-          "image/webp",
-          WEBP_QUALITY,
-        );
+    if (/\.jpe?g$/.test(lower)) {
+      return 1;
+    }
+    if (lower.endsWith(".webp")) {
+      return 2;
+    }
+    return 3;
+  }
+
+  function rasterFiles(entries) {
+    return (Array.isArray(entries) ? entries : []).filter(
+      (entry) => entry?.type === "file" && isRasterImageFile(entry),
+    );
+  }
+
+  function pickFolderMaster(entries, setName) {
+    const files = rasterFiles(entries).filter((entry) => sameSetName(entry.name, setName));
+    const originals = files.filter((entry) => !parseSizeVariantName(entry.name));
+    if (originals.length) {
+      originals.sort((a, b) => {
+        const rank = originalRank(a.name) - originalRank(b.name);
+        if (rank) {
+          return rank;
+        }
+        return (Number(b.size) || 0) - (Number(a.size) || 0);
       });
-      const buffer = await blob.arrayBuffer();
-      return new Uint8Array(buffer);
-    } finally {
-      if (closeBitmap) {
-        bitmap.close();
-      }
+      return { entry: originals[0], role: "original" };
     }
+    const fulls = files.filter((entry) => parseSizeVariantName(entry.name)?.kind === "full");
+    if (fulls.length) {
+      fulls.sort((a, b) => (Number(b.size) || 0) - (Number(a.size) || 0));
+      return { entry: fulls[0], role: "full" };
+    }
+    return null;
   }
 
-  async function generateWebpVariantFiles(sourceImage, sourcePath, originalBytes) {
-    const layout = buildImageSetPaths(sourcePath);
-    const files = [];
-
-    if (layout.deleteSourcePath) {
-      if (!originalBytes?.length) {
-        throw new Error("Could not read original file for move.");
-      }
-      files.push({ path: layout.originalPath, bytes: originalBytes });
+  function planImageSetUpdate(sourcePath, entries) {
+    const layout = resolveImageSet(sourcePath);
+    const folderMaster = pickFolderMaster(entries, layout.setName);
+    let master = null;
+    if (layout.clickedKind === "original") {
+      master = { source: "clicked", role: "original" };
+    } else if (folderMaster?.role === "original") {
+      master = { source: "folder", entry: folderMaster.entry, role: "original" };
+    } else if (layout.clickedKind === "full") {
+      master = { source: "clicked", role: "full" };
+    } else if (folderMaster?.role === "full") {
+      master = { source: "folder", entry: folderMaster.entry, role: "full" };
+    }
+    if (!master) {
+      throw new Error(
+        "This file is a resized copy. Generate sizes from the original image or from il_fullxfull.",
+      );
     }
 
-    for (const output of layout.variants) {
-      const bytes = await imageToWebpBytes(sourceImage, output.maxWidth);
-      files.push({ path: output.path, bytes });
+    const existingNames = new Set(
+      (Array.isArray(entries) ? entries : [])
+        .filter((entry) => entry?.type === "file")
+        .map((entry) => String(entry.name || "").toLowerCase()),
+    );
+    const canMoveClicked =
+      !layout.alreadyInSetFolder &&
+      (layout.clickedKind === "original" || layout.clickedKind === "full") &&
+      !existingNames.has(layout.fileName.toLowerCase());
+    if (canMoveClicked) {
+      existingNames.add(layout.fileName.toLowerCase());
+    }
+
+    const missing = [];
+    for (const size of SIZE_OUTPUTS) {
+      for (const format of SIZE_FORMATS) {
+        const name = `${size.prefix}.${layout.setName}.${format.ext}`;
+        if (existingNames.has(name.toLowerCase())) {
+          continue;
+        }
+        missing.push({
+          name,
+          path: `${layout.imageDir}/${name}`,
+          maxWidth: size.maxWidth,
+          mime: format.mime,
+          quality: format.quality,
+        });
+      }
     }
 
     return {
-      files,
-      deletes: layout.deleteSourcePath ? [layout.deleteSourcePath] : [],
-      imageDir: layout.imageDir,
+      ...layout,
+      master,
+      missing,
+      move: canMoveClicked
+        ? { path: `${layout.imageDir}/${layout.fileName}`, deletePath: layout.normalized }
+        : null,
     };
+  }
+
+  async function listImageSetFolder(imageDir, ctx) {
+    try {
+      return await window.githubAuth.listRepoDirectory(ctx.owner, ctx.repo, imageDir, ctx.branch);
+    } catch (err) {
+      if (err?.status === 404) {
+        return [];
+      }
+      throw err;
+    }
+  }
+
+  async function imageToEncodedBytes(source, maxWidth, mime, quality) {
+    const naturalWidth = source.width ?? source.naturalWidth;
+    const naturalHeight = source.height ?? source.naturalHeight;
+    if (!naturalWidth || !naturalHeight) {
+      throw new Error("Image has no dimensions.");
+    }
+    const targetWidth = maxWidth ? Math.min(maxWidth, naturalWidth) : naturalWidth;
+    const targetHeight = Math.max(1, Math.round(naturalHeight * (targetWidth / naturalWidth)));
+    const canvas = document.createElement("canvas");
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      throw new Error("Canvas is not available.");
+    }
+    if (mime === "image/jpeg") {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, targetWidth, targetHeight);
+    }
+    ctx.drawImage(source, 0, 0, targetWidth, targetHeight);
+    const label = mime === "image/jpeg" ? "JPEG" : "WebP";
+    const blob = await new Promise((resolve, reject) => {
+      canvas.toBlob(
+        (result) => {
+          if (result) {
+            resolve(result);
+          } else {
+            reject(new Error(`${label} encoding failed. Try a different browser.`));
+          }
+        },
+        mime,
+        quality,
+      );
+    });
+    return new Uint8Array(await blob.arrayBuffer());
   }
 
   function setGenerateStatus(overlay, message, kind) {
@@ -644,15 +756,12 @@
     }
   }
 
-  async function generateAndPushWebpVariants(overlay) {
+  async function generateAndPushImageVariants(overlay) {
     if (!previewState?.entry || !previewState?.ctx) {
       throw new Error("No image selected.");
     }
-    if (!window.githubAuth?.commitImagesRepoBinaryFiles) {
+    if (!window.githubAuth?.commitImagesRepoBinaryFiles || !window.githubAuth?.listRepoDirectory) {
       throw new Error("GitHub image commit is not available.");
-    }
-    if (!supportsWebpEncoding()) {
-      throw new Error("This browser cannot encode WebP.");
     }
     const { entry, ctx } = previewState;
     const btn = overlay.querySelector("[data-images-generate-webp]");
@@ -661,22 +770,71 @@
     }
     let source = null;
     try {
-      setGenerateStatus(overlay, "Loading image…", null);
-      source = await loadImageForCanvas(entry, ctx);
-      const originalBytes = new Uint8Array(await (await fetchImageBlob(entry, ctx)).arrayBuffer());
-      setGenerateStatus(overlay, "Generating WebP variants…", null);
-      const result = await generateWebpVariantFiles(source, entry.path, originalBytes);
+      setGenerateStatus(overlay, "Checking image set…", null);
+      const layout = resolveImageSet(entry.path);
+      const entries = await listImageSetFolder(layout.imageDir, ctx);
+      const plan = planImageSetUpdate(entry.path, entries);
+      if (!plan.missing.length && !plan.move) {
+        setGenerateStatus(overlay, "WebP and JPEG sizes are already in this folder.", "ok");
+        return;
+      }
+      if (plan.missing.some((file) => file.mime === "image/webp") && !supportsWebpEncoding()) {
+        throw new Error("This browser cannot encode WebP.");
+      }
+
+      const files = [];
+      const deletes = [];
+      if (plan.move && plan.master.source === "clicked") {
+        setGenerateStatus(overlay, "Loading full-size image…", null);
+        const masterBlob = ensureTypedImageBlob(await fetchImageBlob(entry, ctx), entry);
+        const originalBytes = new Uint8Array(await masterBlob.arrayBuffer());
+        if (!originalBytes.length) {
+          throw new Error("Could not read original file for move.");
+        }
+        files.push({ path: plan.move.path, bytes: originalBytes });
+        deletes.push(plan.move.deletePath);
+        if (plan.missing.length) {
+          source = await decodeImageBlob(masterBlob);
+        }
+      } else if (plan.move) {
+        setGenerateStatus(overlay, "Loading full-size image…", null);
+        const clickedBlob = ensureTypedImageBlob(await fetchImageBlob(entry, ctx), entry);
+        const originalBytes = new Uint8Array(await clickedBlob.arrayBuffer());
+        if (!originalBytes.length) {
+          throw new Error("Could not read original file for move.");
+        }
+        files.push({ path: plan.move.path, bytes: originalBytes });
+        deletes.push(plan.move.deletePath);
+      }
+
+      if (plan.missing.length) {
+        if (!source) {
+          const masterEntry = plan.master.source === "clicked" ? entry : plan.master.entry;
+          setGenerateStatus(overlay, "Loading full-size image…", null);
+          const masterBlob = ensureTypedImageBlob(await fetchImageBlob(masterEntry, ctx), masterEntry);
+          source = await decodeImageBlob(masterBlob);
+        }
+        setGenerateStatus(
+          overlay,
+          `Generating ${plan.missing.length} missing size${plan.missing.length === 1 ? "" : "s"}…`,
+          null,
+        );
+        for (const output of plan.missing) {
+          const bytes = await imageToEncodedBytes(source, output.maxWidth, output.mime, output.quality);
+          files.push({ path: output.path, bytes });
+        }
+      }
+
       setGenerateStatus(overlay, "Pushing to GitHub…", null);
-      const baseName = entry.path.split("/").pop() || entry.name;
       const commit = await window.githubAuth.commitImagesRepoBinaryFiles({
-        message: `Add WebP set for ${baseName} in ${result.imageDir}/`,
-        files: result.files,
-        deletes: result.deletes,
+        message: `Add missing image sizes for ${plan.setName} in ${plan.imageDir}/`,
+        files,
+        deletes,
       });
       const sha = commit?.sha ? String(commit.sha).slice(0, 7) : "ok";
-      const paths = result.files.map((f) => f.path).join(", ");
-      const moveNote = result.deletes.length ? ` Moved original into ${result.imageDir}/.` : "";
-      setGenerateStatus(overlay, `Pushed ${result.files.length} files (${sha}): ${paths}.${moveNote}`, "ok");
+      const paths = files.map((file) => file.path).join(", ");
+      const moveNote = deletes.length ? ` Moved ${plan.fileName} into ${plan.imageDir}/.` : "";
+      setGenerateStatus(overlay, `Pushed ${files.length} files (${sha}): ${paths}.${moveNote}`, "ok");
       if (typeof reloadTreeCallback === "function") {
         reloadTreeCallback();
       }
@@ -1428,7 +1586,7 @@
   }
 
   function mountSignedInBody(body, details) {
-    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. <strong>Upload image</strong> adds a local file (choose the destination folder in the dialog). Click a thumbnail to preview at hero size, then <strong>Edit</strong> to crop and save a new version, or <strong>Generate WebP sizes</strong> to move the original into a folder named after the image and add <code>il_75x75</code>, <code>il_570xN</code>, and <code>il_fullxfull</code> WebP variants (one commit). <strong>Rename</strong> edits the file or folder name in the GitHub repository (Enter to save, Escape to cancel). <strong>Copy URL</strong> copies a public image link (custom domain when the repo matches shop data).</p>
+    body.innerHTML = `<p class="images-browser-intro">Browse files in a separate GitHub repository. Expand folders to explore. <strong>Upload image</strong> adds a local file (choose the destination folder in the dialog). Click a thumbnail to preview at hero size, then <strong>Edit</strong> to crop and save a new version, or <strong>Generate sizes</strong> to add any missing <code>il_75x75</code>, <code>il_570xN</code>, and <code>il_fullxfull</code> WebP and JPEG files, encoded from the original or full-size image (one commit). <strong>Rename</strong> edits the file or folder name in the GitHub repository (Enter to save, Escape to cancel). <strong>Copy URL</strong> copies a public image link (custom domain when the repo matches shop data).</p>
 <div class="images-browser-toolbar">
   <label for="images-repo-select">Images repository</label>
   <select id="images-repo-select" data-images-repo-select aria-label="GitHub images repository"></select>
