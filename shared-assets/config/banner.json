@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "enabled": true,
-  "code": "XMAS",
+  "enabled": false,
+  "code": "",
   "theme": "christmas",
   "message": "get 20% off before 23rd November. Use code XMAS at checkout",
   "endsAt": ""
