@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-25T06:23:48.187Z",
+  "generatedAt": "2026-11-25T06:25:03.764Z",
   "outputs": [
     "about/index.html",
     "apps/index.html",
@@ -23,6 +23,7 @@
     "privacy/index.html",
     "projects/index.html",
     "returns/index.html",
+    "shop/animatronic-talking-head-laser-cut-files-svg-dxf-pdf-lightburn-wooden-robot-plans/index.html",
     "shop/animatronic-talking-robot-head-kit-build-your-own-ai-robot-interactive-conversational-animatronic/index.html",
     "shop/automata/index.html",
     "shop/bird-bank/index.html",
@@ -52,6 +53,7 @@
     "shop/mini-cryptex/index.html",
     "shop/mouse-maze-puzzle-box/index.html",
     "shop/newcombs-paradox/index.html",
+    "shop/other/index.html",
     "shop/puzzle-boxes/index.html",
     "shop/slide-picture-puzzle-box/index.html",
     "shop/street-sweeper/index.html",
