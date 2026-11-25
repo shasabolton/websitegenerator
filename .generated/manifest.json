@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-25T06:28:53.628Z",
+  "generatedAt": "2026-11-25T06:33:22.019Z",
   "outputs": [
     "about/index.html",
     "apps/index.html",
@@ -24,7 +24,6 @@
     "projects/index.html",
     "returns/index.html",
     "shop/animatronic-talking-head-laser-cut-files-svg-dxf-pdf-lightburn-wooden-robot-plans/index.html",
-    "shop/animatronic-talking-robot-head-kit-build-your-own-ai-robot-interactive-conversational-animatronic/index.html",
     "shop/automata/index.html",
     "shop/bird-bank/index.html",
     "shop/bird-zoetrope/index.html",
@@ -60,6 +59,7 @@
     "shop/surfer-whirligig/index.html",
     "shop/swinging-monkey/index.html",
     "shop/sword-through-finger/index.html",
+    "shop/talking-head/index.html",
     "shop/tiny-drive/index.html",
     "shop/tortoise-tally/index.html",
     "shop/toys-and-games/index.html",
