@@ -33,6 +33,23 @@
           "text": "Gear Box Pets Assembley Instruction Videos"
         }
       ]
+    },
+    {
+      "type": "image",
+      "src": "https://images.contraptioncart.com/talkingHead/talkingHeadFront/il_570xN.talkingHeadFront.webp",
+      "alt": "",
+      "caption": "",
+      "width": "50",
+      "align": "left"
+    },
+    {
+      "type": "buttons",
+      "buttons": [
+        {
+          "url": "https://www.contraptioncart.com/talking-head-help/",
+          "text": "Talking Head Video Tutorials and help page"
+        }
+      ]
     }
   ]
 }
