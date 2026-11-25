@@ -63,12 +63,19 @@
     return Number.isFinite(v) && v > 0 ? Math.floor(v) : null;
   }
 
-  function setExpectedDeployVersion(version) {
+  function setExpectedDeployVersion(version, options) {
     const v = Number(version);
     if (!Number.isFinite(v) || v <= 0) {
       return;
     }
-    localStorage.setItem(STORAGE.expectedDeployVersion, String(Math.floor(v)));
+    const next = String(Math.floor(v));
+    if (localStorage.getItem(STORAGE.expectedDeployVersion) === next) {
+      return;
+    }
+    localStorage.setItem(STORAGE.expectedDeployVersion, next);
+    if (options?.silent) {
+      return;
+    }
     window.dispatchEvent(
       new CustomEvent("siteGenerator:deployVersionBumped", { detail: { version: Math.floor(v) } }),
     );
@@ -92,6 +99,52 @@
     } catch {
       return null;
     }
+  }
+
+  async function fetchPublicRepoDeployVersion(owner, repo, branch) {
+    const safeBranch = encodeURIComponent(branch || DEFAULT_BRANCH).replace(/%2F/g, "/");
+    const url = new URL(
+      `https://raw.githubusercontent.com/${owner}/${repo}/${safeBranch}/${SHOP_DATA_PATH}`,
+    );
+    url.searchParams.set("t", String(Date.now()));
+    try {
+      const response = await fetch(url.href, { cache: "no-store" });
+      if (!response.ok) {
+        return null;
+      }
+      const json = await response.json();
+      return getDeployVersion(json);
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Remember the deploy version that a commit actually contains.
+   * If that commit missed the bump, write it in a follow-up commit.
+   * @returns {Promise<number | null>}
+   */
+  async function confirmDeployVersionOnRepo(owner, repo, branch, commitSha, intendedVersion) {
+    const intended = Number(intendedVersion);
+    let atCommit = null;
+    if (commitSha) {
+      try {
+        const meta = await getFileMeta(owner, repo, SHOP_DATA_PATH, commitSha);
+        if (meta?.content) {
+          atCommit = getDeployVersion(JSON.parse(base64ToUtf8(meta.content)));
+        }
+      } catch {
+        atCommit = null;
+      }
+    }
+    if (Number.isFinite(intended) && intended > 0 && atCommit != null && intended > atCommit) {
+      return bumpDeployVersionOnRepo(owner, repo, branch);
+    }
+    const version = atCommit != null ? atCommit : Number.isFinite(intended) ? Math.floor(intended) : 0;
+    if (version > 0) {
+      setExpectedDeployVersion(version);
+    }
+    return version > 0 ? version : null;
   }
 
   /**
@@ -122,7 +175,6 @@
    */
   function appendBumpedShopDataToFileChanges(fileChanges, shopData) {
     const bumped = bumpDeployVersion(shopData && typeof shopData === "object" ? shopData : {});
-    setExpectedDeployVersion(bumped.deployVersion);
     const entry = { path: SHOP_DATA_PATH, content: formatShopDataJsonText(bumped) };
     const index = fileChanges.findIndex((change) => change?.path === SHOP_DATA_PATH);
     if (index >= 0) {
@@ -957,7 +1009,7 @@
     }
 
     const shopBase = shopDataFile.json && typeof shopDataFile.json === "object" ? shopDataFile.json : {};
-    appendBumpedShopDataToFileChanges(fileChanges, shopBase);
+    const bumpedShopData = appendBumpedShopDataToFileChanges(fileChanges, shopBase);
 
     const messageParts = ["Update file tree layout"];
     if (hasProductLayoutChanges) {
@@ -967,6 +1019,13 @@
       message: messageParts.join(" and "),
       fileChanges,
     });
+    await confirmDeployVersionOnRepo(
+      owner,
+      repo,
+      branch,
+      result?.sha,
+      bumpedShopData.deployVersion,
+    );
 
     if (hasProductLayoutChanges && typeof window.productData?.clearProductLayoutOverlays === "function") {
       window.productData.clearProductLayoutOverlays();
@@ -2467,6 +2526,13 @@
     );
 
     const commit = await publishSiteCommit({ message, fileChanges });
+    await confirmDeployVersionOnRepo(
+      owner,
+      repo,
+      branch,
+      commit?.sha,
+      bumpedShopData.deployVersion,
+    );
     clearPendingNewPagesForPaths(publishablePaths);
     return { commit, manifest, outputPaths: nextOutputs };
   }
@@ -2648,6 +2714,13 @@
       message: "Publish full site",
       fileChanges,
     });
+    await confirmDeployVersionOnRepo(
+      owner,
+      repo,
+      branch,
+      commit?.sha,
+      bumpedShopData.deployVersion,
+    );
     clearPendingNewPagesForPaths(treePaths);
     return { commit, manifest, outputPaths: nextOutputs };
   }
@@ -3379,30 +3452,34 @@ ${publishBtn}
       }
       try {
         const pagesV = await fetchPagesDeployVersion();
-        const expected = getExpectedDeployVersion();
+        let repoV = null;
+        const parsed = parseRepoFullName(getSelectedRepo());
+        if (parsed) {
+          if (isSignedIn()) {
+            repoV = await fetchRepoDeployVersion(parsed.owner, parsed.repo, getBranch());
+          }
+          if (repoV == null) {
+            repoV = await fetchPublicRepoDeployVersion(parsed.owner, parsed.repo, getBranch());
+          }
+        }
+        if (repoV != null) {
+          setExpectedDeployVersion(repoV, { silent: true });
+        }
+        const target = repoV != null ? repoV : getExpectedDeployVersion();
         let detail = "";
-        if (expected != null && pagesV < expected) {
+        if (target != null && pagesV < target) {
           pagesEl.classList.add("deploy-version-pages--pending");
-          detail = ` — waiting for GitHub Pages (expected v${expected})`;
-        } else if (expected != null && pagesV >= expected) {
+          detail = ` — waiting for GitHub Pages (expected v${target})`;
+        } else if (target != null && pagesV >= target) {
           pagesEl.classList.add("deploy-version-pages--live");
           detail = " — live";
         }
         pagesEl.textContent = `Pages: v${pagesV}${detail}`;
 
-        if (githubEl && isSignedIn() && getSelectedRepo()) {
-          const parsed = parseRepoFullName(getSelectedRepo());
-          if (parsed) {
-            const repoV = await fetchRepoDeployVersion(parsed.owner, parsed.repo, getBranch());
-            if (repoV != null) {
-              githubEl.hidden = false;
-              if (repoV > pagesV) {
-                githubEl.textContent = ` · GitHub: v${repoV} (not on Pages yet)`;
-              } else {
-                githubEl.textContent = ` · GitHub: v${repoV}`;
-              }
-            }
-          }
+        if (githubEl && repoV != null) {
+          githubEl.hidden = false;
+          githubEl.textContent =
+            repoV > pagesV ? ` · GitHub: v${repoV} (not on Pages yet)` : ` · GitHub: v${repoV}`;
         }
       } catch (err) {
         pagesEl.classList.add("deploy-version-pages--error");
