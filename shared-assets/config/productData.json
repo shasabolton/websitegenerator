@@ -3398,7 +3398,30 @@
       "VARIATION 3 NAME": "",
       "VARIATION 3 VALUES": "",
       "SKU": "talking-head",
-      "CATEGORY": "Other"
+      "CATEGORY": "automata",
+      "SHORT_TITLE": "",
+      "SLUG": "",
+      "REDIRECTS": [],
+      "LINKS": [
+        {
+          "text": "tutorial videos",
+          "url": "https://www.contraptioncart.com/talking-head-help"
+        }
+      ],
+      "WEIGHT_KG": "",
+      "DIGITAL": false,
+      "HIDE": false,
+      "LEGACY_SHOP_URL": "",
+      "ETSY_LISTING_URL": "",
+      "VIDEO3": "",
+      "ETSY_VIDEO1": "",
+      "ETSY_VIDEO2": "",
+      "ETSY_VIDEO3": "",
+      "INSTRUCTION VIDEOS": "",
+      "HIDE INSTRUCTIONS": false,
+      "VARIATION 1 PRICE DELTA": "0,100",
+      "VARIATION 2 PRICE DELTA": "",
+      "VIDEO1": "https://youtube.com/shorts/fclvhWpUlN0?si=tJiyvezAFA9pVoEl"
     },
     {
       "TITLE": "Animatronic Talking Head Laser Cut Files, SVG DXF, PDF, Lightburn, Wooden Robot Plans",
