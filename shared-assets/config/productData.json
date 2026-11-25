@@ -3458,7 +3458,7 @@
       "LINKS": [],
       "WEIGHT_KG": "",
       "DIGITAL": true,
-      "HIDE": false,
+      "HIDE": true,
       "LEGACY_SHOP_URL": "",
       "ETSY_LISTING_URL": "",
       "VIDEO3": "",
@@ -3469,7 +3469,8 @@
       "HIDE INSTRUCTIONS": false,
       "VARIATION 1 PRICE DELTA": "",
       "VARIATION 2 PRICE DELTA": "",
-      "VIDEO1": ""
+      "VIDEO1": "",
+      "DRAFT": true
     }
   ]
 }
