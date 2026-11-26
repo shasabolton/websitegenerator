@@ -3151,7 +3151,7 @@
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "6",
       "WEIGHT_KG": "0.25",
-      "TAGS": "Whirligig,Garden_sculpture,Kinetic_sculpture",
+      "TAGS": "Whirligig,Garden_sculpture,Kinetic_sculpture, wind_spinner",
       "MATERIALS": "",
       "IMAGE1": "https://i.etsystatic.com/25031074/r/il/2d3dc8/5025710985/il_fullxfull.5025710985_st50.jpg",
       "IMAGE2": "",
@@ -3186,7 +3186,8 @@
       "VIDEO3": "",
       "SLUG": "whirligig-hardware",
       "REDIRECTS": [],
-      "TAGLINE": "Stainless steel and brass,ready to use"
+      "TAGLINE": "Stainless steel and brass,ready to use",
+      "LINKS": []
     },
     {
       "TITLE": "Surfer Whirligig Plans - SVG - PDF - laser cutting - scroll saw",
