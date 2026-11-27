@@ -237,7 +237,7 @@
     },
     {
       "TITLE": "Animatronic Talking Robot Head Kit, Build your own AI Robot, Interactive Conversational Animatronic",
-      "DESCRIPTION": "Build an animatronic that doesn't just talk. It talks back.\n\nThis kit is a wooden talking head with a moving face, controlled by the phone you already own. You assemble the mechanism, plug in three small motors, open a web app, and have a conversation. It only listens when you hold the on-screen button or lean in close.\n\nYour phone sits behind the character's forehead. Its speaker is the voice, its microphone is the ear, and its camera notices when you lean in. The app sends the mouth and face movements to the kit over Bluetooth. The mouth syncs with the audio and the eyes track the motion of your face from side to side. The character can speak prerecorded audio files as well as live AI-generated responses to your questions.\n\nIn the kit\n\nLaser-cut wooden face mechanism\nThree 9g micro servos (180°), with the standard arms and screws\nOne Bluetooth controller board. The servos plug straight in. No soldering and no extra wiring\n\nYou will need:\n\nA phone. Android with Chrome works directly. iPhone needs the free Bluefy browser (Safari cannot connect)\nYour own 5V USB phone charger, 2–3A\nPVA or Super Glue\nA small philips screwdriver\n1 hour to build\nFinished size: 22cm x 17cm x 5cm\n\nHow a conversation works Open the web app, pair the board once, and start talking. Use a preset character, or make your own.\n\nThere are three ways to give a custom character a voice:\n\nRecorded. Upload an MP3 and the face performs it.\nScripted. Type a line and the app speaks it in a voice you choose. Save the audio, or let the app generate it each time.\nOriginal. Write a short personality prompt. Each time the character wakes up, it comes back with something new.\nPlayback of audio files is free. Our character comes with some built in audio files. Live AI conversation is pay as you go, with no subscription. Credit starts at $2 which can give 20 minutes to an hour or conversation.\n\nAssembly The moving parts are laser-cut wood. Fit them together, plug the three servos into the board, connect a USB charger, and pair it in the web app.",
+      "DESCRIPTION": "This animatronic talking head kit contains everything you need to build a wooden wall mounted head that not only talks but can actually have a conversation with you. It is controlled over Bluetooth by a web app on your smartphone. Use the inbuilt characters or set your own voice, personality and interaction prompts.\n\nYou assemble the mechanism, plug in three small motors, open a web app, and have a conversation. It only listens when you hold the on-screen button or lean in close.\n\nYour phone can be optionally placed behind the character's forehead. Its speaker is the voice, its microphone is the ear, and its camera notices when you lean in. The app sends the mouth and face motor commands to the kit over Bluetooth. The mouth syncs with the audio and the eyes track the motion of your face from side to side. The character can speak prerecorded audio files as well as live AI-generated responses to your questions.\n\nIn the kit\n\nLaser-cut wooden face mechanism\nThree 9g micro servos (180°), with the standard arms and screws\nOne Bluetooth controller board. The servos plug straight in. No soldering and no extra wiring\n\nYou will need:\n\nA phone. Android with Chrome works directly. iPhone needs the free Bluefy browser (Safari cannot connect)\nYour own 5V USB phone charger, 2–3A\nPVA or Super Glue\nA small philips screwdriver\n1 hour to build\nFinished size: 22cm x 17cm x 5cm\n\nHow a conversation works Open the web app, pair the board once, and start talking. Use a preset character, or make your own.\n\nThere are three ways to give a custom character a voice:\n\nRecorded. Upload an MP3 and the face performs it.\nScripted. Type a line and the app speaks it in a voice you choose. Save the audio, or let the app generate it each time.\nOriginal. Write a short personality prompt. Each time the character wakes up, it comes back with something new.\nPlayback of audio files is free. Our character comes with some built in audio files. Live AI conversation is pay as you go, with no subscription. Credit starts at $2 which can give 20 minutes to an hour or conversation.\n\nAssembly The moving parts are laser-cut wood. Fit them together, plug the three servos into the board, connect a USB charger, and pair it in the web app.",
       "PRICE": "100",
       "CURRENCY_CODE": "AUD",
       "QUANTITY": "5",
@@ -264,13 +264,17 @@
       "VARIATION 3 VALUES": "",
       "SKU": "talking-head",
       "CATEGORY": "automata",
-      "SHORT_TITLE": "Talking Head",
+      "SHORT_TITLE": "Animatronic Talking Head Kit",
       "SLUG": "",
       "REDIRECTS": [],
       "LINKS": [
         {
           "text": "tutorial videos",
           "url": "https://www.contraptioncart.com/talking-head-help"
+        },
+        {
+          "text": "Digital plans",
+          "url": "https://contraptioncart.etsy.com/au/listing/4619952616/animatronic-talking-head-laser-cut-files"
         }
       ],
       "WEIGHT_KG": "0.4",
