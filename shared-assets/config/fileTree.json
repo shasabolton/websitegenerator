@@ -32,7 +32,8 @@
         },
         {
           "label": "mechanisms inside a laser-cut animatronic talking head",
-          "href": "blog/mechanisms-inside-a-laser-cut-animatronic-talking-head"
+          "href": "blog/mechanisms-inside-a-laser-cut-animatronic-talking-head",
+          "draft": true
         }
       ]
     },
